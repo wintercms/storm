@@ -1,6 +1,6 @@
 {
     "name": "wintercms/storm",
-    "description": "Winter CMS Storm Library",
+    "description": "Winter Storm Library",
     "homepage": "https://wintercms.com",
     "keywords": ["winter", "cms", "storm"],
     "license": "MIT",
