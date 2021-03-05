@@ -2,7 +2,7 @@
 return [
     'test' => [
         'pagination' => 'Displayed records: :from-:to of :total',
-        'hello_october' => 'Hello October!',
+        'hello_winter' => 'Hello Winter!',
         'choice' => 'Page|Pages',
     ],
 ];

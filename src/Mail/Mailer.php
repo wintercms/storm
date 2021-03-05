@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Mail;
+<?php namespace Winter\Storm\Mail;
 
 use Event;
 use Config;
@@ -9,12 +9,11 @@ use Illuminate\Support\Collection;
 /**
  * Mailer class for sending mail.
  *
- * @package october\mail
  * @author Alexey Bobkov, Samuel Georges
  */
 class Mailer extends MailerBase
 {
-    use \October\Rain\Support\Traits\Emitter;
+    use \Winter\Storm\Support\Traits\Emitter;
 
     /**
      * @var string Original driver before pretending.
@@ -91,7 +90,7 @@ class Mailer extends MailerBase
           *
           * Example usage (stops the sending process):
           *
-          *     Event::listen('mailer.prepareSend', function ((\October\Rain\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message) {
+          *     Event::listen('mailer.prepareSend', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message) {
           *         return false;
           *     });
           *
@@ -121,7 +120,7 @@ class Mailer extends MailerBase
          *
          * Example usage (logs the message):
          *
-         *     Event::listen('mailer.send', function ((\October\Rain\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message) {
+         *     Event::listen('mailer.send', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message) {
          *         \Log::info("Message was rendered with $view and sent");
          *     });
          *
@@ -387,7 +386,7 @@ class Mailer extends MailerBase
          *
          * Example usage (stops the content adding process):
          *
-         *     Event::listen('mailer.beforeAddContent', function ((\October\Rain\Mail\Mailer) $mailerInstance, (\Illuminate\Mail\Message) $message, (string) $view, (string) $plain, (string) $raw, (array) $data) {
+         *     Event::listen('mailer.beforeAddContent', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (\Illuminate\Mail\Message) $message, (string) $view, (string) $plain, (string) $raw, (array) $data) {
          *         return false;
          *     });
          *
@@ -445,7 +444,7 @@ class Mailer extends MailerBase
          *
          * Example usage (Logs that content has been added):
          *
-         *     Event::listen('mailer.addContent', function ((\October\Rain\Mail\Mailer) $mailerInstance, (\Illuminate\Mail\Message) $message, (string) $view, (array) $data) {
+         *     Event::listen('mailer.addContent', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (\Illuminate\Mail\Message) $message, (string) $view, (array) $data) {
          *         \Log::info("$view has had content added to the message");
          *     });
          *

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Parse\Assetic;
+<?php namespace Winter\Storm\Parse\Assetic;
 
 use File;
 use Assetic\Cache\CacheInterface;
@@ -8,7 +8,6 @@ use RuntimeException;
  * Assetic Filesystem Cache
  * Inherits the base logic except new files have permissions set.
  *
- * @package october/parse
  * @author Alexey Bobkov, Samuel Georges
  */
 class FilesystemCache implements CacheInterface

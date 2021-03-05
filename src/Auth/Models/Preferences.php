@@ -1,15 +1,15 @@
-<?php namespace October\Rain\Auth\Models;
+<?php namespace Winter\Storm\Auth\Models;
 
-use October\Rain\Database\Model;
-use October\Rain\Auth\AuthException;
-use October\Rain\Auth\Manager;
+use Winter\Storm\Database\Model;
+use Winter\Storm\Auth\AuthException;
+use Winter\Storm\Auth\Manager;
 
 /**
  * User Preferences model
  */
 class Preferences extends Model
 {
-    use \October\Rain\Support\Traits\KeyParser;
+    use \Winter\Storm\Support\Traits\KeyParser;
 
     /**
      * @var string The database table used by the model.
@@ -26,7 +26,7 @@ class Preferences extends Model
     protected $jsonable = ['value'];
 
     /**
-     * @var \October\Rain\Auth\Models\User A user who owns the preferences
+     * @var \Winter\Storm\Auth\Models\User A user who owns the preferences
      */
     public $userContext;
 

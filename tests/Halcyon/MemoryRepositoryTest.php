@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Halcyon\MemoryRepository;
+use Winter\Storm\Halcyon\MemoryRepository;
 use Illuminate\Cache\ArrayStore;
 
 class MemoryRepositoryTest extends TestCase

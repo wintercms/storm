@@ -1,11 +1,11 @@
-<?php namespace October\Rain\Foundation\Exception;
+<?php namespace Winter\Storm\Foundation\Exception;
 
 use Log;
 use Event;
 use Response;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use October\Rain\Exception\AjaxException;
+use Winter\Storm\Exception\AjaxException;
 use ReflectionFunction;
 use Exception;
 use Closure;
@@ -18,9 +18,9 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        \October\Rain\Exception\AjaxException::class,
-        \October\Rain\Exception\ValidationException::class,
-        \October\Rain\Exception\ApplicationException::class,
+        \Winter\Storm\Exception\AjaxException::class,
+        \Winter\Storm\Exception\ValidationException::class,
+        \Winter\Storm\Exception\ApplicationException::class,
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Symfony\Component\HttpKernel\Exception\HttpException::class,
     ];

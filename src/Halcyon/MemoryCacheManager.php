@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Halcyon;
+<?php namespace Winter\Storm\Halcyon;
 
 use App;
 use Config;

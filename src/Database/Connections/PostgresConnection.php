@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Connections;
+<?php namespace Winter\Storm\Database\Connections;
 
 use Illuminate\Database\Schema\PostgresBuilder;
 use Doctrine\DBAL\Driver\PDOPgSql\Driver as DoctrineDriver;

@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Parse\Syntax\FieldParser;
+use Winter\Storm\Parse\Syntax\FieldParser;
 
 class SyntaxFieldParserTest extends TestCase
 {
@@ -242,7 +242,7 @@ class SyntaxFieldParserTest extends TestCase
         $parser = new FieldParser;
         $content = '';
         $content .= '{text name="websiteName" label="Website Name" size="large"}{/text}'.PHP_EOL;
-        $content .= '{text name="blogName" label="Blog Name" color="re\"d"}OctoberCMS{/text}'.PHP_EOL;
+        $content .= '{text name="blogName" label="Blog Name" color="re\"d"}WinterCMS{/text}'.PHP_EOL;
         $content .= '{text name="storeName" label="Store Name" shape="circle"}{/text}';
         $content .= '{text label="Unnamed" distance="400m"}Foobar{/text}';
         $content .= '{foobar name="nullName" label="Valid tag, not searched by this test"}{/foobar}';
@@ -277,7 +277,7 @@ class SyntaxFieldParserTest extends TestCase
         $this->assertEquals('re\"d', $fields['blogName']['color']);
         $this->assertEquals('text', $fields['blogName']['type']);
         $this->assertNotNull($fields['blogName']['default']);
-        $this->assertEquals('OctoberCMS', $fields['blogName']['default']);
+        $this->assertEquals('WinterCMS', $fields['blogName']['default']);
 
         $this->assertArrayNotHasKey('name', $fields['storeName']);
         $this->assertArrayHasKey('label', $fields['storeName']);
@@ -314,7 +314,7 @@ class SyntaxFieldParserTest extends TestCase
         $parser = new FieldParser;
         $content = '';
         $content .= '{text name="websiteName" label="Website Name"}{/text}'.PHP_EOL;
-        $content .= '{text name="blogName" label="Blog Name"}OctoberCMS{/text}'.PHP_EOL;
+        $content .= '{text name="blogName" label="Blog Name"}WinterCMS{/text}'.PHP_EOL;
         $content .= '{text name="storeName" label="Store Name"}{/text}';
         $result = self::callProtectedMethod($parser, 'processTagsRegex', [$content, ['text']]);
 
@@ -323,7 +323,7 @@ class SyntaxFieldParserTest extends TestCase
         $this->assertArrayHasKey(2, $result[2]);
 
         $this->assertEquals('name="websiteName" label="Website Name"}', $result[2][0]);
-        $this->assertEquals('name="blogName" label="Blog Name"}OctoberCMS', $result[2][1]);
+        $this->assertEquals('name="blogName" label="Blog Name"}WinterCMS', $result[2][1]);
         $this->assertEquals('name="storeName" label="Store Name"}', $result[2][2]);
     }
 

@@ -1,11 +1,11 @@
-<?php namespace October\Rain\Halcyon\Datasource;
+<?php namespace Winter\Storm\Halcyon\Datasource;
 
-use October\Rain\Filesystem\Filesystem;
-use October\Rain\Halcyon\Processors\Processor;
-use October\Rain\Halcyon\Exception\CreateFileException;
-use October\Rain\Halcyon\Exception\DeleteFileException;
-use October\Rain\Halcyon\Exception\FileExistsException;
-use October\Rain\Halcyon\Exception\CreateDirectoryException;
+use Winter\Storm\Filesystem\Filesystem;
+use Winter\Storm\Halcyon\Processors\Processor;
+use Winter\Storm\Halcyon\Exception\CreateFileException;
+use Winter\Storm\Halcyon\Exception\DeleteFileException;
+use Winter\Storm\Halcyon\Exception\FileExistsException;
+use Winter\Storm\Halcyon\Exception\CreateDirectoryException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Exception;
@@ -25,7 +25,7 @@ class FileDatasource extends Datasource implements DatasourceInterface
     /**
      * The filesystem instance.
      *
-     * @var \October\Rain\Filesystem\Filesystem
+     * @var \Winter\Storm\Filesystem\Filesystem
      */
     protected $files;
 

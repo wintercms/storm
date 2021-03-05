@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Database\Dongle;
+use Winter\Storm\Database\Dongle;
 
 class DongleTest extends TestCase
 {

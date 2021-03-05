@@ -179,10 +179,10 @@ class SluggableTest extends DbTestCase
 * Class with Sluggable and SoftDelete traits
 * with allowTrashedSlugs
 */
-class TestModelSluggableSoftDeleteAllow extends \October\Rain\Database\Model
+class TestModelSluggableSoftDeleteAllow extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\SoftDelete;
-    use \October\Rain\Database\Traits\Sluggable;
+    use \Winter\Storm\Database\Traits\SoftDelete;
+    use \Winter\Storm\Database\Traits\Sluggable;
 
     protected $slugs = ['slug' => 'name'];
     protected $fillable = ['name'];
@@ -194,10 +194,10 @@ class TestModelSluggableSoftDeleteAllow extends \October\Rain\Database\Model
 * Class with Sluggable and SoftDelete traits
 * with default behavior (allowTrashedSlugs = false)
 */
-class TestModelSluggableSoftDelete extends \October\Rain\Database\Model
+class TestModelSluggableSoftDelete extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\SoftDelete;
-    use \October\Rain\Database\Traits\Sluggable;
+    use \Winter\Storm\Database\Traits\SoftDelete;
+    use \Winter\Storm\Database\Traits\Sluggable;
 
     protected $slugs = ['slug' => 'name'];
     protected $fillable = ['name'];
@@ -208,10 +208,10 @@ class TestModelSluggableSoftDelete extends \October\Rain\Database\Model
 * Class with Sluggable and SoftDelete traits
 * with default behavior (allowTrashedSlugs = false)
 */
-class TestModelSluggableSoftDeleteNoUnique extends \October\Rain\Database\Model
+class TestModelSluggableSoftDeleteNoUnique extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\SoftDelete;
-    use \October\Rain\Database\Traits\Sluggable;
+    use \Winter\Storm\Database\Traits\SoftDelete;
+    use \Winter\Storm\Database\Traits\Sluggable;
 
     protected $slugs = ['slug' => 'name'];
     protected $fillable = ['name'];
@@ -221,9 +221,9 @@ class TestModelSluggableSoftDeleteNoUnique extends \October\Rain\Database\Model
 /*
 * Class with only Sluggable trait
 */
-class TestModelSluggable extends \October\Rain\Database\Model
+class TestModelSluggable extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\Sluggable;
+    use \Winter\Storm\Database\Traits\Sluggable;
 
     protected $slugs = ['slug' => 'name'];
     protected $fillable = ['name'];

@@ -1,9 +1,8 @@
-<?php namespace October\Rain\Support\Traits;
+<?php namespace Winter\Storm\Support\Traits;
 
 /**
  * Adds event related features to any class.
  *
- * @package october\support
  * @author Alexey Bobkov, Samuel Georges
  */
 trait Emitter

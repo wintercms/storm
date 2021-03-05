@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Parse\Syntax\Parser;
+use Winter\Storm\Parse\Syntax\Parser;
 
 class SyntaxParserTest extends TestCase
 {

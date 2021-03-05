@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Html;
+<?php namespace Winter\Storm\Html;
 
 use Illuminate\Session\Store as Session;
 use Illuminate\Routing\UrlGenerator as UrlGeneratorBase;
@@ -6,7 +6,6 @@ use Illuminate\Routing\UrlGenerator as UrlGeneratorBase;
 /**
  * Form builder
  *
- * @package october\html
  * @author Alexey Bobkov, Samuel Georges
  */
 class FormBuilder
@@ -16,7 +15,7 @@ class FormBuilder
     /**
      * The HTML builder instance.
      *
-     * @var \October\Rain\Html\HtmlBuilder
+     * @var \Winter\Storm\Html\HtmlBuilder
      */
     protected $html;
 
@@ -90,7 +89,7 @@ class FormBuilder
     /**
      * Create a new form builder instance.
      *
-     * @param \October\Rain\Html\HtmlBuilder  $html
+     * @param \Winter\Storm\Html\HtmlBuilder  $html
      * @param \Illuminate\Routing\UrlGenerator  $url
      * @param string  $csrfToken
      * @param string  $sessionKey

@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Support\Str;
+use Winter\Storm\Support\Str;
 
 class StrTest extends TestCase
 {

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Mail;
+<?php namespace Winter\Storm\Mail;
 
 use Illuminate\Mail\MailServiceProvider as MailServiceProviderBase;
 
@@ -19,7 +19,7 @@ class MailServiceProvider extends MailServiceProviderBase
             $config = $app->make('config')->get('mail');
 
             /*
-             * October mailer
+             * Winter mailer
              */
             $mailer = new Mailer(
                 $app['view'],

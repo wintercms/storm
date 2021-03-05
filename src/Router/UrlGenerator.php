@@ -1,5 +1,5 @@
 <?php
-namespace October\Rain\Router;
+namespace Winter\Storm\Router;
 
 use Illuminate\Routing\UrlGenerator as UrlGeneratorBase;
 

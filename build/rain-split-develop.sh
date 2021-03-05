@@ -19,7 +19,7 @@ split()
 
         pushd $HEADDIR
 
-        ./../../git-subsplit.sh init git@github.com:octobercms/october.git
+        ./../../git-subsplit.sh init git@github.com:wintercms/winter.git
         ./../../git-subsplit.sh update
 
         time ./../../git-subsplit.sh publish --heads="$HEAD" --no-tags "$SPLIT"
@@ -31,6 +31,6 @@ split()
     popd
 }
 
-split backend modules/backend:git@github.com:octoberrain/backend.git "develop"
-split cms     modules/cms:git@github.com:octoberrain/cms.git         "develop"
-split system  modules/system:git@github.com:octoberrain/system.git   "develop"
+split backend modules/backend:git@github.com:wintercms/wn-backend-module.git "develop"
+split cms     modules/cms:git@github.com:wintercms/wn-cms-module.git         "develop"
+split system  modules/system:git@github.com:wintercms/wn-system-module.git   "develop"

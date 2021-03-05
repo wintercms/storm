@@ -1,14 +1,13 @@
-<?php namespace October\Rain\Database\Models;
+<?php namespace Winter\Storm\Database\Models;
 
 use Db;
 use Carbon\Carbon;
-use October\Rain\Database\Model;
+use Winter\Storm\Database\Model;
 use Exception;
 
 /**
  * Deferred Binding Model
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class DeferredBinding extends Model

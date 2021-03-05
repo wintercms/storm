@@ -1,9 +1,9 @@
-<?php namespace October\Rain\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphMany as MorphManyBase;
-use October\Rain\Database\Attach\File as FileModel;
+use Winter\Storm\Database\Attach\File as FileModel;
 
 class AttachMany extends MorphManyBase
 {

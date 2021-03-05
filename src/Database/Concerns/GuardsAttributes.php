@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Database\Concerns;
+<?php namespace Winter\Storm\Database\Concerns;
 
-use October\Rain\Support\Str;
+use Winter\Storm\Support\Str;
 
 trait GuardsAttributes
 {

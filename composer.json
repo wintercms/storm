@@ -1,17 +1,24 @@
 {
-    "name": "october/rain",
-    "description": "October Rain Library",
-    "homepage": "http://octobercms.com",
-    "keywords": ["october", "cms", "rain"],
+    "name": "wintercms/storm",
+    "description": "Winter CMS Storm Library",
+    "homepage": "https://wintercms.com",
+    "keywords": ["winter", "cms", "storm"],
     "license": "MIT",
     "authors": [
         {
             "name": "Alexey Bobkov",
-            "email": "aleksey.bobkov@gmail.com"
+            "email": "aleksey.bobkov@gmail.com",
+            "role": "Original Author"
         },
         {
             "name": "Samuel Georges",
-            "email": "daftspunky@gmail.com"
+            "email": "daftspunky@gmail.com",
+            "role": "Original Author"
+        },
+        {
+            "name": "Luke Towers",
+            "email": "wintercms@luketowers.ca",
+            "role": "Lead Maintainer"
         }
     ],
     "require": {
@@ -49,19 +56,7 @@
         "php-parallel-lint/php-parallel-lint": "^1.0"
     },
     "replace": {
-        "october/auth": "self.version",
-        "october/config": "self.version",
-        "october/database": "self.version",
-        "october/extension": "self.version",
-        "october/filesystem": "self.version",
-        "october/halcyon": "self.version",
-        "october/html": "self.version",
-        "october/mail": "self.version",
-        "october/network": "self.version",
-        "october/parse": "self.version",
-        "october/router": "self.version",
-        "october/support": "self.version",
-        "october/translation": "self.version"
+        "october/rain": "self.version"
     },
     "autoload": {
         "files": [
@@ -70,7 +65,7 @@
             "src/Parse/Assetic/Less/lessc.inc.php"
         ],
         "psr-4": {
-            "October\\Rain\\": "src/"
+            "Winter\\Storm\\": "src/"
         },
         "psr-0": {
             "Less": "src/Parse/Assetic/Less/lib/"
@@ -82,7 +77,7 @@
             "tests/DbTestCase.php"
         ],
         "psr-4": {
-            "October\\Rain\\Tests\\": "tests/"
+            "Winter\\Storm\\Tests\\": "tests/"
         }
     },
     "extra": {

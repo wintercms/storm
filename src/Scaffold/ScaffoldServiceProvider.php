@@ -1,13 +1,13 @@
-<?php namespace October\Rain\Scaffold;
+<?php namespace Winter\Storm\Scaffold;
 
 use Illuminate\Support\ServiceProvider;
-use October\Rain\Scaffold\Console\CreateCommand;
-use October\Rain\Scaffold\Console\CreatePlugin;
-use October\Rain\Scaffold\Console\CreateModel;
-use October\Rain\Scaffold\Console\CreateController;
-use October\Rain\Scaffold\Console\CreateComponent;
-use October\Rain\Scaffold\Console\CreateFormWidget;
-use October\Rain\Scaffold\Console\CreateReportWidget;
+use Winter\Storm\Scaffold\Console\CreateCommand;
+use Winter\Storm\Scaffold\Console\CreatePlugin;
+use Winter\Storm\Scaffold\Console\CreateModel;
+use Winter\Storm\Scaffold\Console\CreateController;
+use Winter\Storm\Scaffold\Console\CreateComponent;
+use Winter\Storm\Scaffold\Console\CreateFormWidget;
+use Winter\Storm\Scaffold\Console\CreateReportWidget;
 
 class ScaffoldServiceProvider extends ServiceProvider
 {

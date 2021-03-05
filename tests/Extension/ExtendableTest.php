@@ -1,7 +1,7 @@
 <?php
 
-use October\Rain\Extension\Extendable;
-use October\Rain\Extension\ExtensionBase;
+use Winter\Storm\Extension\Extendable;
+use Winter\Storm\Extension\ExtensionBase;
 
 class ExtendableTest extends TestCase
 {
@@ -98,7 +98,7 @@ class ExtendableTest extends TestCase
         $subject = new ExtendableTestExampleExtendableClass;
         $subject->addDynamicMethod('getAppName', ['ExtendableTestExampleClass', 'getName']);
 
-        $this->assertEquals('october', $subject->getAppName());
+        $this->assertEquals('winter', $subject->getAppName());
     }
 
     public function testCallingStaticMethod()
@@ -308,7 +308,7 @@ class ExtendableTestExampleClass
 {
     public static function getName()
     {
-        return 'october';
+        return 'winter';
     }
 }
 

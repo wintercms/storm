@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Argon;
+<?php namespace Winter\Storm\Argon;
 
 use Jenssegers\Date\Date as DateBase;
 

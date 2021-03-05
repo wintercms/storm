@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Parse\Assetic;
+<?php namespace Winter\Storm\Parse\Assetic;
 
 use Event;
 use Assetic\Asset\AssetInterface;
@@ -12,7 +12,6 @@ use Assetic\Filter\FilterInterface;
  * Less.php Compiler Filter
  * Class used to compiled stylesheet less files, not using leafo!
  *
- * @package october/parse
  * @author Alexey Bobkov, Samuel Georges
  */
 class ScssCompiler extends ScssphpFilter implements HashableInterface, DependencyExtractorInterface

@@ -1,14 +1,12 @@
 #
-# This will split up the Core modules to its own github repo
+# Splits the core modules into their own repositories for separate inclusion through Composer
 #
 
-mkdir -p october
-pushd october
-./../git-subsplit.sh init git@github.com:octobercms/october.git
+mkdir -p winter
+pushd winter
+./../git-subsplit.sh init git@github.com:wintercms/winter.git
 ./../git-subsplit.sh update
-./../git-subsplit.sh publish --heads="1.1" modules/backend:git@github.com:octoberrain/backend.git
-./../git-subsplit.sh publish --heads="1.1" modules/cms:git@github.com:octoberrain/cms.git
-./../git-subsplit.sh publish --heads="1.1" modules/system:git@github.com:octoberrain/system.git
-# ./../git-subsplit.sh publish --heads="1.0" themes/demo:git@github.com:octoberrain/demo-theme.git
-# ./../git-subsplit.sh publish --heads="1.0" plugins/october/demo:git@github.com:octoberrain/demo-plugin.git
+./../git-subsplit.sh publish --heads="1.1" modules/backend:git@github.com:wintercms/wn-backend-module.git
+./../git-subsplit.sh publish --heads="1.1" modules/cms:git@github.com:wintercms/wn-cms-module.git
+./../git-subsplit.sh publish --heads="1.1" modules/system:git@github.com:wintercms/wn-system-module.git
 popd

@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Halcyon;
+<?php namespace Winter\Storm\Halcyon;
 
 use Illuminate\Cache\Repository;
 
 /**
  * Provides a simple request-level cache.
  *
- * @package october\halcyon
  * @author Alexey Bobkov, Samuel Georges
  */
 class MemoryRepository extends Repository
