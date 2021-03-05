@@ -146,7 +146,7 @@ class_alias(\Winter\Storm\Foundation\Bootstrap\LoadConfiguration::class, \Octobe
 class_alias(\Winter\Storm\Foundation\Bootstrap\LoadEnvironmentVariables::class, \October\Rain\Foundation\Bootstrap\LoadEnvironmentVariables::class);
 class_alias(\Winter\Storm\Foundation\Bootstrap\LoadTranslation::class, \October\Rain\Foundation\Bootstrap\LoadTranslation::class);
 class_alias(\Winter\Storm\Foundation\Bootstrap\RegisterClassLoader::class, \October\Rain\Foundation\Bootstrap\RegisterClassLoader::class);
-class_alias(\Winter\Storm\Foundation\Bootstrap\RegisterOctober::class, \October\Rain\Foundation\Bootstrap\RegisterOctober::class);
+class_alias(\Winter\Storm\Foundation\Bootstrap\RegisterWinter::class, \October\Rain\Foundation\Bootstrap\RegisterOctober::class);
 class_alias(\Winter\Storm\Foundation\Console\ClearCompiledCommand::class, \October\Rain\Foundation\Console\ClearCompiledCommand::class);
 class_alias(\Winter\Storm\Foundation\Console\Kernel::class, \October\Rain\Foundation\Console\Kernel::class);
 class_alias(\Winter\Storm\Foundation\Console\KeyGenerateCommand::class, \October\Rain\Foundation\Console\KeyGenerateCommand::class);
