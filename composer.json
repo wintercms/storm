@@ -61,6 +61,7 @@
     "autoload": {
         "files": [
             "src/Support/helpers.php",
+            "src/Support/aliases.php",
             "src/Html/helpers.php",
             "src/Parse/Assetic/Less/lessc.inc.php"
         ],
