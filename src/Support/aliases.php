@@ -307,7 +307,6 @@ class_alias(\Winter\Storm\Network\NetworkServiceProvider::class, \October\Rain\N
  */
 class_alias(\Winter\Storm\Parse\Bracket::class, \October\Rain\Parse\Bracket::class);
 class_alias(\Winter\Storm\Parse\Ini::class, \October\Rain\Parse\Ini::class);
-class_alias(\Winter\Storm\Parse\League\EscapeFormula::class, \October\Rain\Parse\League\EscapeFormula::class);
 class_alias(\Winter\Storm\Parse\Markdown::class, \October\Rain\Parse\Markdown::class);
 class_alias(\Winter\Storm\Parse\MarkdownData::class, \October\Rain\Parse\MarkdownData::class);
 class_alias(\Winter\Storm\Parse\Parsedown\Parsedown::class, \October\Rain\Parse\Parsedown\Parsedown::class);
