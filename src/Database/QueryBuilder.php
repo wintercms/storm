@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 use App;
-use October\Rain\Support\Arr;
+use Winter\Storm\Support\Arr;
 use Illuminate\Database\Query\Builder as QueryBuilderBase;
 
 class QueryBuilder extends QueryBuilderBase

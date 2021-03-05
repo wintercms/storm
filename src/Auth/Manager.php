@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Auth;
+<?php namespace Winter\Storm\Auth;
 
 use Cookie;
 use Session;
@@ -10,7 +10,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
  */
 class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
 {
-    use \October\Rain\Support\Traits\Singleton;
+    use \Winter\Storm\Support\Traits\Singleton;
 
     /**
      * @var Models\User The currently logged in user
@@ -55,7 +55,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     /**
      * @var string Key to store the auth session data in
      */
-    protected $sessionKey = 'october_auth';
+    protected $sessionKey = 'winter_auth';
 
     /**
      * @var bool Indicates if the user was authenticated via a recaller cookie.
@@ -93,7 +93,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     /**
      * Prepares a query derived from the user model.
      *
-     * @return \October\Rain\Database\Builder $query
+     * @return \Winter\Storm\Database\Builder $query
      */
     protected function createUserModelQuery()
     {
@@ -106,7 +106,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
 
     /**
      * Extend the query used for finding the user.
-     * @param \October\Rain\Database\Builder $query
+     * @param \Winter\Storm\Database\Builder $query
      * @return void
      */
     public function extendUserQuery($query)
@@ -709,7 +709,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.auth.beforeImpersonate', function (\October\Rain\Database\Model|false $oldUser) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.auth.beforeImpersonate', function (\Winter\Storm\Database\Model|false $oldUser) use (\Winter\Storm\Database\Model $model) {
          *         \Log::info($oldUser->full_name . ' is now impersonating ' . $model->full_name);
          *     });
          *
@@ -741,7 +741,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.auth.afterImpersonate', function (\October\Rain\Database\Model|false $oldUser) use (\October\Rain\Database\Model $model) {
+             *     $model->bindEvent('model.auth.afterImpersonate', function (\Winter\Storm\Database\Model|false $oldUser) use (\Winter\Storm\Database\Model $model) {
              *         \Log::info($oldUser->full_name . ' has stopped impersonating ' . $model->full_name);
              *     });
              *

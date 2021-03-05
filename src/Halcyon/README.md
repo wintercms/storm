@@ -1,19 +1,19 @@
-## Rain Halcyon
+## Storm Halcyon
 
 Halcyon is a file based ORM, and the cousin of Eloquent. The goal of this library is to create a solution for file based object storage that shares the same API as database stored models.
 
 ### Registering a data source
 
-Datasources reside inside a resolving container called `October\Rain\Halcyon\Datasource\Resolver`. The following datasources are supported:
+Datasources reside inside a resolving container called `Winter\Storm\Halcyon\Datasource\Resolver`. The following datasources are supported:
 
-- `October\Rain\Halcyon\Datasource\FileDatasource`: File based datasource.
+- `Winter\Storm\Halcyon\Datasource\FileDatasource`: File based datasource.
 
 Here is an example of registering a datasource called `theme1`, then binding the resolver to all models.
 
-    use October\Rain\Halcyon\Model;
-    use October\Rain\Filesystem\Filesystem;
-    use October\Rain\Halcyon\Datasource\FileDatasource;
-    use October\Rain\Halcyon\Datasource\Resolver;
+    use Winter\Storm\Halcyon\Model;
+    use Winter\Storm\Filesystem\Filesystem;
+    use Winter\Storm\Halcyon\Datasource\FileDatasource;
+    use Winter\Storm\Halcyon\Datasource\Resolver;
 
     $datasource = new FileDatasource('/path/to/theme', new Filesystem);
     $resolver = new Resolver(['theme1' => $datasource]);
@@ -22,11 +22,11 @@ Here is an example of registering a datasource called `theme1`, then binding the
 
 ### Model example
 
-Inherit the `October\Rain\Halcyon\Model` to create a new model:
+Inherit the `Winter\Storm\Halcyon\Model` to create a new model:
 
     <?php
 
-    use October\Rain\Halcyon\Model;
+    use Winter\Storm\Halcyon\Model;
 
     class MyPage extends Model
     {

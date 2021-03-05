@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Database\Behaviors;
+<?php namespace Winter\Storm\Database\Behaviors;
 
-class Purgeable extends \October\Rain\Extension\ExtensionBase
+class Purgeable extends \Winter\Storm\Extension\ExtensionBase
 {
     /**
      * @var array List of attribute names which should not be saved to the database.
@@ -30,7 +30,7 @@ class Purgeable extends \October\Rain\Extension\ExtensionBase
         if (!$this->model->propertyExists('purgeable')) {
             $this->model->addDynamicProperty('purgeable', []);
         }
-        
+
         $this->model->purgeable[] = 'purgeable';
         $dynPropNames = array_keys(array_diff_key($this->model->getDynamicProperties(), ['purgeable' => 0]));
         $this->model->purgeable = array_merge($this->model->purgeable, $dynPropNames);

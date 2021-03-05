@@ -250,7 +250,7 @@ class RelationsTest extends DbTestCase
     }
 }
 
-class Post extends \October\Rain\Database\Model
+class Post extends \Winter\Storm\Database\Model
 {
     public $table = 'posts';
 
@@ -291,7 +291,7 @@ class Post extends \October\Rain\Database\Model
     ];
 }
 
-class Term extends \October\Rain\Database\Model
+class Term extends \Winter\Storm\Database\Model
 {
     public $table = 'terms';
 
@@ -316,7 +316,7 @@ class Term extends \October\Rain\Database\Model
     ];
 }
 
-class Morphs extends \October\Rain\Database\Model
+class Morphs extends \Winter\Storm\Database\Model
 {
     public $table = 'morphs';
 

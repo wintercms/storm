@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Util;
+<?php namespace Winter\Storm\Assetic\Util;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.

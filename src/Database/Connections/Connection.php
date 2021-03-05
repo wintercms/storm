@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Database\Connections;
+<?php namespace Winter\Storm\Database\Connections;
 
-use October\Rain\Database\MemoryCache;
-use October\Rain\Database\QueryBuilder;
+use Winter\Storm\Database\MemoryCache;
+use Winter\Storm\Database\QueryBuilder;
 use Illuminate\Database\Connection as ConnectionBase;
 
 class Connection extends ConnectionBase
@@ -9,7 +9,7 @@ class Connection extends ConnectionBase
     /**
      * Get a new query builder instance.
      *
-     * @return \October\Rain\Database\QueryBuilder
+     * @return \Winter\Storm\Database\QueryBuilder
      */
     public function query()
     {

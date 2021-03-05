@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Database\Model;
+use Winter\Storm\Database\Model;
 
 class PurgeableTraitTest extends DbTestCase
 {
@@ -46,7 +46,7 @@ class PurgeableTraitTest extends DbTestCase
 
 class TestModelPurgeable extends Model
 {
-    use \October\Rain\Database\Traits\Purgeable;
+    use \Winter\Storm\Database\Traits\Purgeable;
 
     protected $guarded = ['data'];
 

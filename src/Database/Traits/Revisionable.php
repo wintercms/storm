@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Traits;
+<?php namespace Winter\Storm\Database\Traits;
 
 use Db;
 use Exception;
@@ -101,7 +101,7 @@ trait Revisionable
         }
 
         $softDeletes = in_array(
-            'October\Rain\Database\Traits\SoftDelete',
+            'Winter\Storm\Database\Traits\SoftDelete',
             class_uses_recursive(get_class($this))
         );
 

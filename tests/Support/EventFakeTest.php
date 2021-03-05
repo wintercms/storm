@@ -1,7 +1,7 @@
 <?php
 
-use October\Rain\Events\Dispatcher;
-use October\Rain\Support\Testing\Fakes\EventFake;
+use Winter\Storm\Events\Dispatcher;
+use Winter\Storm\Support\Testing\Fakes\EventFake;
 
 class EventFakeTest extends TestCase
 {

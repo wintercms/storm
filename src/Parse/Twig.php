@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Parse;
+<?php namespace Winter\Storm\Parse;
 
 use App;
 
 /**
  * Twig helper class
  *
- * @package october\parse
  * @author Alexey Bobkov, Samuel Georges
  */
 class Twig

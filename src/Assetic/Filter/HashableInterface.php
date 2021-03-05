@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Filter;
+<?php namespace Winter\Storm\Assetic\Filter;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
