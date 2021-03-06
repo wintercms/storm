@@ -1,14 +1,14 @@
-<?php namespace October\Rain\Database\Traits;
+<?php namespace Winter\Storm\Database\Traits;
 
 use Exception;
-use October\Rain\Database\Collection;
-use October\Rain\Database\TreeCollection;
+use Winter\Storm\Database\Collection;
+use Winter\Storm\Database\TreeCollection;
 
 /**
  * Simple Tree model trait
  *
  * Simple tree implementation, for advanced implementation see:
- * October\Rain\Database\Traits\NestedTree
+ * Winter\Storm\Database\Traits\NestedTree
  *
  * SimpleTree is the bare minimum needed for tree functionality, the
  * methods defined here should be implemented by all "tree" traits.
@@ -18,7 +18,7 @@ use October\Rain\Database\TreeCollection;
  * Model table must have parent_id table column.
  * In the model class definition:
  *
- *   use \October\Rain\Database\Traits\SimpleTree;
+ *   use \Winter\Storm\Database\Traits\SimpleTree;
  *
  * General access methods:
  *
@@ -63,7 +63,7 @@ trait SimpleTree
 
     /**
      * Returns all nodes and children.
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getAll()
     {
@@ -78,7 +78,7 @@ trait SimpleTree
 
     /**
      * Get a list of children records, with their children (recursive)
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getAllChildren()
     {
@@ -99,7 +99,7 @@ trait SimpleTree
 
     /**
      * Returns direct child nodes.
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getChildren()
     {
@@ -121,7 +121,7 @@ trait SimpleTree
 
     /**
      * Returns a list of all root nodes, without eager loading.
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function scopeGetAllRoot($query)
     {

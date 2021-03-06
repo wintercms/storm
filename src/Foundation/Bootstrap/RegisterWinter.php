@@ -1,11 +1,11 @@
-<?php namespace October\Rain\Foundation\Bootstrap;
+<?php namespace Winter\Storm\Foundation\Bootstrap;
 
 use Illuminate\Contracts\Foundation\Application;
 
-class RegisterOctober
+class RegisterWinter
 {
     /**
-     * Specific features for OctoberCMS.
+     * Specific features for WinterCMS.
      *
      * @param  \Illuminate\Contracts\Foundation\Application  $app
      * @return void
@@ -23,7 +23,7 @@ class RegisterOctober
          * Register singletons
          */
         $app->singleton('string', function () {
-            return new \October\Rain\Support\Str;
+            return new \Winter\Storm\Support\Str;
         });
 
         /*

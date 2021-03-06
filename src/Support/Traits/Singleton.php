@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Support\Traits;
+<?php namespace Winter\Storm\Support\Traits;
 
 /**
  * Singleton trait.
@@ -6,7 +6,6 @@
  * Allows a simple interface for treating a class as a singleton.
  * Usage: myObject::instance()
  *
- * @package october\support
  * @author Alexey Bobkov, Samuel Georges
  */
 trait Singleton
@@ -30,7 +29,7 @@ trait Singleton
     {
         static::$instance = null;
     }
-    
+
     /**
      * Constructor.
      */

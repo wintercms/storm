@@ -1,6 +1,6 @@
 <?php
 
-namespace October\Rain\Foundation\Http\Middleware;
+namespace Winter\Storm\Foundation\Http\Middleware;
 
 use Lang;
 use View;

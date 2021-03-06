@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Factory;
+<?php namespace Winter\Storm\Assetic\Factory;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Asset\AssetInterface;
-use October\Rain\Assetic\AssetManager;
-use October\Rain\Assetic\Factory\Loader\FormulaLoaderInterface;
-use October\Rain\Assetic\Factory\Resource\ResourceInterface;
+use Winter\Storm\Assetic\Asset\AssetInterface;
+use Winter\Storm\Assetic\AssetManager;
+use Winter\Storm\Assetic\Factory\Loader\FormulaLoaderInterface;
+use Winter\Storm\Assetic\Factory\Resource\ResourceInterface;
 
 /**
  * A lazy asset manager is a composition of a factory and many formula loaders.

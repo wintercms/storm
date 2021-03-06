@@ -1,18 +1,17 @@
-<?php namespace October\Rain\Assetic\Filter;
+<?php namespace Winter\Storm\Assetic\Filter;
 
 use Event;
-use October\Rain\Assetic\Asset\AssetInterface;
-use October\Rain\Assetic\Factory\AssetFactory;
-use October\Rain\Assetic\Filter\ScssphpFilter;
-use October\Rain\Assetic\Filter\HashableInterface;
-use October\Rain\Assetic\Filter\DependencyExtractorInterface;
-use October\Rain\Assetic\Filter\FilterInterface;
+use Winter\Storm\Assetic\Asset\AssetInterface;
+use Winter\Storm\Assetic\Factory\AssetFactory;
+use Winter\Storm\Assetic\Filter\ScssphpFilter;
+use Winter\Storm\Assetic\Filter\HashableInterface;
+use Winter\Storm\Assetic\Filter\DependencyExtractorInterface;
+use Winter\Storm\Assetic\Filter\FilterInterface;
 
 /**
  * Less.php Compiler Filter
  * Class used to compiled stylesheet less files, not using leafo!
  *
- * @package october/parse
  * @author Alexey Bobkov, Samuel Georges
  */
 class ScssCompiler extends ScssphpFilter implements HashableInterface, DependencyExtractorInterface

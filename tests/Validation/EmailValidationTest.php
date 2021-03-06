@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Filesystem\Filesystem;
-use October\Rain\Translation\FileLoader;
-use October\Rain\Translation\Translator;
-use October\Rain\Validation\Factory;
+use Winter\Storm\Translation\FileLoader;
+use Winter\Storm\Translation\Translator;
+use Winter\Storm\Validation\Factory;
 
 class EmailValidationTest extends TestCase
 {
@@ -29,7 +29,7 @@ class EmailValidationTest extends TestCase
         $this->validation = new Factory($this->translator, null);
     }
 
-    // This validation should fail, as per Laravel pre-5.8, as well as current expected October functionality.
+    // This validation should fail, as per Laravel pre-5.8, as well as current expected Winter functionality.
     public function testDefaultFilter()
     {
         $validator = $this->validation->make([

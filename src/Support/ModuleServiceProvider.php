@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support;
+<?php namespace Winter\Storm\Support;
 
-use October\Rain\Support\Facades\File;
+use Winter\Storm\Support\Facades\File;
 use Illuminate\Support\ServiceProvider as ServiceProviderBase;
 
 abstract class ModuleServiceProvider extends ServiceProviderBase

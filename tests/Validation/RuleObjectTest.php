@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Filesystem\Filesystem;
-use October\Rain\Translation\FileLoader;
-use October\Rain\Translation\Translator;
-use October\Rain\Validation\Factory;
+use Winter\Storm\Translation\FileLoader;
+use Winter\Storm\Translation\Translator;
+use Winter\Storm\Validation\Factory;
 
 class RuleObjectTest extends TestCase
 {

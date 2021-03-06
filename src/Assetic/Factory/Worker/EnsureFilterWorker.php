@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Factory\Worker;
+<?php namespace Winter\Storm\Assetic\Factory\Worker;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Asset\AssetInterface;
-use October\Rain\Assetic\Factory\AssetFactory;
-use October\Rain\Assetic\Filter\FilterInterface;
+use Winter\Storm\Assetic\Asset\AssetInterface;
+use Winter\Storm\Assetic\Factory\AssetFactory;
+use Winter\Storm\Assetic\Filter\FilterInterface;
 
 /**
  * Applies a filter to an asset based on a source and/or target path match.

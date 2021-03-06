@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Foundation\Console;
+<?php namespace Winter\Storm\Foundation\Console;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\KeyGenerateCommand as KeyGenerateCommandBase;

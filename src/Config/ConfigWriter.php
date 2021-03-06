@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Config;
+<?php namespace Winter\Storm\Config;
 
 use Exception;
 

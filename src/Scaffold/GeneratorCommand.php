@@ -1,9 +1,9 @@
-<?php namespace October\Rain\Scaffold;
+<?php namespace Winter\Storm\Scaffold;
 
 use ReflectionClass;
-use October\Rain\Support\Str;
+use Winter\Storm\Support\Str;
 use Illuminate\Console\Command;
-use October\Rain\Filesystem\Filesystem;
+use Winter\Storm\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Exception;
@@ -14,7 +14,7 @@ abstract class GeneratorCommand extends Command
     /**
      * The filesystem instance.
      *
-     * @var \October\Rain\Filesystem\Filesystem
+     * @var \Winter\Storm\Filesystem\Filesystem
      */
     protected $files;
 
@@ -241,7 +241,7 @@ abstract class GeneratorCommand extends Command
     protected function getArguments()
     {
         return [
-            ['plugin', InputArgument::REQUIRED, 'The name of the plugin to create. Eg: RainLab.Blog'],
+            ['plugin', InputArgument::REQUIRED, 'The name of the plugin to create. Eg: Winter.Blog'],
         ];
     }
 

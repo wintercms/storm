@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Foundation;
+<?php namespace Winter\Storm\Foundation;
 
 use Closure;
 use Illuminate\Contracts\Container\Container;
