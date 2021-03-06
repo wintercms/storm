@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Parse\Assetic\StylesheetMinify;
+use Winter\Storm\Parse\Assetic\StylesheetMinify;
 
 class StylesheetMinifyTest extends TestCase
 {

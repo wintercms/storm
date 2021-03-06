@@ -1,11 +1,11 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static string parse(string $contents, array $vars = [])
  *
- * @see \October\Rain\Parse\Twig
+ * @see \Winter\Storm\Parse\Twig
  */
 class Twig extends Facade
 {

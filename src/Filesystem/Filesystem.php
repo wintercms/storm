@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Filesystem;
+<?php namespace Winter\Storm\Filesystem;
 
 use Illuminate\Filesystem\Filesystem as FilesystemBase;
 use ReflectionClass;
@@ -7,7 +7,6 @@ use FilesystemIterator;
 /**
  * File helper
  *
- * @package october\filesystem
  * @author Alexey Bobkov, Samuel Georges
  */
 class Filesystem extends FilesystemBase

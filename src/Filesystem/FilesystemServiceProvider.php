@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Filesystem;
+<?php namespace Winter\Storm\Filesystem;
 
 use Illuminate\Filesystem\FilesystemServiceProvider as FilesystemServiceProviderBase;
 

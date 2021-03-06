@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
-use October\Rain\Database\Schema\Blueprint;
-use October\Rain\Database\Connectors\ConnectionFactory;
+use Winter\Storm\Database\Schema\Blueprint;
+use Winter\Storm\Database\Connectors\ConnectionFactory;
 use Illuminate\Database\DatabaseServiceProvider as DatabaseServiceProviderBase;
 use Illuminate\Database\DatabaseManager;
 
@@ -79,7 +79,7 @@ class DatabaseServiceProvider extends DatabaseServiceProviderBase
     }
 
     /**
-     * Adds a touch of Rain to the Schema Blueprints.
+     * Adds a touch of Storm to the Schema Blueprints.
      * @return void
      */
     protected function swapSchemaBuilderBlueprint()

@@ -3,8 +3,8 @@ name: Tests
 on:
   push:
     branches:
-      - 1.0
-      - 1.1
+      - "1.0"
+      - "1.1"
       - develop
   pull_request:
 
@@ -20,8 +20,8 @@ jobs:
     runs-on: ${{ matrix.operatingSystem }}
     name: ${{ matrix.operatingSystem }} / PHP ${{ matrix.phpVersion }}
     env:
-      extensions: curl, fileinfo, gd, mbstring, openssl, pdo, pdo_sqlite, sqlite3, xml
-      key: october-rain-cache-v1
+      extensions: curl, fileinfo, gd, mbstring, openssl, pdo, pdo_sqlite, sqlite3, xml, zip
+      key: winter-storm-cache-v1
     steps:
       - name: Checkout changes
         uses: actions/checkout@v2
@@ -40,7 +40,7 @@ jobs:
           path: ${{ steps.extcache.outputs.dir }}
           key: ${{ steps.extcache.outputs.key }}
           restore-keys: ${{ steps.extcache.outputs.key }}
-    
+
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -51,7 +51,7 @@ jobs:
       - name: Setup dependency cache
         id: composercache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-        
+
       - name: Cache dependencies
         uses: actions/cache@v2
         with:

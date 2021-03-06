@@ -1,7 +1,7 @@
 <?php
 namespace TestPlugin;
 
-use October\Rain\Supports\Arr;
+use Winter\Storm\Supports\Arr;
 
 class SampleClass
 {

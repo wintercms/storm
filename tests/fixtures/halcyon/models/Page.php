@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Halcyon\Model;
+use Winter\Storm\Halcyon\Model;
 
 class HalcyonTestPage extends Model
 {
@@ -27,7 +27,7 @@ class HalcyonTestPage extends Model
 
 class HalcyonTestPageWithValidation extends HalcyonTestPage
 {
-    use \October\Rain\Halcyon\Traits\Validation;
+    use \Winter\Storm\Halcyon\Traits\Validation;
 
     public $customMessages = [
        'required' => 'The :attribute field is required.'

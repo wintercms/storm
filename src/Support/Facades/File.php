@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static bool exists(string $path)
@@ -53,7 +53,7 @@ use October\Rain\Support\Facade;
  * @method static string|null getFolderPermissions()
  * @method static bool fileNameMatch(string|array $fileName, string $pattern)
  *
- * @see \October\Rain\Filesystem\Filesystem
+ * @see \Winter\Storm\Filesystem\Filesystem
  */
 class File extends Facade
 {

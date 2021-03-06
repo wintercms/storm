@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Http\Middleware;
+<?php namespace Winter\Storm\Http\Middleware;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;

@@ -2,7 +2,7 @@
 
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use October\Rain\Events\Dispatcher;
+use Winter\Storm\Events\Dispatcher;
 
 class DispatcherTest extends TestCase
 {

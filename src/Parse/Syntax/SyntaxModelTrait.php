@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Parse\Syntax;
+<?php namespace Winter\Storm\Parse\Syntax;
 
 use Request;
 

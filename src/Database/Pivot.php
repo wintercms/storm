@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 use Illuminate\Database\Eloquent\Model as ModelBase;
 use Illuminate\Database\Eloquent\Builder as BuilderBase;

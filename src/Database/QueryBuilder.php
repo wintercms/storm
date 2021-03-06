@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 use App;
 use Illuminate\Database\Query\Builder as QueryBuilderBase;

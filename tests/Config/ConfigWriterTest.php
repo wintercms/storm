@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Config\ConfigWriter;
+use Winter\Storm\Config\ConfigWriter;
 
 class ConfigWriterTest extends TestCase
 {
@@ -31,12 +31,12 @@ class ConfigWriterTest extends TestCase
          * Rewrite a single level string
          */
         $contents = file_get_contents(__DIR__ . '/../fixtures/config/sample-config.php');
-        $contents = $writer->toContent($contents, ['url' => 'http://octobercms.com']);
+        $contents = $writer->toContent($contents, ['url' => 'https://wintercms.com']);
         $result = eval('?>'.$contents);
 
         $this->assertTrue(is_array($result));
         $this->assertArrayHasKey('url', $result);
-        $this->assertEquals('http://octobercms.com', $result['url']);
+        $this->assertEquals('https://wintercms.com', $result['url']);
 
         /*
          * Rewrite a second level string

@@ -23,8 +23,8 @@ if (!function_exists('input')) {
         /*
          * Array field name, eg: field[key][key2][key3]
          */
-        if (class_exists('October\Rain\Html\Helper')) {
-            $name = implode('.', October\Rain\Html\Helper::nameToArray($name));
+        if (class_exists('Winter\Storm\Html\Helper')) {
+            $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
         return Input::get($name, $default);
@@ -44,8 +44,8 @@ if (!function_exists('post')) {
         /*
          * Array field name, eg: field[key][key2][key3]
          */
-        if (class_exists('October\Rain\Html\Helper')) {
-            $name = implode('.', October\Rain\Html\Helper::nameToArray($name));
+        if (class_exists('Winter\Storm\Html\Helper')) {
+            $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
         return array_get(Request::post(), $name, $default);
@@ -65,8 +65,8 @@ if (!function_exists('get')) {
         /*
          * Array field name, eg: field[key][key2][key3]
          */
-        if (class_exists('October\Rain\Html\Helper')) {
-            $name = implode('.', October\Rain\Html\Helper::nameToArray($name));
+        if (class_exists('Winter\Storm\Html\Helper')) {
+            $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
         return array_get(Request::query(), $name, $default);
@@ -117,12 +117,12 @@ if (!function_exists('trace_sql')) {
      */
     function trace_sql()
     {
-        if (!defined('OCTOBER_NO_EVENT_LOGGING')) {
-            define('OCTOBER_NO_EVENT_LOGGING', 1);
+        if (!defined('WINTER_NO_EVENT_LOGGING')) {
+            define('WINTER_NO_EVENT_LOGGING', 1);
         }
 
-        if (!defined('OCTOBER_TRACING_SQL')) {
-            define('OCTOBER_TRACING_SQL', 1);
+        if (!defined('WINTER_TRACING_SQL')) {
+            define('WINTER_TRACING_SQL', 1);
         }
         else {
             return;
@@ -235,7 +235,7 @@ if (!function_exists('array_build')) {
      */
     function array_build($array, callable $callback)
     {
-        return \October\Rain\Support\Arr::build($array, $callback);
+        return \Winter\Storm\Support\Arr::build($array, $callback);
     }
 }
 
@@ -244,11 +244,11 @@ if (!function_exists('collect')) {
      * Create a collection from the given value.
      *
      * @param  mixed  $value
-     * @return \October\Rain\Support\Collection
+     * @return \Winter\Storm\Support\Collection
      */
     function collect($value = null)
     {
-        return new \October\Rain\Support\Collection($value);
+        return new \Winter\Storm\Support\Collection($value);
     }
 }
 
@@ -291,7 +291,7 @@ if (!function_exists('http_build_url')) {
     /**
      * Polyfill for `http_build_url` method provided by PECL HTTP extension.
      *
-     * @see \October\Rain\Router\UrlGenerator::buildUrl()
+     * @see \Winter\Storm\Router\UrlGenerator::buildUrl()
      * @param array $url
      * @param array $replace
      * @param mixed $flags
@@ -300,7 +300,7 @@ if (!function_exists('http_build_url')) {
      */
     function http_build_url(array $url, array $replace = [], $flags = HTTP_URL_REPLACE, array &$newUrl = []): string
     {
-        return \October\Rain\Router\UrlGenerator::buildUrl($url, $replace, $flags, $newUrl);
+        return \Winter\Storm\Router\UrlGenerator::buildUrl($url, $replace, $flags, $newUrl);
     }
 }
 

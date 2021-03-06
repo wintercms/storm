@@ -1,9 +1,9 @@
-<?php namespace October\Rain\Halcyon\Traits;
+<?php namespace Winter\Storm\Halcyon\Traits;
 
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
-use October\Rain\Halcyon\Exception\ModelException;
+use Winter\Storm\Halcyon\Exception\ModelException;
 use Exception;
 
 trait Validation
@@ -27,7 +27,7 @@ trait Validation
      */
 
     /**
-     * @var bool Makes the validation procedure throw an {@link October\Rain\Database\ModelException}
+     * @var bool Makes the validation procedure throw an {@link Winter\Storm\Database\ModelException}
      * instead of returning false when validation fails.
      *
      * public $throwOnValidation = true;

@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Halcyon\Processors\SectionParser;
+use Winter\Storm\Halcyon\Processors\SectionParser;
 
 class SectionParserTest extends TestCase
 {
@@ -348,13 +348,13 @@ line = "Line 2"
 setting = "test"
 ==
 
-use October\Rain\Support\Str; // This will be removed (-1 line)
-use October\Rain\Flash\FlashBag; // This will be removed (-1 line)
+use Winter\Storm\Support\Str; // This will be removed (-1 line)
+use Winter\Storm\Flash\FlashBag; // This will be removed (-1 line)
 
 function onStart() { // Line 7
 
-    use October\Rain\Support\Str; // And placed here
-    use October\Rain\Flash\FlashBag; // And placed here
+    use Winter\Storm\Support\Str; // And placed here
+    use Winter\Storm\Flash\FlashBag; // And placed here
 
 }
 ==

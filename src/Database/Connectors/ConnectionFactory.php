@@ -1,12 +1,12 @@
-<?php namespace October\Rain\Database\Connectors;
+<?php namespace Winter\Storm\Database\Connectors;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Connectors\ConnectionFactory as ConnectionFactoryBase;
-use October\Rain\Database\Connections\Connection;
-use October\Rain\Database\Connections\MySqlConnection;
-use October\Rain\Database\Connections\SQLiteConnection;
-use October\Rain\Database\Connections\PostgresConnection;
-use October\Rain\Database\Connections\SqlServerConnection;
+use Winter\Storm\Database\Connections\Connection;
+use Winter\Storm\Database\Connections\MySqlConnection;
+use Winter\Storm\Database\Connections\SQLiteConnection;
+use Winter\Storm\Database\Connections\PostgresConnection;
+use Winter\Storm\Database\Connections\SqlServerConnection;
 use PDOException;
 use InvalidArgumentException;
 

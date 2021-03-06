@@ -1,7 +1,7 @@
 <?php
 
-use October\Rain\Extension\Extendable;
-use October\Rain\Extension\ExtensionBase;
+use Winter\Storm\Extension\Extendable;
+use Winter\Storm\Extension\ExtensionBase;
 
 class ExtensionTest extends TestCase
 {

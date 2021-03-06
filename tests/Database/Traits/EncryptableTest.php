@@ -59,9 +59,9 @@ class EncryptableTest extends DbTestCase
     }
 }
 
-class TestModelEncryptable extends \October\Rain\Database\Model
+class TestModelEncryptable extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\Encryptable;
+    use \Winter\Storm\Database\Traits\Encryptable;
 
     protected $encryptable = ['secret'];
     protected $fillable = ['secret'];

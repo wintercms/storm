@@ -1,4 +1,4 @@
-# Rain Dynamic Syntax
+# Storm Dynamic Syntax
 
 Dynamic Syntax is a templating engine that supports two modes of rendering. Parsing template text can produce two results, either a **view** or **editor** mode. Using this template text as an example:
 

@@ -1,8 +1,8 @@
-<?php namespace October\Rain\Auth\Models;
+<?php namespace Winter\Storm\Auth\Models;
 
 use Str;
 use Hash;
-use October\Rain\Database\Model;
+use Winter\Storm\Database\Model;
 use InvalidArgumentException;
 use Exception;
 
@@ -11,9 +11,9 @@ use Exception;
  */
 class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 {
-    use \October\Rain\Database\Traits\Hashable;
-    use \October\Rain\Database\Traits\Purgeable;
-    use \October\Rain\Database\Traits\Validation;
+    use \Winter\Storm\Database\Traits\Hashable;
+    use \Winter\Storm\Database\Traits\Purgeable;
+    use \Winter\Storm\Database\Traits\Validation;
 
     /**
      * @var string The table associated with the model.
@@ -341,7 +341,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     /**
      * Returns the role assigned to this user.
-     * @return October\Rain\Auth\Models\Role
+     * @return Winter\Storm\Auth\Models\Role
      */
     public function getRole()
     {

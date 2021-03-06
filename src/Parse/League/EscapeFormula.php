@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Parse\League;
+<?php namespace Winter\Storm\Parse\League;
 
 /**
  * League.Csv (https://csv.thephpleague.com)

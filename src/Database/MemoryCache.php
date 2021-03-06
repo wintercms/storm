@@ -1,16 +1,15 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 /**
  * Query memory cache class.
  *
  * Stores query results in memory to avoid running duplicate queries
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class MemoryCache
 {
-    use \October\Rain\Support\Traits\Singleton;
+    use \Winter\Storm\Support\Traits\Singleton;
 
     /**
      * Cached results.

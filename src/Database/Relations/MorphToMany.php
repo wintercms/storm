@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphPivot;
  * Morph to many
  *
  * This class is a carbon copy of Illuminate\Database\Eloquent\Relations\MorphToMany
- * so the base October\Rain\Database\Relations\BelongsToMany class can be inherited
+ * so the base Winter\Storm\Database\Relations\BelongsToMany class can be inherited
  */
 class MorphToMany extends BelongsToMany
 {

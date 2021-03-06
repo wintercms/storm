@@ -1,9 +1,9 @@
-<?php namespace October\Rain\Database\Traits;
+<?php namespace Winter\Storm\Database\Traits;
 
 use App;
 use Lang;
 use Input;
-use October\Rain\Database\ModelException;
+use Winter\Storm\Database\ModelException;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Validator;
 use Exception;
@@ -29,7 +29,7 @@ trait Validation
      */
 
     /**
-     * @var bool Makes the validation procedure throw an {@link October\Rain\Database\ModelException}
+     * @var bool Makes the validation procedure throw an {@link Winter\Storm\Database\ModelException}
      * instead of returning false when validation fails.
      *
      * public $throwOnValidation = true;
@@ -175,7 +175,7 @@ trait Validation
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeValidate', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.beforeValidate', function () use (\Winter\Storm\Database\Model $model) {
          *         // Prevent anything from validating ever!
          *         return false;
          *     });
@@ -324,7 +324,7 @@ trait Validation
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterValidate', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.afterValidate', function () use (\Winter\Storm\Database\Model $model) {
          *         \Log::info("{$model->name} successfully passed validation");
          *     });
          *

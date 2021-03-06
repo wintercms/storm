@@ -1,9 +1,8 @@
-<?php namespace October\Rain\Filesystem;
+<?php namespace Winter\Storm\Filesystem;
 
 /**
  * Zip helper
  *
- * @package october\filesystem
  * @author Alexey Bobkov, Samuel Georges
  *
  * Usage:

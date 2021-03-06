@@ -1,17 +1,24 @@
 {
-    "name": "october/rain",
-    "description": "October Rain Library",
-    "homepage": "http://octobercms.com",
-    "keywords": ["october", "cms", "rain"],
+    "name": "wintercms/storm",
+    "description": "Winter Storm Library",
+    "homepage": "https://wintercms.com",
+    "keywords": ["winter", "cms", "storm"],
     "license": "MIT",
     "authors": [
         {
             "name": "Alexey Bobkov",
-            "email": "aleksey.bobkov@gmail.com"
+            "email": "aleksey.bobkov@gmail.com",
+            "role": "Original Author"
         },
         {
             "name": "Samuel Georges",
-            "email": "daftspunky@gmail.com"
+            "email": "daftspunky@gmail.com",
+            "role": "Original Author"
+        },
+        {
+            "name": "Luke Towers",
+            "email": "wintercms@luketowers.ca",
+            "role": "Lead Maintainer"
         }
     ],
     "require": {
@@ -25,23 +32,11 @@
         "twig/twig": "~2.0",
         "league/csv": "~8.0",
         "jenssegers/date": "~3.0",
+        "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.7",
-        "illuminate/database": "5.5.*",
-        "illuminate/filesystem": "5.5.*",
-        "illuminate/encryption": "5.5.*",
-        "illuminate/queue": "5.5.*",
-        "illuminate/support": "5.5.*",
-        "illuminate/log": "5.5.*",
-        "illuminate/mail": "5.5.*",
-        "illuminate/events": "5.5.*",
-        "illuminate/pagination": "5.5.*",
-        "illuminate/routing": "5.5.*",
-        "illuminate/validation": "5.5.*",
-        "illuminate/view": "5.5.*",
-        "illuminate/cache": "5.5.*",
         "symfony/dom-crawler": "~3.1",
         "symfony/css-selector": "~3.1",
         "meyfa/phpunit-assert-gd": "1.1.0",
@@ -49,28 +44,17 @@
         "php-parallel-lint/php-parallel-lint": "^1.0"
     },
     "replace": {
-        "october/auth": "self.version",
-        "october/config": "self.version",
-        "october/database": "self.version",
-        "october/extension": "self.version",
-        "october/filesystem": "self.version",
-        "october/halcyon": "self.version",
-        "october/html": "self.version",
-        "october/mail": "self.version",
-        "october/network": "self.version",
-        "october/parse": "self.version",
-        "october/router": "self.version",
-        "october/support": "self.version",
-        "october/translation": "self.version"
+        "october/rain": "self.version"
     },
     "autoload": {
         "files": [
             "src/Support/helpers.php",
+            "src/Support/aliases.php",
             "src/Html/helpers.php",
             "src/Parse/Assetic/Less/lessc.inc.php"
         ],
         "psr-4": {
-            "October\\Rain\\": "src/"
+            "Winter\\Storm\\": "src/"
         },
         "psr-0": {
             "Less": "src/Parse/Assetic/Less/lib/"
@@ -82,7 +66,7 @@
             "tests/DbTestCase.php"
         ],
         "psr-4": {
-            "October\\Rain\\Tests\\": "tests/"
+            "Winter\\Storm\\Tests\\": "tests/"
         }
     },
     "extra": {

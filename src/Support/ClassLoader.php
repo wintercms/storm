@@ -1,13 +1,13 @@
-<?php namespace October\Rain\Support;
+<?php namespace Winter\Storm\Support;
 
-use October\Rain\Filesystem\Filesystem;
+use Winter\Storm\Filesystem\Filesystem;
 use Throwable;
 use Exception;
 
 /**
  * Class loader
  *
- * A simple autoloader used by October, it expects the folder names
+ * A simple autoloader used by Winter, it expects the folder names
  * to be lower case and the file name to be capitalized as per the class name.
  */
 class ClassLoader
@@ -15,7 +15,7 @@ class ClassLoader
     /**
      * The filesystem instance.
      *
-     * @var \October\Rain\Filesystem\Filesystem
+     * @var \Winter\Storm\Filesystem\Filesystem
      */
     public $files;
 
@@ -64,7 +64,7 @@ class ClassLoader
     /**
      * Create a new package manifest instance.
      *
-     * @param  \October\Rain\Filesystem\Filesystem  $files
+     * @param  \Winter\Storm\Filesystem\Filesystem  $files
      * @param  string  $basePath
      * @param  string  $manifestPath
      * @return void

@@ -1,9 +1,9 @@
 <?php
 
-use October\Rain\Halcyon\Model;
-use October\Rain\Halcyon\Datasource\Resolver;
-use October\Rain\Halcyon\Datasource\FileDatasource;
-use October\Rain\Filesystem\Filesystem;
+use Winter\Storm\Halcyon\Model;
+use Winter\Storm\Halcyon\Datasource\Resolver;
+use Winter\Storm\Halcyon\Datasource\FileDatasource;
+use Winter\Storm\Filesystem\Filesystem;
 
 class HalcyonModelTest extends TestCase
 {
@@ -133,7 +133,7 @@ ESC;
     }
 
     /**
-     * @expectedException        October\Rain\Halcyon\Exception\InvalidFileNameException
+     * @expectedException        Winter\Storm\Halcyon\Exception\InvalidFileNameException
      * @expectedExceptionMessage The specified file name [one/small/step/for-man.htm] is invalid.
      */
     public function testCreatePageInDirectoryFail()
@@ -244,7 +244,7 @@ ESC;
     }
 
     /**
-     * @expectedException        October\Rain\Halcyon\Exception\FileExistsException
+     * @expectedException        Winter\Storm\Halcyon\Exception\FileExistsException
      * @expectedExceptionMessage A file already exists
      */
     public function testUpdatePageFileExists()
@@ -285,7 +285,7 @@ ESC;
     }
 
     /**
-     * @expectedException        October\Rain\Halcyon\Exception\ModelException
+     * @expectedException        Winter\Storm\Halcyon\Exception\ModelException
      * @expectedExceptionMessage The title field is required.
      */
     public function testPageWithValidation()
@@ -298,7 +298,7 @@ ESC;
     }
 
     /**
-     * @expectedException        October\Rain\Halcyon\Exception\ModelException
+     * @expectedException        Winter\Storm\Halcyon\Exception\ModelException
      * @expectedExceptionMessage The meta title field is required.
      */
     public function testPageWithNestedValidationFail()
