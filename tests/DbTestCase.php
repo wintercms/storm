@@ -38,7 +38,9 @@ class DbTestCase extends TestCase
     protected function flushModelEventListeners()
     {
         foreach (get_declared_classes() as $class) {
-            if ($class === Pivot::class) {
+            // get_declared_classes() includes aliased classes, aliased classes are automatically lowercased
+            // @https://bugs.php.net/bug.php?id=80180
+            if ($class === Pivot::class || strtolower($class) === 'october\rain\database\pivot') {
                 continue;
             }
 
