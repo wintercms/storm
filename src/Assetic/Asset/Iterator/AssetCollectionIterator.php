@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Asset\Iterator;
+<?php namespace Winter\Storm\Assetic\Asset\Iterator;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Asset\AssetCollectionInterface;
+use Winter\Storm\Assetic\Asset\AssetCollectionInterface;
 
 /**
  * Iterates over an asset collection.

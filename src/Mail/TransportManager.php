@@ -1,15 +1,15 @@
-<?php namespace October\Rain\Mail;
+<?php namespace Winter\Storm\Mail;
 
 use Illuminate\Mail\TransportManager as BaseTransportManager;
-use October\Rain\Mail\Transport\MandrillTransport;
-use October\Rain\Mail\Transport\SparkPostTransport;
+use Winter\Storm\Mail\Transport\MandrillTransport;
+use Winter\Storm\Mail\Transport\SparkPostTransport;
 
 class TransportManager extends BaseTransportManager
 {
     /**
      * Create an instance of the Mandrill Swift Transport driver.
      *
-     * @return \October\Rain\Mail\Transport\MandrillTransport
+     * @return \Winter\Storm\Mail\Transport\MandrillTransport
      */
     protected function createMandrillDriver()
     {
@@ -24,7 +24,7 @@ class TransportManager extends BaseTransportManager
     /**
      * Create an instance of the SparkPost Swift Transport driver.
      *
-     * @return \October\Rain\Mail\Transport\SparkPostTransport
+     * @return \Winter\Storm\Mail\Transport\SparkPostTransport
      */
     protected function createSparkPostDriver()
     {

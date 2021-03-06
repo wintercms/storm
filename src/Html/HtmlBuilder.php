@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Html;
+<?php namespace Winter\Storm\Html;
 
 use Illuminate\Routing\UrlGenerator;
 
@@ -7,7 +7,6 @@ use Illuminate\Routing\UrlGenerator;
  *
  * Extension of illuminate/html, injects a session key to each form opening.
  *
- * @package october\html
  * @author Alexey Bobkov, Samuel Georges
  */
 class HtmlBuilder

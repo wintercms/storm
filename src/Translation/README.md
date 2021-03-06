@@ -11,8 +11,8 @@ Modules and plugins can have localization files in the /lang directory. Plugin a
 // Get a localization string from the CMS module
 echo Lang::get('cms::errors.page.not_found');
 
-// Get a localization string from the october/blog plugin.
-echo Lang::get('october.blog::messages.post.added');
+// Get a localization string from the Winter.Blog plugin.
+echo Lang::get('winter.blog::messages.post.added');
 ````
 
 ## Overriding localization strings
@@ -27,7 +27,7 @@ app
         pluginname
           file.php
 ````
-Example: lang/en/october/blog/errors.php
+Example: lang/en/winter/blog/errors.php
 
 To override a module's localization:
 

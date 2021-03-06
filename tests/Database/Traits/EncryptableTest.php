@@ -2,7 +2,7 @@
 
 use Illuminate\Encryption\Encrypter;
 
-class EncryptableTest extends TestCase
+class EncryptableTest extends DbTestCase
 {
     const TEST_CRYPT_KEY = 'gBmM1S5bxZ5ePRj5';
 
@@ -13,21 +13,8 @@ class EncryptableTest extends TestCase
 
     public function setUp(): void
     {
-        $capsule = new Illuminate\Database\Capsule\Manager;
-        $capsule->addConnection([
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => ''
-        ]);
-
-        $capsule->setAsGlobal();
-        $capsule->bootEloquent();
-
-        $capsule->schema()->create('secrets', function ($table) {
-            $table->increments('id');
-            $table->string('secret');
-            $table->timestamps();
-        });
+        parent::setUp();
+        $this->createTable();
 
         $this->encrypter = new Encrypter(self::TEST_CRYPT_KEY, 'AES-128-CBC');
     }
@@ -61,11 +48,20 @@ class EncryptableTest extends TestCase
         $this->assertNull($testModel->secret);
         $this->assertNull($testModel->attributes['secret']);
     }
+
+    protected function createTable()
+    {
+        $this->db->schema()->create('secrets', function ($table) {
+            $table->increments('id');
+            $table->string('secret');
+            $table->timestamps();
+        });
+    }
 }
 
-class TestModelEncryptable extends \October\Rain\Database\Model
+class TestModelEncryptable extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\Encryptable;
+    use \Winter\Storm\Database\Traits\Encryptable;
 
     protected $encryptable = ['secret'];
     protected $fillable = ['secret'];

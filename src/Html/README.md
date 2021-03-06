@@ -1,4 +1,4 @@
-## Rain Html
+## Storm Html
 
 An extension of `illuminate\html` and more.
 

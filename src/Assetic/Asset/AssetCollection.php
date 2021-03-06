@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Asset;
+<?php namespace Winter\Storm\Assetic\Asset;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Asset\Iterator\AssetCollectionFilterIterator;
-use October\Rain\Assetic\Asset\Iterator\AssetCollectionIterator;
-use October\Rain\Assetic\Filter\FilterCollection;
-use October\Rain\Assetic\Filter\FilterInterface;
+use Winter\Storm\Assetic\Asset\Iterator\AssetCollectionFilterIterator;
+use Winter\Storm\Assetic\Asset\Iterator\AssetCollectionIterator;
+use Winter\Storm\Assetic\Filter\FilterCollection;
+use Winter\Storm\Assetic\Filter\FilterInterface;
 
 /**
  * A collection of assets.

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Foundation;
+<?php namespace Winter\Storm\Foundation;
 
 use Str;
 use Config;
@@ -10,12 +10,13 @@ use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\ProviderRepository;
 use Symfony\Component\Debug\Exception\FatalErrorException;
-use October\Rain\Events\EventServiceProvider;
-use October\Rain\Router\RoutingServiceProvider;
-use October\Rain\Foundation\Providers\LogServiceProvider;
-use October\Rain\Foundation\Providers\MakerServiceProvider;
+use Winter\Storm\Events\EventServiceProvider;
+use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Filesystem\PathResolver;
+use Winter\Storm\Foundation\Providers\LogServiceProvider;
+use Winter\Storm\Foundation\Providers\MakerServiceProvider;
 use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
-use October\Rain\Foundation\Providers\ExecutionContextProvider;
+use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 
 class Application extends ApplicationBase
 {
@@ -34,6 +35,27 @@ class Application extends ApplicationBase
     protected $themesPath;
 
     /**
+     * The base temp path.
+     *
+     * @var string
+     */
+    protected $tempPath;
+
+    /**
+     * The base path for uploads.
+     *
+     * @var string
+     */
+    protected $uploadsPath;
+
+    /**
+     * The base path for media.
+     *
+     * @var string
+     */
+    protected $mediaPath;
+
+    /**
      * Get the path to the public / web directory.
      *
      * @return string
@@ -50,7 +72,7 @@ class Application extends ApplicationBase
      */
     public function langPath()
     {
-        return $this->basePath.'/lang';
+        return PathResolver::join($this->basePath, '/lang');
     }
 
     /**
@@ -127,6 +149,8 @@ class Application extends ApplicationBase
         $this->instance('path.plugins', $this->pluginsPath());
         $this->instance('path.themes', $this->themesPath());
         $this->instance('path.temp', $this->tempPath());
+        $this->instance('path.uploads', $this->uploadsPath());
+        $this->instance('path.media', $this->mediaPath());
     }
 
     /**
@@ -136,7 +160,7 @@ class Application extends ApplicationBase
      */
     public function pluginsPath()
     {
-        return $this->pluginsPath ?: $this->basePath.'/plugins';
+        return $this->pluginsPath ?: PathResolver::join($this->basePath, '/plugins');
     }
 
     /**
@@ -147,6 +171,7 @@ class Application extends ApplicationBase
      */
     public function setPluginsPath($path)
     {
+        $path = PathResolver::standardize($path);
         $this->pluginsPath = $path;
         $this->instance('path.plugins', $path);
         return $this;
@@ -159,7 +184,7 @@ class Application extends ApplicationBase
      */
     public function themesPath()
     {
-        return $this->themesPath ?: $this->basePath.'/themes';
+        return $this->themesPath ?: PathResolver::join($this->basePath, '/themes');
     }
 
     /**
@@ -170,6 +195,7 @@ class Application extends ApplicationBase
      */
     public function setThemesPath($path)
     {
+        $path = PathResolver::standardize($path);
         $this->themesPath = $path;
         $this->instance('path.themes', $path);
         return $this;
@@ -182,7 +208,66 @@ class Application extends ApplicationBase
      */
     public function tempPath()
     {
-        return $this->basePath.'/storage/temp';
+        return $this->tempPath ?: PathResolver::join($this->basePath, '/storage/temp');
+    }
+
+    /**
+     * Set the temp path for the application.
+     *
+     * @return string
+     */
+    public function setTempPath($path)
+    {
+        $path = PathResolver::standardize($path);
+        $this->tempPath = $path;
+        $this->instance('path.temp', $path);
+        return $this;
+    }
+
+    /**
+     * Get the path to the uploads directory.
+     *
+     * @return string
+     */
+    public function uploadsPath()
+    {
+        return $this->uploadsPath ?: PathResolver::join($this->basePath, '/storage/app/uploads');
+    }
+
+    /**
+     * Set the uploads path for the application.
+     *
+     * @return string
+     */
+    public function setUploadsPath($path)
+    {
+        $path = PathResolver::standardize($path);
+        $this->uploadsPath = $path;
+        $this->instance('path.uploads', $path);
+        return $this;
+    }
+
+    /**
+     * Get the path to the media directory.
+     *
+     * @return string
+     */
+    public function mediaPath()
+    {
+        return $this->mediaPath ?: PathResolver::join($this->basePath, '/storage/app/media');
+    }
+
+    /**
+     * Set the media path for the application.
+     *
+     * @return string
+     */
+    public function setMediaPath($path)
+    {
+        $path = PathResolver::standardize($path);
+        $this->mediaPath = $path;
+        $this->instance('path.media', $path);
+        return $this;
     }
 
     /**
@@ -356,18 +441,18 @@ class Application extends ApplicationBase
     public function registerCoreContainerAliases()
     {
         $aliases = [
-            'app'                  => [\October\Rain\Foundation\Application::class, \Illuminate\Contracts\Container\Container::class, \Illuminate\Contracts\Foundation\Application::class],
+            'app'                  => [\Winter\Storm\Foundation\Application::class, \Illuminate\Contracts\Container\Container::class, \Illuminate\Contracts\Foundation\Application::class],
             'blade.compiler'       => [\Illuminate\View\Compilers\BladeCompiler::class],
             'cache'                => [\Illuminate\Cache\CacheManager::class, \Illuminate\Contracts\Cache\Factory::class],
             'cache.store'          => [\Illuminate\Cache\Repository::class, \Illuminate\Contracts\Cache\Repository::class],
             'config'               => [\Illuminate\Config\Repository::class, \Illuminate\Contracts\Config\Repository::class],
             'cookie'               => [\Illuminate\Cookie\CookieJar::class, \Illuminate\Contracts\Cookie\Factory::class, \Illuminate\Contracts\Cookie\QueueingFactory::class],
             'encrypter'            => [\Illuminate\Encryption\Encrypter::class, \Illuminate\Contracts\Encryption\Encrypter::class],
-            'db'                   => [\October\Rain\Database\DatabaseManager::class],
+            'db'                   => [\Illuminate\Database\DatabaseManager::class, \Illuminate\Database\ConnectionResolverInterface::class],
             'db.connection'        => [\Illuminate\Database\Connection::class, \Illuminate\Database\ConnectionInterface::class],
             'events'               => [\Illuminate\Events\Dispatcher::class, \Illuminate\Contracts\Events\Dispatcher::class],
             'files'                => [\Illuminate\Filesystem\Filesystem::class],
-            'filesystem'           => [\October\Rain\Filesystem\FilesystemManager::class, \Illuminate\Contracts\Filesystem\Factory::class],
+            'filesystem'           => [\Winter\Storm\Filesystem\FilesystemManager::class, \Illuminate\Contracts\Filesystem\Factory::class],
             'filesystem.disk'      => [\Illuminate\Contracts\Filesystem\Filesystem::class],
             'filesystem.cloud'     => [\Illuminate\Contracts\Filesystem\Cloud::class],
             'hash'                 => [\Illuminate\Contracts\Hashing\Hasher::class],
@@ -383,8 +468,8 @@ class Application extends ApplicationBase
             'router'               => [\Illuminate\Routing\Router::class, \Illuminate\Contracts\Routing\Registrar::class, \Illuminate\Contracts\Routing\BindingRegistrar::class],
             'session'              => [\Illuminate\Session\SessionManager::class],
             'session.store'        => [\Illuminate\Session\Store::class, \Illuminate\Contracts\Session\Session::class],
-            'url'                  => [\October\Rain\Router\UrlGenerator::class, \Illuminate\Contracts\Routing\UrlGenerator::class],
-            'validator'            => [\October\Rain\Validation\Factory::class, \Illuminate\Contracts\Validation\Factory::class],
+            'url'                  => [\Winter\Storm\Router\UrlGenerator::class, \Illuminate\Contracts\Routing\UrlGenerator::class],
+            'validator'            => [\Winter\Storm\Validation\Factory::class, \Illuminate\Contracts\Validation\Factory::class],
             'view'                 => [\Illuminate\View\Factory::class, \Illuminate\Contracts\View\Factory::class],
         ];
 
@@ -406,7 +491,7 @@ class Application extends ApplicationBase
      */
     public function getCachedConfigPath()
     {
-        return $this['path.storage'].'/framework/config.php';
+        return PathResolver::join($this->storagePath(), '/framework/config.php');
     }
 
     /**
@@ -416,7 +501,7 @@ class Application extends ApplicationBase
      */
     public function getCachedRoutesPath()
     {
-        return $this['path.storage'].'/framework/routes.php';
+        return PathResolver::join($this->storagePath(), '/framework/routes.php');
     }
 
     /**
@@ -426,7 +511,7 @@ class Application extends ApplicationBase
      */
     public function getCachedCompilePath()
     {
-        return $this->storagePath().'/framework/compiled.php';
+        return PathResolver::join($this->storagePath(), '/framework/compiled.php');
     }
 
     /**
@@ -436,7 +521,7 @@ class Application extends ApplicationBase
      */
     public function getCachedServicesPath()
     {
-        return $this->storagePath().'/framework/services.php';
+        return PathResolver::join($this->storagePath(), '/framework/services.php');
     }
 
     /**
@@ -446,7 +531,7 @@ class Application extends ApplicationBase
      */
     public function getCachedPackagesPath()
     {
-        return $this->storagePath().'/framework/packages.php';
+        return PathResolver::join($this->storagePath(), '/framework/packages.php');
     }
 
     /**
@@ -456,6 +541,6 @@ class Application extends ApplicationBase
      */
     public function getCachedClassesPath()
     {
-        return $this->storagePath().'/framework/classes.php';
+        return PathResolver::join($this->storagePath(), '/framework/classes.php');
     }
 }

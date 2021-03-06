@@ -1,51 +1,12 @@
 <?php
 
-class SluggableTest extends TestCase
+class SluggableTest extends DbTestCase
 {
-
     public function setUp(): void
     {
-        $capsule = new Illuminate\Database\Capsule\Manager;
-        $capsule->addConnection([
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => ''
-        ]);
+        parent::setUp();
 
-        # Create the dataset in the connection with the tables
-        $capsule->setAsGlobal();
-        $capsule->bootEloquent();
-
-        $capsule->schema()->create('testSoftDelete', function ($table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->softDeletes();
-            $table->timestamps();
-        });
-
-        $capsule->schema()->create('testSoftDeleteNoUnique', function ($table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('slug');
-            $table->softDeletes();
-            $table->timestamps();
-        });
-
-        $capsule->schema()->create('testSoftDeleteAllow', function ($table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->softDeletes();
-            $table->timestamps();
-        });
-
-        $capsule->schema()->create('test', function ($table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->timestamps();
-        });
+        $this->createTables();
     }
 
     public function testSlugGeneration()
@@ -176,16 +137,50 @@ class SluggableTest extends TestCase
         $testModel2 = TestModelSluggable::Create(['name' => 'test']);
         $this->assertEquals($testModel2->slug, 'test');
     }
+
+    protected function createTables()
+    {
+        $this->db->schema()->create('testSoftDelete', function ($table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        $this->db->schema()->create('testSoftDeleteNoUnique', function ($table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('slug');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        $this->db->schema()->create('testSoftDeleteAllow', function ($table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        $this->db->schema()->create('test', function ($table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->timestamps();
+        });
+    }
 }
 
 /*
 * Class with Sluggable and SoftDelete traits
 * with allowTrashedSlugs
 */
-class TestModelSluggableSoftDeleteAllow extends \October\Rain\Database\Model
+class TestModelSluggableSoftDeleteAllow extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\SoftDelete;
-    use \October\Rain\Database\Traits\Sluggable;
+    use \Winter\Storm\Database\Traits\SoftDelete;
+    use \Winter\Storm\Database\Traits\Sluggable;
 
     protected $slugs = ['slug' => 'name'];
     protected $fillable = ['name'];
@@ -197,10 +192,10 @@ class TestModelSluggableSoftDeleteAllow extends \October\Rain\Database\Model
 * Class with Sluggable and SoftDelete traits
 * with default behavior (allowTrashedSlugs = false)
 */
-class TestModelSluggableSoftDelete extends \October\Rain\Database\Model
+class TestModelSluggableSoftDelete extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\SoftDelete;
-    use \October\Rain\Database\Traits\Sluggable;
+    use \Winter\Storm\Database\Traits\SoftDelete;
+    use \Winter\Storm\Database\Traits\Sluggable;
 
     protected $slugs = ['slug' => 'name'];
     protected $fillable = ['name'];
@@ -211,10 +206,10 @@ class TestModelSluggableSoftDelete extends \October\Rain\Database\Model
 * Class with Sluggable and SoftDelete traits
 * with default behavior (allowTrashedSlugs = false)
 */
-class TestModelSluggableSoftDeleteNoUnique extends \October\Rain\Database\Model
+class TestModelSluggableSoftDeleteNoUnique extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\SoftDelete;
-    use \October\Rain\Database\Traits\Sluggable;
+    use \Winter\Storm\Database\Traits\SoftDelete;
+    use \Winter\Storm\Database\Traits\Sluggable;
 
     protected $slugs = ['slug' => 'name'];
     protected $fillable = ['name'];
@@ -224,9 +219,9 @@ class TestModelSluggableSoftDeleteNoUnique extends \October\Rain\Database\Model
 /*
 * Class with only Sluggable trait
 */
-class TestModelSluggable extends \October\Rain\Database\Model
+class TestModelSluggable extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\Sluggable;
+    use \Winter\Storm\Database\Traits\Sluggable;
 
     protected $slugs = ['slug' => 'name'];
     protected $fillable = ['name'];

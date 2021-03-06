@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Filesystem;
+<?php namespace Winter\Storm\Filesystem;
 
 use Throwable;
 
 /**
  * A utility to resolve paths to their canonical location and handle path queries.
  *
- * @package october\filesystem
  * @author Ben Thomson
  */
 class PathResolver
@@ -32,7 +31,7 @@ class PathResolver
         }
 
         // Split path into segments
-        $pathSegments = explode('/', static::normalizePath($path));
+        $pathSegments = explode('/', static::normalize($path));
 
         // Store Windows drive, if available, for final resolved path.
         $drive = array_shift($pathSegments) ?: null;
@@ -57,7 +56,7 @@ class PathResolver
                     ? implode('/', $resolvedSegments) . '/'
                     : '')
                 . $segment;
-            
+
             /**
              * We'll check to see if the current path is within "open_basedir" restrictions. Given that the full path
              * IS within the restrictions at this point - if the current path is not, we'll assume it makes up part of
@@ -71,7 +70,7 @@ class PathResolver
                         if (!$resolvedSymlink) {
                             return false;
                         }
-    
+
                         $resolvedSegments = explode('/', $resolvedSymlink);
                         $drive = array_shift($resolvedSegments) ?: null;
                         continue;
@@ -115,30 +114,58 @@ class PathResolver
     }
 
     /**
+     * Join two paths, making sure they use the correct directory separators.
+     *
+     * @param string $prefix
+     * @param string $path The path to add to the prefix.
+     * @return string
+     */
+    public static function join($prefix, $path = '')
+    {
+        $fullPath = rtrim(static::normalize($prefix, false) . '/' . static::normalize($path, false), '/');
+
+        return static::resolve($fullPath);
+    }
+
+    /**
      * Normalizes a given path.
      *
      * Converts any type of path (Unix or Windows) into a Unix-style path, so that we have a consistent format to work
-     * with.
+     * with internally. All paths will be returned with no trailing path separator.
+     *
+     * @param string $path
+     * @param bool $applyCwd If true, the current working directory will be appended if the path is relative.
+     * @return string
+     */
+    protected static function normalize($path, $applyCwd = true)
+    {
+        // Change directory separators to Unix-based
+        $path = rtrim(str_replace('\\', '/', $path), '/');
+
+        if ($applyCwd) {
+            // Determine drive letter for Windows paths
+            $drive = (preg_match('/^([A-Z]:)/', $path, $matches) === 1)
+                ? $matches[1]
+                : null;
+
+            // Prepend current working directory for relative paths
+            if (substr($path, 0, 1) !== '/' && is_null($drive)) {
+                $path = static::normalize(getcwd()) . '/' . $path;
+            }
+        }
+
+        return $path;
+    }
+
+    /**
+     * Standardizes the path separators of a path back to the expected separator for the operating system.
      *
      * @param string $path
      * @return string
      */
-    protected static function normalizePath($path)
+    public static function standardize($path)
     {
-        // Change directory separators to Unix-based
-        $path = str_replace('\\', '/', $path);
-
-        // Determine drive letter for Windows paths
-        $drive = (preg_match('/^([A-Z]:)/', $path, $matches) === 1)
-            ? $matches[1]
-            : null;
-
-        // Prepend current working directory for relative paths
-        if (substr($path, 0, 1) !== '/' && is_null($drive)) {
-            $path = static::normalizePath(getcwd()) . '/' . $path;
-        }
-
-        return $path;
+        return str_replace('/', DIRECTORY_SEPARATOR, static::normalize($path, false));
     }
 
     /**
@@ -173,7 +200,7 @@ class PathResolver
             $target = static::resolve($directory . $target);
         }
 
-        return static::normalizePath($target);
+        return static::normalize($target);
     }
 
     /**
@@ -194,7 +221,7 @@ class PathResolver
         $found = false;
 
         foreach ($baseDirs as $baseDir) {
-            if (starts_with(static::normalizePath($path), static::normalizePath($baseDir))) {
+            if (starts_with(static::normalize($path), static::normalize($baseDir))) {
                 $found = true;
                 break;
             }

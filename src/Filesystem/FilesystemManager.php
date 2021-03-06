@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Filesystem;
+<?php namespace Winter\Storm\Filesystem;
 
 use OpenCloud\Rackspace;
 use League\Flysystem\FilesystemInterface;
@@ -16,6 +16,24 @@ class FilesystemManager extends BaseFilesystemManager
     protected function adapt(FilesystemInterface $filesystem)
     {
         return new FilesystemAdapter($filesystem);
+    }
+
+    /**
+     * Identify the provided disk and return the name of its config
+     *
+     * @param \Illuminate\Contracts\Filesystem\Filesystem $disk
+     * @return string|null Returns the disk config name if successful, null otherwise.
+     */
+    public function identify($disk)
+    {
+        $configName = null;
+        foreach ($this->disks as $name => $instantiatedDisk) {
+            if ($disk === $instantiatedDisk) {
+                $configName = $name;
+                break;
+            }
+        }
+        return $configName;
     }
 
     /**

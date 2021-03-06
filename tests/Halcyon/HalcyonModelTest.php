@@ -1,9 +1,9 @@
 <?php
 
-use October\Rain\Halcyon\Model;
-use October\Rain\Halcyon\Datasource\Resolver;
-use October\Rain\Halcyon\Datasource\FileDatasource;
-use October\Rain\Filesystem\Filesystem;
+use Winter\Storm\Halcyon\Model;
+use Winter\Storm\Halcyon\Datasource\Resolver;
+use Winter\Storm\Halcyon\Datasource\FileDatasource;
+use Winter\Storm\Filesystem\Filesystem;
 
 class HalcyonModelTest extends TestCase
 {
@@ -134,7 +134,7 @@ ESC;
 
     public function testCreatePageInDirectoryFail()
     {
-        $this->expectException(\October\Rain\Halcyon\Exception\InvalidFileNameException::class);
+        $this->expectException(\Winter\Storm\Halcyon\Exception\InvalidFileNameException::class);
         $this->expectExceptionMessage('The specified file name [one/small/step/for-man.htm] is invalid.');
 
         HalcyonTestPage::create([
@@ -244,7 +244,7 @@ ESC;
 
     public function testUpdatePageFileExists()
     {
-        $this->expectException(\October\Rain\Halcyon\Exception\FileExistsException::class);
+        $this->expectException(\Winter\Storm\Halcyon\Exception\FileExistsException::class);
         $this->expectExceptionMessage('A file already exists');
 
         @unlink($targetFile = __DIR__.'/../fixtures/halcyon/themes/theme1/pages/testfile2a.htm');
@@ -284,7 +284,7 @@ ESC;
 
     public function testPageWithValidation()
     {
-        $this->expectException(\October\Rain\Halcyon\Exception\ModelException::class);
+        $this->expectException(\Winter\Storm\Halcyon\Exception\ModelException::class);
         $this->expectExceptionMessage('The title field is required.');
 
         $page = new HalcyonTestPageWithValidation;
@@ -296,7 +296,7 @@ ESC;
 
     public function testPageWithNestedValidationFail()
     {
-        $this->expectException(\October\Rain\Halcyon\Exception\ModelException::class);
+        $this->expectException(\Winter\Storm\Halcyon\Exception\ModelException::class);
         $this->expectExceptionMessage('The meta title field is required.');
 
         $page = new HalcyonTestPageWithValidation;
@@ -380,7 +380,7 @@ ESC;
 
         $translator->expects($this->any())->method('get')->will($this->returnArgument(0));
 
-        $factory = new \October\Rain\Validation\Factory($translator);
+        $factory = new \Winter\Storm\Validation\Factory($translator);
 
         HalcyonTestPageWithValidation::setModelValidator($factory);
     }

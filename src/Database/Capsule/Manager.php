@@ -1,10 +1,8 @@
-<?php
-
-namespace October\Rain\Database\Capsule;
+<?php namespace Winter\Storm\Database\Capsule;
 
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Capsule\Manager as BaseManager;
-use October\Rain\Database\Connectors\ConnectionFactory;
+use Winter\Storm\Database\Connectors\ConnectionFactory;
 
 class Manager extends BaseManager
 {

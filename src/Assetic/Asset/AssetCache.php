@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Asset;
+<?php namespace Winter\Storm\Assetic\Asset;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Cache\CacheInterface;
-use October\Rain\Assetic\Filter\FilterInterface;
-use October\Rain\Assetic\Filter\HashableInterface;
+use Winter\Storm\Assetic\Cache\CacheInterface;
+use Winter\Storm\Assetic\Filter\FilterInterface;
+use Winter\Storm\Assetic\Filter\HashableInterface;
 
 /**
  * Caches an asset to avoid the cost of loading and dumping.

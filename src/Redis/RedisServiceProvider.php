@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Redis;
+<?php namespace Winter\Storm\Redis;
 
 use Illuminate\Redis\RedisManager;
 use Illuminate\Redis\RedisServiceProvider as BaseRedisServiceProvider;

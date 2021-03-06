@@ -1,9 +1,9 @@
 <?php
 
-use October\Rain\Filesystem\PathResolver;
-use October\Rain\Support\Arr;
-use October\Rain\Support\Str;
-use October\Rain\Support\Collection;
+use Winter\Storm\Filesystem\PathResolver;
+use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Support\Collection;
 
 if (!function_exists('input')) {
     /**
@@ -28,8 +28,8 @@ if (!function_exists('input')) {
         /*
          * Array field name, eg: field[key][key2][key3]
          */
-        if (class_exists('October\Rain\Html\Helper')) {
-            $name = implode('.', October\Rain\Html\Helper::nameToArray($name));
+        if (class_exists('Winter\Storm\Html\Helper')) {
+            $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
         return Input::get($name, $default);
@@ -49,8 +49,8 @@ if (!function_exists('post')) {
         /*
          * Array field name, eg: field[key][key2][key3]
          */
-        if (class_exists('October\Rain\Html\Helper')) {
-            $name = implode('.', October\Rain\Html\Helper::nameToArray($name));
+        if (class_exists('Winter\Storm\Html\Helper')) {
+            $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
         return array_get(Request::post(), $name, $default);
@@ -70,8 +70,8 @@ if (!function_exists('get')) {
         /*
          * Array field name, eg: field[key][key2][key3]
          */
-        if (class_exists('October\Rain\Html\Helper')) {
-            $name = implode('.', October\Rain\Html\Helper::nameToArray($name));
+        if (class_exists('Winter\Storm\Html\Helper')) {
+            $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
         return array_get(Request::query(), $name, $default);
@@ -122,12 +122,12 @@ if (!function_exists('trace_sql')) {
      */
     function trace_sql()
     {
-        if (!defined('OCTOBER_NO_EVENT_LOGGING')) {
-            define('OCTOBER_NO_EVENT_LOGGING', 1);
+        if (!defined('WINTER_NO_EVENT_LOGGING')) {
+            define('WINTER_NO_EVENT_LOGGING', 1);
         }
 
-        if (!defined('OCTOBER_TRACING_SQL')) {
-            define('OCTOBER_TRACING_SQL', 1);
+        if (!defined('WINTER_TRACING_SQL')) {
+            define('WINTER_TRACING_SQL', 1);
         }
         else {
             return;
@@ -165,14 +165,14 @@ if (!function_exists('traceSql')) {
 
 if (!function_exists('config_path')) {
     /**
-     * Get the path to the plugins folder.
+     * Get the path to the config folder.
      *
      * @param  string  $path
      * @return string
      */
     function config_path($path = '')
     {
-        return app('path.config').($path ? '/'.$path : $path);
+        return PathResolver::join(app('path.config'), $path);
     }
 }
 
@@ -185,7 +185,7 @@ if (!function_exists('plugins_path')) {
      */
     function plugins_path($path = '')
     {
-        return app('path.plugins').($path ? '/'.$path : $path);
+        return PathResolver::join(app('path.plugins'), $path);
     }
 }
 
@@ -198,7 +198,20 @@ if (!function_exists('uploads_path')) {
      */
     function uploads_path($path = '')
     {
-        return app('path.uploads').($path ? '/'.$path : $path);
+        return PathResolver::join(Config::get('cms.storage.uploads.path', app('path.uploads')), $path);
+    }
+}
+
+if (!function_exists('media_path')) {
+    /**
+     * Get the path to the media folder.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function media_path($path = '')
+    {
+        return PathResolver::join(Config::get('cms.storage.media.path', app('path.media')), $path);
     }
 }
 
@@ -211,7 +224,7 @@ if (!function_exists('themes_path')) {
      */
     function themes_path($path = '')
     {
-        return app('path.themes').($path ? '/'.$path : $path);
+        return PathResolver::join(app('path.themes'), $path);
     }
 }
 
@@ -224,7 +237,7 @@ if (!function_exists('temp_path')) {
      */
     function temp_path($path = '')
     {
-        return app('path.temp').($path ? '/'.$path : $path);
+        return PathResolver::join(app('path.temp'), $path);
     }
 }
 
@@ -280,7 +293,7 @@ if (!function_exists('collect')) {
      * Create a collection from the given value.
      *
      * @param  mixed  $value
-     * @return \October\Rain\Support\Collection
+     * @return \Winter\Storm\Support\Collection
      */
     function collect($value = null)
     {

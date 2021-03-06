@@ -1,11 +1,11 @@
-<?php namespace October\Rain\Mail;
+<?php namespace Winter\Storm\Mail;
 
+use App;
 use Illuminate\Mail\Mailable as MailableBase;
 
 /**
  * Generic mailable class.
  *
- * @package october\mail
  * @author Alexey Bobkov, Samuel Georges
  */
 class Mailable extends MailableBase
@@ -47,13 +47,20 @@ class Mailable extends MailableBase
      */
     public function withSerializedData($data)
     {
+        // Ensure that the current locale is stored with the rest of the data for proper translation of queued messages
+        $defaultData = [
+            '_current_locale' => App::getLocale(),
+        ];
+
+        $data = array_merge($defaultData, $data);
+
         foreach ($data as $param => $value) {
             $this->viewData[$param] = $this->getSerializedPropertyValue($value);
         }
 
         return $this;
     }
-    
+
     /**
      * Set the subject for the message.
      *
