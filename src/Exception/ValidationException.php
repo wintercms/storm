@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Exception;
+<?php namespace Winter\Storm\Exception;
 
 use Illuminate\Support\MessageBag;
 use Illuminate\Validation\Validator;
@@ -8,7 +8,6 @@ use Exception;
 /**
  * Validation exception class.
  *
- * @package october\exception
  * @author Alexey Bobkov, Samuel Georges
  */
 class ValidationException extends Exception

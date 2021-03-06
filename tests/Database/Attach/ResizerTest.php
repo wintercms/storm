@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Database\Attach\Resizer;
+use Winter\Storm\Database\Attach\Resizer;
 
 class ResizerTest extends TestCase
 {

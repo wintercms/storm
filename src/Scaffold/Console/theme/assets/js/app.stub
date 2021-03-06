@@ -6,7 +6,7 @@
 
     jQuery(document).ready(function($) {
         /*-------------------------------
-        OCTOBERCMS FLASH MESSAGE HANDLING
+        WINTER CMS FLASH MESSAGE HANDLING
         ---------------------------------*/
         $(document).on('ajaxSetup', function(event, context) {
             // Enable AJAX handling of Flash messages on all AJAX requests

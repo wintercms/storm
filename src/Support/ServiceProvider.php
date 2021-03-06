@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Support;
+<?php namespace Winter\Storm\Support;
 
 use Illuminate\Support\ServiceProvider as ServiceProviderBase;
 

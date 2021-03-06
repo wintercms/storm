@@ -49,7 +49,7 @@ return [
     |
     */
 
-    'timezone' => "October's time",
+    'timezone' => "Winter's time",
 
     "timezoneAgain"               =>         'Something "else"'         ,
 

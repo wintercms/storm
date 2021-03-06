@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Events;
+<?php namespace Winter\Storm\Events;
 
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Contracts\Container\Container;

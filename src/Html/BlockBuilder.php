@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Html;
+<?php namespace Winter\Storm\Html;
 
 use Exception;
 
 /**
  * Block manager
  *
- * @package october\html
  * @author Alexey Bobkov, Samuel Georges
  */
 class BlockBuilder

@@ -1,9 +1,9 @@
-<?php namespace October\Rain\Database\Traits;
+<?php namespace Winter\Storm\Database\Traits;
 
 use DbDongle;
-use October\Rain\Database\Collection;
-use October\Rain\Database\TreeCollection;
-use October\Rain\Database\NestedTreeScope;
+use Winter\Storm\Database\Collection;
+use Winter\Storm\Database\TreeCollection;
+use Winter\Storm\Database\NestedTreeScope;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Exception;
 
@@ -13,7 +13,7 @@ use Exception;
  * Model table must have parent_id, nest_left, nest_right and nest_depth table columns.
  * In the model class definition:
  *
- *   use \October\Rain\Database\Traits\NestedTree;
+ *   use \Winter\Storm\Database\Traits\NestedTree;
  *
  *   $table->integer('parent_id')->nullable();
  *   $table->integer('nest_left')->nullable();
@@ -275,7 +275,7 @@ trait NestedTree
 
     /**
      * Make this model a root node.
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function makeRoot()
     {
@@ -284,7 +284,7 @@ trait NestedTree
 
     /**
      * Make model node a child of specified node.
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function makeChildOf($node)
     {
@@ -293,7 +293,7 @@ trait NestedTree
 
     /**
      * Find the left sibling and move to left of it.
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function moveLeft()
     {
@@ -302,7 +302,7 @@ trait NestedTree
 
     /**
      * Find the right sibling and move to the right of it.
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function moveRight()
     {
@@ -311,7 +311,7 @@ trait NestedTree
 
     /**
      * Move to the model to before (left) specified node.
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function moveBefore($node)
     {
@@ -320,7 +320,7 @@ trait NestedTree
 
     /**
      * Move to the model to after (right) a specified node.
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function moveAfter($node)
     {
@@ -364,7 +364,7 @@ trait NestedTree
     /**
      * Checks if the supplied node is inside the subtree of this model.
      *
-     * @param \October\Rain\Database\Model $node
+     * @param \Winter\Storm\Database\Model $node
      * @return boolean
      */
     public function isInsideSubtree($node)
@@ -493,7 +493,7 @@ trait NestedTree
      * Returns a list of all root nodes, without eager loading
      *
      * @param \Illuminate\Database\Query\Builder $query
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function scopeGetAllRoot($query)
     {
@@ -562,7 +562,7 @@ trait NestedTree
     /**
      * Returns all nodes and children.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getAll($columns = ['*'])
     {
@@ -572,7 +572,7 @@ trait NestedTree
     /**
      * Returns the root node starting from the current node.
      *
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function getRoot()
     {
@@ -598,7 +598,7 @@ trait NestedTree
     /**
      * Returns a list of all root nodes, with children eager loaded.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getEagerRoot()
     {
@@ -618,7 +618,7 @@ trait NestedTree
     /**
      * The direct parent node.
      *
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function getParent()
     {
@@ -628,7 +628,7 @@ trait NestedTree
     /**
      * Returns all parents up the tree.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getParents()
     {
@@ -638,7 +638,7 @@ trait NestedTree
     /**
      * Returns all parents up the tree and self.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getParentsAndSelf()
     {
@@ -648,7 +648,7 @@ trait NestedTree
     /**
      * Returns direct child nodes.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getChildren()
     {
@@ -658,7 +658,7 @@ trait NestedTree
     /**
      * Returns direct child nodes, with ->children eager loaded.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getEagerChildren()
     {
@@ -668,7 +668,7 @@ trait NestedTree
     /**
      * Returns all children down the tree.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getAllChildren()
     {
@@ -678,7 +678,7 @@ trait NestedTree
     /**
      * Returns all children and self.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getAllChildrenAndSelf()
     {
@@ -688,7 +688,7 @@ trait NestedTree
     /**
      * Return all siblings (parent's children).
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getSiblings()
     {
@@ -698,7 +698,7 @@ trait NestedTree
     /**
      * Return all siblings and self.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getSiblingsAndSelf()
     {
@@ -708,7 +708,7 @@ trait NestedTree
     /**
      * Return left sibling
      *
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function getLeftSibling()
     {
@@ -718,7 +718,7 @@ trait NestedTree
     /**
      * Return right sibling
      *
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function getRightSibling()
     {
@@ -728,7 +728,7 @@ trait NestedTree
     /**
      * Returns all final nodes without children.
      *
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function getLeaves()
     {
@@ -767,7 +767,7 @@ trait NestedTree
     /**
      * Sets the depth attribute
      *
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     public function setDepth()
     {
@@ -943,14 +943,14 @@ trait NestedTree
      *
      * @param mixed  $target The ID or model instance of the target node
      * @param string $position One of the following values: child, left, right
-     * @return \October\Rain\Database\Model
+     * @return \Winter\Storm\Database\Model
      */
     protected function moveTo($target, $position)
     {
         /*
          * Validate target
          */
-        if ($target instanceof \October\Rain\Database\Model) {
+        if ($target instanceof \Winter\Storm\Database\Model) {
             $target->reload();
         }
         else {
@@ -989,8 +989,8 @@ trait NestedTree
      * Executes the SQL query associated with the update of the indexes affected
      * by the move operation.
      *
-     * @param October\Rain\Database\Model $node The node to be moved
-     * @param October\Rain\Database\Model $target The target node to be moved relative to
+     * @param Winter\Storm\Database\Model $node The node to be moved
+     * @param Winter\Storm\Database\Model $target The target node to be moved relative to
      * @param string $position One of the following values: child, left, right
      * @return int
      */
@@ -1056,8 +1056,8 @@ trait NestedTree
     /**
      * Validates a proposed move and returns true if changes are needed.
      *
-     * @param October\Rain\Database\Model $node The node to be moved
-     * @param October\Rain\Database\Model $target The target node to be moved relative to
+     * @param Winter\Storm\Database\Model $node The node to be moved
+     * @param Winter\Storm\Database\Model $target The target node to be moved relative to
      * @param string $position One of the following values: child, left, right
      * @throws Exception If the validation fails
      * @return bool
@@ -1103,8 +1103,8 @@ trait NestedTree
     /**
      * Calculates the boundary.
      *
-     * @param October\Rain\Database\Model $node The node to be moved
-     * @param October\Rain\Database\Model $target The target node to be moved relative to
+     * @param Winter\Storm\Database\Model $node The node to be moved
+     * @param Winter\Storm\Database\Model $target The target node to be moved relative to
      * @param string $position One of the following values: child, left, right
      * @return int|null
      */
@@ -1133,8 +1133,8 @@ trait NestedTree
     /**
      * Calculates the other boundary.
      *
-     * @param October\Rain\Database\Model $node The node to be moved
-     * @param October\Rain\Database\Model $target The target node to be moved relative to
+     * @param Winter\Storm\Database\Model $node The node to be moved
+     * @param Winter\Storm\Database\Model $target The target node to be moved relative to
      * @param string $position One of the following values: child, left, right
      * @return int
      */
@@ -1148,8 +1148,8 @@ trait NestedTree
     /**
      * Calculates a sorted boundaries array.
      *
-     * @param October\Rain\Database\Model $node The node to be moved
-     * @param October\Rain\Database\Model $target The target node to be moved relative to
+     * @param Winter\Storm\Database\Model $node The node to be moved
+     * @param Winter\Storm\Database\Model $target The target node to be moved relative to
      * @param string $position One of the following values: child, left, right
      * @return array
      */

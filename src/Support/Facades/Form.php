@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static string open(array $options = [])
@@ -33,12 +33,12 @@ use October\Rain\Support\Facade;
  * @method static string old(string $name)
  * @method static string bool oldInputIsEmpty()
  * @method static \Illuminate\Session\Store getSessionStore()
- * @method static \October\Rain\Html\FormBuilder setSessionStore(\Illuminate\Session\Store $session)
+ * @method static \Winter\Storm\Html\FormBuilder setSessionStore(\Illuminate\Session\Store $session)
  * @method static string value(string $name, string $value = null)
  * @method static string sessionKey(string $sessionKey = null)
  * @method static string getSessionKey()
  *
- * @see \October\Rain\Html\FormBuilder
+ * @see \Winter\Storm\Html\FormBuilder
  */
 class Form extends Facade
 {

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Events;
+<?php namespace Winter\Storm\Events;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;

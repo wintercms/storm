@@ -1,13 +1,12 @@
-<?php namespace October\Rain\Assetic\Filter;
+<?php namespace Winter\Storm\Assetic\Filter;
 
-use October\Rain\Assetic\Asset\AssetInterface;
-use October\Rain\Assetic\Filter\FilterInterface;
+use Winter\Storm\Assetic\Asset\AssetInterface;
+use Winter\Storm\Assetic\Filter\FilterInterface;
 
 /**
  * Minify CSS Filter
  * Class used to compress stylesheet css files.
  *
- * @package october/parse
  * @author Alexey Bobkov, Samuel Georges
  */
 class StylesheetMinify implements FilterInterface
@@ -45,7 +44,7 @@ class StylesheetMinify implements FilterInterface
 
         // Remove space before , ; { } >
         $css = preg_replace('/(,|;|\{|}|>)/', '$1', $css);
-        
+
         // Remove newline before } >
         $css = preg_replace('/(\r\n|\r|\n)(})/', '$2', $css);
 

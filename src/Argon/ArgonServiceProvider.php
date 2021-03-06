@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Argon;
+<?php namespace Winter\Storm\Argon;
 
-use October\Rain\Support\ServiceProvider;
+use Winter\Storm\Support\ServiceProvider;
 
 class ArgonServiceProvider extends ServiceProvider
 {

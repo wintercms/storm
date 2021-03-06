@@ -1,9 +1,8 @@
-<?php namespace October\Rain\Parse;
+<?php namespace Winter\Storm\Parse;
 
 /**
  * Bracket parser
  *
- * @package october\parse
  * @author Alexey Bobkov, Samuel Georges
  */
 class Bracket

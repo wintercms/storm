@@ -1,4 +1,4 @@
-# Rain Assetic Resources
+# Storm Assetic Resources
 
 These libraries are useful when parsing assets with the Assetic combiner.
 
@@ -7,9 +7,9 @@ Assetic is an asset management framework for PHP.
 ``` php
 <?php
 
-use October\Rain\Assetic\Asset\AssetCollection;
-use October\Rain\Assetic\Asset\FileAsset;
-use October\Rain\Assetic\Asset\GlobAsset;
+use Winter\Storm\Assetic\Asset\AssetCollection;
+use Winter\Storm\Assetic\Asset\FileAsset;
+use Winter\Storm\Assetic\Asset\GlobAsset;
 
 $js = new AssetCollection(array(
     new GlobAsset('/path/to/js/*'),
@@ -45,11 +45,11 @@ Filters can be applied to manipulate assets.
 ``` php
 <?php
 
-use October\Rain\Assetic\Asset\AssetCollection;
-use October\Rain\Assetic\Asset\FileAsset;
-use October\Rain\Assetic\Asset\GlobAsset;
-use October\Rain\Assetic\Filter\LessFilter;
-use October\Rain\Assetic\Filter\Yui;
+use Winter\Storm\Assetic\Asset\AssetCollection;
+use Winter\Storm\Assetic\Asset\FileAsset;
+use Winter\Storm\Assetic\Asset\GlobAsset;
+use Winter\Storm\Assetic\Filter\LessFilter;
+use Winter\Storm\Assetic\Filter\Yui;
 
 $css = new AssetCollection(array(
     new FileAsset('/path/to/src/styles.less', array(new LessFilter())),
@@ -124,9 +124,9 @@ An asset manager is provided for organizing assets.
 ``` php
 <?php
 
-use October\Rain\Assetic\AssetManager;
-use October\Rain\Assetic\Asset\FileAsset;
-use October\Rain\Assetic\Asset\GlobAsset;
+use Winter\Storm\Assetic\AssetManager;
+use Winter\Storm\Assetic\Asset\FileAsset;
+use Winter\Storm\Assetic\Asset\GlobAsset;
 
 $am = new AssetManager();
 $am->set('jquery', new FileAsset('/path/to/jquery.js'));
@@ -138,9 +138,9 @@ The asset manager can also be used to reference assets to avoid duplication.
 ``` php
 <?php
 
-use October\Rain\Assetic\Asset\AssetCollection;
-use October\Rain\Assetic\Asset\AssetReference;
-use October\Rain\Assetic\Asset\FileAsset;
+use Winter\Storm\Assetic\Asset\AssetCollection;
+use Winter\Storm\Assetic\Asset\AssetReference;
+use Winter\Storm\Assetic\Asset\FileAsset;
 
 $am->set('my_plugin', new AssetCollection(array(
     new AssetReference($am, 'jquery'),
@@ -156,9 +156,9 @@ A filter manager is also provided for organizing filters.
 ``` php
 <?php
 
-use October\Rain\Assetic\FilterManager;
-use October\Rain\Assetic\Filter\Sass\SassFilter;
-use October\Rain\Assetic\Filter\Yui;
+use Winter\Storm\Assetic\FilterManager;
+use Winter\Storm\Assetic\Filter\Sass\SassFilter;
+use Winter\Storm\Assetic\Filter\Yui;
 
 $fm = new FilterManager();
 $fm->set('sass', new SassFilter('/path/to/parser/sass'));
@@ -174,7 +174,7 @@ factory, which will do most of the work for you.
 ``` php
 <?php
 
-use October\Rain\Assetic\Factory\AssetFactory;
+use Winter\Storm\Assetic\Factory\AssetFactory;
 
 $factory = new AssetFactory('/path/to/asset/directory/');
 $factory->setAssetManager($am);
@@ -209,7 +209,7 @@ so the files can be served statically.
 ``` php
 <?php
 
-use October\Rain\Assetic\AssetWriter;
+use Winter\Storm\Assetic\AssetWriter;
 
 $writer = new AssetWriter('/path/to/web');
 $writer->writeManagerAssets($am);
@@ -230,8 +230,8 @@ consideration if the applied filters support it.
 ``` php
 <?php
 
-use October\Rain\Assetic\Factory\AssetFactory;
-use October\Rain\Assetic\Factory\Worker\CacheBustingWorker;
+use Winter\Storm\Assetic\Factory\AssetFactory;
+use Winter\Storm\Assetic\Factory\Worker\CacheBustingWorker;
 
 $factory = new AssetFactory('/path/to/asset/directory/');
 $factory->setAssetManager($am);
@@ -258,10 +258,10 @@ A simple caching mechanism is provided to avoid unnecessary work.
 ``` php
 <?php
 
-use October\Rain\Assetic\Asset\AssetCache;
-use October\Rain\Assetic\Asset\FileAsset;
-use October\Rain\Assetic\Cache\FilesystemCache;
-use October\Rain\Assetic\Filter\Yui;
+use Winter\Storm\Assetic\Asset\AssetCache;
+use Winter\Storm\Assetic\Asset\FileAsset;
+use Winter\Storm\Assetic\Cache\FilesystemCache;
+use Winter\Storm\Assetic\Filter\Yui;
 
 $yui = new Yui\JsCompressorFilter('/path/to/yuicompressor.jar');
 $js = new AssetCache(
@@ -316,10 +316,10 @@ return 404 errors.
 ``` php
 <?php
 
-use October\Rain\Assetic\AssetWriter;
-use October\Rain\Assetic\Extension\Twig\TwigFormulaLoader;
-use October\Rain\Assetic\Extension\Twig\TwigResource;
-use October\Rain\Assetic\Factory\LazyAssetManager;
+use Winter\Storm\Assetic\AssetWriter;
+use Winter\Storm\Assetic\Extension\Twig\TwigFormulaLoader;
+use Winter\Storm\Assetic\Extension\Twig\TwigResource;
+use Winter\Storm\Assetic\Factory\LazyAssetManager;
 
 $am = new LazyAssetManager($factory);
 

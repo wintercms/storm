@@ -1,9 +1,9 @@
 <?php
 
-use October\Rain\Filesystem\PathResolver;
-use October\Rain\Support\Arr;
-use October\Rain\Support\Str;
-use October\Rain\Support\Collection;
+use Winter\Storm\Filesystem\PathResolver;
+use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Support\Collection;
 
 if (!function_exists('input')) {
     /**
@@ -28,8 +28,8 @@ if (!function_exists('input')) {
         /*
          * Array field name, eg: field[key][key2][key3]
          */
-        if (class_exists('October\Rain\Html\Helper')) {
-            $name = implode('.', October\Rain\Html\Helper::nameToArray($name));
+        if (class_exists('Winter\Storm\Html\Helper')) {
+            $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
         return Input::get($name, $default);
@@ -49,8 +49,8 @@ if (!function_exists('post')) {
         /*
          * Array field name, eg: field[key][key2][key3]
          */
-        if (class_exists('October\Rain\Html\Helper')) {
-            $name = implode('.', October\Rain\Html\Helper::nameToArray($name));
+        if (class_exists('Winter\Storm\Html\Helper')) {
+            $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
         return array_get(Request::post(), $name, $default);
@@ -70,8 +70,8 @@ if (!function_exists('get')) {
         /*
          * Array field name, eg: field[key][key2][key3]
          */
-        if (class_exists('October\Rain\Html\Helper')) {
-            $name = implode('.', October\Rain\Html\Helper::nameToArray($name));
+        if (class_exists('Winter\Storm\Html\Helper')) {
+            $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
         return array_get(Request::query(), $name, $default);
@@ -122,12 +122,12 @@ if (!function_exists('trace_sql')) {
      */
     function trace_sql()
     {
-        if (!defined('OCTOBER_NO_EVENT_LOGGING')) {
-            define('OCTOBER_NO_EVENT_LOGGING', 1);
+        if (!defined('WINTER_NO_EVENT_LOGGING')) {
+            define('WINTER_NO_EVENT_LOGGING', 1);
         }
 
-        if (!defined('OCTOBER_TRACING_SQL')) {
-            define('OCTOBER_TRACING_SQL', 1);
+        if (!defined('WINTER_TRACING_SQL')) {
+            define('WINTER_TRACING_SQL', 1);
         }
         else {
             return;
@@ -293,7 +293,7 @@ if (!function_exists('collect')) {
      * Create a collection from the given value.
      *
      * @param  mixed  $value
-     * @return \October\Rain\Support\Collection
+     * @return \Winter\Storm\Support\Collection
      */
     function collect($value = null)
     {

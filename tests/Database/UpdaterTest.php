@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Database\Updater;
+use Winter\Storm\Database\Updater;
 
 class UpdaterTest extends TestCase
 {

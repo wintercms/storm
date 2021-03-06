@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Support\Traits;
+<?php namespace Winter\Storm\Support\Traits;
 
 /**
  * Key Parser trait
@@ -6,7 +6,6 @@
  * Resolves key strings into namespace, group and item.
  * Example: namespace::group.item
  *
- * @package october\support
  * @author Alexey Bobkov, Samuel Georges
  */
 trait KeyParser

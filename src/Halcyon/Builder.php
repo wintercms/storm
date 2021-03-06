@@ -1,17 +1,16 @@
-<?php namespace October\Rain\Halcyon;
+<?php namespace Winter\Storm\Halcyon;
 
-use October\Rain\Halcyon\Datasource\DatasourceInterface;
-use October\Rain\Halcyon\Processors\Processor;
-use October\Rain\Halcyon\Exception\MissingFileNameException;
-use October\Rain\Halcyon\Exception\InvalidFileNameException;
-use October\Rain\Halcyon\Exception\InvalidExtensionException;
+use Winter\Storm\Halcyon\Datasource\DatasourceInterface;
+use Winter\Storm\Halcyon\Processors\Processor;
+use Winter\Storm\Halcyon\Exception\MissingFileNameException;
+use Winter\Storm\Halcyon\Exception\InvalidFileNameException;
+use Winter\Storm\Halcyon\Exception\InvalidExtensionException;
 use BadMethodCallException;
 use ApplicationException;
 
 /**
  * Query builder
  *
- * @package october\halcyon
  * @author Alexey Bobkov, Samuel Georges
  */
 class Builder
@@ -19,21 +18,21 @@ class Builder
     /**
      * The datasource instance.
      *
-     * @var \October\Rain\Halcyon\Datasource\DatasourceInterface
+     * @var \Winter\Storm\Halcyon\Datasource\DatasourceInterface
      */
     protected $datasource;
 
     /**
      * The model being queried.
      *
-     * @var \October\Rain\Halcyon\Model
+     * @var \Winter\Storm\Halcyon\Model
      */
     protected $model;
 
     /**
      * The datasource query post processor instance.
      *
-     * @var \October\Rain\Halcyon\Processors\Processor
+     * @var \Winter\Storm\Halcyon\Processors\Processor
      */
     protected $processor;
 
@@ -131,8 +130,8 @@ class Builder
     /**
      * Create a new query builder instance.
      *
-     * @param  \October\Rain\Halcyon\Datasource\DatasourceInterface  $datasource
-     * @param  \October\Rain\Halcyon\Processors\Processor  $processor
+     * @param  \Winter\Storm\Halcyon\Datasource\DatasourceInterface  $datasource
+     * @param  \Winter\Storm\Halcyon\Processors\Processor  $processor
      * @return void
      */
     public function __construct(DatasourceInterface $datasource, Processor $processor)
@@ -193,7 +192,7 @@ class Builder
      * Alias to set the "limit" value of the query.
      *
      * @param  int  $value
-     * @return \October\Rain\Halcyon\Builder|static
+     * @return \Winter\Storm\Halcyon\Builder|static
      */
     public function take($value)
     {
@@ -217,7 +216,7 @@ class Builder
      * Alias to set the "offset" value of the query.
      *
      * @param  int  $value
-     * @return \October\Rain\Halcyon\Builder|static
+     * @return \Winter\Storm\Halcyon\Builder|static
      */
     public function skip($value)
     {
@@ -277,7 +276,7 @@ class Builder
      * Execute the query as a fresh "select" statement.
      *
      * @param  array  $columns
-     * @return \October\Rain\Halcyon\Collection|static[]
+     * @return \Winter\Storm\Halcyon\Collection|static[]
      */
     public function getFresh($columns = ['*'])
     {
@@ -316,7 +315,7 @@ class Builder
      * Execute the query as a "select" statement.
      *
      * @param  array  $columns
-     * @return \October\Rain\Halcyon\Collection|static[]
+     * @return \Winter\Storm\Halcyon\Collection|static[]
      */
     public function get($columns = ['*'])
     {
@@ -429,7 +428,7 @@ class Builder
     /**
      * Set a model instance for the model being queried.
      *
-     * @param  \October\Rain\Halcyon\Model  $model
+     * @param  \Winter\Storm\Halcyon\Model  $model
      * @return $this
      */
     public function setModel(Model $model)
@@ -446,7 +445,7 @@ class Builder
     /**
      * Get the model instance being queried.
      *
-     * @return \October\Rain\Halcyon\Model
+     * @return \Winter\Storm\Halcyon\Model
      */
     public function getModel()
     {
@@ -457,7 +456,7 @@ class Builder
      * Get the hydrated models.
      *
      * @param  array  $results
-     * @return \October\Rain\Halcyon\Model[]
+     * @return \Winter\Storm\Halcyon\Model[]
      */
     public function getModels(array $results)
     {

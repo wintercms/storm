@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static string after(string $subject, string $search)
@@ -39,7 +39,7 @@ use October\Rain\Support\Facade;
  * @method static string getClassNamespace(string $name)
  * @method static int getPrecedingSymbols(string $string, string $symbol)
  *
- * @see \October\Rain\Support\Str
+ * @see \Winter\Storm\Support\Str
  */
 class Str extends Facade
 {

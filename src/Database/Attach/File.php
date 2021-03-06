@@ -1,11 +1,11 @@
-<?php namespace October\Rain\Database\Attach;
+<?php namespace Winter\Storm\Database\Attach;
 
 use Log;
 use Cache;
 use Storage;
 use File as FileHelper;
-use October\Rain\Network\Http;
-use October\Rain\Database\Model;
+use Winter\Storm\Network\Http;
+use Winter\Storm\Database\Model;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File as FileObj;
 use Exception;
@@ -13,12 +13,11 @@ use Exception;
 /**
  * File attachment model
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class File extends Model
 {
-    use \October\Rain\Database\Traits\Sortable;
+    use \Winter\Storm\Database\Traits\Sortable;
 
     /**
      * @var string The table associated with the model.
