@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Foundation\Http;
+<?php namespace Winter\Storm\Foundation\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -10,13 +10,13 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $bootstrappers = [
-        '\October\Rain\Foundation\Bootstrap\RegisterClassLoader',
-        '\October\Rain\Foundation\Bootstrap\LoadEnvironmentVariables',
-        '\October\Rain\Foundation\Bootstrap\LoadConfiguration',
-        '\October\Rain\Foundation\Bootstrap\LoadTranslation',
+        \Winter\Storm\Foundation\Bootstrap\RegisterClassLoader::class,
+        \Winter\Storm\Foundation\Bootstrap\LoadEnvironmentVariables::class,
+        \Winter\Storm\Foundation\Bootstrap\LoadConfiguration::class,
+        \Winter\Storm\Foundation\Bootstrap\LoadTranslation::class,
         \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
         \Illuminate\Foundation\Bootstrap\RegisterFacades::class,
-        '\October\Rain\Foundation\Bootstrap\RegisterOctober',
+        \Winter\Storm\Foundation\Bootstrap\RegisterWinter::class,
         \Illuminate\Foundation\Bootstrap\RegisterProviders::class,
         \Illuminate\Foundation\Bootstrap\BootProviders::class,
     ];
@@ -27,7 +27,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        '\October\Rain\Foundation\Http\Middleware\CheckForMaintenanceMode',
+        \Winter\Storm\Foundation\Http\Middleware\CheckForTrustedHost::class,
+        \Winter\Storm\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
     ];
 
     /**
@@ -51,7 +52,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \October\Rain\Cookie\Middleware\EncryptCookies::class,
+            \Winter\Storm\Cookie\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,

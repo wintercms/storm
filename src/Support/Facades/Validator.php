@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static \Illuminate\Contracts\Validation\Validator make(array $data, array $rules, array $messages = [], array $customAttributes = [])
@@ -8,7 +8,7 @@ use October\Rain\Support\Facade;
  * @method static void extendImplicit(string $rule, \Closure|string $extension, string $message = null)
  * @method static void replacer(string $rule, \Closure|string $replacer)
  *
- * @see \October\Rain\Validation\Factory
+ * @see \Winter\Storm\Validation\Factory
  */
 class Validator extends Facade
 {

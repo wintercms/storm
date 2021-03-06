@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Router;
+<?php namespace Winter\Storm\Router;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router as RouterBase;

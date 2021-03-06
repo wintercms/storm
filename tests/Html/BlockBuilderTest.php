@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Html\BlockBuilder;
+use Winter\Storm\Html\BlockBuilder;
 
 class BlockBuilderTest extends TestCase
 {

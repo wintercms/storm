@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Scaffold\GeneratorCommand;
+use Winter\Storm\Scaffold\GeneratorCommand;
 
 class ScaffoldBaseTestCommand extends GeneratorCommand
 {

@@ -1,18 +1,18 @@
-<?php namespace October\Rain\Database\Concerns;
+<?php namespace Winter\Storm\Database\Concerns;
 
-use October\Rain\Support\Str;
-use October\Rain\Database\Relations\BelongsTo;
-use October\Rain\Database\Relations\BelongsToMany;
-use October\Rain\Database\Relations\HasMany;
-use October\Rain\Database\Relations\HasOne;
-use October\Rain\Database\Relations\MorphMany;
-use October\Rain\Database\Relations\MorphToMany;
-use October\Rain\Database\Relations\MorphTo;
-use October\Rain\Database\Relations\MorphOne;
-use October\Rain\Database\Relations\AttachMany;
-use October\Rain\Database\Relations\AttachOne;
-use October\Rain\Database\Relations\HasManyThrough;
-use October\Rain\Database\Relations\HasOneThrough;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Database\Relations\BelongsTo;
+use Winter\Storm\Database\Relations\BelongsToMany;
+use Winter\Storm\Database\Relations\HasMany;
+use Winter\Storm\Database\Relations\HasOne;
+use Winter\Storm\Database\Relations\MorphMany;
+use Winter\Storm\Database\Relations\MorphToMany;
+use Winter\Storm\Database\Relations\MorphTo;
+use Winter\Storm\Database\Relations\MorphOne;
+use Winter\Storm\Database\Relations\AttachMany;
+use Winter\Storm\Database\Relations\AttachOne;
+use Winter\Storm\Database\Relations\HasManyThrough;
+use Winter\Storm\Database\Relations\HasOneThrough;
 use InvalidArgumentException;
 
 trait HasRelationships
@@ -89,14 +89,14 @@ trait HasRelationships
 
     /**
      * protected $attachOne = [
-     *     'picture' => ['October\Rain\Database\Attach\File', 'public' => false]
+     *     'picture' => ['Winter\Storm\Database\Attach\File', 'public' => false]
      * ];
      */
     public $attachOne = [];
 
     /**
      * protected $attachMany = [
-     *     'pictures' => ['October\Rain\Database\Attach\File', 'name'=> 'imageable']
+     *     'pictures' => ['Winter\Storm\Database\Attach\File', 'name'=> 'imageable']
      * ];
      */
     public $attachMany = [];
@@ -157,7 +157,36 @@ trait HasRelationships
     public function getRelationDefinition($name)
     {
         if (($type = $this->getRelationType($name)) !== null) {
-            return (array) $this->{$type}[$name] + $this->getRelationDefaults($type);
+            return (array) $this->getRelationTypeDefinition($type, $name) + $this->getRelationDefaults($type);
+        }
+    }
+
+    /**
+     * Returns all defined relations of given type.
+     * @param string $type Relation type
+     * @return array|string|null
+     */
+    public function getRelationTypeDefinitions($type)
+    {
+        if (in_array($type, static::$relationTypes)) {
+            return $this->{$type};
+        }
+
+        return [];
+    }
+
+    /**
+     * Returns the given relation definition.
+     * @param string $type Relation type
+     * @param string $name Relation name
+     * @return array
+     */
+    public function getRelationTypeDefinition($type, $name)
+    {
+        $definitions = $this->getRelationTypeDefinitions($type);
+
+        if (isset($definitions[$name])) {
+            return $definitions[$name];
         }
     }
 
@@ -170,7 +199,7 @@ trait HasRelationships
         $result = [];
 
         foreach (static::$relationTypes as $type) {
-            $result[$type] = $this->{$type};
+            $result[$type] = $this->getRelationTypeDefinitions($type);
 
             /*
              * Apply default values for the relation type
@@ -193,7 +222,7 @@ trait HasRelationships
     public function getRelationType($name)
     {
         foreach (static::$relationTypes as $type) {
-            if (isset($this->{$type}[$name])) {
+            if ($this->getRelationTypeDefinition($type, $name) !== null) {
                 return $type;
             }
         }
@@ -371,8 +400,8 @@ trait HasRelationships
 
     /**
      * Define a one-to-one relationship.
-     * This code is a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\HasOne
+     * This code is a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\HasOne
      */
     public function hasOne($related, $primaryKey = null, $localKey = null, $relationName = null)
     {
@@ -391,8 +420,8 @@ trait HasRelationships
 
     /**
      * Define a polymorphic one-to-one relationship.
-     * This code is a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\MorphOne
+     * This code is a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\MorphOne
      */
     public function morphOne($related, $name, $type = null, $id = null, $localKey = null, $relationName = null)
     {
@@ -415,7 +444,7 @@ trait HasRelationships
      * Define an inverse one-to-one or many relationship.
      * Overridden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the {@link
      * $relationsData} array.
-     * @return \October\Rain\Database\Relations\BelongsTo
+     * @return \Winter\Storm\Database\Relations\BelongsTo
      */
     public function belongsTo($related, $foreignKey = null, $parentKey = null, $relationName = null)
     {
@@ -437,7 +466,7 @@ trait HasRelationships
     /**
      * Define an polymorphic, inverse one-to-one or many relationship.
      * Overridden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the relation.
-     * @return \October\Rain\Database\Relations\BelongsTo
+     * @return \Winter\Storm\Database\Relations\BelongsTo
      */
     public function morphTo($name = null, $type = null, $id = null, $ownerKey = null)
     {
@@ -501,8 +530,8 @@ trait HasRelationships
 
     /**
      * Define a one-to-many relationship.
-     * This code is a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\HasMany
+     * This code is a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\HasMany
      */
     public function hasMany($related, $primaryKey = null, $localKey = null, $relationName = null)
     {
@@ -521,8 +550,8 @@ trait HasRelationships
 
     /**
      * Define a has-many-through relationship.
-     * This code is a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\HasManyThrough
+     * This code is a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\HasManyThrough
      */
     public function hasManyThrough($related, $through, $primaryKey = null, $throughKey = null, $localKey = null, $secondLocalKey = null, $relationName = null)
     {
@@ -547,8 +576,8 @@ trait HasRelationships
 
     /**
      * Define a has-one-through relationship.
-     * This code is a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\HasOneThrough
+     * This code is a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\HasOneThrough
      */
     public function hasOneThrough($related, $through, $primaryKey = null, $throughKey = null, $localKey = null, $secondLocalKey = null, $relationName = null)
     {
@@ -573,8 +602,8 @@ trait HasRelationships
 
     /**
      * Define a polymorphic one-to-many relationship.
-     * This code is a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\MorphMany
+     * This code is a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\MorphMany
      */
     public function morphMany($related, $name, $type = null, $id = null, $localKey = null, $relationName = null)
     {
@@ -595,8 +624,8 @@ trait HasRelationships
 
     /**
      * Define a many-to-many relationship.
-     * This code is almost a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\BelongsToMany
+     * This code is almost a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\BelongsToMany
      */
     public function belongsToMany($related, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $relationName = null)
     {
@@ -628,8 +657,8 @@ trait HasRelationships
 
     /**
      * Define a polymorphic many-to-many relationship.
-     * This code is almost a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\MorphToMany
+     * This code is almost a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\MorphToMany
      */
     public function morphToMany($related, $name, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $inverse = false, $relationName = null)
     {
@@ -661,8 +690,8 @@ trait HasRelationships
 
     /**
      * Define a polymorphic many-to-many inverse relationship.
-     * This code is almost a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\MorphToMany
+     * This code is almost a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\MorphToMany
      */
     public function morphedByMany($related, $name, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $relationName = null)
     {
@@ -689,8 +718,8 @@ trait HasRelationships
 
     /**
      * Define an attachment one-to-one relationship.
-     * This code is a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\MorphOne
+     * This code is a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\MorphOne
      */
     public function attachOne($related, $isPublic = true, $localKey = null, $relationName = null)
     {
@@ -704,15 +733,20 @@ trait HasRelationships
 
         $table = $instance->getTable();
 
+        $keyType = data_get(
+            $instance->getRelationDefinitions(),
+            'morphTo.attachment.keyType'
+        );
+
         $localKey = $localKey ?: $this->getKeyName();
 
-        return new AttachOne($instance->newQuery(), $this, $table.'.'.$type, $table.'.'.$id, $isPublic, $localKey, $relationName);
+        return new AttachOne($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey, $relationName, $keyType);
     }
 
     /**
      * Define an attachment one-to-many relationship.
-     * This code is a duplicate of Eloquent but uses a Rain relation class.
-     * @return \October\Rain\Database\Relations\MorphMany
+     * This code is a duplicate of Eloquent but uses a Storm relation class.
+     * @return \Winter\Storm\Database\Relations\MorphMany
      */
     public function attachMany($related, $isPublic = null, $localKey = null, $relationName = null)
     {
@@ -726,9 +760,14 @@ trait HasRelationships
 
         $table = $instance->getTable();
 
+        $keyType = data_get(
+            $instance->getRelationDefinitions(),
+            'morphTo.attachment.keyType'
+        );
+
         $localKey = $localKey ?: $this->getKeyName();
 
-        return new AttachMany($instance->newQuery(), $this, $table.'.'.$type, $table.'.'.$id, $isPublic, $localKey, $relationName);
+        return new AttachMany($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey, $relationName, $keyType);
     }
 
     /**

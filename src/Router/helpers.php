@@ -39,7 +39,7 @@ if (!function_exists('http_build_url')) {
     /**
      * Polyfill for `http_build_url` method provided by PECL HTTP extension.
      *
-     * @see \October\Rain\Router\UrlGenerator::buildUrl()
+     * @see \Winter\Storm\Router\UrlGenerator::buildUrl()
      * @param mixed $url
      * @param mixed $replace
      * @param mixed $flags
@@ -48,6 +48,6 @@ if (!function_exists('http_build_url')) {
      */
     function http_build_url($url, $replace = [], $flags = HTTP_URL_REPLACE, array &$newUrl = [])
     {
-        return \October\Rain\Router\UrlGenerator::buildUrl($url, $replace, $flags, $newUrl);
+        return \Winter\Storm\Router\UrlGenerator::buildUrl($url, $replace, $flags, $newUrl);
     }
 }

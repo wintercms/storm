@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static string current()
@@ -14,7 +14,7 @@ use October\Rain\Support\Facade;
  * @method static \Illuminate\Contracts\Routing\UrlGenerator setRootControllerNamespace(string $rootNamespace)
  * @method static string buildUrl(array $url, array $replace = [], $flags = HTTP_URL_REPLACE, array &$newUrl = [])
  *
- * @see \October\Rain\Router\UrlGenerator
+ * @see \Winter\Storm\Router\UrlGenerator
  */
 class Url extends Facade
 {

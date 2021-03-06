@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Config;
+<?php namespace Winter\Storm\Config;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Filesystem\Filesystem;
@@ -28,7 +28,7 @@ class ConfigServiceProvider extends ServiceProvider
     /**
      * Get the configuration loader instance.
      *
-     * @return \October\Rain\Config\LoaderInterface
+     * @return \Winter\Storm\Config\LoaderInterface
      */
     public function getConfigLoader()
     {

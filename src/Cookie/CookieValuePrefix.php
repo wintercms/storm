@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Cookie;
+<?php namespace Winter\Storm\Cookie;
 
 /**
  * Helper class to prefix, unprefix, and verify cookie values

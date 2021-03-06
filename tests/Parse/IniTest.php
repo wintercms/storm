@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Parse\Ini as IniParser;
+use Winter\Storm\Parse\Ini as IniParser;
 
 class IniTest extends TestCase
 {

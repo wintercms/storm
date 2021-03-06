@@ -1,8 +1,8 @@
-<?php namespace October\Rain\Database\Behaviors;
+<?php namespace Winter\Storm\Database\Behaviors;
 
 use Exception;
-use October\Rain\Database\SortableScope;
-use October\Rain\Extension\ExtensionBase;
+use Winter\Storm\Database\SortableScope;
+use Winter\Storm\Extension\ExtensionBase;
 
 /**
  * Sortable model behavior
@@ -13,7 +13,7 @@ use October\Rain\Extension\ExtensionBase;
  *
  * In the model class definition:
  *
- *   public $implement = ['\October\Rain\Database\Traits\Sortable'];
+ *   public $implement = ['\Winter\Storm\Database\Traits\Sortable'];
  *
  * To set orders:
  *

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,7 +35,7 @@ class HasOneThrough extends HasOneThroughBase
     {
         $uses = class_uses_recursive(get_class($this->parent));
 
-        return in_array('October\Rain\Database\Traits\SoftDelete', $uses) ||
+        return in_array('Winter\Storm\Database\Traits\SoftDelete', $uses) ||
             in_array('Illuminate\Database\Eloquent\SoftDeletes', $uses);
     }
 }

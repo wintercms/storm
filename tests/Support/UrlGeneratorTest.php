@@ -1,43 +1,43 @@
 <?php
-use October\Rain\Router\UrlGenerator;
+use Winter\Storm\Router\UrlGenerator;
 
 class UrlGeneratorTest extends TestCase
 {
     public function testSimpleUrl()
     {
-        $this->assertEquals('https://octobercms.com/', UrlGenerator::buildUrl([
+        $this->assertEquals('https://wintercms.com/', UrlGenerator::buildUrl([
             'scheme' => 'https',
-            'host' => 'octobercms.com',
+            'host' => 'wintercms.com',
             'path' => '/'
         ]));
 
-        $this->assertEquals('https://octobercms.com/', http_build_url([
+        $this->assertEquals('https://wintercms.com/', http_build_url([
             'scheme' => 'https',
-            'host' => 'octobercms.com',
+            'host' => 'wintercms.com',
             'path' => '/'
         ]));
     }
 
     public function testComplexUrl()
     {
-        $this->assertEquals('https://user:pass@github.com:80/octobercms/october?test=1&test=2#comment1', UrlGenerator::buildUrl([
+        $this->assertEquals('https://user:pass@github.com:80/wintercms/winter?test=1&test=2#comment1', UrlGenerator::buildUrl([
             'scheme' => 'https',
             'user' => 'user',
             'pass' => 'pass',
             'host' => 'github.com',
             'port' => 80,
-            'path' => '/octobercms/october',
+            'path' => '/wintercms/winter',
             'query' => 'test=1&test=2',
             'fragment' => 'comment1'
         ]));
 
-        $this->assertEquals('https://user:pass@github.com:80/octobercms/october?test=1&test=2#comment1', http_build_url([
+        $this->assertEquals('https://user:pass@github.com:80/wintercms/winter?test=1&test=2#comment1', http_build_url([
             'scheme' => 'https',
             'user' => 'user',
             'pass' => 'pass',
             'host' => 'github.com',
             'port' => 80,
-            'path' => '/octobercms/october',
+            'path' => '/wintercms/winter',
             'query' => 'test=1&test=2',
             'fragment' => 'comment1'
         ]));
@@ -45,17 +45,17 @@ class UrlGeneratorTest extends TestCase
 
     public function testReplacements()
     {
-        $this->assertEquals('https://octobercms.com', UrlGenerator::buildUrl([
+        $this->assertEquals('https://wintercms.com', UrlGenerator::buildUrl([
             'scheme' => 'https',
             'host' => 'wordpress.org'
         ], [
             'scheme' => 'https',
-            'host' => 'octobercms.com'
+            'host' => 'wintercms.com'
         ]));
 
-        $this->assertEquals('https://octobercms.com:80/changelog', UrlGenerator::buildUrl([
+        $this->assertEquals('https://wintercms.com:80/changelog', UrlGenerator::buildUrl([
             'scheme' => 'https',
-            'host' => 'octobercms.com'
+            'host' => 'wintercms.com'
         ], [
             'port' => 80,
             'path' => '/changelog'
@@ -67,7 +67,7 @@ class UrlGeneratorTest extends TestCase
             'pass' => 'pass',
             'host' => 'github.com',
             'port' => 80,
-            'path' => '/octobercms/october',
+            'path' => '/wintercms/winter',
             'query' => 'test=1&test=2',
             'fragment' => 'comment1'
         ], [
@@ -84,30 +84,30 @@ class UrlGeneratorTest extends TestCase
 
     public function testJoinSegments()
     {
-        $this->assertEquals('https://octobercms.com/plugins/rainlab-pages', UrlGenerator::buildUrl([
+        $this->assertEquals('https://wintercms.com/plugins/winter-pages', UrlGenerator::buildUrl([
             'scheme' => 'https',
-            'host' => 'octobercms.com',
+            'host' => 'wintercms.com',
             'path' => '/plugins'
         ], [
-            'path' => '/rainlab-pages'
+            'path' => '/winter-pages'
         ], HTTP_URL_JOIN_PATH));
 
-        $this->assertEquals('https://octobercms.com/?query1=1&query2=2&query3=3', UrlGenerator::buildUrl([
+        $this->assertEquals('https://wintercms.com/?query1=1&query2=2&query3=3', UrlGenerator::buildUrl([
             'scheme' => 'https',
-            'host' => 'octobercms.com',
+            'host' => 'wintercms.com',
             'path' => '/',
             'query' => 'query1=1&query2=2'
         ], [
             'query' => 'query3=3'
         ], HTTP_URL_JOIN_QUERY));
 
-        $this->assertEquals('https://octobercms.com/plugins/rainlab-pages?query1=1&query2=2&query3=3', UrlGenerator::buildUrl([
+        $this->assertEquals('https://wintercms.com/plugins/winter-pages?query1=1&query2=2&query3=3', UrlGenerator::buildUrl([
             'scheme' => 'https',
-            'host' => 'octobercms.com',
+            'host' => 'wintercms.com',
             'path' => '/plugins',
             'query' => 'query1=1&query2=2'
         ], [
-            'path' => '/rainlab-pages',
+            'path' => '/winter-pages',
             'query' => 'query3=3'
         ], HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY));
     }
@@ -120,13 +120,13 @@ class UrlGeneratorTest extends TestCase
             'pass' => 'pass',
             'host' => 'github.com',
             'port' => 80,
-            'path' => '/octobercms/october',
+            'path' => '/wintercms/winter',
             'query' => 'test=1&test=2',
             'fragment' => 'comment1'
         ];
 
         $this->assertEquals(
-            'https://github.com:80/octobercms/october?test=1&test=2#comment1',
+            'https://github.com:80/wintercms/winter?test=1&test=2#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_AUTH)
         );
 
@@ -136,17 +136,17 @@ class UrlGeneratorTest extends TestCase
         );
 
         $this->assertEquals(
-            'https://github.com:80/octobercms/october?test=1&test=2#comment1',
+            'https://github.com:80/wintercms/winter?test=1&test=2#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_USER)
         );
 
         $this->assertEquals(
-            'https://user@github.com:80/octobercms/october?test=1&test=2#comment1',
+            'https://user@github.com:80/wintercms/winter?test=1&test=2#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_PASS)
         );
 
         $this->assertEquals(
-            'https://user:pass@github.com/octobercms/october?test=1&test=2#comment1',
+            'https://user:pass@github.com/wintercms/winter?test=1&test=2#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_PORT)
         );
 
@@ -156,17 +156,17 @@ class UrlGeneratorTest extends TestCase
         );
 
         $this->assertEquals(
-            'https://user:pass@github.com:80/octobercms/october#comment1',
+            'https://user:pass@github.com:80/wintercms/winter#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_QUERY)
         );
 
         $this->assertEquals(
-            'https://user:pass@github.com:80/octobercms/october?test=1&test=2',
+            'https://user:pass@github.com:80/wintercms/winter?test=1&test=2',
             http_build_url($segments, [], HTTP_URL_STRIP_FRAGMENT)
         );
 
         $this->assertEquals(
-            'https://user:pass@github.com/octobercms/october',
+            'https://user:pass@github.com/wintercms/winter',
             http_build_url($segments, [], HTTP_URL_STRIP_PORT | HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT)
         );
     }

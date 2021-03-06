@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Factory\Loader;
+<?php namespace Winter\Storm\Assetic\Factory\Loader;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.

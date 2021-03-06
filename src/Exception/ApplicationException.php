@@ -1,13 +1,12 @@
-<?php namespace October\Rain\Exception;
+<?php namespace Winter\Storm\Exception;
 
 use Exception;
-use October\Rain\Html\HtmlBuilder;
+use Winter\Storm\Html\HtmlBuilder;
 
 /**
  * This class represents an application exception.
  * Application exceptions are not logged in the error log.
  *
- * @package october\exception
  * @author Alexey Bobkov, Samuel Georges, Luke Towers
  */
 class ApplicationException extends ExceptionBase

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Translation;
+<?php namespace Winter\Storm\Translation;
 
 use Illuminate\Support\ServiceProvider;
 

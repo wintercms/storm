@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Router;
+<?php namespace Winter\Storm\Router;
 
 use Illuminate\Routing\RoutingServiceProvider as RoutingServiceProviderBase;
 

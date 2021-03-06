@@ -1,10 +1,10 @@
-<?php namespace October\Rain\Validation;
+<?php namespace Winter\Storm\Validation;
 
 use Illuminate\Validation\Validator as BaseValidator;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 
 /**
- * October CMS wrapper for the Laravel Validator class.
+ * Winter CMS wrapper for the Laravel Validator class.
  *
  * The only difference between this and the BaseValidator is that it resets the email validation rule to use the
  * `filter` method by default.
@@ -13,7 +13,7 @@ use Illuminate\Contracts\Validation\Validator as ValidatorContract;
  */
 class Validator extends BaseValidator implements ValidatorContract
 {
-    use \October\Rain\Validation\Concerns\ValidatesEmail;
+    use \Winter\Storm\Validation\Concerns\ValidatesEmail;
     use Concerns\FormatsMessages;
 
     /**

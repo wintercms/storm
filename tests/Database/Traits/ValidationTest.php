@@ -2,7 +2,7 @@
 
 class ValidationTest extends TestCase
 {
-    use \October\Rain\Database\Traits\Validation;
+    use \Winter\Storm\Database\Traits\Validation;
 
     public $exists;
 
@@ -70,7 +70,7 @@ class ValidationTest extends TestCase
             'email' => ['unique:users,email_address,NULL,id,account_id,1']
         ], $this->processValidationRules($rules));
     }
-    
+
     protected function getConnectionName()
     {
         return 'mysql';
@@ -93,7 +93,7 @@ class ValidationTest extends TestCase
 
     public function testArrayFieldNames()
     {
-        $mock = $this->getMockForTrait('October\Rain\Database\Traits\Validation');
+        $mock = $this->getMockForTrait('Winter\Storm\Database\Traits\Validation');
 
         $rules = [
             'field' => 'required',
