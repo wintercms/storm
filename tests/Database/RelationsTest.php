@@ -74,29 +74,6 @@ class RelationsTest extends DbTestCase
         $this->assertEquals(1, $post->terms()->count());
     }
 
-    public function testBelongsToManySyncLabels()
-    {
-        $post = $this->seeded['posts'][0];
-
-        $this->assertEquals(1, $post->labels()->count());
-        $this->assertEquals(2, $post->tags()->count());
-
-        $post->labels()->sync([
-            $this->seeded['labels'][0]->id,
-            $this->seeded['labels'][1]->id,
-        ]);
-        $post->tags()->detach();
-
-        $this->assertEquals(2, $post->labels()->count());
-        $this->assertEquals(0, $post->tags()->count());
-        $this->assertEquals([
-            $this->seeded['labels'][0]->id,
-            $this->seeded['labels'][1]->id,
-        ], $post->labels()->pluck('id')->toArray());
-
-        $this->assertEquals(2, $post->terms()->count());
-    }
-
     public function testBelongsToManyDetach()
     {
         $post = $this->seeded['posts'][0];
@@ -126,47 +103,6 @@ class RelationsTest extends DbTestCase
         $category = $this->seeded['categories'][0];
         $post = $this->seeded['posts'][0];
 
-        $category->posts()->detach();
-        $post->reloadRelations();
-
-        $this->assertEquals(0, $category->posts()->count());
-        $this->assertEquals(0, $post->categories()->count());
-    }
-
-    public function testBelongsToManyDetachAllWithScopeUnpublished()
-    {
-        $category = $this->seeded['categories'][1];
-        $post = $this->seeded['posts'][1];
-
-        $this->assertEquals(0, $category->posts()->count());
-        $this->assertEquals(1, $post->categories()->count());
-
-        // Post won't detach because it doesn't pass the scope ...
-        $category->posts()->detach();
-        $post->reloadRelations();
-
-        $this->assertEquals(0, $category->posts()->count());
-        $this->assertEquals(1, $post->categories()->count());
-
-        // ... even when its ID is directly used.
-        $category->posts()->detach([$post->id]);
-        $post->reloadRelations();
-
-        $this->assertEquals(0, $category->posts()->count());
-        $this->assertEquals(1, $post->categories()->count());
-
-        // Publish the post
-        $post->published = true;
-        $post->published_at = Carbon::now()->sub('minutes', 10);
-        $post->save();
-
-        $post->reloadRelations();
-        $category->reloadRelations();
-
-        $this->assertEquals(1, $category->posts()->count());
-        $this->assertEquals(1, $post->categories()->count());
-
-        // Detach post
         $category->posts()->detach();
         $post->reloadRelations();
 
