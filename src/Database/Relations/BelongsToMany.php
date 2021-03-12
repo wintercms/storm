@@ -172,7 +172,7 @@ class BelongsToMany extends BelongsToManyBase
     {
         $attachedIdList = $this->parseIds($ids);
         if (empty($attachedIdList)) {
-            $attachedIdList = $this->allRelatedIds()->all();
+            $attachedIdList = $this->newPivotQuery()->lists($this->relatedPivotKey);
         }
 
         /**
