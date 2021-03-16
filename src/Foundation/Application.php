@@ -425,7 +425,7 @@ class Application extends ApplicationBase
         ]);
 
         // Reset package manifest
-        $this->make(PackageManifest::class)->manifest = null;
+        $this->make(PackageManifest::class)->manifest = [];
     }
 
 
