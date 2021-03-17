@@ -1,13 +1,12 @@
-<?php namespace October\Rain\Parse;
+<?php namespace Winter\Storm\Parse;
 
 /**
- * Initialization (INI) configuration parser that uses "October flavoured INI",
+ * Initialization (INI) configuration parser that uses "Winter flavoured INI",
  * with the following improvements:
  *
  * - Parsing supports infinite array nesting
  * - Ability to render INI from a PHP array
  *
- * @package october\parse
  * @author Alexey Bobkov, Samuel Georges
  */
 class Ini

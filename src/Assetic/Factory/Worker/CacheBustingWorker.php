@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Factory\Worker;
+<?php namespace Winter\Storm\Assetic\Factory\Worker;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Asset\AssetCollectionInterface;
-use October\Rain\Assetic\Asset\AssetInterface;
-use October\Rain\Assetic\Factory\AssetFactory;
+use Winter\Storm\Assetic\Asset\AssetCollectionInterface;
+use Winter\Storm\Assetic\Asset\AssetInterface;
+use Winter\Storm\Assetic\Factory\AssetFactory;
 
 /**
  * Adds cache busting code

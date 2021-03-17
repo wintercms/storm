@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Argon;
+<?php namespace Winter\Storm\Argon;
 
 use Carbon\Carbon as DateBase;
 

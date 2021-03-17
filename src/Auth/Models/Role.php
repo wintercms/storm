@@ -1,14 +1,14 @@
-<?php namespace October\Rain\Auth\Models;
+<?php namespace Winter\Storm\Auth\Models;
 
 use InvalidArgumentException;
-use October\Rain\Database\Model;
+use Winter\Storm\Database\Model;
 
 /**
  * Role model
  */
 class Role extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use \Winter\Storm\Database\Traits\Validation;
 
     /**
      * @var string The table associated with the model.

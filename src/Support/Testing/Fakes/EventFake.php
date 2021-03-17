@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Support\Testing\Fakes;
+<?php namespace Winter\Storm\Support\Testing\Fakes;
 
-use October\Rain\Events\Dispatcher;
-use October\Rain\Support\Arr;
+use Winter\Storm\Events\Dispatcher;
+use Winter\Storm\Support\Arr;
 
 class EventFake extends \Illuminate\Support\Testing\Fakes\EventFake
 {

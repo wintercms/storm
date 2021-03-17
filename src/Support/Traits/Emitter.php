@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Support\Traits;
+<?php namespace Winter\Storm\Support\Traits;
 
 use Closure;
 use Opis\Closure\SerializableClosure as OpisSerializableClosure;
@@ -6,7 +6,6 @@ use Opis\Closure\SerializableClosure as OpisSerializableClosure;
 /**
  * Adds event related features to any class.
  *
- * @package october\support
  * @author Alexey Bobkov, Samuel Georges
  */
 trait Emitter

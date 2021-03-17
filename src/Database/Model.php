@@ -1,9 +1,9 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 use Closure;
-use October\Rain\Support\Arr;
-use October\Rain\Support\Str;
-use October\Rain\Argon\Argon;
+use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Argon\Argon;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
 use DateTimeInterface;
@@ -14,16 +14,15 @@ use Exception;
  *
  * Extends Eloquent with added extendability and deferred bindings.
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class Model extends EloquentModel
 {
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
-    use \October\Rain\Support\Traits\Emitter;
-    use \October\Rain\Extension\ExtendableTrait;
-    use \October\Rain\Database\Traits\DeferredBinding;
+    use \Winter\Storm\Support\Traits\Emitter;
+    use \Winter\Storm\Extension\ExtendableTrait;
+    use \Winter\Storm\Database\Traits\DeferredBinding;
 
     /**
      * @var array Behaviors implemented by this model.
@@ -177,11 +176,11 @@ class Model extends EloquentModel
             /**
              * @event model.afterBoot
              * Called after the model is booted
-             * > **Note:** also triggered in October\Rain\Halcyon\Model
+             * > **Note:** also triggered in Winter\Storm\Halcyon\Model
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.afterBoot', function () use (\October\Rain\Database\Model $model) {
+             *     $model->bindEvent('model.afterBoot', function () use (\Winter\Storm\Database\Model $model) {
              *         \Log::info(get_class($model) . ' has booted');
              *     });
              *
@@ -218,11 +217,11 @@ class Model extends EloquentModel
         /**
          * @event model.beforeCreate
          * Called before the model is created
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeCreate', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.beforeCreate', function () use (\Winter\Storm\Database\Model $model) {
          *         if (!$model->isValid()) {
          *             throw new \Exception("Invalid Model!");
          *         }
@@ -239,11 +238,11 @@ class Model extends EloquentModel
         /**
          * @event model.afterCreate
          * Called after the model is created
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterCreate', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.afterCreate', function () use (\Winter\Storm\Database\Model $model) {
          *         \Log::info("{$model->name} was created!");
          *     });
          *
@@ -258,11 +257,11 @@ class Model extends EloquentModel
         /**
          * @event model.beforeUpdate
          * Called before the model is updated
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeUpdate', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.beforeUpdate', function () use (\Winter\Storm\Database\Model $model) {
          *         if (!$model->isValid()) {
          *             throw new \Exception("Invalid Model!");
          *         }
@@ -279,11 +278,11 @@ class Model extends EloquentModel
         /**
          * @event model.afterUpdate
          * Called after the model is updated
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterUpdate', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.afterUpdate', function () use (\Winter\Storm\Database\Model $model) {
          *         if ($model->title !== $model->original['title']) {
          *             \Log::info("{$model->name} updated its title!");
          *         }
@@ -301,11 +300,11 @@ class Model extends EloquentModel
          * @event model.beforeSave
          * Called before the model is saved
          * > **Note:** This is called both when creating and updating
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeSave', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.beforeSave', function () use (\Winter\Storm\Database\Model $model) {
          *         if (!$model->isValid()) {
          *             throw new \Exception("Invalid Model!");
          *         }
@@ -323,11 +322,11 @@ class Model extends EloquentModel
          * @event model.afterSave
          * Called after the model is saved
          * > **Note:** This is called both when creating and updating
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterSave', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.afterSave', function () use (\Winter\Storm\Database\Model $model) {
          *         if ($model->title !== $model->original['title']) {
          *             \Log::info("{$model->name} updated its title!");
          *         }
@@ -344,11 +343,11 @@ class Model extends EloquentModel
         /**
          * @event model.beforeDelete
          * Called before the model is deleted
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeDelete', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.beforeDelete', function () use (\Winter\Storm\Database\Model $model) {
          *         if (!$model->isAllowedToBeDeleted()) {
          *             throw new \Exception("You cannot delete me!");
          *         }
@@ -365,11 +364,11 @@ class Model extends EloquentModel
         /**
          * @event model.afterDelete
          * Called after the model is deleted
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterDelete', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.afterDelete', function () use (\Winter\Storm\Database\Model $model) {
          *         \Log::info("{$model->name} was deleted");
          *     });
          *
@@ -384,11 +383,11 @@ class Model extends EloquentModel
         /**
          * @event model.beforeFetch
          * Called before the model is fetched
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeFetch', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.beforeFetch', function () use (\Winter\Storm\Database\Model $model) {
          *         if (!\Auth::getUser()->hasAccess('fetch.this.model')) {
          *             throw new \Exception("You shall not pass!");
          *         }
@@ -405,11 +404,11 @@ class Model extends EloquentModel
         /**
          * @event model.afterFetch
          * Called after the model is fetched
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterFetch', function () use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.afterFetch', function () use (\Winter\Storm\Database\Model $model) {
          *         \Log::info("{$model->name} was retrieved from the database");
          *     });
          *
@@ -525,7 +524,7 @@ class Model extends EloquentModel
     /**
      * Get a fresh timestamp for the model.
      *
-     * @return \October\Rain\Argon\Argon
+     * @return \Winter\Storm\Argon\Argon
      */
     public function freshTimestamp()
     {
@@ -615,8 +614,8 @@ class Model extends EloquentModel
     /**
      * Create a new Eloquent query builder for the model.
      *
-     * @param  \October\Rain\Database\QueryBuilder $query
-     * @return \October\Rain\Database\Builder|static
+     * @param  \Winter\Storm\Database\QueryBuilder $query
+     * @return \Winter\Storm\Database\Builder|static
      */
     public function newEloquentBuilder($query)
     {
@@ -626,7 +625,7 @@ class Model extends EloquentModel
     /**
      * Get a new query builder instance for the connection.
      *
-     * @return \October\Rain\Database\QueryBuilder
+     * @return \Winter\Storm\Database\QueryBuilder
      */
     protected function newBaseQueryBuilder()
     {
@@ -647,7 +646,7 @@ class Model extends EloquentModel
      * Create a new Model Collection instance.
      *
      * @param  array  $models
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function newCollection(array $models = [])
     {
@@ -715,12 +714,12 @@ class Model extends EloquentModel
 
     /**
      * Create a generic pivot model instance.
-     * @param  \October\Rain\Database\Model  $parent
+     * @param  \Winter\Storm\Database\Model  $parent
      * @param  array  $attributes
      * @param  string  $table
      * @param  bool  $exists
      * @param  string|null  $using
-     * @return \October\Rain\Database\Pivot
+     * @return \Winter\Storm\Database\Pivot
      */
     public function newPivot(EloquentModel $parent, array $attributes, $table, $exists, $using = null)
     {
@@ -731,12 +730,12 @@ class Model extends EloquentModel
 
     /**
      * Create a pivot model instance specific to a relation.
-     * @param  \October\Rain\Database\Model  $parent
+     * @param  \Winter\Storm\Database\Model  $parent
      * @param  string  $relationName
      * @param  array   $attributes
      * @param  string  $table
      * @param  bool    $exists
-     * @return \October\Rain\Database\Pivot
+     * @return \Winter\Storm\Database\Pivot
      */
     public function newRelationPivot($relationName, $parent, $attributes, $table, $exists)
     {
@@ -762,11 +761,11 @@ class Model extends EloquentModel
         /**
          * @event model.saveInternal
          * Called before the model is saved
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.saveInternal', function ((array) $attributes, (array) $options) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.saveInternal', function ((array) $attributes, (array) $options) use (\Winter\Storm\Database\Model $model) {
          *         // Prevent anything from saving ever!
          *         return false;
          *     });
@@ -928,7 +927,9 @@ class Model extends EloquentModel
              */
             if ($type == 'belongsToMany') {
                 foreach ($relations as $name => $options) {
-                    $this->{$name}()->detach();
+                    if (Arr::get($options, 'detach', true)) {
+                        $this->{$name}()->detach();
+                    }
                 }
             }
         }
@@ -1023,11 +1024,11 @@ class Model extends EloquentModel
         /**
          * @event model.beforeGetAttribute
          * Called before the model attribute is retrieved (only when the attribute exists in `$model->attributes` or has a get mutator method defined; i.e. `getFooAttribute()`)
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeGetAttribute', function ((string) $key) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.beforeGetAttribute', function ((string) $key) use (\Winter\Storm\Database\Model $model) {
          *         if ($key === 'not-for-you-to-look-at') {
          *             return 'you are not allowed here';
          *         }
@@ -1054,11 +1055,11 @@ class Model extends EloquentModel
         /**
          * @event model.getAttribute
          * Called after the model attribute is retrieved (only when the attribute exists in `$model->attributes` or has a get mutator method defined; i.e. `getFooAttribute()`)
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.getAttribute', function ((string) $key, $value) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.getAttribute', function ((string) $key, $value) use (\Winter\Storm\Database\Model $model) {
          *         if ($key === 'not-for-you-to-look-at') {
          *             return "Totally not $value";
          *         }
@@ -1215,11 +1216,11 @@ class Model extends EloquentModel
         /**
          * @event model.beforeSetAttribute
          * Called before the model attribute is set
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeSetAttribute', function ((string) $key, $value) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.beforeSetAttribute', function ((string) $key, $value) use (\Winter\Storm\Database\Model $model) {
          *         if ($key === 'not-for-you-to-touch') {
          *             return '$value has been touched! The humanity!';
          *         }
@@ -1249,11 +1250,11 @@ class Model extends EloquentModel
         /**
          * @event model.setAttribute
          * Called after the model attribute is set
-         * > **Note:** also triggered in October\Rain\Halcyon\Model
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.setAttribute', function ((string) $key, $value) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.setAttribute', function ((string) $key, $value) use (\Winter\Storm\Database\Model $model) {
          *         if ($key === 'not-for-you-to-touch') {
          *             \Log::info("{$key} has been touched and set to {$value}!")
          *         }

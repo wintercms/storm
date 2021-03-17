@@ -1,10 +1,9 @@
-<?php namespace October\Rain\Mail;
+<?php namespace Winter\Storm\Mail;
 
 /**
  * This class parses Mail templates.
  * Returns the structured file information.
  *
- * @package october\mail
  * @author Alexey Bobkov, Samuel Georges
  */
 class MailParser

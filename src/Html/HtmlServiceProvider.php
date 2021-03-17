@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Html;
+<?php namespace Winter\Storm\Html;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Support\DeferrableProvider;

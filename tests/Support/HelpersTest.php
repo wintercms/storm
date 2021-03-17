@@ -1,7 +1,7 @@
 <?php
 
-use October\Rain\Foundation\Application;
-use October\Rain\Filesystem\PathResolver;
+use Winter\Storm\Foundation\Application;
+use Winter\Storm\Filesystem\PathResolver;
 
 class HelpersTest extends TestCase
 {
@@ -12,7 +12,7 @@ class HelpersTest extends TestCase
 
         // Mock Config facade
         if (!class_exists('Config')) {
-            class_alias('October\Rain\Support\Facades\Config', 'Config');
+            class_alias('Winter\Storm\Support\Facades\Config', 'Config');
         }
 
         Config::shouldReceive('get')->andreturnUsing(function ($key) {
@@ -24,7 +24,7 @@ class HelpersTest extends TestCase
             }
         });
     }
-    
+
     public function testConfigPath()
     {
         if (PHP_OS_FAMILY === 'Windows') {

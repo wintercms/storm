@@ -1,8 +1,8 @@
 <?php namespace {{studly_author}}\{{studly_plugin}}\Updates;
 
 use Schema;
-use October\Rain\Database\Schema\Blueprint;
-use October\Rain\Database\Updates\Migration;
+use Winter\Storm\Database\Schema\Blueprint;
+use Winter\Storm\Database\Updates\Migration;
 
 class Create{{studly_plural_name}}Table extends Migration
 {

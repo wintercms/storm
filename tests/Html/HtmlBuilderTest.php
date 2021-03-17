@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Html\HtmlBuilder;
+use Winter\Storm\Html\HtmlBuilder;
 
 class HtmlBuilderTest extends TestCase
 {

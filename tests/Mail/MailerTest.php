@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Mail\Mailer;
+use Winter\Storm\Mail\Mailer;
 
 class MailerTest extends TestCase
 {

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Factory\Loader;
+<?php namespace Winter\Storm\Assetic\Factory\Loader;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Factory\AssetFactory;
-use October\Rain\Assetic\Factory\Resource\ResourceInterface;
-use October\Rain\Assetic\Util\FilesystemUtils;
+use Winter\Storm\Assetic\Factory\AssetFactory;
+use Winter\Storm\Assetic\Factory\Resource\ResourceInterface;
+use Winter\Storm\Assetic\Util\FilesystemUtils;
 
 /**
  * Loads asset formulae from PHP files.

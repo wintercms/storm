@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -89,6 +89,18 @@ class BelongsToMany extends BelongsToManyBase
     }
 
     /**
+     * Override sync() method of BelongToMany relation in order to flush the query cache.
+     * @param array $ids
+     * @param bool $detaching
+     * @return array
+     */
+    public function sync($ids, $detaching = true)
+    {
+        parent::sync($ids, $detaching);
+        $this->flushDuplicateCache();
+    }
+
+    /**
      * Create a new instance of this related model with deferred binding support.
      */
     public function create(array $attributes = [], array $pivotData = [], $sessionKey = null)
@@ -118,7 +130,7 @@ class BelongsToMany extends BelongsToManyBase
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.beforeAttach', function (string $relationName, array $attachedIdList, array $insertData) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.relation.beforeAttach', function (string $relationName, array $attachedIdList, array $insertData) use (\Winter\Storm\Database\Model $model) {
          *         if (!$model->isRelationValid($attachedIdList)) {
          *             throw new \Exception("Invalid relation!");
          *             return false;
@@ -141,7 +153,7 @@ class BelongsToMany extends BelongsToManyBase
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.afterAttach', function (string $relationName, array $attachedIdList, array $insertData) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.relation.afterAttach', function (string $relationName, array $attachedIdList, array $insertData) use (\Winter\Storm\Database\Model $model) {
          *         traceLog("New relation {$relationName} was created", $attachedIdList);
          *     });
          *
@@ -160,7 +172,7 @@ class BelongsToMany extends BelongsToManyBase
     {
         $attachedIdList = $this->parseIds($ids);
         if (empty($attachedIdList)) {
-            $attachedIdList = $this->allRelatedIds();
+            $attachedIdList = $this->newPivotQuery()->lists($this->relatedPivotKey);
         }
 
         /**
@@ -169,7 +181,7 @@ class BelongsToMany extends BelongsToManyBase
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.beforeDetach', function (string $relationName, array $attachedIdList) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.relation.beforeDetach', function (string $relationName, array $attachedIdList) use (\Winter\Storm\Database\Model $model) {
          *         if (!$model->isRelationValid($attachedIdList)) {
          *             throw new \Exception("Invalid relation!");
          *             return false;
@@ -192,7 +204,7 @@ class BelongsToMany extends BelongsToManyBase
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.afterDetach', function (string $relationName, array $attachedIdList) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.relation.afterDetach', function (string $relationName, array $attachedIdList) use (\Winter\Storm\Database\Model $model) {
          *         traceLog("Relation {$relationName} was removed", $attachedIdList);
          *     });
          *
@@ -234,7 +246,7 @@ class BelongsToMany extends BelongsToManyBase
     }
 
     /**
-     * Get a paginator for the "select" statement. Complies with October Rain.
+     * Get a paginator for the "select" statement. Complies with Winter Storm.
      *
      * @param  int    $perPage
      * @param  int    $currentPage
@@ -263,7 +275,7 @@ class BelongsToMany extends BelongsToManyBase
     public function newPivot(array $attributes = [], $exists = false)
     {
         /*
-         * October looks to the relationship parent
+         * Winter looks to the relationship parent
          */
         $pivot = $this->parent->newRelationPivot($this->relationName, $this->parent, $attributes, $this->table, $exists);
 
@@ -364,7 +376,7 @@ class BelongsToMany extends BelongsToManyBase
      * Get all of the IDs for the related models, with deferred binding support
      *
      * @param string $sessionKey
-     * @return \October\Rain\Support\Collection
+     * @return \Winter\Storm\Support\Collection
      */
     public function allRelatedIds($sessionKey = null)
     {

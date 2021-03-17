@@ -1,13 +1,13 @@
-<?php namespace October\Rain\Auth\Models;
+<?php namespace Winter\Storm\Auth\Models;
 
-use October\Rain\Database\Model;
+use Winter\Storm\Database\Model;
 
 /**
  * Group model
  */
 class Group extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use \Winter\Storm\Database\Traits\Validation;
 
     /**
      * @var string The table associated with the model.

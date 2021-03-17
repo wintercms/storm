@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Router;
+<?php namespace Winter\Storm\Router;
 
 /**
  * URL Router
  *
- * Used in October CMS for managing page routes.
+ * Used in Winter CMS for managing page routes.
  *
- * @package october\router
  * @author Alexey Bobkov, Samuel Georges
  */
 class Router
@@ -21,7 +20,7 @@ class Router
     protected $routeMap = [];
 
     /**
-     * @var \October\Rain\Router\Rule A referred to the matched router rule
+     * @var \Winter\Storm\Router\Rule A referred to the matched router rule
      */
     protected $matchedRouteRule;
 
@@ -225,7 +224,7 @@ class Router
 
     /**
      * Returns the matched route rule name.
-     * @return \October\Rain\Router\Rule The matched rule object.
+     * @return \Winter\Storm\Router\Rule The matched rule object.
      */
     public function matchedRoute()
     {

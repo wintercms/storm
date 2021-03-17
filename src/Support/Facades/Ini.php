@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static array parse(string $contents)
@@ -8,7 +8,7 @@ use October\Rain\Support\Facade;
  * @method static array expandProperty(array &$array, string $key, $value)
  * @method static string render(array $vars = [], int $level = 1)
  *
- * @see \October\Rain\Parse\Ini
+ * @see \Winter\Storm\Parse\Ini
  */
 class Ini extends Facade
 {

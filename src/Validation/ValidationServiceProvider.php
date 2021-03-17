@@ -1,10 +1,10 @@
-<?php namespace October\Rain\Validation;
+<?php namespace Winter\Storm\Validation;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Validation\ValidationServiceProvider as BaseServiceProvider;
 
 /**
- * October CMS wrapper for the Laravel Validation service provider.
+ * Winter CMS wrapper for the Laravel Validation service provider.
  */
 class ValidationServiceProvider extends BaseServiceProvider implements DeferrableProvider
 {

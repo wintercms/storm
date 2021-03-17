@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Filesystem;
+<?php namespace Winter\Storm\Filesystem;
 
 use Config;
 use Exception;
@@ -7,7 +7,6 @@ use Exception;
  * File definitions helper.
  * Contains file extensions for common use cases.
  *
- * @package october\filesystem
  * @author Alexey Bobkov, Samuel Georges
  */
 class Definitions

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Filesystem;
+<?php namespace Winter\Storm\Filesystem;
 
 use Carbon\Carbon;
 use League\Flysystem\Adapter\Ftp;

@@ -1,30 +1,29 @@
-<?php namespace October\Rain\Network;
+<?php namespace Winter\Storm\Network;
 
-use October\Rain\Exception\ApplicationException;
+use Winter\Storm\Exception\ApplicationException;
 
 /**
  * HTTP Network Access
  *
  * Used as a cURL wrapper for the HTTP protocol.
  *
- * @package october\network
  * @author Alexey Bobkov, Samuel Georges
  *
  * Usage:
  *
- *   Http::get('http://octobercms.com');
+ *   Http::get('https://wintercms.com');
  *   Http::post('...');
  *   Http::delete('...');
  *   Http::patch('...');
  *   Http::put('...');
  *   Http::options('...');
  *
- *   $result = Http::post('http://octobercms.com');
+ *   $result = Http::post('https://wintercms.com');
  *   echo $result;                          // Outputs: <html><head><title>...
  *   echo $result->code;                    // Outputs: 200
  *   echo $result->headers['Content-Type']; // Outputs: text/html; charset=UTF-8
  *
- *   Http::post('http://octobercms.com', function($http){
+ *   Http::post('https://wintercms.com', function($http){
  *
  *       // Sets a HTTP header
  *       $http->header('Rest-Key', '...');

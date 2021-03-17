@@ -1,11 +1,11 @@
-<?php namespace October\Rain\Halcyon\Datasource;
+<?php namespace Winter\Storm\Halcyon\Datasource;
 
 /**
  * Datasource base class.
  */
 class Datasource
 {
-    use \October\Rain\Support\Traits\Emitter;
+    use \Winter\Storm\Support\Traits\Emitter;
 
     /**
      * @var bool Indicates if the record is currently being force deleted.
@@ -15,14 +15,14 @@ class Datasource
     /**
      * The query post processor implementation.
      *
-     * @var \October\Rain\Halcyon\Processors\Processor
+     * @var \Winter\Storm\Halcyon\Processors\Processor
      */
     protected $postProcessor;
 
     /**
      * Get the query post processor used by the connection.
      *
-     * @return \October\Rain\Halcyon\Processors\Processor
+     * @return \Winter\Storm\Halcyon\Processors\Processor
      */
     public function getPostProcessor()
     {

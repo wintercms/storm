@@ -1,23 +1,22 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
-use October\Rain\Extension\ExtensionBase;
+use Winter\Storm\Extension\ExtensionBase;
 
 /**
  * Base class for model behaviors.
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class ModelBehavior extends ExtensionBase
 {
     /**
-     * @var \October\Rain\Database\Model Reference to the extended model.
+     * @var \Winter\Storm\Database\Model Reference to the extended model.
      */
     protected $model;
 
     /**
      * Constructor
-     * @param \October\Rain\Database\Model $model The extended model.
+     * @param \Winter\Storm\Database\Model $model The extended model.
      */
     public function __construct($model)
     {

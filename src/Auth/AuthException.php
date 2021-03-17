@@ -1,14 +1,13 @@
-<?php namespace October\Rain\Auth;
+<?php namespace Winter\Storm\Auth;
 
 use Config;
-use October\Rain\Exception\ApplicationException;
+use Winter\Storm\Exception\ApplicationException;
 use Exception;
 use Lang;
 
 /**
  * Used when user authentication fails. Implements a softer error message.
  *
- * @package october\auth
  * @author Alexey Bobkov, Samuel Georges
  */
 class AuthException extends ApplicationException

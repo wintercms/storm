@@ -1,10 +1,10 @@
-## Rain Support
+## Storm Support
 
-The October Rain Support contains common classes relevant to supporting the other October Rain libraries. It adds the following features:
+The Winter Storm Support contains common classes relevant to supporting the other Winter Storm libraries. It adds the following features:
 
 ### Scaffolding
 
-See the Scaffolding Commands section of the [Console documentation](https://octobercms.com/docs/console/commands).
+See the Scaffolding Commands section of the [Console documentation](https://wintercms.com/docs/console/commands).
 
 ### A true Singleton trait
 
@@ -13,7 +13,7 @@ A *true singleton* is a class that can ever only have a single instance, no matt
 ```php
 class MyClass
 {
-    use \October\Rain\Support\Traits\Singleton;
+    use \Winter\Storm\Support\Traits\Singleton;
 }
 
 $class = MyClass::instance();
@@ -39,7 +39,7 @@ Adds event related features to any class.
 ```php
 class MyClass
 {
-    use October\Rain\Support\Traits\Emitter;
+    use Winter\Storm\Support\Traits\Emitter;
 }
 ```
 

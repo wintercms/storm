@@ -1,12 +1,12 @@
-<?php namespace October\Rain\Validation;
+<?php namespace Winter\Storm\Validation;
 
 use Illuminate\Contracts\Validation\Factory as FactoryContract;
 use Illuminate\Validation\Factory as BaseFactory;
 
 /**
- * October CMS wrapper for the Laravel Validation factory.
+ * Winter CMS wrapper for the Laravel Validation factory.
  *
- * Ensures that the default resolver is the October\Rain\Validation\Validator.
+ * Ensures that the default resolver is the Winter\Storm\Validation\Validator.
  */
 class Factory extends BaseFactory implements FactoryContract
 {
@@ -17,7 +17,7 @@ class Factory extends BaseFactory implements FactoryContract
      * @param  array  $rules
      * @param  array  $messages
      * @param  array  $customAttributes
-     * @return \October\Rain\Validation\Validator
+     * @return \Winter\Storm\Validation\Validator
      */
     protected function resolve(array $data, array $rules, array $messages, array $customAttributes)
     {

@@ -1,9 +1,9 @@
-<?php namespace October\Rain\Scaffold\Console;
+<?php namespace Winter\Storm\Scaffold\Console;
 
-use October\Rain\Scaffold\GeneratorCommand;
+use Winter\Storm\Scaffold\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use October\Rain\Support\Str;
+use Winter\Storm\Support\Str;
 
 class CreateController extends GeneratorCommand
 {
@@ -84,7 +84,7 @@ class CreateController extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['plugin', InputArgument::REQUIRED, 'The name of the plugin to create. Eg: RainLab.Blog'],
+            ['plugin', InputArgument::REQUIRED, 'The name of the plugin to create. Eg: Winter.Blog'],
             ['controller', InputArgument::REQUIRED, 'The name of the controller. Eg: Posts'],
         ];
     }

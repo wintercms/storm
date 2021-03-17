@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Filesystem\PathResolver;
+use Winter\Storm\Filesystem\PathResolver;
 
 /**
  * The tests below will test both the resolve_path() method (and wrapped PathResolver::resolve() method),
@@ -171,7 +171,7 @@ class PathResolverTest extends TestCase
     public function testRelativeToWorkingDirPaths()
     {
         if (class_exists('System\ServiceProvider')) {
-            $baseWorkingDir = './vendor/october/rain/';
+            $baseWorkingDir = './vendor/wintercms/storm/';
         } else {
             $baseWorkingDir = './';
         }

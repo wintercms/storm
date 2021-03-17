@@ -1,4 +1,4 @@
-## Rain Extensions
+## Storm Extensions
 
 Adds the ability for classes to have *private traits*, also known as Behaviors. These are similar to native PHP Traits except they have some distinct benefits:
 
@@ -11,17 +11,17 @@ Where you might use a trait like this:
 
     class MyClass
     {
-        use \October\Rain\UtilityFunctions;
-        use \October\Rain\DeferredBinding;
+        use \Winter\Storm\UtilityFunctions;
+        use \Winter\Storm\DeferredBinding;
     }
 
 A behavior is used in a similar fashion:
 
-    class MyClass extends \October\Rain\Extension\Extendable
+    class MyClass extends \Winter\Storm\Extension\Extendable
     {
         public $implement = [
-            'October.Rain.UtilityFunctions',
-            'October.Rain.DeferredBinding',
+            'Winter.Storm.UtilityFunctions',
+            'Winter.Storm.DeferredBinding',
         ];
     }
 
@@ -37,7 +37,7 @@ Where you might define a trait like this:
 
 A behavior is defined like this:
 
-    class UtilityFunctions extends \October\Rain\Extension\ExtensionBase
+    class UtilityFunctions extends \Winter\Storm\Extension\ExtensionBase
     {
         protected $parent;
 
@@ -60,7 +60,7 @@ The extended object is always passed as the first parameter to the Behavior's co
 
     <?php namespace MyNamespace\Behaviors;
 
-    class FormController extends \October\Rain\Extension\ExtensionBase
+    class FormController extends \Winter\Storm\Extension\ExtensionBase
     {
         /**
          * @var Reference to the extended object.
@@ -92,7 +92,7 @@ This `Controller` class will implement the `FormController` behavior and then th
 
     <?php namespace MyNamespace;
 
-    class Controller extends \October\Rain\Extension\Extendable
+    class Controller extends \Winter\Storm\Extension\Extendable
     {
 
         /**
@@ -147,21 +147,21 @@ Methods can be added to a `Model` through the use of `addDynamicMethod`.
 
 If a behavior class does not exist, like a trait, an *Class not found* error will be thrown. In some cases you may wish to suppress this error, for conditional implementation if a module is present in the system. You can do this by placing an `@` symbol at the beginning of the class name.
 
-    class User extends \October\Rain\Extension\Extendable
+    class User extends \Winter\Storm\Extension\Extendable
     {
-        public $implement = ['@RainLab.Translate.Behaviors.TranslatableModel'];
+        public $implement = ['@Winter.Translate.Behaviors.TranslatableModel'];
     }
 
-If the class name `RainLab\Translate\Behaviors\TranslatableModel` does not exist, no error will be thrown. This is the equivalent of the following code:
+If the class name `Winter\Translate\Behaviors\TranslatableModel` does not exist, no error will be thrown. This is the equivalent of the following code:
 
-    class User extends \October\Rain\Extension\Extendable
+    class User extends \Winter\Storm\Extension\Extendable
     {
         public $implement = [];
 
         public function __construct()
         {
-            if (class_exists('RainLab\Translate\Behaviors\TranslatableModel')) {
-                $controller->implement[] = 'RainLab.Translate.Behaviors.TranslatableModel';
+            if (class_exists('Winter\Translate\Behaviors\TranslatableModel')) {
+                $controller->implement[] = 'Winter.Translate.Behaviors.TranslatableModel';
             }
 
             parent::__construct();
