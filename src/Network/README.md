@@ -1,4 +1,4 @@
-## Rain Network Services
+## Storm Network Services
 
 Provides classes used for opening sockets across the network.
 
@@ -9,7 +9,7 @@ Used as a cURL wrapper for the HTTP protocol.
 **Basic usage**
 
     // Make a GET call
-    Http::get('http://octobercms.com');
+    Http::get('https://wintercms.com');
 
     // Make a POST call
     Http::post('...');
@@ -28,14 +28,14 @@ Used as a cURL wrapper for the HTTP protocol.
 
 **Expected response**
 
-    $result = Http::post('http://octobercms.com');
+    $result = Http::post('https://wintercms.com');
     echo $result;                          // Outputs: <html><head><title>...
     echo $result->code;                    // Outputs: 200
     echo $result->headers['Content-Type']; // Outputs: text/html; charset=UTF-8
 
 **Advanced usage**
 
-    Http::post('http://octobercms.com', function($http){
+    Http::post('https://wintercms.com', function($http){
 
        // Sets a HTTP header
        $http->header('Rest-Key', '...');

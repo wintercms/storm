@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Testing\Fakes;
+<?php namespace Winter\Storm\Support\Testing\Fakes;
 
-use October\Rain\Mail\Mailable;
+use Winter\Storm\Mail\Mailable;
 
 class MailFake extends \Illuminate\Support\Testing\Fakes\MailFake
 {
@@ -72,7 +72,7 @@ class MailFake extends \Illuminate\Support\Testing\Fakes\MailFake
      * @param  array  $data
      * @param  \Closure|string  $callback
      * @param  bool  $queued
-     * @return \October\Rain\Mail\Mailable
+     * @return \Winter\Storm\Mail\Mailable
      */
     public function buildMailable($view, $data, $callback, $queued = false)
     {

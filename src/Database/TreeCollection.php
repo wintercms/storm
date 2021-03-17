@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 /**
  * Custom collection used by NestedTree trait.
@@ -15,7 +15,7 @@ class TreeCollection extends Collection
      * Converts a flat collection of nested set models to an set where
      * children is eager loaded
      * @param bool $removeOrphans Remove nodes that exist without their parents.
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     public function toNested($removeOrphans = true)
     {

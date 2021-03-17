@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Events;
+<?php namespace Winter\Storm\Events;
 
 use Exception;
 use ReflectionClass;
@@ -202,7 +202,7 @@ class Dispatcher extends \Illuminate\Events\Dispatcher
             if (method_exists($class, 'queue')) {
                 $this->callQueueMethodOnHandler($class, $method, $arguments);
             } else {
-                $this->resolveQueue()->push('October\Rain\Events\CallQueuedHandler@call', [
+                $this->resolveQueue()->push('Winter\Storm\Events\CallQueuedHandler@call', [
                     'class' => $class, 'method' => $method, 'data' => serialize($arguments),
                 ]);
             }
@@ -234,7 +234,7 @@ class Dispatcher extends \Illuminate\Events\Dispatcher
     {
         $handler = (new ReflectionClass($class))->newInstanceWithoutConstructor();
 
-        $handler->queue($this->resolveQueue(), 'October\Rain\Events\CallQueuedHandler@call', [
+        $handler->queue($this->resolveQueue(), 'Winter\Storm\Events\CallQueuedHandler@call', [
             'class' => $class, 'method' => $method, 'data' => serialize($arguments),
         ]);
     }

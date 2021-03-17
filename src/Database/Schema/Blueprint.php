@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Schema;
+<?php namespace Winter\Storm\Database\Schema;
 
 use Illuminate\Database\Schema\Blueprint as BaseBlueprint;
 

@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Html\Helper as HtmlHelper;
+use Winter\Storm\Html\Helper as HtmlHelper;
 
 class HtmlHelperTest extends TestCase
 {

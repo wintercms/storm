@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Filter;
+<?php namespace Winter\Storm\Assetic\Filter;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Asset\AssetInterface;
-use October\Rain\Assetic\Factory\AssetFactory;
-use October\Rain\Assetic\Util\LessUtils;
+use Winter\Storm\Assetic\Asset\AssetInterface;
+use Winter\Storm\Assetic\Factory\AssetFactory;
+use Winter\Storm\Assetic\Util\LessUtils;
 
 /**
  * Loads LESS files using the PHP implementation of less, lessphp.

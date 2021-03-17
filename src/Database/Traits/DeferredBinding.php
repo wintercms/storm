@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Database\Traits;
+<?php namespace Winter\Storm\Database\Traits;
 
-use October\Rain\Database\Models\DeferredBinding as DeferredBindingModel;
+use Winter\Storm\Database\Models\DeferredBinding as DeferredBindingModel;
 
 trait DeferredBinding
 {
@@ -158,7 +158,7 @@ trait DeferredBinding
 
     /**
      * Returns any outstanding binding records for this model.
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     protected function getDeferredBindingRecords($sessionKey)
     {

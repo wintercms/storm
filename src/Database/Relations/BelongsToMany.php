@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -89,6 +89,18 @@ class BelongsToMany extends BelongsToManyBase
     }
 
     /**
+     * Override sync() method of BelongToMany relation in order to flush the query cache.
+     * @param array $ids
+     * @param bool $detaching
+     * @return array
+     */
+    public function sync($ids, $detaching = true)
+    {
+        parent::sync($ids, $detaching);
+        $this->flushDuplicateCache();
+    }
+
+    /**
      * Create a new instance of this related model with deferred binding support.
      */
     public function create(array $attributes = [], array $pivotData = [], $sessionKey = null)
@@ -118,7 +130,7 @@ class BelongsToMany extends BelongsToManyBase
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.beforeAttach', function (string $relationName, array $attachedIdList, array $insertData) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.relation.beforeAttach', function (string $relationName, array $attachedIdList, array $insertData) use (\Winter\Storm\Database\Model $model) {
          *         if (!$model->isRelationValid($attachedIdList)) {
          *             throw new \Exception("Invalid relation!");
          *             return false;
@@ -130,14 +142,10 @@ class BelongsToMany extends BelongsToManyBase
             return;
         }
 
-        // Here we will insert the attachment records into the pivot table. Once we have
-        // inserted the records, we will touch the relationships if necessary and the
-        // function will return. We can parse the IDs before inserting the records.
-        $this->newPivotStatement()->insert($insertData);
-
-        if ($touch) {
-            $this->touchIfTouching();
-        }
+        /**
+         * @see Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithPivotTable
+         */
+        parent::attach($id, $attributes, $touch);
 
         /**
          * @event model.relation.afterAttach
@@ -145,7 +153,7 @@ class BelongsToMany extends BelongsToManyBase
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.afterAttach', function (string $relationName, array $attachedIdList, array $insertData) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.relation.afterAttach', function (string $relationName, array $attachedIdList, array $insertData) use (\Winter\Storm\Database\Model $model) {
          *         traceLog("New relation {$relationName} was created", $attachedIdList);
          *     });
          *
@@ -164,7 +172,7 @@ class BelongsToMany extends BelongsToManyBase
     {
         $attachedIdList = $this->parseIds($ids);
         if (empty($attachedIdList)) {
-            $attachedIdList = $this->allRelatedIds()->all();
+            $attachedIdList = $this->newPivotQuery()->lists($this->relatedPivotKey);
         }
 
         /**
@@ -173,7 +181,7 @@ class BelongsToMany extends BelongsToManyBase
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.beforeDetach', function (string $relationName, array $attachedIdList) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.relation.beforeDetach', function (string $relationName, array $attachedIdList) use (\Winter\Storm\Database\Model $model) {
          *         if (!$model->isRelationValid($attachedIdList)) {
          *             throw new \Exception("Invalid relation!");
          *             return false;
@@ -185,8 +193,8 @@ class BelongsToMany extends BelongsToManyBase
             return;
         }
 
-        /*
-         * See Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithPivotTable
+        /**
+         * @see Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithPivotTable
          */
         parent::detach($attachedIdList, $touch);
 
@@ -196,7 +204,7 @@ class BelongsToMany extends BelongsToManyBase
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.afterDetach', function (string $relationName, array $attachedIdList) use (\October\Rain\Database\Model $model) {
+         *     $model->bindEvent('model.relation.afterDetach', function (string $relationName, array $attachedIdList) use (\Winter\Storm\Database\Model $model) {
          *         traceLog("Relation {$relationName} was removed", $attachedIdList);
          *     });
          *
@@ -238,7 +246,7 @@ class BelongsToMany extends BelongsToManyBase
     }
 
     /**
-     * Get a paginator for the "select" statement. Complies with October Rain.
+     * Get a paginator for the "select" statement. Complies with Winter Storm.
      *
      * @param  int    $perPage
      * @param  int    $currentPage
@@ -267,7 +275,7 @@ class BelongsToMany extends BelongsToManyBase
     public function newPivot(array $attributes = [], $exists = false)
     {
         /*
-         * October looks to the relationship parent
+         * Winter looks to the relationship parent
          */
         $pivot = $this->parent->newRelationPivot($this->relationName, $this->parent, $attributes, $this->table, $exists);
 
@@ -368,7 +376,7 @@ class BelongsToMany extends BelongsToManyBase
      * Get all of the IDs for the related models, with deferred binding support
      *
      * @param string $sessionKey
-     * @return \October\Rain\Support\Collection
+     * @return \Winter\Storm\Support\Collection
      */
     public function allRelatedIds($sessionKey = null)
     {
@@ -408,15 +416,5 @@ class BelongsToMany extends BelongsToManyBase
     {
         traceLog('Method BelongsToMany::getRelatedIds has been deprecated, use BelongsToMany::allRelatedIds instead.');
         return $this->allRelatedIds($sessionKey)->all();
-    }
-
-    /**
-     * Get the pivot models that are currently attached (taking conditions & scopes into account).
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function getCurrentlyAttachedPivots()
-    {
-        return $this->getQuery()->get();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Database\Model;
+use Winter\Storm\Database\Model;
 
 class ModelTest extends DbTestCase
 {

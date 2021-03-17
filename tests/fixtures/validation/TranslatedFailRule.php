@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Validation\Rule;
+use Winter\Storm\Validation\Rule;
 
 class TranslatedFailRule extends Rule
 {

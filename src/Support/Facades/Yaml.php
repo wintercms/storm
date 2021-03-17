@@ -1,13 +1,13 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static array parse(string $contents)
  * @method static array parseFile(string $fileName)
  * @method static string render(array $vars = [], array $options = [])
  *
- * @see \October\Rain\Parse\Yaml
+ * @see \Winter\Storm\Parse\Yaml
  */
 class Yaml extends Facade
 {

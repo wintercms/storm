@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Filesystem;
+<?php namespace Winter\Storm\Filesystem;
 
 use Throwable;
 
 /**
  * A utility to resolve paths to their canonical location and handle path queries.
  *
- * @package october\filesystem
  * @author Ben Thomson
  */
 class PathResolver
@@ -57,7 +56,7 @@ class PathResolver
                     ? implode('/', $resolvedSegments) . '/'
                     : '')
                 . $segment;
-            
+
             /**
              * We'll check to see if the current path is within "open_basedir" restrictions. Given that the full path
              * IS within the restrictions at this point - if the current path is not, we'll assume it makes up part of
@@ -71,7 +70,7 @@ class PathResolver
                         if (!$resolvedSymlink) {
                             return false;
                         }
-    
+
                         $resolvedSegments = explode('/', $resolvedSymlink);
                         $drive = array_shift($resolvedSegments) ?: null;
                         continue;

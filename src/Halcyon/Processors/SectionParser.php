@@ -1,13 +1,12 @@
-<?php namespace October\Rain\Halcyon\Processors;
+<?php namespace Winter\Storm\Halcyon\Processors;
 
-use October\Rain\Parse\Ini;
-use October\Rain\Support\Str;
+use Winter\Storm\Parse\Ini;
+use Winter\Storm\Support\Str;
 
 /**
  * This class parses CMS object files (pages, partials and layouts).
  * Returns the structured file information.
  *
- * @package october\halcyon
  * @author Alexey Bobkov, Samuel Georges
  */
 class SectionParser

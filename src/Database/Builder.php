@@ -1,15 +1,14 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder as BuilderModel;
-use October\Rain\Support\Facades\DbDongle;
+use Winter\Storm\Support\Facades\DbDongle;
 
 /**
  * Query builder class.
  *
  * Extends Eloquent builder class.
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class Builder extends BuilderModel

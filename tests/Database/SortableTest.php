@@ -21,9 +21,9 @@ class SortableTest extends DbTestCase
     }
 }
 
-class TestSortableModel extends \October\Rain\Database\Model
+class TestSortableModel extends \Winter\Storm\Database\Model
 {
-    use \October\Rain\Database\Traits\Sortable;
+    use \Winter\Storm\Database\Traits\Sortable;
 
     protected $table = 'test';
 }
