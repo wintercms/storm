@@ -1,13 +1,13 @@
-<?php namespace October\Rain\Support;
+<?php namespace Winter\Storm\Support;
 
-use October\Rain\Filesystem\Filesystem;
+use Winter\Storm\Filesystem\Filesystem;
 use Throwable;
 use Exception;
 
 /**
  * Class loader
  *
- * A simple autoloader used by October, it expects the folder names
+ * A simple autoloader used by Winter, it expects the folder names
  * to be lower case and the file name to be capitalized as per the class name.
  */
 class ClassLoader
@@ -15,7 +15,7 @@ class ClassLoader
     /**
      * The filesystem instance.
      *
-     * @var \October\Rain\Filesystem\Filesystem
+     * @var \Winter\Storm\Filesystem\Filesystem
      */
     public $files;
 
@@ -62,9 +62,16 @@ class ClassLoader
     protected $registered = false;
 
     /**
+     * Class alias array.
+     *
+     * @var array
+     */
+    protected $aliases = [];
+
+    /**
      * Create a new package manifest instance.
      *
-     * @param  \October\Rain\Filesystem\Filesystem  $files
+     * @param  \Winter\Storm\Filesystem\Filesystem  $files
      * @param  string  $basePath
      * @param  string  $manifestPath
      * @return void
@@ -104,6 +111,10 @@ class ClassLoader
                 $this->includeClass($class, $path);
                 return true;
             }
+        }
+
+        if (!is_null($alias = $this->getAlias($class))) {
+            return class_alias($alias, $class);
         }
     }
 
@@ -208,12 +219,43 @@ class ClassLoader
     }
 
     /**
+     * Adds alias to the class loader.
+     *
+     * Aliases are first-come, first-served. If a real class already exists with the same name as an alias, the real
+     * class is used over the alias.
+     *
+     * @param array $aliases
+     * @return void
+     */
+    public function addAliases(array $aliases)
+    {
+        foreach ($aliases as $original => $alias) {
+            if (!array_key_exists(strtolower($alias), $this->aliases)) {
+                $this->aliases[strtolower($alias)] = $original;
+            }
+        }
+    }
+
+    /**
+     * Gets an alias for a class, if available.
+     *
+     * @param string $class
+     * @return string|null
+     */
+    protected function getAlias($class)
+    {
+        return array_key_exists(strtolower($class), $this->aliases)
+            ? $this->aliases[strtolower($class)]
+            : null;
+    }
+
+    /**
      * Get the normal file name for a class.
      *
      * @param  string  $class
      * @return string
      */
-    protected function normalizeClass($class)
+    protected static function normalizeClass($class)
     {
         /*
          * Strip first slash

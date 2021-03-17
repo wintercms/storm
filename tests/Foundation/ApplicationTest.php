@@ -1,7 +1,7 @@
 <?php
 
-use October\Rain\Foundation\Application;
-use October\Rain\Filesystem\PathResolver;
+use Winter\Storm\Foundation\Application;
+use Winter\Storm\Filesystem\PathResolver;
 
 class ApplicationTest extends TestCase
 {

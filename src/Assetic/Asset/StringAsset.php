@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Asset;
+<?php namespace Winter\Storm\Assetic\Asset;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Filter\FilterInterface;
+use Winter\Storm\Assetic\Filter\FilterInterface;
 
 /**
  * Represents a string asset.

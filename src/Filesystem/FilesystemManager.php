@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Filesystem;
+<?php namespace Winter\Storm\Filesystem;
 
 use OpenCloud\Rackspace;
 use League\Flysystem\FilesystemInterface;

@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Parse;
+<?php namespace Winter\Storm\Parse;
 
 /**
  * Helper class for passing partially parsed Markdown input
  * to and from the markdown.beforeParse and markdown.parse
  * event handlers
  *
- * @package october\support
  * @author Alexey Bobkov, Samuel Georges
  */
 class MarkdownData

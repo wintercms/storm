@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Exception;
+<?php namespace Winter\Storm\Exception;
 
 use App;
 use Config;
@@ -9,7 +9,6 @@ use Exception;
 /**
  * System Error Handler, this class handles application exception events.
  *
- * @package october\exception
  * @author Alexey Bobkov, Samuel Georges
  */
 class ErrorHandler

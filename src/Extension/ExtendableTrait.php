@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Extension;
+<?php namespace Winter\Storm\Extension;
 
 use ReflectionClass;
 use ReflectionMethod;
@@ -11,7 +11,6 @@ use Exception;
  * framework (Laravel). It is currently used by the Controller and
  * Model classes.
  *
- * @package october\extension
  * @author Alexey Bobkov, Samuel Georges
  */
 
@@ -134,7 +133,7 @@ trait ExtendableTrait
     {
         if (!method_exists($extensionObject, 'extensionIsHiddenMethod')) {
             throw new Exception(sprintf(
-                'Extension %s should inherit October\Rain\Extension\ExtensionBase or implement October\Rain\Extension\ExtensionTrait.',
+                'Extension %s should inherit Winter\Storm\Extension\ExtensionBase or implement Winter\Storm\Extension\ExtensionTrait.',
                 $extensionName
             ));
         }
@@ -410,8 +409,8 @@ trait ExtendableTrait
             $extension = $this->extensionData['methods'][$name];
             $extensionObject = $this->extensionData['extensions'][$extension];
 
-            if (method_exists($extension, $name) && is_callable([$extension, $name])) {
-                return call_user_func_array([$extensionObject, $name], $params);
+            if (method_exists($extension, $name)) {
+                return call_user_func_array([$extensionObject, $name], array_values($params));
             }
         }
 
@@ -419,7 +418,7 @@ trait ExtendableTrait
             $dynamicCallable = $this->extensionData['dynamicMethods'][$name];
 
             if (is_callable($dynamicCallable)) {
-                return call_user_func_array($dynamicCallable, $params);
+                return call_user_func_array($dynamicCallable, array_values($params));
             }
         }
 

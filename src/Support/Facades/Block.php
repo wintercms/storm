@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static void put(string $name)
@@ -13,7 +13,7 @@ use October\Rain\Support\Facade;
  * @method static string get(string $name, string $default = null)
  * @method static void reset()
  *
- * @see \October\Rain\Html\BlockBuilder
+ * @see \Winter\Storm\Html\BlockBuilder
  */
 class Block extends Facade
 {

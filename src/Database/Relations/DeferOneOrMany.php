@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations;
 
-use October\Rain\Support\Facades\DbDongle;
+use Winter\Storm\Support\Facades\DbDongle;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
 
 trait DeferOneOrMany

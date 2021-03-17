@@ -1,13 +1,13 @@
-<?php namespace October\Rain\Foundation\Bootstrap;
+<?php namespace Winter\Storm\Foundation\Bootstrap;
 
-use October\Rain\Support\ClassLoader;
-use October\Rain\Filesystem\Filesystem;
+use Winter\Storm\Support\ClassLoader;
+use Winter\Storm\Filesystem\Filesystem;
 use Illuminate\Contracts\Foundation\Application;
 
 class RegisterClassLoader
 {
     /**
-     * Register The October Auto Loader
+     * Register The Winter Auto Loader
      *
      * @param  \Illuminate\Contracts\Foundation\Application  $app
      * @return void

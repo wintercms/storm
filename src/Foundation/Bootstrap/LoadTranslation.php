@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Foundation\Bootstrap;
+<?php namespace Winter\Storm\Foundation\Bootstrap;
 
-use October\Rain\Translation\Translator;
-use October\Rain\Translation\FileLoader;
+use Winter\Storm\Translation\Translator;
+use Winter\Storm\Translation\FileLoader;
 use Illuminate\Contracts\Foundation\Application;
 
 class LoadTranslation

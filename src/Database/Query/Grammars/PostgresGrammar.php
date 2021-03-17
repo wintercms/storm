@@ -1,8 +1,8 @@
-<?php namespace October\Rain\Database\Query\Grammars;
+<?php namespace Winter\Storm\Database\Query\Grammars;
 
-use October\Rain\Database\QueryBuilder;
+use Winter\Storm\Database\QueryBuilder;
 use Illuminate\Database\Query\Grammars\PostgresGrammar as BasePostgresGrammer;
-use October\Rain\Database\Query\Grammars\Concerns\SelectConcatenations;
+use Winter\Storm\Database\Query\Grammars\Concerns\SelectConcatenations;
 
 class PostgresGrammar extends BasePostgresGrammer
 {
@@ -11,7 +11,7 @@ class PostgresGrammar extends BasePostgresGrammer
     /**
      * Compile an "upsert" statement into SQL.
      *
-     * @param  \October\Rain\Database\QueryBuilder $query
+     * @param  \Winter\Storm\Database\QueryBuilder $query
      * @param  array $values
      * @param  array $uniqueBy
      * @param  array $update

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Foundation\Providers;
+<?php namespace Winter\Storm\Foundation\Providers;
 
 use Illuminate\Log\LogServiceProvider as LogServiceProviderBase;
 

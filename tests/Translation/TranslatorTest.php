@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Filesystem\Filesystem;
-use October\Rain\Events\Dispatcher;
-use October\Rain\Translation\FileLoader;
-use October\Rain\Translation\Translator;
+use Winter\Storm\Events\Dispatcher;
+use Winter\Storm\Translation\FileLoader;
+use Winter\Storm\Translation\Translator;
 
 class TranslatorTest extends TestCase
 {
@@ -71,6 +71,6 @@ class TranslatorTest extends TestCase
         $this->translator->setEventDispatcher($eventsDispatcher);
 
         $this->assertEquals('Hello Override!', $this->translator->get('lang.test.hello_override'));
-        $this->assertEquals('Hello October!', $this->translator->get('lang.test.hello_october'));
+        $this->assertEquals('Hello Winter!', $this->translator->get('lang.test.hello_winter'));
     }
 }

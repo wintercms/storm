@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Traits;
+<?php namespace Winter\Storm\Database\Traits;
 
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
@@ -30,7 +30,7 @@ trait SoftDelete
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.beforeRestore', function () use (\October\Rain\Database\Model $model) {
+             *     $model->bindEvent('model.beforeRestore', function () use (\Winter\Storm\Database\Model $model) {
              *         \Log::info("{$model->name} is going to be restored!");
              *     });
              *
@@ -48,7 +48,7 @@ trait SoftDelete
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.afterRestore', function () use (\October\Rain\Database\Model $model) {
+             *     $model->bindEvent('model.afterRestore', function () use (\Winter\Storm\Database\Model $model) {
              *         \Log::info("{$model->name} has been brought back to life!");
              *     });
              *
