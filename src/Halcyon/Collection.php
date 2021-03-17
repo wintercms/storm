@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Halcyon;
+<?php namespace Winter\Storm\Halcyon;
 
-use October\Rain\Support\Collection as CollectionBase;
+use Winter\Storm\Support\Collection as CollectionBase;
 
 /**
  * This class represents a collection of Halcyon models.
  *
- * @package october\halcyon
  * @author Alexey Bobkov, Samuel Georges
  */
 class Collection extends CollectionBase

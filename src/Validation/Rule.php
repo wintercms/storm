@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Validation;
+<?php namespace Winter\Storm\Validation;
 
 use Illuminate\Contracts\Validation\Rule as RuleContract;
 

@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Attach;
+<?php namespace Winter\Storm\Database\Attach;
 
 use Symfony\Component\HttpFoundation\File\File as FileObj;
 use Exception;
@@ -20,7 +20,6 @@ use Exception;
  *      Resizer::open('path/to/image.jpg')
  *          ->save('path/to/new_image.jpg', 60);
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class Resizer

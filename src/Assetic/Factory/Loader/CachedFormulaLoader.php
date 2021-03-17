@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Factory\Loader;
+<?php namespace Winter\Storm\Assetic\Factory\Loader;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Cache\ConfigCache;
-use October\Rain\Assetic\Factory\Resource\IteratorResourceInterface;
-use October\Rain\Assetic\Factory\Resource\ResourceInterface;
+use Winter\Storm\Assetic\Cache\ConfigCache;
+use Winter\Storm\Assetic\Factory\Resource\IteratorResourceInterface;
+use Winter\Storm\Assetic\Factory\Resource\ResourceInterface;
 
 /**
  * Adds a caching layer to a loader.

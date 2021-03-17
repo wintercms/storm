@@ -1,8 +1,8 @@
-<?php namespace October\Rain\Auth\Models;
+<?php namespace Winter\Storm\Auth\Models;
 
 use Carbon\Carbon;
-use October\Rain\Auth\AuthException;
-use October\Rain\Database\Model;
+use Winter\Storm\Auth\AuthException;
+use Winter\Storm\Database\Model;
 
 /**
  * Throttle model

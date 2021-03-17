@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static string parse(string $text)
@@ -8,7 +8,7 @@ use October\Rain\Support\Facade;
  * @method static string parseSafe(string $text)
  * @method static string parseLine(string $text)
  *
- * @see \October\Rain\Parse\Markdown
+ * @see \Winter\Storm\Parse\Markdown
  */
 class Markdown extends Facade
 {

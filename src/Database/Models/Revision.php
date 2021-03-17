@@ -1,12 +1,11 @@
-<?php namespace October\Rain\Database\Models;
+<?php namespace Winter\Storm\Database\Models;
 
 use Db;
-use October\Rain\Database\Model;
+use Winter\Storm\Database\Model;
 
 /**
  * Revision Model
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class Revision extends Model

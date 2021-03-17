@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static mixed raw(string $sql)
@@ -15,7 +15,7 @@ use October\Rain\Support\Facade;
  * @method static string getDriver()
  * @method static string getTablePrefix()
  *
- * @see \October\Rain\Database\Dongle
+ * @see \Winter\Storm\Database\Dongle
  */
 class DbDongle extends Facade
 {

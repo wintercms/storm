@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Database\Traits;
+<?php namespace Winter\Storm\Database\Traits;
 
 use Exception;
-use October\Rain\Database\SortableScope;
+use Winter\Storm\Database\SortableScope;
 
 /**
  * Sortable model trait
@@ -12,7 +12,7 @@ use October\Rain\Database\SortableScope;
  *
  * In the model class definition:
  *
- *   use \October\Rain\Database\Traits\Sortable;
+ *   use \Winter\Storm\Database\Traits\Sortable;
  *
  * To set orders:
  *

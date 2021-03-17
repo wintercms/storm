@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Router;
+<?php namespace Winter\Storm\Router;
 
 use InvalidArgumentException;
 
 /**
  * Router Rule Object
  *
- * @package october\router
  * @author Alexey Bobkov, Samuel Georges
  */
 class Rule

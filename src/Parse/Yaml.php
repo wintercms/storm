@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Parse;
+<?php namespace Winter\Storm\Parse;
 
 use Cache;
 use Config;
@@ -9,7 +9,6 @@ use Symfony\Component\Yaml\Exception\ParseException;
 /**
  * Yaml helper class
  *
- * @package october\parse
  * @author Alexey Bobkov, Samuel Georges
  */
 class Yaml

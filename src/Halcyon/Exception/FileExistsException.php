@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Halcyon\Exception;
+<?php namespace Winter\Storm\Halcyon\Exception;
 
 use RuntimeException;
 

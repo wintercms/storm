@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Mail\Transport;
+<?php namespace Winter\Storm\Mail\Transport;
 
 use Swift_Mime_SimpleMessage;
 use GuzzleHttp\ClientInterface;

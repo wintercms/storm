@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Validation\Concerns;
+<?php namespace Winter\Storm\Validation\Concerns;
 
 use Illuminate\Support\Str;
 

@@ -1,11 +1,10 @@
-<?php namespace October\Rain\Halcyon;
+<?php namespace Winter\Storm\Halcyon;
 
 use Illuminate\Cache\Repository;
 
 /**
  * Provides a simple request-level cache.
  *
- * @package october\halcyon
  * @author Alexey Bobkov, Samuel Georges
  */
 class MemoryRepository extends Repository
@@ -48,7 +47,7 @@ class MemoryRepository extends Repository
      * @param  string  $key
      * @param  mixed   $value
      * @param  \DateTimeInterface|\DateInterval|int  $seconds
-     * @return void
+     * @return bool
      */
     public function put($key, $value, $seconds = null)
     {
@@ -57,7 +56,7 @@ class MemoryRepository extends Repository
         }
 
         $this->putInMemoryCache($key, $value);
-        parent::put($key, $value, $seconds);
+        return parent::put($key, $value, $seconds);
     }
 
     /**

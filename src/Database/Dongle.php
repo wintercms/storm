@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 /**
  * Database driver dongle
@@ -198,7 +198,7 @@ class Dongle
         if (!is_array($columns)) {
             $columns = is_null($columns) ? ['created_at', 'updated_at'] : [$columns];
         }
-        
+
         $prefixedTable = $this->getTablePrefix() . $table;
 
         foreach ($columns as $column) {
