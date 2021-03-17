@@ -12,7 +12,7 @@ use Exception;
  */
 class DeferredBinding extends Model
 {
-    use \October\Rain\Database\Traits\Nullable;
+    use \Winter\Storm\Database\Traits\Nullable;
 
     /**
      * @var string The database table used by the model.
