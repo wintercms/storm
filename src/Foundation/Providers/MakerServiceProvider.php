@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Foundation\Providers;
+<?php namespace Winter\Storm\Foundation\Providers;
 
-use October\Rain\Foundation\Maker;
+use Winter\Storm\Foundation\Maker;
 use Illuminate\Support\ServiceProvider;
 
 class MakerServiceProvider extends ServiceProvider

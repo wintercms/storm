@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Flash;
+<?php namespace Winter\Storm\Flash;
 
 use App;
 use Illuminate\Support\MessageBag;
@@ -6,7 +6,6 @@ use Illuminate\Support\MessageBag;
 /**
  * Simple flash bag
  *
- * @package october\support
  * @author Alexey Bobkov, Samuel Georges
  */
 class FlashBag extends MessageBag
@@ -146,7 +145,7 @@ class FlashBag extends MessageBag
      *
      * @param  string  $key
      * @param  string  $message
-     * @return \October\Rain\Flash\FlashBag
+     * @return \Winter\Storm\Flash\FlashBag
      */
     public function add($key, $message)
     {

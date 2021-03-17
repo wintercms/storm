@@ -1,9 +1,8 @@
-<?php namespace October\Rain\Router;
+<?php namespace Winter\Storm\Router;
 
 /**
  * Methods that may be useful for processing routing activity
  *
- * @package october\router
  * @author Alexey Bobkov, Samuel Georges
  */
 class Helper

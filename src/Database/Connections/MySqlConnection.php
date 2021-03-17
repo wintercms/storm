@@ -1,10 +1,10 @@
-<?php namespace October\Rain\Database\Connections;
+<?php namespace Winter\Storm\Database\Connections;
 
 use PDO;
 use Illuminate\Database\Schema\MySqlBuilder;
 use Illuminate\Database\Query\Processors\MySqlProcessor;
 use Doctrine\DBAL\Driver\PDOMySql\Driver as DoctrineDriver;
-use October\Rain\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
+use Winter\Storm\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 
 class MySqlConnection extends Connection

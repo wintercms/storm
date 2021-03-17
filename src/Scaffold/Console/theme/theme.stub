@@ -1,6 +1,6 @@
 name: "{{code}}"
 description: "No description provided yet..."
-author: "October CMS Scaffold"
+author: "Winter CMS Scaffold"
 homepage: "https://example.com"
 code: "{{code}}"
 form:

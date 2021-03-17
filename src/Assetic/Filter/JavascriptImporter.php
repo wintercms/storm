@@ -1,8 +1,8 @@
-<?php namespace October\Rain\Assetic\Filter;
+<?php namespace Winter\Storm\Assetic\Filter;
 
 use File;
-use October\Rain\Assetic\Asset\AssetInterface;
-use October\Rain\Assetic\Filter\FilterInterface;
+use Winter\Storm\Assetic\Asset\AssetInterface;
+use Winter\Storm\Assetic\Filter\FilterInterface;
 use RuntimeException;
 
 /**
@@ -16,7 +16,6 @@ use RuntimeException;
  * =define #FOO "Bar";
  * console.log(#FOO);
  *
- * @package october/parse
  * @author Alexey Bobkov, Samuel Georges
  */
 class JavascriptImporter implements FilterInterface

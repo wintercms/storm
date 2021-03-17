@@ -7,7 +7,7 @@
         <title>{% placeholder page_title default %}{{ this.page.title }}{% endplaceholder %}</title>
         {% partial "meta/styles" %}
         {% partial "meta/seo" %}
-        <meta name="generator" content="OctoberCMS">
+        <meta name="generator" content="Winter CMS">
     </head>
     {% set pageId = this.page.id %}
     {% set pageTitle = this.page.title %}

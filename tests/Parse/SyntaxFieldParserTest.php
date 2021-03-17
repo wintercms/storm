@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Parse\Syntax\FieldParser;
+use Winter\Storm\Parse\Syntax\FieldParser;
 
 class SyntaxFieldParserTest extends TestCase
 {
@@ -160,6 +160,23 @@ class SyntaxFieldParserTest extends TestCase
         ], $fields['radio']['options']);
     }
 
+    public function testParseColorPicker()
+    {
+        $content = '';
+        $content .= '{colorpicker name="field1" label="Field 1" availableColors="#ffffff|#000000" allowEmpty="false"}{/colorpicker}'.PHP_EOL;
+        $content .= '{variable type="colorpicker" name="field2" label="Field 2" allowEmpty="true"}{/variable}';
+
+        $result = FieldParser::parse($content);
+        $fields = $result->getFields();
+
+        $this->assertArrayNotHasKey('availableColors', $fields['field2']);
+        $this->assertCount(2, $fields['field1']['availableColors']);
+        $this->assertEquals(['#ffffff', '#000000'], $fields['field1']['availableColors']);
+
+        $this->assertFalse($fields['field1']['allowEmpty']);
+        $this->assertTrue($fields['field2']['allowEmpty']);
+    }
+
     public function testParseRepeater()
     {
         $content = '';
@@ -242,7 +259,7 @@ class SyntaxFieldParserTest extends TestCase
         $parser = new FieldParser;
         $content = '';
         $content .= '{text name="websiteName" label="Website Name" size="large"}{/text}'.PHP_EOL;
-        $content .= '{text name="blogName" label="Blog Name" color="re\"d"}OctoberCMS{/text}'.PHP_EOL;
+        $content .= '{text name="blogName" label="Blog Name" color="re\"d"}WinterCMS{/text}'.PHP_EOL;
         $content .= '{text name="storeName" label="Store Name" shape="circle"}{/text}';
         $content .= '{text label="Unnamed" distance="400m"}Foobar{/text}';
         $content .= '{foobar name="nullName" label="Valid tag, not searched by this test"}{/foobar}';
@@ -277,7 +294,7 @@ class SyntaxFieldParserTest extends TestCase
         $this->assertEquals('re\"d', $fields['blogName']['color']);
         $this->assertEquals('text', $fields['blogName']['type']);
         $this->assertNotNull($fields['blogName']['default']);
-        $this->assertEquals('OctoberCMS', $fields['blogName']['default']);
+        $this->assertEquals('WinterCMS', $fields['blogName']['default']);
 
         $this->assertArrayNotHasKey('name', $fields['storeName']);
         $this->assertArrayHasKey('label', $fields['storeName']);
@@ -314,7 +331,7 @@ class SyntaxFieldParserTest extends TestCase
         $parser = new FieldParser;
         $content = '';
         $content .= '{text name="websiteName" label="Website Name"}{/text}'.PHP_EOL;
-        $content .= '{text name="blogName" label="Blog Name"}OctoberCMS{/text}'.PHP_EOL;
+        $content .= '{text name="blogName" label="Blog Name"}WinterCMS{/text}'.PHP_EOL;
         $content .= '{text name="storeName" label="Store Name"}{/text}';
         $result = self::callProtectedMethod($parser, 'processTagsRegex', [$content, ['text']]);
 
@@ -323,7 +340,7 @@ class SyntaxFieldParserTest extends TestCase
         $this->assertArrayHasKey(2, $result[2]);
 
         $this->assertEquals('name="websiteName" label="Website Name"}', $result[2][0]);
-        $this->assertEquals('name="blogName" label="Blog Name"}OctoberCMS', $result[2][1]);
+        $this->assertEquals('name="blogName" label="Blog Name"}WinterCMS', $result[2][1]);
         $this->assertEquals('name="storeName" label="Store Name"}', $result[2][2]);
     }
 

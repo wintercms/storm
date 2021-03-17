@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Updates;
+<?php namespace Winter\Storm\Database\Updates;
 
 use Illuminate\Database\Migrations\Migration as MigrationBase;
 

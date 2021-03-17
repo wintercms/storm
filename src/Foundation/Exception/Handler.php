@@ -1,14 +1,16 @@
-<?php namespace October\Rain\Foundation\Exception;
+<?php namespace Winter\Storm\Foundation\Exception;
 
 use Log;
 use Event;
+use Closure;
 use Response;
+use Exception;
+use Throwable;
+use ReflectionClass;
+use ReflectionFunction;
+use Winter\Storm\Exception\AjaxException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use October\Rain\Exception\AjaxException;
-use ReflectionFunction;
-use Exception;
-use Closure;
 
 class Handler extends ExceptionHandler
 {
@@ -18,9 +20,9 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        \October\Rain\Exception\AjaxException::class,
-        \October\Rain\Exception\ValidationException::class,
-        \October\Rain\Exception\ApplicationException::class,
+        \Winter\Storm\Exception\AjaxException::class,
+        \Winter\Storm\Exception\ValidationException::class,
+        \Winter\Storm\Exception\ApplicationException::class,
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Symfony\Component\HttpKernel\Exception\HttpException::class,
     ];
@@ -217,6 +219,12 @@ class Handler extends ExceptionHandler
     {
         $parameters = $reflection->getParameters();
         $expected = $parameters[0];
-        return !$expected->getClass() || $expected->getClass()->isInstance($exception);
+
+        try {
+            return (new ReflectionClass($expected->getType()->getName()))
+                ->isInstance($exception);
+        } catch (Throwable $t) {
+            return false;
+        }
     }
 }

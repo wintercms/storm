@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Foundation;
+<?php namespace Winter\Storm\Foundation;
 
 use Str;
 use Config;
@@ -10,13 +10,13 @@ use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\ProviderRepository;
 use Symfony\Component\Debug\Exception\FatalErrorException;
-use October\Rain\Events\EventServiceProvider;
-use October\Rain\Router\RoutingServiceProvider;
-use October\Rain\Filesystem\PathResolver;
-use October\Rain\Foundation\Providers\LogServiceProvider;
-use October\Rain\Foundation\Providers\MakerServiceProvider;
+use Winter\Storm\Events\EventServiceProvider;
+use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Filesystem\PathResolver;
+use Winter\Storm\Foundation\Providers\LogServiceProvider;
+use Winter\Storm\Foundation\Providers\MakerServiceProvider;
 use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
-use October\Rain\Foundation\Providers\ExecutionContextProvider;
+use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 
 class Application extends ApplicationBase
 {
@@ -425,7 +425,7 @@ class Application extends ApplicationBase
         ]);
 
         // Reset package manifest
-        $this->make(PackageManifest::class)->manifest = null;
+        $this->make(PackageManifest::class)->manifest = [];
     }
 
 
@@ -441,18 +441,18 @@ class Application extends ApplicationBase
     public function registerCoreContainerAliases()
     {
         $aliases = [
-            'app'                  => [\October\Rain\Foundation\Application::class, \Illuminate\Contracts\Container\Container::class, \Illuminate\Contracts\Foundation\Application::class],
+            'app'                  => [\Winter\Storm\Foundation\Application::class, \Illuminate\Contracts\Container\Container::class, \Illuminate\Contracts\Foundation\Application::class],
             'blade.compiler'       => [\Illuminate\View\Compilers\BladeCompiler::class],
             'cache'                => [\Illuminate\Cache\CacheManager::class, \Illuminate\Contracts\Cache\Factory::class],
             'cache.store'          => [\Illuminate\Cache\Repository::class, \Illuminate\Contracts\Cache\Repository::class],
             'config'               => [\Illuminate\Config\Repository::class, \Illuminate\Contracts\Config\Repository::class],
             'cookie'               => [\Illuminate\Cookie\CookieJar::class, \Illuminate\Contracts\Cookie\Factory::class, \Illuminate\Contracts\Cookie\QueueingFactory::class],
             'encrypter'            => [\Illuminate\Encryption\Encrypter::class, \Illuminate\Contracts\Encryption\Encrypter::class],
-            'db'                   => [\October\Rain\Database\DatabaseManager::class],
+            'db'                   => [\Illuminate\Database\DatabaseManager::class, \Illuminate\Database\ConnectionResolverInterface::class],
             'db.connection'        => [\Illuminate\Database\Connection::class, \Illuminate\Database\ConnectionInterface::class],
             'events'               => [\Illuminate\Events\Dispatcher::class, \Illuminate\Contracts\Events\Dispatcher::class],
             'files'                => [\Illuminate\Filesystem\Filesystem::class],
-            'filesystem'           => [\October\Rain\Filesystem\FilesystemManager::class, \Illuminate\Contracts\Filesystem\Factory::class],
+            'filesystem'           => [\Winter\Storm\Filesystem\FilesystemManager::class, \Illuminate\Contracts\Filesystem\Factory::class],
             'filesystem.disk'      => [\Illuminate\Contracts\Filesystem\Filesystem::class],
             'filesystem.cloud'     => [\Illuminate\Contracts\Filesystem\Cloud::class],
             'hash'                 => [\Illuminate\Contracts\Hashing\Hasher::class],
@@ -468,8 +468,8 @@ class Application extends ApplicationBase
             'router'               => [\Illuminate\Routing\Router::class, \Illuminate\Contracts\Routing\Registrar::class, \Illuminate\Contracts\Routing\BindingRegistrar::class],
             'session'              => [\Illuminate\Session\SessionManager::class],
             'session.store'        => [\Illuminate\Session\Store::class, \Illuminate\Contracts\Session\Session::class],
-            'url'                  => [\October\Rain\Router\UrlGenerator::class, \Illuminate\Contracts\Routing\UrlGenerator::class],
-            'validator'            => [\October\Rain\Validation\Factory::class, \Illuminate\Contracts\Validation\Factory::class],
+            'url'                  => [\Winter\Storm\Router\UrlGenerator::class, \Illuminate\Contracts\Routing\UrlGenerator::class],
+            'validator'            => [\Winter\Storm\Validation\Factory::class, \Illuminate\Contracts\Validation\Factory::class],
             'view'                 => [\Illuminate\View\Factory::class, \Illuminate\Contracts\View\Factory::class],
         ];
 

@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Router\Helper;
+use Winter\Storm\Router\Helper;
 
 class RouterHelperTest extends TestCase
 {

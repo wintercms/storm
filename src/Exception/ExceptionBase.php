@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Exception;
+<?php namespace Winter\Storm\Exception;
 
 use File;
 use Exception;
@@ -8,7 +8,6 @@ use Exception;
  * This class represents a base interface and set of properties
  * for system and application exceptions.
  *
- * @package october\exception
  * @author Alexey Bobkov, Samuel Georges
  */
 class ExceptionBase extends Exception
@@ -191,7 +190,7 @@ class ExceptionBase extends Exception
 
         return $this->highlight = (object)$result;
     }
-    
+
     /**
      * Returns an array of line numbers used for highlighting the problem area of code.
      * This will be six (6) lines before and after the error line number.

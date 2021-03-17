@@ -1,23 +1,22 @@
-<?php namespace October\Rain\Config;
+<?php namespace Winter\Storm\Config;
 
 use Closure;
 use ArrayAccess;
 use Illuminate\Contracts\Config\Repository as RepositoryContract;
 
 /**
- * October config repository class.
+ * Winter config repository class.
  *
- * @package config
  * @author Alexey Bobkov, Samuel Georges
  */
 class Repository implements ArrayAccess, RepositoryContract
 {
-    use \October\Rain\Support\Traits\KeyParser;
+    use \Winter\Storm\Support\Traits\KeyParser;
 
     /**
      * The loader implementation.
      *
-     * @var \October\Rain\Config\LoaderInterface
+     * @var \Winter\Storm\Config\LoaderInterface
      */
     protected $loader;
 
@@ -52,7 +51,7 @@ class Repository implements ArrayAccess, RepositoryContract
     /**
      * Create a new configuration repository.
      *
-     * @param  \October\Rain\Config\LoaderInterface  $loader
+     * @param  \Winter\Storm\Config\LoaderInterface  $loader
      * @param  string  $environment
      * @return void
      */
@@ -369,7 +368,7 @@ class Repository implements ArrayAccess, RepositoryContract
     /**
      * Get the loader implementation.
      *
-     * @return \October\Rain\Config\LoaderInterface
+     * @return \Winter\Storm\Config\LoaderInterface
      */
     public function getLoader()
     {
@@ -379,7 +378,7 @@ class Repository implements ArrayAccess, RepositoryContract
     /**
      * Set the loader implementation.
      *
-     * @param  \October\Rain\Config\LoaderInterface  $loader
+     * @param  \Winter\Storm\Config\LoaderInterface  $loader
      * @return void
      */
     public function setLoader(LoaderInterface $loader)

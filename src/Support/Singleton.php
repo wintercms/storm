@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Support;
+<?php namespace Winter\Storm\Support;
 
 use App; // @todo Allow external binding
 
@@ -8,7 +8,6 @@ use App; // @todo Allow external binding
  * A self binding, self contained single class that supports IoC.
  * Usage: myObject::instance()
  *
- * @package october\support
  * @author Alexey Bobkov, Samuel Georges
  */
 class Singleton

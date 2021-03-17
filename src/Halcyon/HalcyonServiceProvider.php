@@ -1,13 +1,12 @@
-<?php namespace October\Rain\Halcyon;
+<?php namespace Winter\Storm\Halcyon;
 
-use October\Rain\Halcyon\Datasource\Resolver;
-use October\Rain\Support\ServiceProvider;
+use Winter\Storm\Halcyon\Datasource\Resolver;
+use Winter\Storm\Support\ServiceProvider;
 use Illuminate\Cache\CacheManager;
 
 /**
  * Service provider
  *
- * @package october\halcyon
  * @author Alexey Bobkov, Samuel Georges
  */
 class HalcyonServiceProvider extends ServiceProvider

@@ -11,8 +11,8 @@ Modules and plugins can have config files in the /config directory. Plugin and m
 // Get a configuration string from the CMS module
 echo Config::get('cms::options.allowComments');
 
-// Get a configuration string from the october/blog plugin.
-echo Config::get('october.blog::options.allowComments');
+// Get a configuration string from the Winter.Blog plugin.
+echo Config::get('winter.blog::options.allowComments');
 ````
 
 ## Overriding configuration strings
@@ -26,7 +26,7 @@ app
       pluginname
         file.php
 ````
-Example: config/october/blog/options.php
+Example: config/winter/blog/options.php
 
 To override a module's configuration:
 

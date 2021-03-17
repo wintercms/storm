@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Connections;
+<?php namespace Winter\Storm\Database\Connections;
 
 use Closure;
 use Exception;
@@ -6,7 +6,7 @@ use Throwable;
 use Illuminate\Database\Schema\SqlServerBuilder;
 use Doctrine\DBAL\Driver\PDOSqlsrv\Driver as DoctrineDriver;
 use Illuminate\Database\Query\Processors\SqlServerProcessor;
-use October\Rain\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
+use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
 
 class SqlServerConnection extends Connection

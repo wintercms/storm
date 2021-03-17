@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Asset\Iterator;
+<?php namespace Winter\Storm\Assetic\Asset\Iterator;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.

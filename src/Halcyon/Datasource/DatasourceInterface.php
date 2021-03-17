@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Halcyon\Datasource;
+<?php namespace Winter\Storm\Halcyon\Datasource;
 
 interface DatasourceInterface
 {
