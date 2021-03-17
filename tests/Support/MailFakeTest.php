@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Support\Testing\Fakes\MailFake;
+use Winter\Storm\Support\Testing\Fakes\MailFake;
 
 class MailFakeTest extends TestCase
 {
@@ -14,7 +14,7 @@ class MailFakeTest extends TestCase
 
         // Mock Mail facade
         if (!class_exists('Mail')) {
-            class_alias('\October\Rain\Support\Facades\Mail', 'Mail');
+            class_alias('\Winter\Storm\Support\Facades\Mail', 'Mail');
         }
         Mail::swap(new MailFake());
 

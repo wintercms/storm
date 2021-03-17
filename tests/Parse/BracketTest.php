@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Parse\Bracket as TextParser;
+use Winter\Storm\Parse\Bracket as TextParser;
 
 class BracketTest extends TestCase
 {

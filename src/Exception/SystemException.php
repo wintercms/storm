@@ -1,13 +1,12 @@
-<?php namespace October\Rain\Exception;
+<?php namespace Winter\Storm\Exception;
 
 use Exception;
-use October\Rain\Html\HtmlBuilder;
+use Winter\Storm\Html\HtmlBuilder;
 
 /**
  * This class represents a critical system exception.
  * System exceptions are logged in the error log.
  *
- * @package october\exception
  * @author Alexey Bobkov, Samuel Georges, Luke Towers
  */
 class SystemException extends ExceptionBase

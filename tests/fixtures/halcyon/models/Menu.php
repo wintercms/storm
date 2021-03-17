@@ -1,6 +1,6 @@
 <?php
 
-use October\Rain\Halcyon\Model;
+use Winter\Storm\Halcyon\Model;
 
 class HalcyonTestMenu extends Model
 {

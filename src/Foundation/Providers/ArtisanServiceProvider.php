@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Foundation\Providers;
+<?php namespace Winter\Storm\Foundation\Providers;
 
-use October\Rain\Foundation\Console\KeyGenerateCommand;
-use October\Rain\Foundation\Console\ClearCompiledCommand;
+use Winter\Storm\Foundation\Console\KeyGenerateCommand;
+use Winter\Storm\Foundation\Console\ClearCompiledCommand;
 use Illuminate\Foundation\Providers\ArtisanServiceProvider as ArtisanServiceProviderBase;
 
 class ArtisanServiceProvider extends ArtisanServiceProviderBase

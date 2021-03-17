@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
-use October\Rain\Support\Testing\Fakes\MailFake;
+use Winter\Storm\Support\Facade;
+use Winter\Storm\Support\Testing\Fakes\MailFake;
 
 /**
  * @method static \Illuminate\Mail\PendingMail to($users)
@@ -22,15 +22,15 @@ use October\Rain\Support\Testing\Fakes\MailFake;
  * @method static \Illuminate\Support\Collection queued(string $mailable, \Closure|string $callback = null)
  * @method static bool hasQueued(string $mailable)
  *
- * @see \October\Rain\Mail\Mailer
- * @see \October\Rain\Support\Testing\Fakes\MailFake
+ * @see \Winter\Storm\Mail\Mailer
+ * @see \Winter\Storm\Support\Testing\Fakes\MailFake
  */
 class Mail extends Facade
 {
     /**
      * Replace the bound instance with a fake.
      *
-     * @return \October\Rain\Support\Testing\Fakes\MailFake
+     * @return \Winter\Storm\Support\Testing\Fakes\MailFake
      */
     public static function fake()
     {

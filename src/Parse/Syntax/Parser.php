@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Parse\Syntax;
+<?php namespace Winter\Storm\Parse\Syntax;
 
-use October\Rain\Parse\Bracket as TextParser;
+use Winter\Storm\Parse\Bracket as TextParser;
 
 /**
  * Dynamic Syntax parser
@@ -11,12 +11,12 @@ class Parser
     const CHAR_CLOSE = '}';
 
     /**
-     * @var \October\Rain\Parse\Syntax\FieldParser Field parser instance.
+     * @var \Winter\Storm\Parse\Syntax\FieldParser Field parser instance.
      */
     protected $fieldParser;
 
     /**
-     * @var \October\Rain\Parse\Bracket Text parser instance.
+     * @var \Winter\Storm\Parse\Bracket Text parser instance.
      */
     protected $textParser;
 
@@ -187,7 +187,7 @@ class Parser
      */
     protected function evalTwigViewField($field, $params, $prefix = null)
     {
-        if (isset($params['X_OCTOBER_IS_VARIABLE'])) {
+        if (isset($params['X_WINTER_IS_VARIABLE'])) {
             return '';
         }
 
@@ -245,7 +245,7 @@ class Parser
      */
     protected function evalSimpleViewField($field, $params, $prefix = null)
     {
-        if (isset($params['X_OCTOBER_IS_VARIABLE'])) {
+        if (isset($params['X_WINTER_IS_VARIABLE'])) {
             return '';
         }
 

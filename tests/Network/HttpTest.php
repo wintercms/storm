@@ -1,7 +1,7 @@
 <?php
 
-use October\Rain\Exception\ApplicationException;
-use October\Rain\Network\Http;
+use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Network\Http;
 
 class HttpTest extends TestCase
 {
@@ -10,7 +10,7 @@ class HttpTest extends TestCase
     /**
      * Http object fixture
      *
-     * @var \October\Rain\Network\Http
+     * @var \Winter\Storm\Network\Http
      */
     protected $Http;
 

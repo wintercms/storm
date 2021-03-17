@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Mail;
+<?php namespace Winter\Storm\Mail;
 
 use App;
 use Illuminate\Mail\Mailable as MailableBase;
@@ -6,7 +6,6 @@ use Illuminate\Mail\Mailable as MailableBase;
 /**
  * Generic mailable class.
  *
- * @package october\mail
  * @author Alexey Bobkov, Samuel Georges
  */
 class Mailable extends MailableBase
@@ -61,7 +60,7 @@ class Mailable extends MailableBase
 
         return $this;
     }
-    
+
     /**
      * Set the subject for the message.
      *

@@ -3,11 +3,11 @@
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
-use October\Rain\Database\Query\Grammars\MySqlGrammar;
-use October\Rain\Database\Query\Grammars\PostgresGrammar;
-use October\Rain\Database\Query\Grammars\SQLiteGrammar;
-use October\Rain\Database\Query\Grammars\SqlServerGrammar;
-use October\Rain\Database\QueryBuilder;
+use Winter\Storm\Database\Query\Grammars\MySqlGrammar;
+use Winter\Storm\Database\Query\Grammars\PostgresGrammar;
+use Winter\Storm\Database\Query\Grammars\SQLiteGrammar;
+use Winter\Storm\Database\Query\Grammars\SqlServerGrammar;
+use Winter\Storm\Database\QueryBuilder;
 
 class QueryBuilderTest extends TestCase
 {
@@ -185,7 +185,7 @@ class QueryBuilderTest extends TestCase
         if ($connection) {
             return parent::getConnection($connection);
         }
-        
+
         $connection = $this->getMockBuilder(ConnectionInterface::class)
             ->disableOriginalConstructor()
             ->disableOriginalClone()

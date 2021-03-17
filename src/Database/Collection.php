@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
 

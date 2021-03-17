@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 use Db;
 use Str;
@@ -11,7 +11,6 @@ use Exception;
  *
  * Combine various models in to a single feed.
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class DataFeed

@@ -1,10 +1,9 @@
-<?php namespace October\Rain\Extension;
+<?php namespace Winter\Storm\Extension;
 
 /**
  * Extension class
  * Allows for "Private traits"
  *
- * @package october\extension
  * @author Alexey Bobkov, Samuel Georges
  */
 

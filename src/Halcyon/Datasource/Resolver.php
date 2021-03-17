@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Halcyon\Datasource;
+<?php namespace Winter\Storm\Halcyon\Datasource;
 
 class Resolver implements ResolverInterface
 {
@@ -33,7 +33,7 @@ class Resolver implements ResolverInterface
      * Get a database datasource instance.
      *
      * @param  string  $name
-     * @return \October\Rain\Halcyon\Datasource\DatasourceInterface
+     * @return \Winter\Storm\Halcyon\Datasource\DatasourceInterface
      */
     public function datasource($name = null)
     {
@@ -48,7 +48,7 @@ class Resolver implements ResolverInterface
      * Add a datasource to the resolver.
      *
      * @param  string  $name
-     * @param  \October\Rain\Halcyon\Datasource\DatasourceInterface  $datasource
+     * @param  \Winter\Storm\Halcyon\Datasource\DatasourceInterface  $datasource
      * @return void
      */
     public function addDatasource($name, DatasourceInterface $datasource)
