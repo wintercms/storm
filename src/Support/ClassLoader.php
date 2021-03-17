@@ -240,7 +240,7 @@ class ClassLoader
      * Gets an alias for a class, if available.
      *
      * @param string $class
-     * @return void
+     * @return string|null
      */
     protected function getAlias($class)
     {
