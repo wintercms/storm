@@ -116,4 +116,26 @@ class SemvarTest extends TestCase
         $this->assertFalse(Semvar::match('>=1.5 || ^3.2', '1.3.0'));
         $this->assertFalse(Semvar::match('>=1.5 <=2.0 || ^3.2', '1.3'));
     }
+
+    public function testExplode()
+    {
+        $version = Semvar::explode('1.5');
+
+        $this->assertIsArray($version);
+
+        $this->assertArrayHasKey('string', $version);
+        $this->assertArrayHasKey('major', $version);
+        $this->assertArrayHasKey('minor', $version);
+        $this->assertArrayHasKey('patch', $version);
+
+        $this->assertIsString($version['string']);
+        $this->assertIsInt($version['major']);
+        $this->assertIsInt($version['minor']);
+        $this->assertIsInt($version['patch']);
+
+        $this->assertEquals('1.5.0', $version['string']);
+        $this->assertEquals(1, $version['major']);
+        $this->assertEquals(5, $version['minor']);
+        $this->assertEquals(0, $version['patch']);
+    }
 }
