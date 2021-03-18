@@ -138,4 +138,24 @@ class SemvarTest extends TestCase
         $this->assertEquals(5, $version['minor']);
         $this->assertEquals(0, $version['patch']);
     }
+
+    public function testWildRule()
+    {
+        $this->assertTrue(Semvar::match('1.*', '1.6'));
+        $this->assertTrue(Semvar::match('1.5.*', '1.5.6'));
+        $this->assertTrue(Semvar::match('1.5.* || 2.4.*', '2.4.2'));
+        $this->assertFalse(Semvar::match('1.*', '2.1'));
+        $this->assertFalse(Semvar::match('1.5.*', '1.6'));
+        $this->assertFalse(Semvar::match('1.5.* || 2.4.*', '1.6'));
+    }
+
+    public function testRangeRule()
+    {
+        $this->assertTrue(Semvar::match('1.0 - 2.3', '1.6'));
+        $this->assertTrue(Semvar::match('1.0 - 1.8', '1.6'));
+        $this->assertTrue(Semvar::match('1.0 - 1.8 || 3.2 - 4.0', '3.3.0'));
+        $this->assertFalse(Semvar::match('1.5 - 2.0', '2.1'));
+        $this->assertFalse(Semvar::match('1.5 - 2.0', '1.4'));
+        $this->assertFalse(Semvar::match('1.0 - 1.8 || 3.2 - 4.0', '2.3.0'));
+    }
 }
