@@ -6,7 +6,6 @@
  *
  * @author Jack Wilkinson
  */
-
 class Semvar
 {
     const LOGICAL_OR = '||';
@@ -15,7 +14,7 @@ class Semvar
     const OPERATOR_GT    = 'greaterThan';
     const OPERATOR_LTE   = 'lessThanEqual';
     const OPERATOR_LT    = 'lessThan';
-    const OPERATOR_TILDY = 'tildy';
+    const OPERATOR_TILDE = 'tilde';
     const OPERATOR_CARET = 'caret';
 
     const OPERATORS = [
@@ -23,7 +22,7 @@ class Semvar
         self::OPERATOR_GT       => '>',
         self::OPERATOR_LTE      => '<=',
         self::OPERATOR_LT       => '<',
-        self::OPERATOR_TILDY    => '~',
+        self::OPERATOR_TILDE    => '~',
         self::OPERATOR_CARET    => '^'
     ];
 
@@ -206,7 +205,7 @@ class Semvar
                         return false;
                     }
                     break;
-                case static::OPERATOR_TILDY:
+                case static::OPERATOR_TILDE:
                     list($lower, $upper) = static::tildyRange($compare);
                     if (!(version_compare($version, $lower) >= 0 && version_compare($version, $upper) <= 0)) {
                         return false;
