@@ -10,12 +10,14 @@ class Semvar
 {
     const LOGICAL_OR = '||';
 
-    const OPERATOR_GTE   = 'greaterThanEqual';
-    const OPERATOR_GT    = 'greaterThan';
-    const OPERATOR_LTE   = 'lessThanEqual';
-    const OPERATOR_LT    = 'lessThan';
-    const OPERATOR_TILDE = 'tilde';
-    const OPERATOR_CARET = 'caret';
+    const OPERATOR_GTE    = 'greaterThanEqual';
+    const OPERATOR_GT     = 'greaterThan';
+    const OPERATOR_LTE    = 'lessThanEqual';
+    const OPERATOR_LT     = 'lessThan';
+    const OPERATOR_TILDE  = 'tilde';
+    const OPERATOR_CARET  = 'caret';
+    const OPERATOR_HYPHEN = 'hyphen';
+    const OPERATOR_WILD   = 'wild';
 
     const OPERATORS = [
         self::OPERATOR_GTE      => '>=',
@@ -23,7 +25,9 @@ class Semvar
         self::OPERATOR_LTE      => '<=',
         self::OPERATOR_LT       => '<',
         self::OPERATOR_TILDE    => '~',
-        self::OPERATOR_CARET    => '^'
+        self::OPERATOR_CARET    => '^',
+        self::OPERATOR_HYPHEN   => '-',
+        self::OPERATOR_WILD     => '*'
     ];
 
     const SEMVAR_REGEX = '/^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>'
@@ -56,10 +60,10 @@ class Semvar
     {
         preg_match(static::SEMVAR_REGEX, static::makeCompliant($version), $matches);
         return [
-            'string' => $matches[0],
-            'major'  => (int) $matches['major'],
-            'minor'  => (int) $matches['minor'],
-            'patch'  => (int) $matches['patch'],
+            'string' => $matches[0] ?? '0.0.0',
+            'major'  => (int) ($matches['major'] ?? 0),
+            'minor'  => (int) ($matches['minor'] ?? 0),
+            'patch'  => (int) ($matches['patch'] ?? 0),
         ];
     }
 
@@ -84,11 +88,11 @@ class Semvar
             $version .= '.0';
         }
 
-        return $version;
+        return trim($version);
     }
 
     /**
-     * Expand a version into upper and lower bounds inline with the ~ operator
+     *  Create a version upper and lower range inline with the ~ operator
      * @param  string $version version to be tested, e.g. 1.2.3
      * @return array           lower and upper bounds, e.g. [1.2.3, 1.3.0]
      */
@@ -108,7 +112,7 @@ class Semvar
     }
 
     /**
-     * Expand a version into upper and lower bounds inline with the ^ operator
+     * Create a version upper and lower range inline with the ^ operator
      * @param  string $version version to be tested, e.g. 1.2.3
      * @return array           lower and upper bounds, e.g. [1.2.3, 2.0.0]
      */
@@ -121,6 +125,71 @@ class Semvar
         }
 
         return [$version['string'], sprintf('%d.0.0', $version['major'] + 1)];
+    }
+
+    /**
+     * Expand a hyphen rule into upper and lower bounds inline with the - operator
+     * @param  string $rule     version to be tested, e.g. 1.0 - 2.0
+     * @return string           lower and upper bounds, e.g. >=1.0 <2.1
+     * @throws \InvalidArgumentException
+     */
+    public static function expandHyphen(string $rule): string
+    {
+        $rule = array_filter(array_map(function ($element) {
+            return trim($element);
+        }, explode(static::OPERATORS[static::OPERATOR_HYPHEN], $rule)), function ($element) {
+            return $element !== static::OPERATORS[static::OPERATOR_HYPHEN];
+        });
+
+        if (count($rule) !== 2) {
+            throw new \InvalidArgumentException('hyphen rule syntactically wrong');
+        }
+
+        $upper = static::explode($rule[1]);
+
+        $rule[0] = '>=' . static::makeCompliant($rule[0]);
+        $rule[1] = sprintf(
+            '<%d.%d.%d',
+            $upper['major'],
+            ($upper['minor'] === 0 ? 1 : $upper['minor']),
+            $upper['patch']
+        );
+
+        return implode(' ', $rule);
+    }
+
+    /**
+     * Expand a wild rule into upper and lower bounds inline with the * operator
+     * @param  string $rule     version to be tested, e.g. 1.*
+     * @return string           lower and upper bounds, e.g. >=1.0 <2.0
+     * @throws \InvalidArgumentException
+     */
+    public static function expandWild(string $rule): string
+    {
+        $elements = explode('.', $rule);
+        $count = count($elements);
+
+        if ($count === 3) {
+            return sprintf(
+                '>=%s <%s',
+                static::makeCompliant(sprintf('%s.%s', $elements[0], $elements[1])),
+                static::makeCompliant(sprintf('%s.%s', $elements[0], ((int) $elements[1]) + 1))
+            );
+        }
+
+        if ($count === 2) {
+            return sprintf(
+                '>=%s <%s',
+                static::makeCompliant($elements[0]),
+                static::makeCompliant(((int) $elements[0]) + 1)
+            );
+        }
+
+        if ($count === 1 && $elements[0] === '*') {
+            return '>=0.0.0 <9999.9999.9999';
+        }
+
+        throw new \InvalidArgumentException('wild rule syntactically wrong');
     }
 
     /**
@@ -151,10 +220,16 @@ class Semvar
         }
 
         if (isset($char)) {
-            $buffer[$index] .= $char;
+            $buffer[$index] = ($buffer[$index] ?? '') . $char;
         }
 
         return array_map(function ($rule) {
+            if (strpos($rule, static::OPERATORS[static::OPERATOR_HYPHEN]) !== false) {
+                $rule = static::expandHyphen($rule);
+            }
+            if (strpos($rule, static::OPERATORS[static::OPERATOR_WILD]) !== false) {
+                $rule = static::expandWild($rule);
+            }
             return explode(' ', trim($rule));
         }, $buffer);
     }
