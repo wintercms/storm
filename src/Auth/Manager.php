@@ -240,15 +240,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
          */
         foreach ($hashedCredentials as $credential => $value) {
             if (!$user->checkHashValue($credential, $value)) {
-                // Incorrect password
-                if ($credential == 'password') {
-                    throw new AuthException(sprintf(
-                        'A user was found to match all plain text credentials however hashed credential "%s" did not match.',
-                        $credential
-                    ));
-                }
-
-                // User not found
+                // User doesn't exist or invalid password, should not expose if a user exists or not.
                 throw new AuthException('A user was not found with the given credentials.');
             }
         }
