@@ -1,17 +1,12 @@
 <?php namespace Winter\Storm\Events;
 
-use Exception;
 use ReflectionClass;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Illuminate\Container\Container;
+use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Str;
+use Illuminate\Events\Dispatcher as BaseDispatcher;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
-use Illuminate\Contracts\Broadcasting\Factory as BroadcastFactory;
-use Illuminate\Contracts\Container\Container as ContainerContract;
 
-class Dispatcher extends \Illuminate\Events\Dispatcher
+class Dispatcher extends BaseDispatcher
 {
     /**
      * The sorted event listeners.
