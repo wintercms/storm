@@ -169,6 +169,21 @@ class ClassLoader
     }
 
     /**
+     * De-register the given class loader on the auto-loader stack.
+     *
+     * @return void
+     */
+    public function unregister()
+    {
+        if (!$this->registered) {
+            return;
+        }
+
+        spl_autoload_unregister([$this, 'load']);
+        $this->registered = false;
+    }
+
+    /**
      * Build the manifest and write it to disk.
      *
      * @return void
@@ -275,8 +290,8 @@ class ClassLoader
     {
         if (count($this->namespaceAliases)) {
             foreach ($this->namespaceAliases as $alias => $original) {
-                if (starts_with($class, $original)) {
-                    return str_replace($original, $alias, $class);
+                if (starts_with($class, $alias)) {
+                    return str_replace($alias, $original, $class);
                 }
             }
         }
