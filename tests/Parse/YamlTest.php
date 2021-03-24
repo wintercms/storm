@@ -20,6 +20,7 @@ class YamlTest extends TestCase
         $yaml = $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/version.yaml'));
 
         $this->assertEquals([
+            '1.3.2' => 'Added support for Translate plugin. Added some new languages.',
             '1.3.1' => [
                 'Minor bug fix Please see changelog',
                 'fix_database.php',
