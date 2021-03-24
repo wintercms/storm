@@ -59,10 +59,8 @@ class Translator extends TranslatorBase
          *     });
          *
          */
-        if (
-            isset($this->events)
-            && ($line = $this->events->fire('translator.beforeResolve', [$key, $replace, $locale], true))
-        ) {
+        if (isset($this->events) &&
+            ($line = $this->events->fire('translator.beforeResolve', [$key, $replace, $locale], true))) {
             return $line;
         }
 
@@ -120,10 +118,8 @@ class Translator extends TranslatorBase
          *     });
          *
          */
-        if (
-            isset($this->events)
-            && ($afterResolve = $this->events->fire('translator.afterResolve', [$key, $replace, $line, $locale], true))
-        ) {
+        if (isset($this->events) &&
+            ($afterResolve = $this->events->fire('translator.afterResolve', [$key, $replace, $line, $locale], true))) {
             return $afterResolve;
         }
 
