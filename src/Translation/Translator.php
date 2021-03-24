@@ -23,6 +23,11 @@ class Translator extends TranslatorBase
     protected $events;
 
     /**
+     * @var array List of namespace aliases. ['aliased.namespace' => 'real.namespace']
+     */
+    protected $aliases = [];
+
+    /**
      * Get the translation for a given key.
      *
      * @param  string  $key
@@ -203,6 +208,37 @@ class Translator extends TranslatorBase
         $locales[] = static::CORE_LOCALE;
 
         return $locales;
+    }
+
+    /**
+     * Parse a key into namespace, group, and item.
+     *
+     * @param  string  $key
+     * @return array
+     */
+    public function parseKey($key)
+    {
+        $segments = parent::parseKey($key);
+
+        $namespace = strtolower($segments[0]);
+
+        if (isset($this->aliases[$namespace])) {
+            $segments[0] = $this->aliases[$namespace];
+        }
+
+        return $segments;
+    }
+
+    /**
+     * Register a namespace alias
+     *
+     * @param string $namespace The namespace to register an alias for. Example: winter.blog
+     * @param string $alias The alias to register. Example: rainlab.blog
+     * @return void
+     */
+    public function registerNamespaceAlias(string $namespace, string $alias)
+    {
+        $this->aliases[strtolower($alias)] = $namespace;
     }
 
     /**
