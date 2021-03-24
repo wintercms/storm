@@ -63,14 +63,29 @@ class TranslatorTest extends TestCase
 
     public function testOverrideWithBeforeResolveEvent()
     {
-        $eventsDispatcher = $this->createMock(Dispatcher::class);
-        $eventsDispatcher
-            ->expects($this->exactly(2))
-            ->method('fire')
-            ->will($this->onConsecutiveCalls('Hello Override!', null));
+        $eventsDispatcher = new Dispatcher();
         $this->translator->setEventDispatcher($eventsDispatcher);
 
-        $this->assertEquals('Hello Override!', $this->translator->get('lang.test.hello_override'));
         $this->assertEquals('Hello Winter!', $this->translator->get('lang.test.hello_winter'));
+
+        $eventsDispatcher->listen('translator.beforeResolve', function () {
+            return 'Hello Override!';
+        });
+
+        $this->assertEquals('Hello Override!', $this->translator->get('lang.test.hello_override'));
+    }
+
+    public function testOverrideWithAfterResolveEvent()
+    {
+        $eventsDispatcher = new Dispatcher();
+        $this->translator->setEventDispatcher($eventsDispatcher);
+
+        $this->assertEquals('Hello Winter!', $this->translator->get('lang.test.hello_winter'));
+
+        $eventsDispatcher->listen('translator.afterResolve', function ($key, $replace, $line) {
+            return str_replace('Hello', 'Hi', $line);
+        });
+
+        $this->assertEquals('Hi Winter!', $this->translator->get('lang.test.hello_winter'));
     }
 }
