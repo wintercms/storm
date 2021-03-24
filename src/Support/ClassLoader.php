@@ -69,6 +69,13 @@ class ClassLoader
     protected $aliases = [];
 
     /**
+     * Namespace alias array.
+     *
+     * @var array
+     */
+    protected $namespaceAliases = [];
+
+    /**
      * Create a new package manifest instance.
      *
      * @param  \Winter\Storm\Filesystem\Filesystem  $files
@@ -162,6 +169,21 @@ class ClassLoader
     }
 
     /**
+     * De-register the given class loader on the auto-loader stack.
+     *
+     * @return void
+     */
+    public function unregister()
+    {
+        if (!$this->registered) {
+            return;
+        }
+
+        spl_autoload_unregister([$this, 'load']);
+        $this->registered = false;
+    }
+
+    /**
      * Build the manifest and write it to disk.
      *
      * @return void
@@ -230,8 +252,30 @@ class ClassLoader
     public function addAliases(array $aliases)
     {
         foreach ($aliases as $original => $alias) {
-            if (!array_key_exists(strtolower($alias), $this->aliases)) {
-                $this->aliases[strtolower($alias)] = $original;
+            if (!array_key_exists($alias, $this->aliases)) {
+                $this->aliases[$alias] = $original;
+            }
+        }
+    }
+
+    /**
+     * Adds namespace aliases to the class loader.
+     *
+     * Similar to the "addAliases" method, but applies across an entire namespace.
+     *
+     * Aliases are first-come, first-served. If a real class already exists with the same name as an alias, the real
+     * class is used over the alias.
+     *
+     * @param array $aliases
+     * @return void
+     */
+    public function addNamespaceAliases(array $namespaceAliases)
+    {
+        foreach ($namespaceAliases as $original => $alias) {
+            if (!array_key_exists($alias, $this->namespaceAliases)) {
+                $alias = ltrim($alias, '\\');
+                $original = ltrim($original, '\\');
+                $this->namespaceAliases[$alias] = $original;
             }
         }
     }
@@ -244,8 +288,16 @@ class ClassLoader
      */
     protected function getAlias($class)
     {
-        return array_key_exists(strtolower($class), $this->aliases)
-            ? $this->aliases[strtolower($class)]
+        if (count($this->namespaceAliases)) {
+            foreach ($this->namespaceAliases as $alias => $original) {
+                if (starts_with($class, $alias)) {
+                    return str_replace($alias, $original, $class);
+                }
+            }
+        }
+
+        return array_key_exists($class, $this->aliases)
+            ? $this->aliases[$class]
             : null;
     }
 
