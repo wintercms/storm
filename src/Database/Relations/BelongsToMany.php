@@ -142,10 +142,14 @@ class BelongsToMany extends BelongsToManyBase
             return;
         }
 
-        /**
-         * @see Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithPivotTable
-         */
-        parent::attach($id, $attributes, $touch);
+        // Here we will insert the attachment records into the pivot table. Once we have
+        // inserted the records, we will touch the relationships if necessary and the
+        // function will return. We can parse the IDs before inserting the records.
+        $this->newPivotStatement()->insert($insertData);
+
+        if ($touch) {
+            $this->touchIfTouching();
+        }
 
         /**
          * @event model.relation.afterAttach
@@ -227,7 +231,7 @@ class BelongsToMany extends BelongsToManyBase
             $this->parent->reloadRelations($this->relationName);
         }
         else {
-            $this->parent->bindDeferred($this->relationName, $model, $sessionKey);
+            $this->parent->bindDeferred($this->relationName, $model, $sessionKey, $pivotData);
         }
     }
 
