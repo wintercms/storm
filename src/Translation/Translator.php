@@ -59,8 +59,10 @@ class Translator extends TranslatorBase
          *     });
          *
          */
-        if (isset($this->events) &&
-            ($line = $this->events->fire('translator.beforeResolve', [$key, $replace, $locale], true))) {
+        if (
+            isset($this->events)
+            && ($line = $this->events->fire('translator.beforeResolve', [$key, $replace, $locale], true))
+        ) {
             return $line;
         }
 
@@ -105,7 +107,27 @@ class Translator extends TranslatorBase
             }
         }
 
-        // If the line doesn't exist, we will return back the key which was requested as
+        /**
+         * @event translator.afterResolve
+         * Fires after the translator resolves the requested language key
+         *
+         * Example usage (overrides the value returned for a specific language key):
+         *
+         *     Event::listen('translator.afterResolve', function ((string) $key, (array) $replace, (string|null) $line (string|null) $locale) {
+         *         if ($key === 'my.custom.key') {
+         *             return 'My overriding value';
+         *         }
+         *     });
+         *
+         */
+        if (
+            isset($this->events)
+            && ($afterResolve = $this->events->fire('translator.afterResolve', [$key, $replace, $line, $locale], true))
+        ) {
+            return $afterResolve;
+        }
+
+        // If the line doesn't exist, we overrideswill return back the key which was requested as
         // that will be quick to spot in the UI if language keys are wrong or missing
         // from the application's language files. Otherwise we can return the line.
         if (!isset($line)) {
