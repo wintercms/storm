@@ -5,14 +5,19 @@ use Config;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
+use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
 
 /**
  * Yaml helper class
  *
  * @author Alexey Bobkov, Samuel Georges
+ * @author Winter CMS
  */
 class Yaml
 {
+    /** @var  */
+    protected $processor;
+
     /**
      * Parses supplied YAML contents in to a PHP array.
      * @param string $contents YAML contents to parse.
@@ -21,7 +26,18 @@ class Yaml
     public function parse($contents)
     {
         $yaml = new Parser;
-        return $yaml->parse($contents);
+
+        if (!is_null($this->processor)) {
+            $contents = $this->processor->preprocess($contents);
+        }
+
+        $parsed = $yaml->parse($contents);
+
+        if (!is_null($this->processor)) {
+            $parsed = $this->processor->process($parsed);
+        }
+
+        return $parsed;
     }
 
     /**
@@ -65,5 +81,17 @@ class Yaml
 
         $yaml = new Dumper;
         return $yaml->dump($vars, $inline, 0, $exceptionOnInvalidType, $objectSupport);
+    }
+
+    /**
+     * Sets a processor.
+     *
+     * @param YamlProcessor $processor
+     * @return static
+     */
+    public function setProcessor(YamlProcessor $processor)
+    {
+        $this->processor = $processor;
+        return $this;
     }
 }
