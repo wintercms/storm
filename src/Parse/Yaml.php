@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Parse;
 
 use Cache;
+use Closure;
 use Config;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
@@ -15,13 +16,14 @@ use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
  */
 class Yaml
 {
-    /** @var  */
+    /** @var YamlProcessor active YAML processor instance */
     protected $processor;
 
     /**
      * Parses supplied YAML contents in to a PHP array.
+     *
      * @param string $contents YAML contents to parse.
-     * @return array The YAML contents as an array.
+     * @return mixed The YAML contents.
      */
     public function parse($contents)
     {
@@ -42,8 +44,9 @@ class Yaml
 
     /**
      * Parses YAML file contents in to a PHP array.
+     *
      * @param string $fileName File to read contents and parse.
-     * @return array The YAML contents as an array.
+     * @return mixed The YAML contents.
      */
     public function parseFile($fileName)
     {
@@ -63,6 +66,7 @@ class Yaml
 
     /**
      * Renders a PHP array to YAML format.
+     *
      * @param array $vars
      * @param array $options
      *
@@ -70,6 +74,8 @@ class Yaml
      * - inline: The level where you switch to inline YAML.
      * - exceptionOnInvalidType: if an exception must be thrown on invalid types.
      * - objectSupport: if object support is enabled.
+     *
+     * @return string
      */
     public function render($vars = [], $options = [])
     {
@@ -93,5 +99,40 @@ class Yaml
     {
         $this->processor = $processor;
         return $this;
+    }
+
+    /**
+     * Removes the current processor.
+     *
+     * @return static
+     */
+    public function removeProcessor()
+    {
+        $this->processor = null;
+        return $this;
+    }
+
+    /**
+     * Temporarily uses a processor for the YAML parser within a callback.
+     *
+     * Once the callback is fired, any previous active processor will be restored.
+     *
+     * @return mixed
+     */
+    public function withProcessor(YamlProcessor $processor, callable $callback)
+    {
+        if (!is_null($this->processor)) {
+            $oldProcessor = $this->processor;
+        }
+
+        $this->setProcessor($processor);
+        $data = $callback($this);
+        $this->removeProcessor();
+
+        if (isset($oldProcessor)) {
+            $this->setProcessor($oldProcessor);
+        }
+
+        return $data;
     }
 }
