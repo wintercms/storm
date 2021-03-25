@@ -1,52 +1,124 @@
 <?php
 
+use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
 use Winter\Storm\Parse\Yaml as YamlParser;
-use Winter\Storm\Parse\Processor\VersionYamlProcessor;
 
 class YamlTest extends TestCase
 {
     public function testParseWithoutProcessor()
     {
-        $this->expectException(Symfony\Component\Yaml\Exception\ParseException::class);
-
         $parser = new YamlParser;
-        $yaml = $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/version.yaml'));
-    }
-
-    public function testParseWithProcessor()
-    {
-        $parser = new YamlParser;
-        $parser->setProcessor(new VersionYamlProcessor);
-        $yaml = $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/version.yaml'));
+        $yaml = $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/test.yaml'));
 
         $this->assertEquals([
-            '1.3.2' => 'Added support for Translate plugin. Added some new languages.',
-            '1.3.1' => [
-                'Minor bug fix Please see changelog',
-                'fix_database.php',
-            ],
-            '1.3.0' => '!!! We\'ve refactored major parts of this plugin. Please see the website for more information.',
-            '1.2.0' => [
-                '!!! Security update - see: https://wintercms.com'
-            ],
-            '1.1.0' => [
-                '!!! Drop support for blog settings',
-                'drop_blog_settings_table.php',
-            ],
-            '1.0.5' => [
-                'Create blog settings table',
-                'Another update message',
-                'Yet one more update message',
-                'create_blog_settings_table.php',
-            ],
-            '1.0.4' => 'Another fix',
-            '1.0.3' => 'Bug fix update that uses no scripts',
-            '1.0.2' => 'Added some stuff',
-            '1.0.1' => [
-                'Added some upgrade file and some seeding',
-                'some_upgrade_file.php',
-                'some_seeding_file.php',
+            'test' => [
+                'test1' => 'Test 1 Value',
+                'test2' => [
+                    'test21' => 'Test 2 Value',
+                ],
+                'test3' => [
+                    'Test 3 Value 1',
+                    'Test 3 Value 2',
+                    'Test 3 Value 3',
+                ],
             ],
         ], $yaml);
+    }
+
+    public function testParseWithPreProcessor()
+    {
+        $parser = new YamlParser;
+        $parser->setProcessor(new UppercaseYamlProcessor);
+        $yaml = $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/test.yaml'));
+        $parser->removeProcessor();
+
+        $this->assertEquals([
+            'TEST' => [
+                'TEST1' => 'TEST 1 VALUE',
+                'TEST2' => [
+                    'TEST21' => 'TEST 2 VALUE',
+                ],
+                'TEST3' => [
+                    'TEST 3 VALUE 1',
+                    'TEST 3 VALUE 2',
+                    'TEST 3 VALUE 3',
+                ],
+            ],
+        ], $yaml);
+    }
+
+    public function testParseWithPreProcessorTemporarily()
+    {
+        $parser = new YamlParser;
+        $yaml = $parser->withProcessor(new UppercaseYamlProcessor, function ($yaml) {
+            return $yaml->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/test.yaml'));
+        });
+
+        $this->assertEquals([
+            'TEST' => [
+                'TEST1' => 'TEST 1 VALUE',
+                'TEST2' => [
+                    'TEST21' => 'TEST 2 VALUE',
+                ],
+                'TEST3' => [
+                    'TEST 3 VALUE 1',
+                    'TEST 3 VALUE 2',
+                    'TEST 3 VALUE 3',
+                ],
+            ],
+        ], $yaml);
+    }
+
+    public function testParseWithPostProcessor()
+    {
+        $parser = new YamlParser;
+        $parser->setProcessor(new ObjectYamlProcessor);
+        $yaml = $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/test.yaml'));
+        $parser->removeProcessor();
+
+        $this->assertIsObject($yaml);
+        $this->assertEquals([
+            'test1' => 'Test 1 Value',
+            'test2' => [
+                'test21' => 'Test 2 Value',
+            ],
+            'test3' => [
+                'Test 3 Value 1',
+                'Test 3 Value 2',
+                'Test 3 Value 3',
+            ],
+        ], $yaml->test);
+    }
+}
+
+/**
+ * Test pre-processor
+ */
+class UppercaseYamlProcessor implements YamlProcessor
+{
+    public function preprocess($text)
+    {
+        return strtoupper($text);
+    }
+
+    public function process($parsed)
+    {
+        return $parsed;
+    }
+}
+
+/**
+ * Test post-processor
+ */
+class ObjectYamlProcessor implements YamlProcessor
+{
+    public function preprocess($text)
+    {
+        return $text;
+    }
+
+    public function process($parsed)
+    {
+        return (object) $parsed;
     }
 }
