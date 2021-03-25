@@ -1,7 +1,6 @@
 <?php namespace Winter\Storm\Parse;
 
 use Cache;
-use Closure;
 use Config;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
