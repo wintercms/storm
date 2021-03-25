@@ -81,4 +81,11 @@ class TranslatorTest extends TestCase
         $this->assertEquals('Hello Winter!', $this->translator->get('winter.test::lang.test.hello_winter'));
         $this->assertEquals('Hello Winter!', $this->translator->get('winter.alias::lang.test.hello_winter'));
     }
+
+    public function testMixedCaseNamespaceAliasing()
+    {
+        $this->translator->registerNamespaceAlias('Winter.Test', 'Winter.CaseAlias');
+        $this->assertEquals('Hello Winter!', $this->translator->get('winter.test::lang.test.hello_winter'));
+        $this->assertEquals('Hello Winter!', $this->translator->get('winter.casealias::lang.test.hello_winter'));
+    }
 }

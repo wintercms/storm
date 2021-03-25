@@ -238,7 +238,7 @@ class Translator extends TranslatorBase
      */
     public function registerNamespaceAlias(string $namespace, string $alias)
     {
-        $this->aliases[strtolower($alias)] = $namespace;
+        $this->aliases[strtolower($alias)] = strtolower($namespace);
     }
 
     /**
