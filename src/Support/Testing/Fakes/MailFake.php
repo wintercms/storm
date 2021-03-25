@@ -13,7 +13,8 @@ class MailFake extends \Illuminate\Support\Testing\Fakes\MailFake
     protected function mailablesOf($type)
     {
         return collect($this->mailables)->filter(function ($mailable) use ($type) {
-            return $mailable instanceof $type || $mailable->view === $type || $mailable->textView === $type;
+            return $mailable instanceof $type ||
+                ($mailable instanceof Mailable && ($mailable->view === $type || $mailable->textView === $type));
         });
     }
 
@@ -26,7 +27,8 @@ class MailFake extends \Illuminate\Support\Testing\Fakes\MailFake
     protected function queuedMailablesOf($type)
     {
         return collect($this->queuedMailables)->filter(function ($mailable) use ($type) {
-            return $mailable instanceof $type || $mailable->view === $type || $mailable->textView === $type;
+            return $mailable instanceof $type ||
+                ($mailable instanceof Mailable && ($mailable->view === $type || $mailable->textView === $type));
         });
     }
 
