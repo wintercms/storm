@@ -4,7 +4,7 @@ use Winter\Storm\Database\Attach\Resizer;
 
 class ResizerTest extends TestCase
 {
-    #use \AssertGD\GDAssertTrait;
+    use \AssertGD\GDAssertTrait;
 
     // Controls whether the test compares against existing fixtures or generates new ones
     // Should be false when we are actually running the tests, true when we are generating fixtures
