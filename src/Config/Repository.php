@@ -42,6 +42,13 @@ class Repository implements ArrayAccess, RepositoryContract
     protected $packages = [];
 
     /**
+     * All of the namespace aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [];
+
+    /**
      * The after load callbacks for namespaces.
      *
      * @var array
@@ -258,6 +265,8 @@ class Repository implements ArrayAccess, RepositoryContract
     protected function parseNamespacedSegments($key)
     {
         list($namespace, $item) = explode('::', $key);
+        // load aliases namespace
+        $namespace = $this->aliases[$namespace] ?? $namespace;
 
         // If the namespace is registered as a package, we will just assume the group
         // is equal to the namespace since all packages cascade in this way having
@@ -352,6 +361,18 @@ class Repository implements ArrayAccess, RepositoryContract
     public function addNamespace($namespace, $hint)
     {
         $this->loader->addNamespace($namespace, $hint);
+    }
+
+    /**
+     * Add a new namespace to the loader.
+     *
+     * @param  string  $namespace
+     * @param  string  $alias
+     * @return void
+     */
+    public function registerNamespaceAlias(string $namespace, string $alias)
+    {
+        $this->aliases[strtolower($alias)] = strtolower($namespace);
     }
 
     /**
