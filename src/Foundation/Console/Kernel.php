@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Foundation\Console;
+<?php namespace Winter\Storm\Foundation\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -11,14 +11,14 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $bootstrappers = [
-        '\October\Rain\Foundation\Bootstrap\RegisterClassLoader',
-        '\October\Rain\Foundation\Bootstrap\LoadEnvironmentVariables',
-        '\October\Rain\Foundation\Bootstrap\LoadConfiguration',
-        '\October\Rain\Foundation\Bootstrap\LoadTranslation',
+        '\Winter\Storm\Foundation\Bootstrap\RegisterClassLoader',
+        '\Winter\Storm\Foundation\Bootstrap\LoadEnvironmentVariables',
+        '\Winter\Storm\Foundation\Bootstrap\LoadConfiguration',
+        '\Winter\Storm\Foundation\Bootstrap\LoadTranslation',
         \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
         \Illuminate\Foundation\Bootstrap\RegisterFacades::class,
         \Illuminate\Foundation\Bootstrap\SetRequestForConsole::class,
-        '\October\Rain\Foundation\Bootstrap\RegisterOctober',
+        '\Winter\Storm\Foundation\Bootstrap\RegisterWinter',
         \Illuminate\Foundation\Bootstrap\RegisterProviders::class,
         \Illuminate\Foundation\Bootstrap\BootProviders::class,
     ];

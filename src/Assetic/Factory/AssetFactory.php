@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Assetic\Factory;
+<?php namespace Winter\Storm\Assetic\Factory;
 
 /*
  * This file is part of the Assetic package, an OpenSky project.
@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-use October\Rain\Assetic\Asset\AssetCollection;
-use October\Rain\Assetic\Asset\AssetCollectionInterface;
-use October\Rain\Assetic\Asset\AssetInterface;
-use October\Rain\Assetic\Asset\AssetReference;
-use October\Rain\Assetic\Asset\FileAsset;
-use October\Rain\Assetic\Asset\GlobAsset;
-use October\Rain\Assetic\Asset\HttpAsset;
-use October\Rain\Assetic\AssetManager;
-use October\Rain\Assetic\Factory\Worker\WorkerInterface;
-use October\Rain\Assetic\Filter\DependencyExtractorInterface;
-use October\Rain\Assetic\FilterManager;
+use Winter\Storm\Assetic\Asset\AssetCollection;
+use Winter\Storm\Assetic\Asset\AssetCollectionInterface;
+use Winter\Storm\Assetic\Asset\AssetInterface;
+use Winter\Storm\Assetic\Asset\AssetReference;
+use Winter\Storm\Assetic\Asset\FileAsset;
+use Winter\Storm\Assetic\Asset\GlobAsset;
+use Winter\Storm\Assetic\Asset\HttpAsset;
+use Winter\Storm\Assetic\AssetManager;
+use Winter\Storm\Assetic\Factory\Worker\WorkerInterface;
+use Winter\Storm\Assetic\Filter\DependencyExtractorInterface;
+use Winter\Storm\Assetic\FilterManager;
 
 /**
  * The asset factory creates asset objects.

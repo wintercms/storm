@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Foundation\Http\Middleware;
+<?php namespace Winter\Storm\Foundation\Http\Middleware;
 
 use Config;
-use October\Rain\Http\Middleware\TrustHosts as BaseMiddleware;
+use Winter\Storm\Http\Middleware\TrustHosts as BaseMiddleware;
 
 class CheckForTrustedHost extends BaseMiddleware
 {

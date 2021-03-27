@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 

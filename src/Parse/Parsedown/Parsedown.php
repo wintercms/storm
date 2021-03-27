@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Parse\Parsedown;
+<?php namespace Winter\Storm\Parse\Parsedown;
 
 use ParsedownExtra;
 

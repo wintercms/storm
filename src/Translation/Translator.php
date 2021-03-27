@@ -1,26 +1,31 @@
-<?php namespace October\Rain\Translation;
+<?php namespace Winter\Storm\Translation;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Translation\Translator as TranslatorBase;
 
 /**
- * October translator class.
+ * Winter translator class.
  *
  * @package translation
  * @author Alexey Bobkov, Samuel Georges
  */
 class Translator extends TranslatorBase
 {
-    use \October\Rain\Support\Traits\KeyParser;
+    use \Winter\Storm\Support\Traits\KeyParser;
 
     const CORE_LOCALE = 'en';
 
     /**
      * The event dispatcher instance.
      *
-     * @var \Illuminate\Contracts\Events\Dispatcher|\October\Rain\Events\Dispatcher
+     * @var \Illuminate\Contracts\Events\Dispatcher|\Winter\Storm\Events\Dispatcher
      */
     protected $events;
+
+    /**
+     * @var array List of namespace aliases. ['aliased.namespace' => 'real.namespace']
+     */
+    protected $aliases = [];
 
     /**
      * Get the translation for a given key.
@@ -183,7 +188,7 @@ class Translator extends TranslatorBase
             $localeParts = explode('-', $locale, 2);
             $locale = $localeParts[0] . '_' . strtoupper($localeParts[1]);
         }
-        
+
         $replace['count'] = $number;
 
         return $this->makeReplacements($this->getSelector()->choose($line, $number, $locale), $replace);
@@ -203,6 +208,37 @@ class Translator extends TranslatorBase
         $locales[] = static::CORE_LOCALE;
 
         return $locales;
+    }
+
+    /**
+     * Parse a key into namespace, group, and item.
+     *
+     * @param  string  $key
+     * @return array
+     */
+    public function parseKey($key)
+    {
+        $segments = parent::parseKey($key);
+
+        $namespace = strtolower($segments[0]);
+
+        if (isset($this->aliases[$namespace])) {
+            $segments[0] = $this->aliases[$namespace];
+        }
+
+        return $segments;
+    }
+
+    /**
+     * Register a namespace alias
+     *
+     * @param string $namespace The namespace to register an alias for. Example: winter.blog
+     * @param string $alias The alias to register. Example: rainlab.blog
+     * @return void
+     */
+    public function registerNamespaceAlias(string $namespace, string $alias)
+    {
+        $this->aliases[strtolower($alias)] = strtolower($namespace);
     }
 
     /**

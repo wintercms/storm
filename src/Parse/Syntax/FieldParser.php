@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Parse\Syntax;
+<?php namespace Winter\Storm\Parse\Syntax;
 
-use October\Rain\Exception\ApplicationException;
+use Winter\Storm\Exception\ApplicationException;
 
 /**
  * Dynamic Syntax parser
@@ -261,7 +261,7 @@ class FieldParser
             }
 
             if ($tagName == 'variable') {
-                $params['X_OCTOBER_IS_VARIABLE'] = true;
+                $params['X_WINTER_IS_VARIABLE'] = true;
                 $tagName = array_get($params, 'type', 'text');
             }
 

@@ -1,9 +1,9 @@
 <?php
 
-use October\Rain\Database\Model;
-use October\Rain\Database\Pivot;
-use October\Rain\Database\Capsule\Manager as CapsuleManager;
-use October\Rain\Events\Dispatcher;
+use Winter\Storm\Database\Model;
+use Winter\Storm\Database\Pivot;
+use Winter\Storm\Database\Capsule\Manager as CapsuleManager;
+use Winter\Storm\Events\Dispatcher;
 
 class DbTestCase extends TestCase
 {
@@ -30,7 +30,7 @@ class DbTestCase extends TestCase
     }
 
     /**
-     * The models in October use a static property to store their events, these
+     * The models in Winter use a static property to store their events, these
      * will need to be targeted and reset ready for a new test cycle.
      * Pivot models are an exception since they are internally managed.
      * @return void
@@ -38,7 +38,9 @@ class DbTestCase extends TestCase
     protected function flushModelEventListeners()
     {
         foreach (get_declared_classes() as $class) {
-            if ($class === Pivot::class) {
+            // get_declared_classes() includes aliased classes, aliased classes are automatically lowercased
+            // @https://bugs.php.net/bug.php?id=80180
+            if ($class === Pivot::class || strtolower($class) === 'october\rain\database\pivot') {
                 continue;
             }
 

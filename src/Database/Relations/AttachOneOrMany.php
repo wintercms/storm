@@ -1,9 +1,9 @@
-<?php namespace October\Rain\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use October\Rain\Support\Facades\DbDongle;
-use October\Rain\Database\Attach\File as FileModel;
+use Winter\Storm\Support\Facades\DbDongle;
+use Winter\Storm\Database\Attach\File as FileModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait AttachOneOrMany
@@ -220,7 +220,7 @@ trait AttachOneOrMany
             $this->parent->bindDeferred($this->relationName, $model, $sessionKey);
         }
     }
-    
+
     /**
      * Attach an array of models to the parent instance with deferred binding support.
      * @param  array  $models

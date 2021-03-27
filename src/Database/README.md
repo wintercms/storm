@@ -1,6 +1,6 @@
-## Rain Database
+## Storm Database
 
-The October Rain Foundation is an extension of the Eloquent ORM used by Laravel. It adds the following features:
+The Winter Storm Foundation is an extension of the Eloquent ORM used by Laravel. It adds the following features:
 
 ### Usage Instructions
 
@@ -8,21 +8,21 @@ See the [Illuminate Database instructions](https://github.com/illuminate/databas
 
 ### Alternate relations and events
 
-Relations and events can be defined using an alternative syntax, which is preferred by the [October CMS platform](http://octobercms.com).
+Relations and events can be defined using an alternative syntax, which is preferred by the [Winter CMS platform](https://wintercms.com).
 
-[See October CMS Model documentation](https://octobercms.com/docs/database/model)
+[See Winter CMS Model documentation](https://wintercms.com/docs/database/model)
 
 ### Model validation
 
 Models can define validation rules Laravel's built-in Validator class.
 
-[See October CMS Model documentation](https://octobercms.com/docs/database/model)
+[See Winter CMS Model documentation](https://wintercms.com/docs/database/model)
 
 ### Deferred bindings
 
 Deferred bindings allow you to postpone model relationships until the master record commits the changes. This is particularly useful if you need to prepare some models (such as file uploads) and associate them to another model that doesn't exist yet.
 
-[See Deferred binding documentation](https://octobercms.com/docs/database/relations#deferred-binding)
+[See Deferred binding documentation](https://wintercms.com/docs/database/relations#deferred-binding)
 
 ### Tree Trait Interface
 
@@ -39,4 +39,4 @@ These methods do not require chaining:
 - getChildren(): Return the child nodes below this one.
 - getChildCount(): Return the number of children below this node.
 
-All models must return a collection of the base class `October\Rain\Database\TreeCollection`.
+All models must return a collection of the base class `Winter\Storm\Database\TreeCollection`.

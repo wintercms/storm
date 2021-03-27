@@ -1,8 +1,8 @@
-<?php namespace October\Rain\Cookie\Middleware;
+<?php namespace Winter\Storm\Cookie\Middleware;
 
 use Config;
 use Session;
-use October\Rain\Cookie\CookieValuePrefix;
+use Winter\Storm\Cookie\CookieValuePrefix;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Contracts\Encryption\DecryptException;

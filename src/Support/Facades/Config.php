@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static bool has(string $key)
@@ -15,8 +15,8 @@ use October\Rain\Support\Facade;
  * @method static void afterLoading(string $namespace, \Closure $callback)
  * @method static void addNamespace(string $namespace, string $hint)
  * @method static array getNamespaces()
- * @method static \October\Rain\Config\LoaderInterface getLoader()
- * @method static void setLoader(\October\Rain\Config\LoaderInterface $loader)
+ * @method static \Winter\Storm\Config\LoaderInterface getLoader()
+ * @method static void setLoader(\Winter\Storm\Config\LoaderInterface $loader)
  * @method static string getEnvironment()
  * @method static array getAfterLoadCallbacks()
  * @method static array getItems()
@@ -25,7 +25,7 @@ use October\Rain\Support\Facade;
  * @method static void offsetSet(string $key, mixed $value)
  * @method static void offsetUnset(string $key)
  *
- * @see \October\Rain\Config\Repository
+ * @see \Winter\Storm\Config\Repository
  */
 class Config extends Facade
 {

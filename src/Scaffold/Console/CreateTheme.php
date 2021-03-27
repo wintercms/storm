@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Scaffold\Console;
+<?php namespace Winter\Storm\Scaffold\Console;
 
 use Exception;
-use October\Rain\Scaffold\GeneratorCommand;
+use Winter\Storm\Scaffold\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 

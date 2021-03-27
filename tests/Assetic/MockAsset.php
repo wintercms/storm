@@ -1,7 +1,7 @@
 <?php
 
-use October\Rain\Assetic\Asset\AssetInterface;
-use October\Rain\Assetic\Filter\FilterInterface;
+use Winter\Storm\Assetic\Asset\AssetInterface;
+use Winter\Storm\Assetic\Filter\FilterInterface;
 
 /**
  * Class MockAsset

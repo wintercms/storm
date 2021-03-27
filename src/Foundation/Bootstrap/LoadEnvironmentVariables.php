@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Foundation\Bootstrap;
+<?php namespace Winter\Storm\Foundation\Bootstrap;
 
 use Dotenv\Dotenv;
 use Dotenv\Exception\InvalidPathException;

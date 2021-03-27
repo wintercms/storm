@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database;
+<?php namespace Winter\Storm\Database;
 
 use Db;
 use File;
@@ -10,7 +10,6 @@ use Exception;
  *
  * Executes database migration and seed scripts based on their filename.
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class Updater
@@ -101,7 +100,7 @@ class Updater
         }
 
         throw new Exception(sprintf(
-            'Database script [%s] must inherit October\Rain\Database\Updates\Migration or October\Rain\Database\Updates\Seeder classes',
+            'Database script [%s] must inherit Winter\Storm\Database\Updates\Migration or Winter\Storm\Database\Updates\Seeder classes',
             get_class($object)
         ));
     }

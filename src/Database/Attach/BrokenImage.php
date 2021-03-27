@@ -1,4 +1,4 @@
-<?php namespace October\Rain\Database\Attach;
+<?php namespace Winter\Storm\Database\Attach;
 
 use File as FileHelper;
 

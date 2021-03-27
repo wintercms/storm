@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Database\Traits;
+<?php namespace Winter\Storm\Database\Traits;
 
-use October\Rain\Database\Models\DeferredBinding as DeferredBindingModel;
+use Winter\Storm\Database\Models\DeferredBinding as DeferredBindingModel;
 
 trait DeferredBinding
 {
@@ -27,7 +27,7 @@ trait DeferredBinding
     /**
      * Bind a deferred relationship to the supplied record.
      */
-    public function bindDeferred($relation, $record, $sessionKey)
+    public function bindDeferred($relation, $record, $sessionKey, $pivotData = [])
     {
         $binding = new DeferredBindingModel;
         $binding->setConnection($this->getConnectionName());
@@ -35,6 +35,7 @@ trait DeferredBinding
         $binding->master_field = $relation;
         $binding->slave_type = get_class($record);
         $binding->slave_id = $record->getKey();
+        $binding->pivot_data = $pivotData;
         $binding->session_key = $sessionKey;
         $binding->is_bind = true;
         $binding->save();
@@ -146,7 +147,11 @@ trait DeferredBinding
             $relationObj = $this->$relationName();
 
             if ($binding->is_bind) {
-                $relationObj->add($slaveModel);
+                if (in_array($relationType, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
+                    $relationObj->add($slaveModel, null, (array) $binding->pivot_data);
+                } else {
+                    $relationObj->add($slaveModel);
+                }
             }
             else {
                 $relationObj->remove($slaveModel);
@@ -158,7 +163,7 @@ trait DeferredBinding
 
     /**
      * Returns any outstanding binding records for this model.
-     * @return \October\Rain\Database\Collection
+     * @return \Winter\Storm\Database\Collection
      */
     protected function getDeferredBindingRecords($sessionKey)
     {

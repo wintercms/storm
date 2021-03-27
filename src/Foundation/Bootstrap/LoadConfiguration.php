@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Foundation\Bootstrap;
+<?php namespace Winter\Storm\Foundation\Bootstrap;
 
-use October\Rain\Config\Repository;
-use October\Rain\Config\FileLoader;
+use Winter\Storm\Config\Repository;
+use Winter\Storm\Config\FileLoader;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Foundation\Application;
 use Exception;

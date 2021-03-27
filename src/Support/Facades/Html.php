@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Support\Facades;
+<?php namespace Winter\Storm\Support\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 /**
  * @method static string entities(string $value)
@@ -24,7 +24,7 @@ use October\Rain\Support\Facade;
  * @method static string limit(string $html, int $maxLength = 100, string $end = '...')
  * @method static string clean(string $html)
  *
- * @see \October\Rain\Html\HtmlBuilder
+ * @see \Winter\Storm\Html\HtmlBuilder
  */
 class Html extends Facade
 {

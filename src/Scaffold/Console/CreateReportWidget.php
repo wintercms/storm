@@ -1,6 +1,6 @@
-<?php namespace October\Rain\Scaffold\Console;
+<?php namespace Winter\Storm\Scaffold\Console;
 
-use October\Rain\Scaffold\GeneratorCommand;
+use Winter\Storm\Scaffold\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -67,7 +67,7 @@ class CreateReportWidget extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['plugin', InputArgument::REQUIRED, 'The name of the plugin. Eg: RainLab.Google'],
+            ['plugin', InputArgument::REQUIRED, 'The name of the plugin. Eg: Winter.Google'],
             ['widget', InputArgument::REQUIRED, 'The name of the report widget. Eg: TopPages'],
         ];
     }

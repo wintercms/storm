@@ -1,22 +1,33 @@
-<?php namespace October\Rain\Database\Models;
+<?php namespace Winter\Storm\Database\Models;
 
 use Db;
 use Carbon\Carbon;
-use October\Rain\Database\Model;
+use Winter\Storm\Database\Model;
 use Exception;
 
 /**
  * Deferred Binding Model
  *
- * @package october\database
  * @author Alexey Bobkov, Samuel Georges
  */
 class DeferredBinding extends Model
 {
+    use \Winter\Storm\Database\Traits\Nullable;
+
     /**
      * @var string The database table used by the model.
      */
     public $table = 'deferred_bindings';
+
+    /**
+     * @var array List of attribute names which are json encoded and decoded from the database.
+     */
+    protected $jsonable = ['pivot_data'];
+
+    /**
+     * @var array List of attribute names which should be set to null when empty.
+     */
+    protected $nullable = ['pivot_data'];
 
     /**
      * Prevents duplicates and conflicting binds.

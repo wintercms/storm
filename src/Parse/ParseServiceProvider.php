@@ -1,9 +1,8 @@
-<?php namespace October\Rain\Parse;
+<?php namespace Winter\Storm\Parse;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Contracts\Support\DeferrableProvider;
 
-class ParseServiceProvider extends ServiceProvider implements DeferrableProvider
+class ParseServiceProvider extends ServiceProvider
 {
     /**
      * The container singletons that should be registered.

@@ -1,9 +1,9 @@
-<?php namespace October\Rain\Halcyon;
+<?php namespace Winter\Storm\Halcyon;
 
-use October\Rain\Support\Arr;
-use October\Rain\Support\Str;
-use October\Rain\Extension\Extendable;
-use October\Rain\Halcyon\Datasource\ResolverInterface as Resolver;
+use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Extension\Extendable;
+use Winter\Storm\Halcyon\Datasource\ResolverInterface as Resolver;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -15,12 +15,11 @@ use Exception;
 /**
  * This is a base template object. Equivalent to a Model in ORM.
  *
- * @package october\halcyon
  * @author Alexey Bobkov, Samuel Georges
  */
 class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
-    use \October\Rain\Support\Traits\Emitter;
+    use \Winter\Storm\Support\Traits\Emitter;
 
     /**
      * @var string The data source for the model, a directory path.
@@ -113,7 +112,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * The datasource resolver instance.
      *
-     * @var \October\Rain\Halcyon\Datasource\ResolverInterface
+     * @var \Winter\Storm\Halcyon\Datasource\ResolverInterface
      */
     protected static $resolver;
 
@@ -250,7 +249,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
 
         /*
          * Hook to boot events
-         * @see October\Rain\Database\Model::registerModelEvent
+         * @see Winter\Storm\Database\Model::registerModelEvent
          */
         static::registerModelEvent('booted', function ($model) {
             $model->fireEvent('model.afterBoot');
@@ -499,7 +498,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      *
      * @param  array  $items
      * @param  string|null  $datasource
-     * @return \October\Rain\Halcyon\Collection
+     * @return \Winter\Storm\Halcyon\Collection
      */
     public static function hydrate(array $items, $datasource = null)
     {
@@ -530,7 +529,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Begin querying the model.
      *
-     * @return \October\Rain\Halcyon\Builder
+     * @return \Winter\Storm\Halcyon\Builder
      */
     public static function query()
     {
@@ -541,7 +540,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      * Begin querying the model on a given datasource.
      *
      * @param  string|null  $datasource
-     * @return \October\Rain\Halcyon\Model
+     * @return \Winter\Storm\Halcyon\Model
      */
     public static function on($datasource = null)
     {
@@ -557,7 +556,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Get all of the models from the datasource.
      *
-     * @return \October\Rain\Halcyon\Collection|static[]
+     * @return \Winter\Storm\Halcyon\Collection|static[]
      */
     public static function all()
     {
@@ -680,7 +679,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     public function getAttribute($key)
     {
         /**
-         * @see October\Rain\Database\Model::getAttributeValue
+         * @see Winter\Storm\Database\Model::getAttributeValue
          */
         if (($attr = $this->fireEvent('model.beforeGetAttribute', [$key], true)) !== null) {
             return $attr;
@@ -696,7 +695,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
         }
 
         /**
-         * @see October\Rain\Database\Model::getAttributeValue
+         * @see Winter\Storm\Database\Model::getAttributeValue
          */
         if (($_attr = $this->fireEvent('model.getAttribute', [$key, $value], true)) !== null) {
             return $_attr;
@@ -765,7 +764,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     public function setAttribute($key, $value)
     {
         /**
-         * @see October\Rain\Database\Model::setAttributeValue
+         * @see Winter\Storm\Database\Model::setAttributeValue
          */
         // Before Event
         if (($_value = $this->fireEvent('model.beforeSetAttribute', [$key, $value], true)) !== null) {
@@ -788,7 +787,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
         }
 
         /**
-         * @see October\Rain\Database\Model::setAttributeValue
+         * @see Winter\Storm\Database\Model::setAttributeValue
          */
         // After Event
         $this->fireEvent('model.setAttribute', [$key, $value]);
@@ -1227,7 +1226,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     public function saveInternal(array $options = [])
     {
         /**
-         * @see October\Rain\Database\Model::saveInternal
+         * @see Winter\Storm\Database\Model::saveInternal
          */
         // Event
         if ($this->fireEvent('model.saveInternal', [$this->attributes, $options], true) === false) {
@@ -1275,7 +1274,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Perform a model update operation.
      *
-     * @param  October\Rain\Halcyon\Builder  $query
+     * @param  Winter\Storm\Halcyon\Builder  $query
      * @param  array  $options
      * @return bool
      */
@@ -1308,7 +1307,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Perform a model insert operation.
      *
-     * @param  October\Rain\Halcyon\Builder  $query
+     * @param  Winter\Storm\Halcyon\Builder  $query
      * @param  array  $options
      * @return bool
      */
@@ -1359,7 +1358,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
 
     /**
      * Get a new query builder for the object
-     * @return \October\Rain\Halcyon\Builder
+     * @return \Winter\Storm\Halcyon\Builder
      */
     public function newQuery()
     {
@@ -1374,7 +1373,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      * Create a new Halcyon Collection instance.
      *
      * @param  array  $models
-     * @return \October\Rain\Halcyon\Collection
+     * @return \Winter\Storm\Halcyon\Collection
      */
     public function newCollection(array $models = [])
     {
@@ -1405,7 +1404,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Get the datasource for the model.
      *
-     * @return \October\Rain\Halcyon\Datasource
+     * @return \Winter\Storm\Halcyon\Datasource
      */
     public function getDatasource()
     {
@@ -1439,7 +1438,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      * Resolve a datasource instance.
      *
      * @param  string|null  $datasource
-     * @return \October\Rain\Halcyon\Datasource
+     * @return \Winter\Storm\Halcyon\Datasource
      */
     public static function resolveDatasource($datasource = null)
     {
@@ -1449,7 +1448,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Get the datasource resolver instance.
      *
-     * @return \October\Rain\Halcyon\DatasourceResolverInterface
+     * @return \Winter\Storm\Halcyon\DatasourceResolverInterface
      */
     public static function getDatasourceResolver()
     {
@@ -1459,7 +1458,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Set the datasource resolver instance.
      *
-     * @param  \October\Rain\Halcyon\Datasource\ResolverInterface  $resolver
+     * @param  \Winter\Storm\Halcyon\Datasource\ResolverInterface  $resolver
      * @return void
      */
     public static function setDatasourceResolver(Resolver $resolver)
