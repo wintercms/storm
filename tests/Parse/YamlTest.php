@@ -151,6 +151,9 @@ class YamlTest extends TestCase
                         'complex1' => 'this is "very" complex quoting',
                         'complex2' => 'this is also \'very\' complex quoting',
                     ],
+                    'testComment' => [
+                        'key' => 'value',
+                    ],
                 ],
             ],
         ], $yaml);
