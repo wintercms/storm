@@ -147,9 +147,10 @@ class YamlTest extends TestCase
                     'testClass' => [
                         'My\Class\Path' => 'value'
                     ],
-                    'testBothQuoting' => [
+                    'testQuoting' => [
                         'complex1' => 'this is "very" complex quoting',
                         'complex2' => 'this is also \'very\' complex quoting',
+                        'middle' => 'this string is "quoted" in the middle',
                     ],
                     'testComment' => [
                         'key' => 'value',
