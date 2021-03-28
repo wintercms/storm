@@ -21,8 +21,8 @@ class Symfony3Processor implements YamlProcessor
 
         foreach ($lines as &$line) {
             // Surround array keys with quotes if not already
-            $line = preg_replace_callback('/^( *)([\'"]{0}[^\'"\n\r:\\\]+[\'"]{0})\s*:/m', function ($matches) {
-                return $matches[1] . '"' . trim($matches[2]) . '":';
+            $line = preg_replace_callback('/^( *)([\'"]{0}[^\'"\n\r:]+[\'"]{0})\s*:/m', function ($matches) {
+                return $matches[1] . "'" . trim($matches[2]) . "':";
             }, rtrim($line));
         }
 
