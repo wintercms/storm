@@ -29,3 +29,5 @@ form:
             options:
                 true: true
                 false: false
+        testClass:
+            My\Class\Path: value

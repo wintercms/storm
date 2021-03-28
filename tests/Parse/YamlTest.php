@@ -144,6 +144,9 @@ class YamlTest extends TestCase
                             'false' => false,
                         ],
                     ],
+                    'testClass' => [
+                        'My\Class\Path' => 'value'
+                    ],
                 ],
             ],
         ], $yaml);
