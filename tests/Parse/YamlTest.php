@@ -1,8 +1,6 @@
 <?php
 
-use Symfony\Component\Yaml\Exception\ParseException;
 use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
-use Winter\Storm\Parse\Processor\Symfony3Processor;
 use Winter\Storm\Parse\Yaml as YamlParser;
 
 class YamlTest extends TestCase
@@ -90,63 +88,6 @@ class YamlTest extends TestCase
                 'Test 3 Value 3',
             ],
         ], $yaml->test);
-    }
-
-    public function testSymfony3YamlFile()
-    {
-        // This YAML file should not be parseable by default
-        $this->expectException(ParseException::class);
-
-        $parser = new YamlParser;
-        $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/symfony3.yaml'));
-    }
-
-    public function testSymfony3YamlFileWithProcessor()
-    {
-        $parser = new YamlParser;
-        $parser->setProcessor(new Symfony3Processor);
-        $yaml = $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/symfony3.yaml'));
-
-        $this->assertEquals([
-            'form' => [
-                'fields' => [
-                    'testField' => [
-                        'type' => 'text',
-                        'label' => 'Test field',
-                    ],
-                    'testSelect' => [
-                        'type' => 'select',
-                        'label' => 'Do you rock the casbah?',
-                        'options' => [
-                            '0' => 'Nope',
-                            '1' => 'ROCK THE CASBAH!',
-                            '2' => 2,
-                        ],
-                    ],
-                    'testSelectTwo' => [
-                        'type' => 'select',
-                        'label' => 'Which decade of songs did you like?',
-                        'options' => [
-                            '1960s',
-                            '1970s',
-                            '1980s',
-                            '1990s',
-                            '2000s',
-                            '2010s',
-                            '2020s',
-                        ],
-                    ],
-                    'testBoolean' => [
-                        'type' => 'select',
-                        'label' => 'Is the sky blue?',
-                        'options' => [
-                            'true' => true,
-                            'false' => false,
-                        ],
-                    ],
-                ],
-            ],
-        ], $yaml);
     }
 }
 
