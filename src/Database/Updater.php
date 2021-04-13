@@ -29,14 +29,12 @@ class Updater
 
         Eloquent::unguard();
 
-        Db::transaction(function () use ($object) {
-            if ($object instanceof Updates\Migration) {
-                $object->up();
-            }
-            elseif ($object instanceof Updates\Seeder) {
-                $object->run();
-            }
-        });
+        if ($object instanceof Updates\Migration) {
+            $object->up();
+        }
+        elseif ($object instanceof Updates\Seeder) {
+            $object->run();
+        }
 
         Eloquent::reguard();
 
@@ -58,11 +56,9 @@ class Updater
 
         Eloquent::unguard();
 
-        Db::transaction(function () use ($object) {
-            if ($object instanceof Updates\Migration) {
-                $object->down();
-            }
-        });
+        if ($object instanceof Updates\Migration) {
+            $object->down();
+        }
 
         Eloquent::reguard();
 
