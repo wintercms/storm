@@ -27,6 +27,13 @@ class FileLoader implements LoaderInterface
     protected $hints = [];
 
     /**
+     * All of the namespace aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [];
+
+    /**
      * A cache of whether namespaces and groups exists.
      *
      * @var array
@@ -159,6 +166,13 @@ class FileLoader implements LoaderInterface
         if ($this->files->exists($path)) {
             $items = array_merge($items, $this->getRequire($path));
         }
+        // If package is has an alias and the package does not have a global config
+        elseif (isset($this->aliases[$package])) {
+            $path = $this->getPackagePath($this->aliases[$package], $group);
+            if ($this->files->exists($path)) {
+                $items = array_merge($items, $this->getRequire($path));
+            }
+        }
 
         // Once we have merged the regular package configuration we need to look for
         // an environment specific configuration file. If one exists, we will get
@@ -220,6 +234,18 @@ class FileLoader implements LoaderInterface
     public function addNamespace($namespace, $hint)
     {
         $this->hints[$namespace] = $hint;
+    }
+
+    /**
+     * Add a new namespace to the loader.
+     *
+     * @param  string  $namespace
+     * @param  string  $alias
+     * @return void
+     */
+    public function registerNamespaceAlias(string $namespace, string $alias)
+    {
+        $this->aliases[strtolower($namespace)] = strtolower($alias);
     }
 
     /**
