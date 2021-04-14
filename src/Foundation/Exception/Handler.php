@@ -1,7 +1,6 @@
 <?php namespace Winter\Storm\Foundation\Exception;
 
 use Log;
-use Event;
 use Closure;
 use Response;
 use Exception;
@@ -56,7 +55,7 @@ class Handler extends ExceptionHandler
          *         }
          *     });
          */
-        if (Event::fire('exception.beforeReport', [$exception], true) === false) {
+        if (app()->make('events')->fire('exception.beforeReport', [$exception], true) === false) {
             return;
         }
 
@@ -78,7 +77,7 @@ class Handler extends ExceptionHandler
          *         app('sentry')->captureException($exception);
          *     });
          */
-        Event::fire('exception.report', [$exception]);
+        app()->make('events')->fire('exception.report', [$exception]);
     }
 
     /**
