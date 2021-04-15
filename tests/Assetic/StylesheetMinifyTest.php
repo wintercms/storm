@@ -9,7 +9,7 @@ class StylesheetMinifyTest extends TestCase
     public function testSpaceRemoval()
     {
         $input  = 'body{width: calc(99.9% * 1/1 - 0px); height: 0px;}';
-        $output = 'body{width:calc(99.9% * 1/1 - 0px);height:0px}';
+        $output = 'body{width:calc(99.9% * 1/1 - 0px);height:0}';
 
         $mockAsset = new MockAsset($input);
         $result    = new StylesheetMinify();
@@ -85,7 +85,7 @@ class StylesheetMinifyTest extends TestCase
     public function testUnitPreservationInVar()
     {
         $input  = '--offset-width: 0px';
-        $output = '--offset-width:0px';
+        $output = '--offset-width:0';
 
         $mockAsset = new MockAsset($input);
         $result    = new StylesheetMinify();
