@@ -105,11 +105,11 @@ class StylesheetMinifyTest extends TestCase
             .icon-large:before {
                 speak: initial;
             }
-        CSS;
+CSS;
 
         $output = <<<CSS
-        [class^="icon-"]:before,[class*=" icon-"]:before{speak:none}.icon-large:before{speak:initial}
-        CSS;
+[class^="icon-"]:before,[class*=" icon-"]:before{speak:none}.icon-large:before{speak:initial}
+CSS;
 
         $mockAsset = new MockAsset($input);
         $result    = new StylesheetMinify();
