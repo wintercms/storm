@@ -96,8 +96,11 @@ class BelongsToMany extends BelongsToManyBase
      */
     public function sync($ids, $detaching = true)
     {
-        parent::sync($ids, $detaching);
+        $changed = parent::sync($ids, $detaching);
+        
         $this->flushDuplicateCache();
+        
+        return $changed;
     }
 
     /**
