@@ -167,8 +167,8 @@ class FileLoader implements LoaderInterface
             $items = array_merge($items, $this->getRequire($path));
         }
         // If package is has an alias and the package does not have a global config
-        elseif (isset($this->aliases[$package])) {
-            $path = $this->getPackagePath($this->aliases[$package], $group);
+        elseif (($alias = array_search($package, $this->aliases)) && is_string($alias)) {
+            $path = $this->getPackagePath($alias, $group);
             if ($this->files->exists($path)) {
                 $items = array_merge($items, $this->getRequire($path));
             }
@@ -245,7 +245,7 @@ class FileLoader implements LoaderInterface
      */
     public function registerNamespaceAlias(string $namespace, string $alias)
     {
-        $this->aliases[strtolower($namespace)] = strtolower($alias);
+        $this->aliases[strtolower($alias)] = strtolower($namespace);
     }
 
     /**
