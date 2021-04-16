@@ -366,6 +366,9 @@ class Repository implements ArrayAccess, RepositoryContract
     /**
      * Add a alias to a namespace in the loader.
      *
+     *    // to allow for config('alias.demo::foo') to redirect to config('winter.demo::foo')
+     *    Config::registerNamespaceAlias('Winter.Demo', 'Alias.Demo');
+     *
      * @param  string  $namespace
      * @param  string  $alias
      * @return void
@@ -379,11 +382,14 @@ class Repository implements ArrayAccess, RepositoryContract
      * Register an alias in the loader that will add fallback to alias
      * support if a package config is not found
      *
+     *    // to allow for config('winter.demo::foo') to fallback to global 'alias.demo' config
+     *    Config::registerPackageFallback('Winter.Demo', 'Alias.Demo');
+     *
      * @param  string  $namespace
      * @param  string  $alias
      * @return void
      */
-    public function registerPackageAlias(string $namespace, string $alias)
+    public function registerPackageFallback(string $namespace, string $alias)
     {
         $this->loader->registerNamespaceAlias($namespace, $alias);
     }
