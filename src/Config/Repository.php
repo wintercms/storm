@@ -364,7 +364,7 @@ class Repository implements ArrayAccess, RepositoryContract
     }
 
     /**
-     * Add a new namespace to the loader.
+     * Add a alias to a namespace in the loader.
      *
      * @param  string  $namespace
      * @param  string  $alias
@@ -373,6 +373,19 @@ class Repository implements ArrayAccess, RepositoryContract
     public function registerNamespaceAlias(string $namespace, string $alias)
     {
         $this->aliases[strtolower($alias)] = strtolower($namespace);
+    }
+
+    /**
+     * Register an alias in the loader that will add fallback to alias
+     * support if a package config is not found
+     *
+     * @param  string  $namespace
+     * @param  string  $alias
+     * @return void
+     */
+    public function registerPackageAlias(string $namespace, string $alias)
+    {
+        $this->loader->registerNamespaceAlias($namespace, $alias);
     }
 
     /**
