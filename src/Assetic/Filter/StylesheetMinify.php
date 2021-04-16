@@ -31,19 +31,19 @@ class StylesheetMinify implements FilterInterface
         $css = preg_replace('/\s{2,}/', ' ', $css);
 
         // Remove spaces before and after comment
-        $css = preg_replace('/(\s+)(\/\*(.*?)\*\/)(\s+)/', '$2', $css);
+        $css = preg_replace('/(\s+)(\/\*[^!](.*?)\*\/)(\s+)/', '$2', $css);
 
-        // Remove comment blocks, everything between /* and */
-        $css = preg_replace('#/\*.*?\*/#s', '', $css);
+        // Remove comment blocks, everything between /* and */, ignore /*! comments
+        $css = preg_replace('#/\*[^\!].*?\*/#s', '', $css);
 
         // Remove ; before }
         $css = preg_replace('/;(?=\s*})/', '', $css);
 
-        // Remove space after , : ; { } */ >
-        $css = preg_replace('/(,|:|;|\{|}|\*\/|>) /', '$1', $css);
+        // Remove space after , : ; { } */ >, but not after !*/
+        $css = preg_replace('/(,|:|;|\{|}|[^!]\*\/|>) /', '$1', $css);
 
         // Remove space before , ; { } >
-        $css = preg_replace('/(,|;|\{|}|>)/', '$1', $css);
+        $css = preg_replace('/ (,|;|\{|}|>)/', '$1', $css);
 
         // Remove newline before } >
         $css = preg_replace('/(\r\n|\r|\n)(})/', '$2', $css);
