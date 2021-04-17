@@ -123,7 +123,8 @@ class Resizer
         if ($this->mime === 'image/gif') {
             $alphaColor = ['red' => 0, 'green' => 0, 'blue' => 0];
             $alphaIndex = imagecolortransparent($this->image);
-            if ($alphaIndex >= 0) {
+            $palletSize = imagecolorstotal($img);
+            if ($alphaIndex >= 0 && $alphaIndex < $palletSize) {
                 $alphaColor = imagecolorsforindex($this->image, $alphaIndex);
             }
             $alphaIndex = imagecolorallocatealpha($img, $alphaColor['red'], $alphaColor['green'], $alphaColor['blue'], 127);
