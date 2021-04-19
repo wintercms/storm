@@ -121,15 +121,15 @@ class Resizer
     protected function retainImageTransparency($img)
     {
         if ($this->mime === 'image/gif') {
-            $alphaColor = ['red' => 0, 'green' => 0, 'blue' => 0];
             $alphaIndex = imagecolortransparent($this->image);
             $palletSize = imagecolorstotal($this->image);
             if ($alphaIndex >= 0 && $alphaIndex < $palletSize) {
+                $alphaColor = ['red' => 0, 'green' => 0, 'blue' => 0];
                 $alphaColor = imagecolorsforindex($this->image, $alphaIndex);
+                $alphaIndex = imagecolorallocatealpha($img, $alphaColor['red'], $alphaColor['green'], $alphaColor['blue'], 127);
+                imagefill($img, 0, 0, $alphaIndex);
+                imagecolortransparent($img, $alphaIndex);
             }
-            $alphaIndex = imagecolorallocatealpha($img, $alphaColor['red'], $alphaColor['green'], $alphaColor['blue'], 127);
-            imagefill($img, 0, 0, $alphaIndex);
-            imagecolortransparent($img, $alphaIndex);
         } elseif ($this->mime === 'image/png' || $this->mime === 'image/webp') {
             imagealphablending($img, false);
             imagesavealpha($img, true);

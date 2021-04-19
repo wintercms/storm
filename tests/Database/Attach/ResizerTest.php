@@ -21,6 +21,8 @@ class ResizerTest extends TestCase
     const SRC_LANDSCAPE_TRANSPARENT = 'landscape_transparent.png';
     const SRC_PORTRAIT = 'portrait.gif';
     const SRC_SQUARE = 'square.jpg';
+    const SRC_GIF_BG = 'bg.gif';
+    const SRC_GIF_INDEX = 'index.gif';
 
     /**
      * Fixtures that are common to multiple tests (reduce number of images and noise for identical results)
@@ -263,6 +265,35 @@ class ResizerTest extends TestCase
         $this->setSource(self::SRC_PORTRAIT);
         $this->createFixtureResizer();
         $this->resizer->resize(1, 10, ['mode' => 'portrait']);
+        $this->assertImageSameAsFixture(__METHOD__);
+    }
+
+    /**
+     * Given a Resizer with a white background gif image
+     * When the resize method is called with the auto parameter and 32x32 dimensions
+     * Then the saved image should have be 32x32 and with white background
+     * Tests if white color is preserved/saved after resize operation
+     * @throws Exception
+     */
+    public function testResizeSaveBackgroundColor32x32()
+    {
+        $this->setSource(self::SRC_GIF_BG);
+        $this->createFixtureResizer();
+        $this->resizer->resize(32, 32);
+        $this->assertImageSameAsFixture(__METHOD__);
+    }
+
+    /**
+     * Given a Resizer with a gif image which transparency index is set outside the image color pallet
+     * When the resize method is called with the auto parameter and 300x255 dimensions
+     * Then the saved image should have be 300x255 and no index is out of range error is thrown
+     * @throws Exception
+     */
+    public function testResizeIndex300x255()
+    {
+        $this->setSource(self::SRC_GIF_INDEX);
+        $this->createFixtureResizer();
+        $this->resizer->resize(300, 255);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
