@@ -300,6 +300,7 @@ class Model extends EloquentModel
          * @event model.beforeSave
          * Called before the model is saved
          * > **Note:** This is called both when creating and updating
+         *
          * > **Note:** also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
