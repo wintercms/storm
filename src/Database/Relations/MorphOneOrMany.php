@@ -13,26 +13,6 @@ trait MorphOneOrMany
     protected $relationName;
 
     /**
-     * Set the base constraints on the relation query.
-     *
-     * @return void
-     */
-    public function addConstraints()
-    {
-        if (static::$constraints) {
-            if (starts_with($this->morphClass, 'Winter\\')) {
-                $this->query->where(function ($q) {
-                    $q->where($this->morphType, $this->morphClass);
-                    $q->orWhere($this->morphType, str_replace('Winter\\', 'RainLab\\', $this->morphClass));
-                });
-            } else {
-                $this->query->where($this->morphType, $this->morphClass);
-            }
-        }
-    }
-
-
-    /**
      * Save the supplied related model with deferred binding support.
      */
     public function save(Model $model, $sessionKey = null)

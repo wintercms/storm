@@ -39,14 +39,7 @@ trait AttachOneOrMany
     public function addConstraints()
     {
         if (static::$constraints) {
-            if (starts_with($this->morphClass, 'Winter\\')) {
-                $this->query->where(function ($q) {
-                    $q->where($this->morphType, $this->morphClass);
-                    $q->orWhere($this->morphType, str_replace('Winter\\', 'RainLab\\', $this->morphClass));
-                });
-            } else {
-                $this->query->where($this->morphType, $this->morphClass);
-            }
+            $this->query->where($this->morphType, $this->morphClass);
 
             $this->query->where($this->foreignKey, '=', $this->getParentKey());
 
