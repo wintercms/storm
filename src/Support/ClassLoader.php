@@ -98,6 +98,8 @@ class ClassLoader
      */
     public function load($class)
     {
+        // Allow class aliases defined with addAliases() and addNamespaceAliases() to take
+        // precedence over classes that actually exist on the filesystem
         if (!is_null($alias = $this->getAlias($class))) {
             return class_alias($alias, $class);
         }
