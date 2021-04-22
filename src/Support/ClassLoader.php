@@ -98,6 +98,10 @@ class ClassLoader
      */
     public function load($class)
     {
+        if (!is_null($alias = $this->getAlias($class))) {
+            return class_alias($alias, $class);
+        }
+
         if (
             isset($this->manifest[$class]) &&
             $this->isRealFilePath($path = $this->manifest[$class])
@@ -118,10 +122,6 @@ class ClassLoader
                 $this->includeClass($class, $path);
                 return true;
             }
-        }
-
-        if (!is_null($alias = $this->getAlias($class))) {
-            return class_alias($alias, $class);
         }
     }
 
