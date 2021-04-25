@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Mail;
 
-use Illuminate\Mail\TransportManager as BaseTransportManager;
+use Illuminate\Mail\MailManager as BaseTransportManager;
 use Winter\Storm\Mail\Transport\MandrillTransport;
 use Winter\Storm\Mail\Transport\SparkPostTransport;
 
