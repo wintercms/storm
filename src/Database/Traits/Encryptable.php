@@ -12,11 +12,6 @@ trait Encryptable
      */
 
     /**
-     * @var \Illuminate\Contracts\Encryption\Encrypter Encrypter instance.
-     */
-    protected $encrypterInstance;
-
-    /**
      * @var array List of original attribute values before they were encrypted.
      */
     protected $originalEncryptableValues = [];
