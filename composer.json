@@ -39,11 +39,7 @@
         "linkorb/jsmin-php": "~1.0",
         "wikimedia/less.php": "~3.0",
         "scssphp/scssphp": "~1.0",
-<<<<<<< HEAD
         "symfony/yaml": "^5.1",
-=======
-        "symfony/yaml": "^4.4",
->>>>>>> 553365b50dba7042a578e4e7bb6b8094787416db
         "twig/twig": "~2.0",
         "league/csv": "~9.1",
         "nesbot/carbon": "^2.0",
