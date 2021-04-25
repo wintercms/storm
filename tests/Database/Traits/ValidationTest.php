@@ -21,8 +21,9 @@ class ValidationTest extends TestCase
         ], $this->processValidationRules($rules));
 
         $this->exists = false;
+
         $this->assertEquals([
-            'email' => ['unique:users']
+            'email' => ['unique:mysql.users,email,NULL,the_id']
         ], $this->processValidationRules($rules));
 
         /*
@@ -37,22 +38,7 @@ class ValidationTest extends TestCase
 
         $this->exists = false;
         $this->assertEquals([
-            'email' => ['unique:users,email_address']
-        ], $this->processValidationRules($rules));
-
-        /*
-         * Forcing a unique rule to ignore a given ID
-         */
-        $rules = ['email' => 'unique:users,email_address,10'];
-
-        $this->exists = true;
-        $this->assertEquals([
-            'email' => ['unique:mysql.users,email_address,7,the_id']
-        ], $this->processValidationRules($rules));
-
-        $this->exists = false;
-        $this->assertEquals([
-            'email' => ['unique:users,email_address,10']
+            'email' => ['unique:mysql.users,email_address,NULL,the_id']
         ], $this->processValidationRules($rules));
 
         /*
@@ -67,7 +53,7 @@ class ValidationTest extends TestCase
 
         $this->exists = false;
         $this->assertEquals([
-            'email' => ['unique:users,email_address,NULL,id,account_id,1']
+            'email' => ['unique:mysql.users,email_address,20,id,account_id,1']
         ], $this->processValidationRules($rules));
     }
 
@@ -83,7 +69,7 @@ class ValidationTest extends TestCase
 
     protected function getKey()
     {
-        return 7;
+        return $this->exists ? 7 : null;
     }
 
     protected function getKeyName()

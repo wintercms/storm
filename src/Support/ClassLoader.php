@@ -286,7 +286,7 @@ class ClassLoader
      * @param string $class
      * @return string|null
      */
-    protected function getAlias($class)
+    public function getAlias($class)
     {
         if (count($this->namespaceAliases)) {
             foreach ($this->namespaceAliases as $alias => $original) {
