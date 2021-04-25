@@ -22,7 +22,7 @@ class EncryptableTest extends DbTestCase
     public function testEncryptableTrait()
     {
         $testModel = new TestModelEncryptable();
-        $testModel->setEncrypter($this->encrypter);
+        $testModel->encryptUsing($this->encrypter);
 
         $testModel->fill(['secret' => 'test']);
         $this->assertEquals('test', $testModel->secret);
