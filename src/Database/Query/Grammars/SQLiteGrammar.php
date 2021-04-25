@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Database\Query\Grammars;
 
-use Winter\Storm\Database\QueryBuilder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\SQLiteGrammar as BaseSQLiteGrammar;
 use Winter\Storm\Database\Query\Grammars\Concerns\SelectConcatenations;
@@ -36,13 +36,13 @@ class SQLiteGrammar extends BaseSQLiteGrammar
     /**
      * Compile an "upsert" statement into SQL.
      *
-     * @param  \Winter\Storm\Database\QueryBuilder $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @param  array $values
      * @param  array $uniqueBy
      * @param  array $update
      * @return  string
      */
-    public function compileUpsert(QueryBuilder $query, array $values, array $uniqueBy, array $update)
+    public function compileUpsert(Builder $query, array $values, array $uniqueBy, array $update)
     {
         $sql = $this->compileInsert($query, $values);
 
