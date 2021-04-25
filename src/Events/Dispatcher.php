@@ -30,7 +30,7 @@ class Dispatcher extends BaseDispatcher
      * @param  int  $priority
      * @return void
      */
-    public function listen($events, $listener, $priority = 0)
+    public function listen($events, $listener = null, $priority = 0) 
     {
         foreach ((array) $events as $event) {
             if (Str::contains($event, '*')) {
