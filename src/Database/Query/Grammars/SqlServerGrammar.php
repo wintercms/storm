@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Database\Query\Grammars;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar as BaseSqlServerGrammar;
 use Winter\Storm\Database\Query\Grammars\Concerns\SelectConcatenations;
 
