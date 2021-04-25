@@ -210,9 +210,7 @@ class QueryBuilderTest extends TestCase
                 'rollBack',
                 'transactionLevel',
                 'pretend',
-            ])
-            ->addMethods([
-                'getDatabaseName',
+                'getDatabaseName'
             ])
             ->getMock();
 
