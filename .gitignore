@@ -12,6 +12,10 @@ composer.lock
 php_errors.log
 
 #eclipse
+/.editorconfig
 /.buildpath
 /.project
 /.settings/
+
+#phpunit
+tests/.phpunit.result.cache
