@@ -103,7 +103,7 @@ trait Encryptable
      */
     public function getEncrypter()
     {
-        if(is_null(self::$encrypter)) {
+        if (is_null(self::$encrypter)) {
             $this->setEncrypter(App::make('encrypter'));
         }
         return self::$encrypter;
