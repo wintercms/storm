@@ -19,6 +19,7 @@ class TranslatorTest extends TestCase
         $path       = __DIR__ . '/../fixtures/lang';
         $fileLoader = new FileLoader(new Filesystem(), $path);
         $translator = new Translator($fileLoader, 'en');
+        $translator->addNamespace('winter.test', $path);
         $this->translator = $translator;
     }
 
@@ -72,5 +73,19 @@ class TranslatorTest extends TestCase
 
         $this->assertEquals('Hello Override!', $this->translator->get('lang.test.hello_override'));
         $this->assertEquals('Hello Winter!', $this->translator->get('lang.test.hello_winter'));
+    }
+
+    public function testNamespaceAliasing()
+    {
+        $this->translator->registerNamespaceAlias('winter.test', 'winter.alias');
+        $this->assertEquals('Hello Winter!', $this->translator->get('winter.test::lang.test.hello_winter'));
+        $this->assertEquals('Hello Winter!', $this->translator->get('winter.alias::lang.test.hello_winter'));
+    }
+
+    public function testMixedCaseNamespaceAliasing()
+    {
+        $this->translator->registerNamespaceAlias('Winter.Test', 'Winter.CaseAlias');
+        $this->assertEquals('Hello Winter!', $this->translator->get('winter.test::lang.test.hello_winter'));
+        $this->assertEquals('Hello Winter!', $this->translator->get('winter.casealias::lang.test.hello_winter'));
     }
 }
