@@ -148,6 +148,20 @@ class YamlTest extends TestCase
             ],
         ], $yaml);
     }
+    
+    public function testVersionYaml()
+    {
+        $parser = new YamlParser;
+        $yaml = $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/version_test.yaml'));
+        $this->assertEquals([
+            '1.1.0' => 'Update test',
+            '1.1.1' => [
+                'Version with multipe tasks',
+                'migration.php',
+            ],
+            '1.1.2' => 'Important update'
+        ], $yaml);
+    }
 }
 
 /**
