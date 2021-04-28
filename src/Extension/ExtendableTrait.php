@@ -4,6 +4,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
 use Exception;
+use Winter\Storm\Support\ClassLoader;
 
 /**
  * This extension trait is used when access to the underlying base class
@@ -225,7 +226,21 @@ trait ExtendableTrait
     public function isClassExtendedWith($name)
     {
         $name = str_replace('.', '\\', trim($name));
-        return isset($this->extensionData['extensions'][$name]);
+
+        if (isset($this->extensionData['extensions'][$name])) {
+            return true;
+        }
+
+        $pluginNamespace = implode('\\', array_slice(explode('\\', $name), 0, 2));
+        $aliases = \App::make(ClassLoader::class)->getNamespaceAliases($pluginNamespace);
+
+        foreach ($aliases as $alias) {
+            if (isset($this->extensionData['extensions'][str_replace($pluginNamespace, $alias, $name)])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
