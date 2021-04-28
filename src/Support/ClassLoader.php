@@ -302,6 +302,24 @@ class ClassLoader
     }
 
     /**
+     * Gets aliases registered for a namespace, if available.
+     *
+     * @param string $namespace
+     * @return array
+     */
+    public function getNamespaceAliases($namespace)
+    {
+        $aliases = [];
+        foreach ($this->namespaceAliases as $alias => $original) {
+            if ($namespace === $original) {
+                $aliases[] = $alias;
+            }
+        }
+
+        return $aliases;
+    }
+
+    /**
      * Get the normal file name for a class.
      *
      * @param  string  $class
