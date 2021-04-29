@@ -3,8 +3,6 @@
 use Log;
 use Closure;
 use Response;
-use Exception;
-use Throwable;
 use ReflectionClass;
 use ReflectionFunction;
 use Winter\Storm\Exception\AjaxException;
@@ -87,7 +85,7 @@ class Handler extends ExceptionHandler
      * @param  \Throwable  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Throwable $exception)
+    public function render($request, \Throwable  $exception)
     {
         $statusCode = $this->getStatusCode($exception);
         $response = $this->callCustomHandlers($exception);
@@ -178,7 +176,7 @@ class Handler extends ExceptionHandler
             try {
                 $response = $handler($exception, $code, $fromConsole);
             }
-            catch (Exception $e) {
+            catch (\Exception $e) {
                 $response = $this->convertExceptionToResponse($e);
             }
             // If this handler returns a "non-null" response, we will return it so it will
@@ -218,7 +216,7 @@ class Handler extends ExceptionHandler
         try {
             return (new ReflectionClass($expected->getType()->getName()))
                 ->isInstance($exception);
-        } catch (Throwable $t) {
+        } catch (\Throwable  $t) {
             return false;
         }
     }
