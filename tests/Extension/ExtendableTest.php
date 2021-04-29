@@ -2,9 +2,55 @@
 
 use Winter\Storm\Extension\Extendable;
 use Winter\Storm\Extension\ExtensionBase;
+use Winter\Storm\Filesystem\Filesystem;
+use Winter\Storm\Support\ClassLoader;
 
 class ExtendableTest extends TestCase
 {
+    /** @var ClassLoader */
+    protected $classLoader;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->classLoader = new ClassLoader(
+            new Filesystem(),
+            dirname(__DIR__) . '/fixtures/classes',
+            dirname(__DIR__) . '/fixtures/classes/classes.php'
+        );
+
+        $this->classLoader->register();
+
+        $this->classLoader->addDirectories([
+            'plugins'
+        ]);
+
+        $this->classLoader->addNamespaceAliases([
+            'Alias\\ExtendableTest' => 'Real\\ExtendableTest',
+            'Alias' => 'Real',
+        ]);
+    }
+
+    /**
+     * Returns a class with mocked `getClassLoader` method to allow for `ClassLoader` injection
+     *
+     * @param string $class
+     * @return mixed
+     */
+    protected function getExtendableClass($class)
+    {
+        $subject = $this->getMockBuilder($class)
+            ->setMethods(['getClassLoader'])
+            ->getMock();
+
+        $subject->expects($this->any())
+            ->method('getClassLoader')
+            ->will($this->returnValue($this->classLoader));
+
+        return $subject;
+    }
+
     public function testExtendingExtendableClass()
     {
         $subject = new ExtendableTestExampleExtendableClass;
@@ -83,6 +129,15 @@ class ExtendableTest extends TestCase
         $this->assertEquals('foo', $subject->getOriginalFoo());
     }
 
+    public function testExtendOnClassWithClassLoaderAliases()
+    {
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClassAlias1::class);
+        $this->assertTrue($subject->isClassExtendedWith('Alias.ExtendableTest.ExampleBehaviorClass1'));
+
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClassAlias2::class);
+        $this->assertTrue($subject->isClassExtendedWith('Alias.ExampleBehaviorClass1'));
+    }
+
     public function testDynamicClosureOnClass()
     {
         $subject = new ExtendableTestExampleExtendableClass;
@@ -149,27 +204,27 @@ class ExtendableTest extends TestCase
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Class ExtendableTestInvalidExtendableClass contains an invalid $implement value');
-        
+
         $result = new ExtendableTestInvalidExtendableClass;
     }
 
     public function testSoftImplementFake()
     {
-        $result = new ExtendableTestExampleExtendableSoftImplementFakeClass;
+        $result = $this->getExtendableClass(ExtendableTestExampleExtendableSoftImplementFakeClass::class);
         $this->assertFalse($result->isClassExtendedWith('RabbleRabbleRabble'));
         $this->assertEquals('working', $result->getStatus());
     }
 
     public function testSoftImplementReal()
     {
-        $result = new ExtendableTestExampleExtendableSoftImplementRealClass;
+        $result = $this->getExtendableClass(ExtendableTestExampleExtendableSoftImplementRealClass::class);
         $this->assertTrue($result->isClassExtendedWith('ExtendableTestExampleBehaviorClass1'));
         $this->assertEquals('foo', $result->getFoo());
     }
 
     public function testSoftImplementCombo()
     {
-        $result = new ExtendableTestExampleExtendableSoftImplementComboClass;
+        $result = $this->getExtendableClass(ExtendableTestExampleExtendableSoftImplementComboClass::class);
         $this->assertFalse($result->isClassExtendedWith('RabbleRabbleRabble'));
         $this->assertTrue($result->isClassExtendedWith('ExtendableTestExampleBehaviorClass1'));
         $this->assertTrue($result->isClassExtendedWith('ExtendableTestExampleBehaviorClass2'));
@@ -178,7 +233,7 @@ class ExtendableTest extends TestCase
 
     public function testDotNotation()
     {
-        $subject = new ExtendableTestExampleExtendableClassDotNotation();
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClassDotNotation::class);
         $subject->extendClassWith('ExtendableTest.ExampleBehaviorClass2');
 
         $this->assertTrue($subject->isClassExtendedWith('ExtendableTest.ExampleBehaviorClass1'));
@@ -297,6 +352,22 @@ class ExtendableTestExampleExtendableClass extends Extendable
     }
 }
 
+/*
+ * Example class that has extensions enabled via `ClassLoader` alias
+ */
+class ExtendableTestExampleExtendableClassAlias1 extends Extendable
+{
+    public $implement = ['Real.ExtendableTest.ExampleBehaviorClass1'];
+}
+
+/*
+ * Example class that has extensions enabled via `ClassLoader` alias
+ */
+class ExtendableTestExampleExtendableClassAlias2 extends Extendable
+{
+    public $implement = ['Real.ExampleBehaviorClass1'];
+}
+
 /**
  * A normal class without extensions enabled
  */
@@ -378,3 +449,9 @@ class ExtendableTestExampleExtendableClassDotNotation extends Extendable
  */
 class_alias('ExtendableTestExampleBehaviorClass1', 'ExtendableTest\\ExampleBehaviorClass1');
 class_alias('ExtendableTestExampleBehaviorClass2', 'ExtendableTest\\ExampleBehaviorClass2');
+
+/*
+ * Add namespaces for `ClassLoader` aliasing
+ */
+class_alias('ExtendableTestExampleBehaviorClass1', 'Real\\ExtendableTest\\ExampleBehaviorClass1');
+class_alias('ExtendableTestExampleBehaviorClass1', 'Real\\ExampleBehaviorClass1');
