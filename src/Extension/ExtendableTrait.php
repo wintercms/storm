@@ -231,16 +231,45 @@ trait ExtendableTrait
             return true;
         }
 
-        $pluginNamespace = implode('\\', array_slice(explode('\\', $name), 0, 2));
-        $aliases = \App::make(ClassLoader::class)->getNamespaceAliases($pluginNamespace);
+        $parts = explode('\\', $name);
+        $count = count($parts) - 1;
 
-        foreach ($aliases as $alias) {
-            if (isset($this->extensionData['extensions'][str_replace($pluginNamespace, $alias, $name)])) {
-                return true;
+        if ($count < 1) {
+            return false;
+        }
+
+        $map = [];
+        $namespace = '';
+
+        for ($i = 0; $i < $count; $i++) {
+            $namespace = $namespace ? $namespace . '\\' . $parts[$i] : $parts[$i];
+            $map[] = $namespace;
+        }
+
+        $map = array_reverse($map);
+
+        foreach ($map as $namespace) {
+            if ($aliases = $this->getClassLoader()->getNamespaceAliases($namespace)) {
+                foreach ($aliases as $alias) {
+                    if (isset($this->extensionData['extensions'][str_replace($namespace, $alias, $name)])) {
+                        return true;
+                    }
+                }
             }
         }
 
         return false;
+    }
+
+
+    /**
+     * Returns ClassLoader object
+     *
+     * @return ClassLoader
+     */
+    protected function getClassLoader(): ClassLoader
+    {
+        return \App::make(ClassLoader::class);
     }
 
     /**
