@@ -1,10 +1,12 @@
 <?php namespace Winter\Storm\Events;
 
+use Closure;
 use ReflectionClass;
 use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Str;
 use Illuminate\Events\Dispatcher as BaseDispatcher;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Events\QueuedClosure;
 
 class Dispatcher extends BaseDispatcher
 {
@@ -32,6 +34,10 @@ class Dispatcher extends BaseDispatcher
      */
     public function listen($events, $listener = null, $priority = 0)
     {
+        if ($events instanceof Closure || $events instanceof QueuedClosure) {
+            return parent::listen($events, $listener, $priority);
+        }
+        
         foreach ((array) $events as $event) {
             if (Str::contains($event, '*')) {
                 $this->setupWildcardListen($event, $listener);
