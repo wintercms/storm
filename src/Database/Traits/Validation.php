@@ -442,7 +442,7 @@ trait Validation
             $keyName,
             $whereColumn,
             $whereValue
-        ) = array_pad(explode(',', $definition), 6, null);
+        ) = array_pad(explode(',', $definition, 6), 6, null);
 
         $table = 'unique:' . $this->getConnectionName()  . '.' . $this->getTable();
         $column = $column ?: $fieldName;
