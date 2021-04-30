@@ -1,9 +1,10 @@
 <?php namespace Winter\Storm\Extension;
 
+use App;
+use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
-use Exception;
 use Winter\Storm\Support\ClassLoader;
 
 /**
@@ -80,7 +81,7 @@ trait ExtendableTrait
         }
 
         foreach ($uses as $use) {
-            $useClass = str_replace('.', '\\', trim($use));
+            $useClass = $this->extensionNormalizeClassName($use);
 
             /*
              * Soft implement
@@ -121,6 +122,29 @@ trait ExtendableTrait
     public static function clearExtendedClasses()
     {
         self::$extendableCallbacks = [];
+    }
+
+    /**
+     * Normalizes the provided extension name
+     *
+     * @param string $name
+     * @return string
+     */
+    protected function extensionNormalizeClassName(string $name): string
+    {
+        $name = str_replace('.', '\\', trim($name));
+        $name = $this->extensionGetClassLoader()->getAlias($name) ?: $name;
+        return $name;
+    }
+
+    /**
+     * Gets the class loader
+     *
+     * @return ClassLoader
+     */
+    protected function extensionGetClassLoader(): ClassLoader
+    {
+        return App::make(ClassLoader::class);
     }
 
     /**
@@ -203,7 +227,7 @@ trait ExtendableTrait
             return $this;
         }
 
-        $extensionName = str_replace('.', '\\', trim($extensionName));
+        $extensionName = $this->extensionNormalizeClassName($extensionName);
 
         if (isset($this->extensionData['extensions'][$extensionName])) {
             throw new Exception(sprintf(
@@ -225,51 +249,7 @@ trait ExtendableTrait
      */
     public function isClassExtendedWith($name)
     {
-        $name = str_replace('.', '\\', trim($name));
-
-        if (isset($this->extensionData['extensions'][$name])) {
-            return true;
-        }
-
-        $parts = explode('\\', $name);
-        $count = count($parts) - 1;
-
-        if ($count < 1) {
-            return false;
-        }
-
-        $map = [];
-        $namespace = '';
-
-        for ($i = 0; $i < $count; $i++) {
-            $namespace = $namespace ? $namespace . '\\' . $parts[$i] : $parts[$i];
-            $map[] = $namespace;
-        }
-
-        $map = array_reverse($map);
-
-        foreach ($map as $namespace) {
-            if ($aliases = $this->getClassLoader()->getNamespaceAliases($namespace)) {
-                foreach ($aliases as $alias) {
-                    if (isset($this->extensionData['extensions'][str_replace($namespace, $alias, $name)])) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Returns ClassLoader object
-     *
-     * @return ClassLoader
-     */
-    protected function getClassLoader(): ClassLoader
-    {
-        return \App::make(ClassLoader::class);
+        return isset($this->extensionData['extensions'][$this->extensionNormalizeClassName($name)]);
     }
 
     /**
@@ -282,8 +262,7 @@ trait ExtendableTrait
      */
     public function getClassExtension($name)
     {
-        $name = str_replace('.', '\\', trim($name));
-        return $this->extensionData['extensions'][$name] ?? null;
+        return $this->extensionData['extensions'][$this->extensionNormalizeClassName($name)] ?? null;
     }
 
     /**
@@ -511,6 +490,8 @@ trait ExtendableTrait
                 }
 
                 foreach ($uses as $use) {
+                    // Class alias checks not required here as the current name of the extension class doesn't
+                    // matter because as long as $useClassName is able to be instantiated the method will resolve
                     $useClassName = str_replace('.', '\\', trim($use));
 
                     $useClass = new ReflectionClass($useClassName);

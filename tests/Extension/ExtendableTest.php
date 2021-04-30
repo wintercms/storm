@@ -41,11 +41,11 @@ class ExtendableTest extends TestCase
     protected function getExtendableClass($class)
     {
         $subject = $this->getMockBuilder($class)
-            ->setMethods(['getClassLoader'])
+            ->setMethods(['extensionGetClassLoader'])
             ->getMock();
 
         $subject->expects($this->any())
-            ->method('getClassLoader')
+            ->method('extensionGetClassLoader')
             ->will($this->returnValue($this->classLoader));
 
         return $subject;
