@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use Winter\Storm\Foundation\Application;
 use Winter\Storm\Events\Dispatcher;
@@ -23,14 +23,14 @@ class DispatcherTest extends TestCase
     /**
      * Test normal string event dispatch
      */
-    public function testNormalListen() 
+    public function testNormalListen()
     {
         /**
          * Test normal usage
          */
         $magic_value = false;
         $dispatcher = new Dispatcher();
-        $dispatcher->listen('test.test', function() use (&$magic_value) {
+        $dispatcher->listen('test.test', function () use (&$magic_value) {
             $magic_value = true;
         });
         $dispatcher->fire('test.test');
@@ -40,11 +40,11 @@ class DispatcherTest extends TestCase
     /**
      * Test closure usage
      */
-    public function testTypedClosureListen() 
+    public function testTypedClosureListen()
     {
         $magic_value = false;
         $dispatcher = new Dispatcher();
-        $dispatcher->listen(function(EventTest $event) use (&$magic_value) {
+        $dispatcher->listen(function (EventTest $event) use (&$magic_value) {
             $magic_value = true;
         });
         $dispatcher->dispatch('test.test');
@@ -60,10 +60,8 @@ class DispatcherTest extends TestCase
     public function testQueuedClosureListen()
     {
         $dispatcher = new Dispatcher();
-        $dispatcher->listen(new QueuedClosure(function(EventTest $event) use (&$magic_value) {
-            
+        $dispatcher->listen(new QueuedClosure(function (EventTest $event) use (&$magic_value) {
         }));
         $this->addToAssertionCount(1);
-        
     }
 }
