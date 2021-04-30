@@ -447,7 +447,7 @@ trait Validation
         ) = array_pad(explode(',', $definition, 6), 6, null);
 
         // Remove unique or unique: from the table name
-        $table = ltrim(ltrim($table, 'unique'), ':');
+        $table = Str::after(Str::after($table, 'unique'), ':');
 
         // Support table, connection.table, and null value
         if (Str::contains($table, '.')) {
