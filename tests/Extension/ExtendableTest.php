@@ -27,8 +27,8 @@ class ExtendableTest extends TestCase
         ]);
 
         $this->classLoader->addNamespaceAliases([
-            'Alias\\ExtendableTest' => 'Real\\ExtendableTest',
-            'Alias' => 'Real',
+            'Real\\ExtendableTest' => 'Alias\\ExtendableTest',
+            'Real' => 'Alias',
         ]);
     }
 
@@ -132,10 +132,10 @@ class ExtendableTest extends TestCase
     public function testExtendOnClassWithClassLoaderAliases()
     {
         $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClassAlias1::class);
-        $this->assertTrue($subject->isClassExtendedWith('Alias.ExtendableTest.ExampleBehaviorClass1'));
+        $this->assertTrue($subject->isClassExtendedWith('Real.ExtendableTest.ExampleBehaviorClass1'));
 
         $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClassAlias2::class);
-        $this->assertTrue($subject->isClassExtendedWith('Alias.ExampleBehaviorClass1'));
+        $this->assertTrue($subject->isClassExtendedWith('Real.ExampleBehaviorClass1'));
     }
 
     public function testDynamicClosureOnClass()
@@ -357,7 +357,7 @@ class ExtendableTestExampleExtendableClass extends Extendable
  */
 class ExtendableTestExampleExtendableClassAlias1 extends Extendable
 {
-    public $implement = ['Real.ExtendableTest.ExampleBehaviorClass1'];
+    public $implement = ['Alias.ExtendableTest.ExampleBehaviorClass1'];
 }
 
 /*
@@ -365,7 +365,7 @@ class ExtendableTestExampleExtendableClassAlias1 extends Extendable
  */
 class ExtendableTestExampleExtendableClassAlias2 extends Extendable
 {
-    public $implement = ['Real.ExampleBehaviorClass1'];
+    public $implement = ['Alias.ExampleBehaviorClass1'];
 }
 
 /**
