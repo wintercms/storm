@@ -38,6 +38,7 @@ class ValidationTest extends TestCase
          * - "unique:table_name,column_to_check
          * - "unique:table_name,column_to_check,ignore_value
          * - "unique:table_name,column_to_check,ignore_value,ignore_column
+         * - "unique:table_name,column_to_check,ignore_value,ignore_column,extra_where_column
          * - "unique:table_name,column_to_check,ignore_value,ignore_column,extra_where_column,extra_where_value...
          *
          * Default values:
@@ -78,13 +79,25 @@ class ValidationTest extends TestCase
                 'exists'     => ['email' => ['unique:mysql.users,email_address,customColumnValue,customColumn']],
                 'not_exists' => ['email' => ['unique:mysql.users,email_address,NULL,customColumn']],
             ],
-            // Additional where clauses
+            // Additional where clauses (no value)
+            [
+                'rules'      => ['email' => 'unique:users,email_address,NULL,primaryKey,extraWhereColumn'],
+                'exists'     => ['email' => ['unique:mysql.users,email_address,primaryKeyValue,primaryKey,extraWhereColumn']],
+                'not_exists' => ['email' => ['unique:mysql.users,email_address,NULL,primaryKey,extraWhereColumn']],
+            ],
+            // Additional where clauses (with value)
             [
                 'rules'      => ['email' => 'unique:users,email_address,NULL,primaryKey,extraWhereColumn,extraWhereValue'],
                 'exists'     => ['email' => ['unique:mysql.users,email_address,primaryKeyValue,primaryKey,extraWhereColumn,extraWhereValue']],
                 'not_exists' => ['email' => ['unique:mysql.users,email_address,NULL,primaryKey,extraWhereColumn,extraWhereValue']],
             ],
-            // Multiple additional where clauses
+            // Multiple additional where clauses (no value)
+            [
+                'rules'      => ['email' => 'unique:users,email_address,NULL,primaryKey,extraWhereColumn,extraWhereValue,secondWhereColumn'],
+                'exists'     => ['email' => ['unique:mysql.users,email_address,primaryKeyValue,primaryKey,extraWhereColumn,extraWhereValue,secondWhereColumn']],
+                'not_exists' => ['email' => ['unique:mysql.users,email_address,NULL,primaryKey,extraWhereColumn,extraWhereValue,secondWhereColumn']],
+            ],
+            // Multiple additional where clauses (with value)
             [
                 'rules'      => ['email' => 'unique:users,email_address,NULL,primaryKey,extraWhereColumn,extraWhereValue,secondWhereColumn,secondWhereValue'],
                 'exists'     => ['email' => ['unique:mysql.users,email_address,primaryKeyValue,primaryKey,extraWhereColumn,extraWhereValue,secondWhereColumn,secondWhereValue']],

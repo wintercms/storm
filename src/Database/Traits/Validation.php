@@ -470,8 +470,10 @@ trait Validation
 
         $params = ["unique:{$connection}.{$table}", $column, $ignoreValue, $ignoreColumn];
 
-        if ($whereColumn && $whereValue) {
+        if ($whereColumn) {
             $params[] = $whereColumn;
+        }
+        if ($whereValue) {
             $params[] = $whereValue;
         }
 
