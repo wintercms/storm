@@ -43,8 +43,8 @@
         "twig/twig": "~2.0",
         "league/csv": "~9.1",
         "nesbot/carbon": "^2.0",
-        "laravel/framework": "^8.0",
-        "laravel/tinker": "~2.0"
+        "laravel/framework": "9.x-dev",
+        "laravel/tinker": "dev-develop"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.5.12|^9.3.3",
