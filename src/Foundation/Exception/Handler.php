@@ -3,6 +3,7 @@
 use Log;
 use Closure;
 use Response;
+use Throwable;
 use ReflectionClass;
 use ReflectionFunction;
 use Winter\Storm\Exception\AjaxException;
@@ -32,14 +33,14 @@ class Handler extends ExceptionHandler
     protected $handlers = [];
 
     /**
-     * Report or log an exception.
+     * Report or log an throwable.
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  \Throwable  $exception
+     * @param  \Throwable  $throwable
      * @return void
      */
-    public function report(\Throwable $exception)
+    public function report(Throwable $throwable)
     {
         /**
          * @event exception.beforeReport
@@ -47,22 +48,22 @@ class Handler extends ExceptionHandler
          *
          * Example usage (prevents the reporting of a given exception)
          *
-         *     Event::listen('exception.report', function (\Exception $exception) {
-         *         if ($exception instanceof \My\Custom\Exception) {
+         *     Event::listen('exception.report', function (\Throwable $throwable) {
+         *         if ($throwable instanceof \My\Custom\Exception) {
          *             return false;
          *         }
          *     });
          */
-        if (app()->make('events')->fire('exception.beforeReport', [$exception], true) === false) {
+        if (app()->make('events')->fire('exception.beforeReport', [$throwable], true) === false) {
             return;
         }
 
-        if ($this->shouldntReport($exception)) {
+        if ($this->shouldntReport($throwable)) {
             return;
         }
 
         if (class_exists('Log')) {
-            Log::error($exception);
+            Log::error($throwable);
         }
 
         /**
@@ -71,24 +72,24 @@ class Handler extends ExceptionHandler
          *
          * Example usage (performs additional reporting on the exception)
          *
-         *     Event::listen('exception.report', function (\Exception $exception) {
-         *         app('sentry')->captureException($exception);
+         *     Event::listen('exception.report', function (\Throwable $throwable) {
+         *         app('sentry')->captureException($throwable);
          *     });
          */
-        app()->make('events')->fire('exception.report', [$exception]);
+        app()->make('events')->fire('exception.report', [$throwable]);
     }
 
     /**
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $exception
+     * @param  \Throwable  $throwable
      * @return \Illuminate\Http\Response
      */
-    public function render($request, \Throwable  $exception)
+    public function render($request, Throwable  $throwable)
     {
-        $statusCode = $this->getStatusCode($exception);
-        $response = $this->callCustomHandlers($exception);
+        $statusCode = $this->getStatusCode($throwable);
+        $response = $this->callCustomHandlers($throwable);
 
         if (!is_null($response)) {
             if ($response instanceof \Symfony\Component\HttpFoundation\Response) {
@@ -98,25 +99,25 @@ class Handler extends ExceptionHandler
             return Response::make($response, $statusCode);
         }
 
-        if ($event = app()->make('events')->fire('exception.beforeRender', [$exception, $statusCode, $request], true)) {
+        if ($event = app()->make('events')->fire('exception.beforeRender', [$throwable, $statusCode, $request], true)) {
             return Response::make($event, $statusCode);
         }
 
-        return parent::render($request, $exception);
+        return parent::render($request, $throwable);
     }
 
     /**
      * Checks if the exception implements the HttpExceptionInterface, or returns
      * as generic 500 error code for a server side error.
-     * @param \Exception $exception
+     * @param \Throwable $throwable
      * @return int
      */
-    protected function getStatusCode($exception)
+    protected function getStatusCode($throwable)
     {
-        if ($exception instanceof HttpExceptionInterface) {
-            $code = $exception->getStatusCode();
+        if ($throwable instanceof HttpExceptionInterface) {
+            $code = $throwable->getStatusCode();
         }
-        elseif ($exception instanceof AjaxException) {
+        elseif ($throwable instanceof AjaxException) {
             $code = 406;
         }
         else {
@@ -152,32 +153,32 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Handle the given exception.
+     * Handle the given throwable.
      *
-     * @param  \Exception  $exception
+     * @param  \Throwable  $throwable
      * @param  bool  $fromConsole
      * @return void
      */
-    protected function callCustomHandlers($exception, $fromConsole = false)
+    protected function callCustomHandlers($throwable, $fromConsole = false)
     {
         foreach ($this->handlers as $handler) {
-            // If this exception handler does not handle the given exception, we will just
-            // go the next one. A handler may type-hint an exception that it handles so
+            // If this throwable handler does not handle the given throwable, we will just
+            // go the next one. A handler may type-hint an throwable that it handles so
             //  we can have more granularity on the error handling for the developer.
-            if (!$this->handlesException($handler, $exception)) {
+            if (!$this->handlesThrowable($handler, $throwable)) {
                 continue;
             }
 
-            $code = $this->getStatusCode($exception);
+            $code = $this->getStatusCode($throwable);
 
             // We will wrap this handler in a try / catch and avoid white screens of death
-            // if any exceptions are thrown from a handler itself. This way we will get
+            // if any throwables are thrown from a handler itself. This way we will get
             // at least some errors, and avoid errors with no data or not log writes.
             try {
-                $response = $handler($exception, $code, $fromConsole);
+                $response = $handler($throwable, $code, $fromConsole);
             }
-            catch (\Exception $e) {
-                $response = $this->convertExceptionToResponse($e);
+            catch (Throwable $t) {
+                $response = $this->convertThrowableToResponse($t);
             }
             // If this handler returns a "non-null" response, we will return it so it will
             // get sent back to the browsers. Once the handler returns a valid response
@@ -189,33 +190,33 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Determine if the given handler handles this exception.
+     * Determine if the given handler handles this throwable.
      *
      * @param  \Closure    $handler
-     * @param  \Exception  $exception
+     * @param  \Throwable  $throwable
      * @return bool
      */
-    protected function handlesException(Closure $handler, $exception)
+    protected function handlesThrowable(Closure $handler, $throwable)
     {
         $reflection = new ReflectionFunction($handler);
-        return $reflection->getNumberOfParameters() == 0 || $this->hints($reflection, $exception);
+        return $reflection->getNumberOfParameters() == 0 || $this->hints($reflection, $throwable);
     }
 
     /**
-     * Determine if the given handler type hints the exception.
+     * Determine if the given handler type hints the throwable.
      *
      * @param  \ReflectionFunction  $reflection
-     * @param  \Exception  $exception
+     * @param  \Throwable  $throwable
      * @return bool
      */
-    protected function hints(ReflectionFunction $reflection, $exception)
+    protected function hints(ReflectionFunction $reflection, $throwable)
     {
         $parameters = $reflection->getParameters();
         $expected = $parameters[0];
 
         try {
             return (new ReflectionClass($expected->getType()->getName()))
-                ->isInstance($exception);
+                ->isInstance($throwable);
         } catch (\Throwable  $t) {
             return false;
         }
