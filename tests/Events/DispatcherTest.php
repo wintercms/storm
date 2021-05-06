@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Bus;
 
 class DispatcherTest extends TestCase
 {
-    
+
     public function setUp(): void
     {
         include_once __DIR__.'/../fixtures/events/EventTest.php';
-        
+
         parent::setUp();
     }
-    
+
     /**
      * Test normal string event dispatch
      */
@@ -36,7 +36,7 @@ class DispatcherTest extends TestCase
         $dispatcher->fire('test.test');
         $this->assertTrue($magic_value);
     }
-    
+
     /**
      * Test closure usage
      */
@@ -52,16 +52,84 @@ class DispatcherTest extends TestCase
         $dispatcher->dispatch(new EventTest);
         $this->assertTrue($magic_value);
     }
-    
+
+    public function testStringEventPriorities()
+    {
+        $magic_value = 0;
+        $dispatcher = new Dispatcher();
+
+        $dispatcher->listen("test.test", function () use (&$magic_value) {
+            $magic_value = 42;
+        }, 1);
+        $dispatcher->listen("test.test", function () use (&$magic_value) {
+            $magic_value = 1;
+        }, 2);
+
+        $dispatcher->dispatch("test.test");
+        $this->assertEquals(42, $magic_value);
+    }
+
+    public function testClosurePriorities()
+    {
+        $magic_value = 0;
+        $dispatcher = new Dispatcher();
+
+        $dispatcher->listen(function (EventTest $test) use (&$magic_value) {
+            $magic_value = 42;
+        }, 1);
+        $dispatcher->listen(function (EventTest $test) use (&$magic_value) {
+            $magic_value = 1;
+        }, 2);
+
+        $dispatcher->dispatch(new EventTest());
+        $this->assertEquals(42, $magic_value);
+    }
+
+    public function testQueuedClosurePriorities()
+    {
+        $mock_queued_closure_should_match = $this->createMock(QueuedClosure::class);
+        $mock_queued_closure_should_match->closure = function (EventTest $test) use (&$magic_value) {
+            $magic_value = 42;
+        };
+        $mock_queued_closure_should_match->method('resolve')->willReturn($mock_queued_closure_should_match->closure);
+
+        $mock_queued_closure_should_not_match = $this->createMock(QueuedClosure::class);
+        $mock_queued_closure_should_not_match->closure = function (EventTest $test) use (&$magic_value) {
+            $magic_value = 2;
+        };
+        $mock_queued_closure_should_not_match->method('resolve')->willReturn($mock_queued_closure_should_not_match->closure);
+        $dispatcher = new Dispatcher();
+        $magic_value = 0;
+
+        // Test natural sorting without priority to the queued tasks to be queued.
+        $dispatcher->listen($mock_queued_closure_should_not_match);
+        $dispatcher->listen($mock_queued_closure_should_match);
+        $dispatcher->dispatch(new EventTest());
+        $this->assertEquals(42, $magic_value);
+
+        // Test priority sorting for the queued tasks to be queued
+        $magic_value = 0;
+        $dispatcher->listen($mock_queued_closure_should_match, 1);
+        $dispatcher->listen($mock_queued_closure_should_not_match, 2);
+        $dispatcher->dispatch(new EventTest());
+        $this->assertEquals(42, $magic_value);
+    }
+
     /**
      * Test wether the dispatcher accepts a QueuedClosure
      * TODO: Figure out how to test successful execution of event closure on a triggered event.
      */
     public function testQueuedClosureListen()
     {
+        $magic_value = false;
+        $mock_queued_closure = $this->createMock(QueuedClosure::class);
+        $mock_queued_closure->closure = function (EventTest $test) use (&$magic_value) {
+            $magic_value = true;
+        };
+        $mock_queued_closure->method('resolve')->willReturn($mock_queued_closure->closure);
         $dispatcher = new Dispatcher();
-        $dispatcher->listen(new QueuedClosure(function (EventTest $event) use (&$magic_value) {
-        }));
-        $this->addToAssertionCount(1);
+        $dispatcher->listen($mock_queued_closure);
+        $dispatcher->dispatch(new EventTest());
+        $this->assertTrue($magic_value);
     }
 }
