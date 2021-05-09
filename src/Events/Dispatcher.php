@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Events;
 
 use Closure;
+use Opis\Closure\SerializableClosure;
 use ReflectionClass;
 use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Str;
@@ -28,7 +29,8 @@ class Dispatcher extends BaseDispatcher
      * Register an event listener with the dispatcher.
      *
      * @param  string|array|Closure|QueuedClosure  $events
-     * @param  mixed  $listener when the third parameter is omitted and a Closure or QueuedClosure is provided this parameter is used as an integer this is used as priority value
+     * @param  mixed  $listener when the third parameter is omitted and a Closure or QueuedClosure is provided
+     * this parameter is used as an integer this is used as priority value
      * @param int $priority
      * @return void
      */
@@ -45,6 +47,9 @@ class Dispatcher extends BaseDispatcher
             return $this->listen($this->firstClosureParameterType($events->closure), $events->resolve(), $priority);
         } elseif ($listener instanceof QueuedClosure) {
             $listener = $listener->resolve();
+        }
+        if ($listener instanceof Closure && !($listener instanceof SerializableClosure)) {
+            $listener = new SerializableClosure($listener);
         }
 
         foreach ((array) $events as $event) {
@@ -124,6 +129,9 @@ class Dispatcher extends BaseDispatcher
         }
 
         foreach ($this->getListeners($event) as $listener) {
+            if ($listener instanceof SerializableClosure) {
+                $listener = $listener->getClosure();
+            }
             $response = $listener($event, $payload);
 
             // If a response is returned from the listener and event halting is enabled

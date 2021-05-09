@@ -1,9 +1,11 @@
 <?php namespace Winter\Storm\Extension;
 
+use Opis\Closure\SerializableClosure;
 use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
 use Exception;
+use Winter\Storm\Support\Serialisation;
 
 /**
  * This extension trait is used when access to the underlying base class
@@ -20,10 +22,10 @@ trait ExtendableTrait
      * @var array Class reflection information, including behaviors.
      */
     protected $extensionData = [
-        'extensions'        => [],
-        'methods'           => [],
-        'dynamicMethods'    => [],
-        'dynamicProperties' => []
+        ExtensionConstants::EXTENSIONS         => [],
+        ExtensionConstants::METHODS            => [],
+        ExtensionConstants::DYNAMIC_METHODS    => [],
+        ExtensionConstants::DYNAMIC_PROPERTIES => []
     ];
 
     /**
@@ -56,7 +58,7 @@ trait ExtendableTrait
         foreach ($classes as $class) {
             if (isset(self::$extendableCallbacks[$class]) && is_array(self::$extendableCallbacks[$class])) {
                 foreach (self::$extendableCallbacks[$class] as $callback) {
-                    call_user_func($callback, $this);
+                    call_user_func(Serialisation::unwrapClosure($callback), $this);
                 }
             }
         }
@@ -109,8 +111,7 @@ trait ExtendableTrait
         ) {
             self::$extendableCallbacks[$class] = [];
         }
-
-        self::$extendableCallbacks[$class][] = $callback;
+        self::$extendableCallbacks[$class][] = Serialisation::wrapClosure($callback);
     }
 
     /**
@@ -147,7 +148,7 @@ trait ExtendableTrait
                 continue;
             }
 
-            $this->extensionData['methods'][$methodName] = $extensionName;
+            $this->extensionData[ExtensionConstants::METHODS][$methodName] = $extensionName;
         }
     }
 
@@ -166,8 +167,7 @@ trait ExtendableTrait
         ) {
             $method = [$extensionObj, $method];
         }
-
-        $this->extensionData['dynamicMethods'][$dynamicName] = $method;
+        $this->extensionData[ExtensionConstants::DYNAMIC_METHODS][$dynamicName] = Serialisation::wrapClosure($method);
     }
 
     /**
@@ -186,7 +186,7 @@ trait ExtendableTrait
             $this->{$dynamicName} = $value;
         }
 
-        $this->extensionData['dynamicProperties'][] = $dynamicName;
+        $this->extensionData[ExtensionConstants::DYNAMIC_PROPERTIES][] = $dynamicName;
 
         self::$extendableGuardProperties = true;
     }
@@ -204,7 +204,7 @@ trait ExtendableTrait
 
         $extensionName = str_replace('.', '\\', trim($extensionName));
 
-        if (isset($this->extensionData['extensions'][$extensionName])) {
+        if (isset($this->extensionData[ExtensionConstants::EXTENSIONS][$extensionName])) {
             throw new Exception(sprintf(
                 'Class %s has already been extended with %s',
                 get_class($this),
@@ -212,7 +212,7 @@ trait ExtendableTrait
             ));
         }
 
-        $this->extensionData['extensions'][$extensionName] = $extensionObject = new $extensionName($this);
+        $this->extensionData[ExtensionConstants::EXTENSIONS][$extensionName] = $extensionObject = new $extensionName($this);
         $this->extensionExtractMethods($extensionName, $extensionObject);
         $extensionObject->extensionApplyInitCallbacks();
     }
@@ -225,7 +225,7 @@ trait ExtendableTrait
     public function isClassExtendedWith($name)
     {
         $name = str_replace('.', '\\', trim($name));
-        return isset($this->extensionData['extensions'][$name]);
+        return isset($this->extensionData[ExtensionConstants::EXTENSIONS][$name]);
     }
 
     /**
@@ -239,7 +239,7 @@ trait ExtendableTrait
     public function getClassExtension($name)
     {
         $name = str_replace('.', '\\', trim($name));
-        return $this->extensionData['extensions'][$name] ?? null;
+        return $this->extensionData[ExtensionConstants::EXTENSIONS][$name] ?? null;
     }
 
     /**
@@ -254,7 +254,7 @@ trait ExtendableTrait
     public function asExtension($shortName)
     {
         $hints = [];
-        foreach ($this->extensionData['extensions'] as $class => $obj) {
+        foreach ($this->extensionData[ExtensionConstants::EXTENSIONS] as $class => $obj) {
             if (
                 preg_match('@\\\\([\w]+)$@', $class, $matches) &&
                 $matches[1] == $shortName
@@ -275,8 +275,8 @@ trait ExtendableTrait
     {
         return (
             method_exists($this, $name) ||
-            isset($this->extensionData['methods'][$name]) ||
-            isset($this->extensionData['dynamicMethods'][$name])
+            isset($this->extensionData[ExtensionConstants::METHODS][$name]) ||
+            isset($this->extensionData[ExtensionConstants::DYNAMIC_METHODS][$name])
         );
     }
 
@@ -288,8 +288,8 @@ trait ExtendableTrait
     {
         return array_values(array_unique(array_merge(
             get_class_methods($this),
-            array_keys($this->extensionData['methods']),
-            array_keys($this->extensionData['dynamicMethods'])
+            array_keys($this->extensionData[ExtensionConstants::METHODS]),
+            array_keys($this->extensionData[ExtensionConstants::DYNAMIC_METHODS])
         )));
     }
 
@@ -300,7 +300,7 @@ trait ExtendableTrait
     public function getDynamicProperties()
     {
         $result = [];
-        $propertyNames = $this->extensionData['dynamicProperties'];
+        $propertyNames = $this->extensionData[ExtensionConstants::DYNAMIC_PROPERTIES];
         foreach ($propertyNames as $propName) {
             $result[$propName] = $this->{$propName};
         }
@@ -318,7 +318,7 @@ trait ExtendableTrait
             return true;
         }
 
-        foreach ($this->extensionData['extensions'] as $extensionObject) {
+        foreach ($this->extensionData[ExtensionConstants::EXTENSIONS] as $extensionObject) {
             if (
                 property_exists($extensionObject, $name) &&
                 $this->extendableIsAccessible($extensionObject, $name)
@@ -350,7 +350,7 @@ trait ExtendableTrait
      */
     public function extendableGet($name)
     {
-        foreach ($this->extensionData['extensions'] as $extensionObject) {
+        foreach ($this->extensionData[ExtensionConstants::EXTENSIONS] as $extensionObject) {
             if (
                 property_exists($extensionObject, $name) &&
                 $this->extendableIsAccessible($extensionObject, $name)
@@ -373,7 +373,7 @@ trait ExtendableTrait
      */
     public function extendableSet($name, $value)
     {
-        foreach ($this->extensionData['extensions'] as $extensionObject) {
+        foreach ($this->extensionData[ExtensionConstants::EXTENSIONS] as $extensionObject) {
             if (!property_exists($extensionObject, $name)) {
                 continue;
             }
@@ -405,20 +405,20 @@ trait ExtendableTrait
      */
     public function extendableCall($name, $params = null)
     {
-        if (isset($this->extensionData['methods'][$name])) {
-            $extension = $this->extensionData['methods'][$name];
-            $extensionObject = $this->extensionData['extensions'][$extension];
+        if (isset($this->extensionData[ExtensionConstants::METHODS][$name])) {
+            $extension = $this->extensionData[ExtensionConstants::METHODS][$name];
+            $extensionObject = $this->extensionData[ExtensionConstants::EXTENSIONS][$extension];
 
             if (method_exists($extension, $name)) {
                 return call_user_func_array([$extensionObject, $name], array_values($params));
             }
         }
 
-        if (isset($this->extensionData['dynamicMethods'][$name])) {
-            $dynamicCallable = $this->extensionData['dynamicMethods'][$name];
+        if (isset($this->extensionData[ExtensionConstants::DYNAMIC_METHODS][$name])) {
+            $dynamicCallable = $this->extensionData[ExtensionConstants::DYNAMIC_METHODS][$name];
 
             if (is_callable($dynamicCallable)) {
-                return call_user_func_array($dynamicCallable, array_values($params));
+                return call_user_func_array(Serialisation::unwrapClosure($dynamicCallable), array_values($params));
             }
         }
 

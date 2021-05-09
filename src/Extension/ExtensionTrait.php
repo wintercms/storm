@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Extension;
 
+use Opis\Closure\SerializableClosure;
+
 /**
  * Extension trait
  *
@@ -24,8 +26,8 @@ trait ExtensionTrait
     public static $extendableStaticCalledClass = null;
 
     protected $extensionHidden = [
-        'fields' => [],
-        'methods' => ['extensionIsHiddenField', 'extensionIsHiddenMethod']
+        ExtensionConstants::FIELDS => [],
+        ExtensionConstants::METHODS => ['extensionIsHiddenField', 'extensionIsHiddenMethod']
     ];
 
     public function extensionApplyInitCallbacks()
@@ -34,6 +36,9 @@ trait ExtensionTrait
         foreach ($classes as $class) {
             if (isset(self::$extensionCallbacks[$class]) && is_array(self::$extensionCallbacks[$class])) {
                 foreach (self::$extensionCallbacks[$class] as $callback) {
+                    if ($callback instanceof SerializableClosure) {
+                        $callback = $callback->getClosure();
+                    }
                     call_user_func($callback, $this);
                 }
             }
@@ -54,28 +59,30 @@ trait ExtensionTrait
         ) {
             self::$extensionCallbacks[$class] = [];
         }
-
+        if ($callback instanceof \Closure && !($callback instanceof SerializableClosure)) {
+            $callback = new SerializableClosure(($callback));
+        }
         self::$extensionCallbacks[$class][] = $callback;
     }
 
     protected function extensionHideField($name)
     {
-        $this->extensionHidden['fields'][] = $name;
+        $this->extensionHidden[ExtensionConstants::FIELDS][] = $name;
     }
 
     protected function extensionHideMethod($name)
     {
-        $this->extensionHidden['methods'][] = $name;
+        $this->extensionHidden[ExtensionConstants::METHODS][] = $name;
     }
 
     public function extensionIsHiddenField($name)
     {
-        return in_array($name, $this->extensionHidden['fields']);
+        return in_array($name, $this->extensionHidden[ExtensionConstants::FIELDS]);
     }
 
     public function extensionIsHiddenMethod($name)
     {
-        return in_array($name, $this->extensionHidden['methods']);
+        return in_array($name, $this->extensionHidden[ExtensionConstants::METHODS]);
     }
 
     public static function getCalledExtensionClass()

@@ -116,8 +116,7 @@ class DispatcherTest extends TestCase
     }
 
     /**
-     * Test wether the dispatcher accepts a QueuedClosure
-     * TODO: Figure out how to test successful execution of event closure on a triggered event.
+     * Test whether the dispatcher accepts a QueuedClosure
      */
     public function testQueuedClosureListen()
     {
