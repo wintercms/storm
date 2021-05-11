@@ -4,6 +4,7 @@ use Closure;
 use Opis\Closure\SerializableClosure;
 use ReflectionClass;
 use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Serialisation;
 use Winter\Storm\Support\Str;
 use Illuminate\Events\Dispatcher as BaseDispatcher;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -48,9 +49,7 @@ class Dispatcher extends BaseDispatcher
         } elseif ($listener instanceof QueuedClosure) {
             $listener = $listener->resolve();
         }
-        if ($listener instanceof Closure && !($listener instanceof SerializableClosure)) {
-            $listener = new SerializableClosure($listener);
-        }
+        $listener = Serialisation::wrapClosure($listener);
 
         foreach ((array) $events as $event) {
             if (Str::contains($event, '*')) {
