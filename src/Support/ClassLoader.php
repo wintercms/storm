@@ -112,41 +112,52 @@ class ClassLoader
      */
     public function load($class)
     {
+        $class = static::normalizeClass($class);
+
+        // If the class is already aliased, skip loading.
+        if (in_array($class, $this->loadedAliases) || in_array($class, $this->reversedClasses)) {
+            return true;
+        }
+
         if (
             isset($this->manifest[$class]) &&
             $this->isRealFilePath($path = $this->manifest[$class])
         ) {
             require_once $this->basePath.DIRECTORY_SEPARATOR.$path;
+
+            if (!is_null($reverse = $this->getReverseAlias($class))) {
+                if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
+                    class_alias($class, $reverse);
+                    $this->reversedClasses[] = $reverse;
+                }
+            }
+
             return true;
         }
 
-        list($lowerClass, $upperClass) = static::normalizeClass($class);
+        list($lowerClass, $upperClass, $lowerClassStudlyFile, $upperClassStudlyFile) = static::getPathsForClass($class);
 
         foreach ($this->directories as $directory) {
-            if ($this->isRealFilePath($path = $directory.DIRECTORY_SEPARATOR.$lowerClass)) {
-                $this->includeClass($class, $path);
+            $paths = [
+                $directory . DIRECTORY_SEPARATOR . $lowerClass,
+                $directory . DIRECTORY_SEPARATOR . $upperClass,
+                $directory . DIRECTORY_SEPARATOR . $lowerClassStudlyFile,
+                $directory . DIRECTORY_SEPARATOR . $upperClassStudlyFile,
+            ];
 
-                if (!is_null($reverse = $this->getReverseAlias($class))) {
-                    if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
-                        class_alias($class, $reverse);
-                        $this->reversedClasses[] = $reverse;
+            foreach ($paths as $path) {
+                if ($this->isRealFilePath($path)) {
+                    $this->includeClass($class, $path);
+
+                    if (!is_null($reverse = $this->getReverseAlias($class))) {
+                        if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
+                            class_alias($class, $reverse);
+                            $this->reversedClasses[] = $reverse;
+                        }
                     }
+
+                    return true;
                 }
-
-                return true;
-            }
-
-            if ($this->isRealFilePath($path = $directory.DIRECTORY_SEPARATOR.$upperClass)) {
-                $this->includeClass($class, $path);
-
-                if (!is_null($reverse = $this->getReverseAlias($class))) {
-                    if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
-                        class_alias($class, $reverse);
-                        $this->reversedClasses[] = $reverse;
-                    }
-                }
-
-                return true;
             }
         }
 
@@ -356,21 +367,28 @@ class ClassLoader
             : null;
     }
 
-    /**
-     * Get the normal file name for a class.
-     *
-     * @param  string  $class
-     * @return string
-     */
     protected static function normalizeClass($class)
     {
         /*
          * Strip first slash
          */
-        if ($class[0] == '\\') {
+        if (substr($class, 0, 1) == '\\') {
             $class = substr($class, 1);
         }
 
+        return implode('\\', array_map(function ($part) {
+            return Str::studly($part);
+        }, explode('\\', $class)));
+    }
+
+    /**
+     * Get the possible paths for a class.
+     *
+     * @param  string  $class
+     * @return string
+     */
+    protected static function getPathsForClass($class)
+    {
         /*
          * Lowercase folders
          */
@@ -385,7 +403,10 @@ class ClassLoader
         $lowerClass = strtolower($directory) . DIRECTORY_SEPARATOR . $file . '.php';
         $upperClass = $directory . DIRECTORY_SEPARATOR . $file . '.php';
 
-        return [$lowerClass, $upperClass];
+        $lowerClassStudlyFile = strtolower($directory) . DIRECTORY_SEPARATOR . Str::studly($file) . '.php';
+        $upperClassStudlyFile = $directory . DIRECTORY_SEPARATOR . Str::studly($file) . '.php';
+
+        return [$lowerClass, $upperClass, $lowerClassStudlyFile, $upperClassStudlyFile];
     }
 
     /**
