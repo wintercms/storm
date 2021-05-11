@@ -76,6 +76,20 @@ class ClassLoader
     protected $namespaceAliases = [];
 
     /**
+     * Aliases that have been explicitly loaded.
+     *
+     * @var array
+     */
+    protected $loadedAliases = [];
+
+    /**
+     * Reversed classes to ignore for alias checks.
+     *
+     * @var array
+     */
+    protected $reversedClasses = [];
+
+    /**
      * Create a new package manifest instance.
      *
      * @param  \Winter\Storm\Filesystem\Filesystem  $files
@@ -111,17 +125,35 @@ class ClassLoader
         foreach ($this->directories as $directory) {
             if ($this->isRealFilePath($path = $directory.DIRECTORY_SEPARATOR.$lowerClass)) {
                 $this->includeClass($class, $path);
+
+                if (!is_null($reverse = $this->getReverseAlias($class))) {
+                    if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
+                        class_alias($class, $reverse);
+                        $this->reversedClasses[] = $reverse;
+                    }
+                }
+
                 return true;
             }
 
             if ($this->isRealFilePath($path = $directory.DIRECTORY_SEPARATOR.$upperClass)) {
                 $this->includeClass($class, $path);
+
+                if (!is_null($reverse = $this->getReverseAlias($class))) {
+                    if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
+                        class_alias($class, $reverse);
+                        $this->reversedClasses[] = $reverse;
+                    }
+                }
+
                 return true;
             }
         }
 
-        if (!is_null($alias = $this->getAlias($class))) {
-            return class_alias($alias, $class);
+        if (!is_null($alias = $this->getAlias($class)) && !in_array($class, $this->reversedClasses)) {
+            $this->loadedAliases[] = $class;
+            class_alias($alias, $class);
+            return true;
         }
     }
 
@@ -298,6 +330,29 @@ class ClassLoader
 
         return array_key_exists($class, $this->aliases)
             ? $this->aliases[$class]
+            : null;
+    }
+
+    /**
+     * Gets a reverse alias for a class, if available.
+     *
+     * @param string $class
+     * @return string|null
+     */
+    public function getReverseAlias($class)
+    {
+        if (count($this->namespaceAliases)) {
+            foreach ($this->namespaceAliases as $alias => $original) {
+                if (starts_with($class, $original)) {
+                    return str_replace($original, $alias, $class);
+                }
+            }
+        }
+
+        $aliasKey = array_search($class, $this->aliases);
+
+        return ($aliasKey !== false)
+            ? $aliasKey
             : null;
     }
 
