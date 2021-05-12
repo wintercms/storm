@@ -1,6 +1,5 @@
 <?php namespace Winter\Storm\Support;
 
-
 use Opis\Closure\SerializableClosure;
 use Closure;
 
