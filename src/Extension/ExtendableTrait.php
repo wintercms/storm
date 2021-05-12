@@ -22,10 +22,10 @@ trait ExtendableTrait
      * @var array Class reflection information, including behaviors.
      */
     protected $extensionData = [
-        'extensions'         => [],
-        'methods'            => [],
-        'dynamicMethods'     => [],
-        'dynamicProperties'  => []
+        'extensions'        => [],
+        'methods'           => [],
+        'dynamicMethods'    => [],
+        'dynamicProperties' => []
     ];
 
     /**
