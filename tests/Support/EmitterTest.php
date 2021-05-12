@@ -215,7 +215,7 @@ class EmitterTest extends TestCase
         $emitter->bindEvent($test, function () use ($test) {
             EmitterClass::$output = $test;
         });
-        $emitter->bindEvent(function(EventTest $event) use ($test) {
+        $emitter->bindEvent(function (EventTest $event) use ($test) {
             EmitterClass::$output = $test.$test;
         });
         $serialized = serialize($emitter);
