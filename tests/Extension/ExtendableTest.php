@@ -42,38 +42,42 @@ class ExtendableTest extends TestCase
     {
         $subject = $this->getMockBuilder($class)
             ->setMethods(['extensionGetClassLoader'])
+            ->disableOriginalConstructor()
             ->getMock();
 
         $subject->expects($this->any())
             ->method('extensionGetClassLoader')
             ->will($this->returnValue($this->classLoader));
 
+        // Run construction
+        $subject->__construct();
+
         return $subject;
     }
 
     public function testExtendingExtendableClass()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $this->assertNull($subject->classAttribute);
 
         ExtendableTestExampleExtendableClass::extend(function ($extension) {
             $extension->classAttribute = 'bar';
         });
 
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $this->assertEquals('bar', $subject->classAttribute);
     }
 
     public function testSettingDeclaredPropertyOnClass()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $subject->classAttribute = 'Test';
         $this->assertEquals('Test', $subject->classAttribute);
     }
 
     public function testSettingUndeclaredPropertyOnClass()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $subject->newAttribute = 'Test';
         $this->assertNull($subject->newAttribute);
         $this->assertFalse(property_exists($subject, 'newAttribute'));
@@ -81,7 +85,7 @@ class ExtendableTest extends TestCase
 
     public function testSettingDeclaredPropertyOnBehavior()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $behavior = $subject->getClassExtension('ExtendableTestExampleBehaviorClass1');
 
         $subject->behaviorAttribute = 'Test';
@@ -92,7 +96,7 @@ class ExtendableTest extends TestCase
 
     public function testDynamicPropertyOnClass()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $this->assertFalse(property_exists($subject, 'newAttribute'));
         $subject->addDynamicProperty('dynamicAttribute', 'Test');
         $this->assertEquals('Test', $subject->dynamicAttribute);
@@ -101,7 +105,7 @@ class ExtendableTest extends TestCase
 
     public function testDynamicallyExtendingClass()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $subject->extendClassWith('ExtendableTestExampleBehaviorClass2');
 
         $this->assertTrue($subject->isClassExtendedWith('ExtendableTestExampleBehaviorClass1'));
@@ -110,7 +114,7 @@ class ExtendableTest extends TestCase
 
     public function testDynamicMethodOnClass()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $subject->addDynamicMethod('getFooAnotherWay', 'getFoo', 'ExtendableTestExampleBehaviorClass1');
 
         $this->assertEquals('foo', $subject->getFoo());
@@ -119,7 +123,7 @@ class ExtendableTest extends TestCase
 
     public function testDynamicExtendAndMethodOnClass()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $subject->extendClassWith('ExtendableTestExampleBehaviorClass2');
         $subject->addDynamicMethod('getOriginalFoo', 'getFoo', 'ExtendableTestExampleBehaviorClass1');
 
@@ -140,7 +144,7 @@ class ExtendableTest extends TestCase
 
     public function testDynamicClosureOnClass()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $subject->addDynamicMethod('sayHello', function () {
             return 'Hello world';
         });
@@ -150,7 +154,7 @@ class ExtendableTest extends TestCase
 
     public function testDynamicCallableOnClass()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $subject->addDynamicMethod('getAppName', ['ExtendableTestExampleClass', 'getName']);
 
         $this->assertEquals('winter', $subject->getAppName());
@@ -176,7 +180,7 @@ class ExtendableTest extends TestCase
 
     public function testAccessingProtectedProperty()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $this->assertEmpty($subject->protectedFoo);
 
         $subject->protectedFoo = 'snickers';
@@ -185,10 +189,11 @@ class ExtendableTest extends TestCase
 
     public function testAccessingProtectedMethod()
     {
-        $this->expectException(BadMethodCallException::class);
-        $this->expectExceptionMessage('Call to undefined method ExtendableTestExampleExtendableClass::protectedBar()');
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
 
-        $subject = new ExtendableTestExampleExtendableClass;
+        $this->expectException(BadMethodCallException::class);
+        $this->expectExceptionMessage('Call to undefined method ' . get_class($subject) . '::protectedBar()');
+
         echo $subject->protectedBar();
     }
 
@@ -242,19 +247,19 @@ class ExtendableTest extends TestCase
 
     public function testMethodExists()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $this->assertTrue($subject->methodExists('extend'));
     }
 
     public function testMethodNotExists()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $this->assertFalse($subject->methodExists('missingFunction'));
     }
 
     public function testDynamicMethodExists()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $subject->addDynamicMethod('getFooAnotherWay', 'getFoo', 'ExtendableTestExampleBehaviorClass1');
 
         $this->assertTrue($subject->methodExists('getFooAnotherWay'));
@@ -262,7 +267,7 @@ class ExtendableTest extends TestCase
 
     public function testGetClassMethods()
     {
-        $subject = new ExtendableTestExampleExtendableClass;
+        $subject = $this->getExtendableClass(ExtendableTestExampleExtendableClass::class);
         $subject->addDynamicMethod('getFooAnotherWay', 'getFoo', 'ExtendableTestExampleBehaviorClass1');
         $methods =  $subject->getClassMethods();
 
