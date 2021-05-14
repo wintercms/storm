@@ -49,12 +49,12 @@ trait MocksClassLoader
     protected function mockClassLoader($class)
     {
         $subject = $this->getMockBuilder($class)
-            ->setMethods(['getClassLoader'])
+            ->setMethods(['extensionGetClassLoader'])
             ->disableOriginalConstructor()
             ->getMock();
 
         $subject->expects($this->any())
-            ->method('getClassLoader')
+            ->method('extensionGetClassLoader')
             ->will($this->returnValue($this->classLoader));
 
         // Run construction

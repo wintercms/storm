@@ -133,7 +133,7 @@ trait ExtendableTrait
     protected function extensionNormalizeClassName(string $name): string
     {
         $name = str_replace('.', '\\', trim($name));
-        if (!is_null($this->getClassLoader()) && ($alias = $this->getClassLoader()->getAlias($name))) {
+        if (!is_null($this->extensionGetClassLoader()) && ($alias = $this->extensionGetClassLoader()->getAlias($name))) {
             $name = $alias;
         }
         return $name;
@@ -506,11 +506,6 @@ trait ExtendableTrait
             }
         }
 
-        // $parent = get_parent_class($className);
-        // if ($parent !== false && method_exists($parent, '__callStatic')) {
-        //    return parent::__callStatic($name, $params);
-        // }
-
         throw new BadMethodCallException(sprintf(
             'Call to undefined method %s::%s()',
             $className,
@@ -523,7 +518,7 @@ trait ExtendableTrait
      *
      * @return ClassLoader|null
      */
-    protected function getClassLoader(): ?ClassLoader
+    protected function extensionGetClassLoader(): ?ClassLoader
     {
         if (!class_exists('App')) {
             return null;
