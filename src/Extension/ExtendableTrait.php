@@ -133,18 +133,10 @@ trait ExtendableTrait
     protected function extensionNormalizeClassName(string $name): string
     {
         $name = str_replace('.', '\\', trim($name));
-        $name = $this->extensionGetClassLoader()->getAlias($name) ?: $name;
+        if (!is_null($this->getClassLoader()) && ($alias = $this->getClassLoader()->getAlias($name))) {
+            $name = $alias;
+        }
         return $name;
-    }
-
-    /**
-     * Gets the class loader
-     *
-     * @return ClassLoader
-     */
-    protected function extensionGetClassLoader(): ClassLoader
-    {
-        return App::make(ClassLoader::class);
     }
 
     /**
@@ -524,5 +516,19 @@ trait ExtendableTrait
             $className,
             $name
         ));
+    }
+
+    /**
+     * Gets the class loader
+     *
+     * @return ClassLoader|null
+     */
+    protected function getClassLoader(): ?ClassLoader
+    {
+        if (!class_exists('App')) {
+            return null;
+        }
+
+        return App::make(ClassLoader::class);
     }
 }
