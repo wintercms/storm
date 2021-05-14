@@ -14,10 +14,10 @@ trait MocksClassLoader
     protected $classLoader;
 
     /**
-     * Registers
+     * Registers a mock class loader in the autoload stack.
      *
-     * @param [type] $basePath
-     * @param [type] $manifestPath
+     * @param string $basePath
+     * @param string $manifestPath
      * @return void
      */
     protected function registerMockClassLoader($basePath = null, $manifestPath = null)
