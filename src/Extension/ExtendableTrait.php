@@ -1,9 +1,11 @@
 <?php namespace Winter\Storm\Extension;
 
+use App;
 use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
 use Exception;
+use Winter\Storm\Support\ClassLoader;
 
 /**
  * This extension trait is used when access to the underlying base class
@@ -25,6 +27,8 @@ trait ExtendableTrait
         'dynamicMethods'    => [],
         'dynamicProperties' => []
     ];
+
+    protected $extendableClassLoader = null;
 
     /**
      * @var array Used to extend the constructor of an extendable class. Eg:
@@ -93,6 +97,21 @@ trait ExtendableTrait
 
             $this->extendClassWith($useClass);
         }
+
+        // If App is available, bind the ClassLoader
+        if (class_exists('App')) {
+            $this->extendableClassLoader = App::make(ClassLoader::class);
+        }
+    }
+
+    /**
+     * Bind ClassLoader to this object
+     * @param  ClassLoader $classLoader
+     * @return void
+     */
+    public function extendableRegisterClassLoader(ClassLoader $classLoader): void
+    {
+        $this->extendableClassLoader = $classLoader;
     }
 
     /**
@@ -204,7 +223,7 @@ trait ExtendableTrait
 
         $extensionName = str_replace('.', '\\', trim($extensionName));
 
-        if (isset($this->extensionData['extensions'][$extensionName])) {
+        if ($this->isClassExtendedWith($extensionName)) {
             throw new Exception(sprintf(
                 'Class %s has already been extended with %s',
                 get_class($this),
@@ -225,6 +244,10 @@ trait ExtendableTrait
     public function isClassExtendedWith($name)
     {
         $name = str_replace('.', '\\', trim($name));
+        if ($this->extendableClassLoader && $alias = $this->extendableClassLoader->getReverseAlias($name)) {
+            return isset($this->extensionData['extensions'][$name])
+                || isset($this->extensionData['extensions'][$alias]);
+        }
         return isset($this->extensionData['extensions'][$name]);
     }
 
