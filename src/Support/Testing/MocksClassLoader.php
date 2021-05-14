@@ -46,7 +46,7 @@ trait MocksClassLoader
      * @param string $class
      * @return mixed
      */
-    protected function extendableMakeClassWithClassLoader($class)
+    protected function extendableMakeClass($class)
     {
         $subject = new $class();
         $subject->extendableRegisterClassLoader($this->classLoader);
