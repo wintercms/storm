@@ -32,6 +32,13 @@ class FileDatasource extends Datasource implements DatasourceInterface
     protected $files;
 
     /**
+     * Resolved path map.
+     *
+     * @var array
+     */
+    protected $pathResolverMap = [];
+
+    /**
      * Create a new datasource instance.
      *
      * @param string $basePath
@@ -325,19 +332,19 @@ class FileDatasource extends Datasource implements DatasourceInterface
      */
     protected function makeDirectoryPath($dirName, $relativePath = '')
     {
-        $base = $this->basePath . '/' . $dirName;
-        if (!empty($relativePath)) {
-            $path = $base . '/' . $relativePath;
-        } else {
-            $path = $base;
-        }
+        $base = $this->basePath . DIRECTORY_SEPARATOR . $dirName;
+        $path = !empty($relativePath) ? $base . DIRECTORY_SEPARATOR . $relativePath : $base;
+
+        // Resolve paths with base lookup for performance
+        $base = $this->pathResolverMap[$base] ?? $this->pathResolverMap[$base] = PathResolver::resolve($base);
+        $path = PathResolver::resolve($path);
 
         // Limit paths to those under the configured basePath + directory combo
-        if (!PathResolver::within($path, $base)) {
+        if (!starts_with($path, $base)) {
             throw (new InvalidFileNameException)->setInvalidFileName($path);
         }
 
-        return PathResolver::resolve($path);
+        return $path;
     }
 
     /**
