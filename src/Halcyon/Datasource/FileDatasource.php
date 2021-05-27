@@ -332,8 +332,8 @@ class FileDatasource extends Datasource implements DatasourceInterface
      */
     protected function makeDirectoryPath($dirName, $relativePath = '')
     {
-        $base = $this->basePath . DIRECTORY_SEPARATOR . $dirName;
-        $path = !empty($relativePath) ? $base . DIRECTORY_SEPARATOR . $relativePath : $base;
+        $base = $this->basePath . '/' . $dirName;
+        $path = !empty($relativePath) ? $base . '/' . $relativePath : $base;
 
         // Resolve paths with base lookup for performance
         $base = $this->pathResolverMap[$base] ?? $this->pathResolverMap[$base] = PathResolver::resolve($base);
