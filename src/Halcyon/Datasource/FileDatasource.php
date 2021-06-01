@@ -336,7 +336,7 @@ class FileDatasource extends Datasource implements DatasourceInterface
         $path = !empty($relativePath) ? $base . '/' . $relativePath : $base;
 
         // Resolve paths with base lookup for performance
-        $base = $this->resolvedBasePaths[$base] ?? $this->resolvedBasePaths[$base] = PathResolver::resolve($base);
+        $base = $this->resolvedBasePaths[$base] ?? ($this->resolvedBasePaths[$base] = PathResolver::resolve($base));
         $path = PathResolver::resolve($path);
 
         // Limit paths to those under the configured basePath + directory combo
