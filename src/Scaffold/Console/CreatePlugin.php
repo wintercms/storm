@@ -30,7 +30,7 @@ class CreatePlugin extends GeneratorCommand
     /** @inheritDoc */
     public function handle()
     {
-        if ($this->hasOption('with-translations')) {
+        if ($this->option('with-translations')) {
             $currentLocale = config('app.locale');
 
             $this->stubs = [
