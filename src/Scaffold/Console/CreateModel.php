@@ -29,7 +29,7 @@ class CreateModel extends GeneratorCommand
 
     public function handle()
     {
-        if ($this->hasOption('settings')) {
+        if ($this->option('settings')) {
             $this->stubs = [
                 'model/settings-model.stub'        => 'models/{{studly_name}}.php',
                 'model/settings-fields.stub'       => 'models/{{lower_name}}/fields.yaml'
