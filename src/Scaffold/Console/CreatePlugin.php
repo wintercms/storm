@@ -27,26 +27,22 @@ class CreatePlugin extends GeneratorCommand
      */
     protected $type = 'Plugin';
 
-    /**
-     * A mapping of stub to generated file.
-     *
-     * @var array
-     */
-    protected $stubs = [
-        'plugin/plugin.stub'  => 'Plugin.php',
-        'plugin/version.stub' => 'updates/version.yaml',
-    ];
-
     /** @inheritDoc */
     public function handle()
     {
         if ($this->hasOption('with-translations')) {
             $currentLocale = config('app.locale');
 
-            $this->stubs['plugin/lang.stub'] = sprintf('lang/%s/lang.php', $currentLocale);
-
-            unset($this->stubs['plugin/plugin.stub']);
-            $this->stubs['plugin/plugin-with-translations.stub'] = 'Plugin.php';
+            $this->stubs = [
+                'plugin/lang.stub' => sprintf('lang/%s/lang.php', $currentLocale),
+                'plugin/plugin-with-translations.stub' => 'Plugin.php',
+                'plugin/version.stub' => 'updates/version.yaml'
+            ];
+        } else {
+            $this->stubs = [
+                'plugin/plugin.stub'  => 'Plugin.php',
+                'plugin/version.stub' => 'updates/version.yaml',
+            ];
         }
 
         parent::handle();
