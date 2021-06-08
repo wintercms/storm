@@ -37,6 +37,21 @@ class CreatePlugin extends GeneratorCommand
         'plugin/version.stub' => 'updates/version.yaml',
     ];
 
+    /** @inheritDoc */
+    public function handle()
+    {
+        if ($this->hasOption('with-translations')) {
+            $currentLocale = config('app.locale');
+
+            $this->stubs['plugin/lang.stub'] = sprintf('lang/%s/lang.php', $currentLocale);
+
+            unset($this->stubs['plugin/plugin.stub']);
+            $this->stubs['plugin/plugin-with-translations.stub'] = 'Plugin.php';
+        }
+
+        parent::handle();
+    }
+
     /**
      * Prepare variables for stubs.
      *
@@ -87,6 +102,7 @@ class CreatePlugin extends GeneratorCommand
     {
         return [
             ['force', null, InputOption::VALUE_NONE, 'Overwrite existing files with generated ones.'],
+            ['with-translations', null, InputOption::VALUE_NONE, 'Create lang folder and default locale file.'],
         ];
     }
 }

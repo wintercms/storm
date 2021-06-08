@@ -1,0 +1,17 @@
+<?php
+
+return [
+    'plugin' => [
+        'name' => '{{name}}',
+        'description' => 'No description provided yet...'
+    ],
+
+    'permissions' => [
+        'tab' => '{{name}}',
+        'label' => 'Some permission'
+    ],
+
+    'navigation' => [
+        'label' => '{{name}}'
+    ]
+];
