@@ -17,7 +17,7 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => '{{lower_author}}.{{lower_name}}::lang.plugin.name',
-            'description' => 'No description provided yet...',
+            'description' => '{{lower_author}}.{{lower_name}}::lang.plugin.description',
             'author'      => '{{author}}',
             'icon'        => 'icon-leaf'
         ];
