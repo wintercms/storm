@@ -27,17 +27,24 @@ class CreateModel extends GeneratorCommand
      */
     protected $type = 'Model';
 
-    /**
-     * A mapping of stub to generated file.
-     *
-     * @var array
-     */
-    protected $stubs = [
-        'model/model.stub'        => 'models/{{studly_name}}.php',
-        'model/fields.stub'       => 'models/{{lower_name}}/fields.yaml',
-        'model/columns.stub'      => 'models/{{lower_name}}/columns.yaml',
-        'model/create_table.stub' => 'updates/create_{{snake_plural_name}}_table.php',
-    ];
+    public function handle()
+    {
+        if ($this->hasOption('settings')) {
+            $this->stubs = [
+                'model/settings-model.stub'        => 'models/{{studly_name}}.php',
+                'model/settings-fields.stub'       => 'models/{{lower_name}}/fields.yaml'
+            ];
+        } else {
+            $this->stubs = [
+                'model/model.stub'        => 'models/{{studly_name}}.php',
+                'model/fields.stub'       => 'models/{{lower_name}}/fields.yaml',
+                'model/columns.stub'      => 'models/{{lower_name}}/columns.yaml',
+                'model/create_table.stub' => 'updates/create_{{snake_plural_name}}_table.php'
+            ];
+        }
+
+        parent::handle();
+    }
 
     /**
      * Prepare variables for stubs.
@@ -51,7 +58,6 @@ class CreateModel extends GeneratorCommand
         $parts = explode('.', $pluginCode);
         $plugin = array_pop($parts);
         $author = array_pop($parts);
-
         $model = $this->argument('model');
 
         return [
@@ -83,6 +89,7 @@ class CreateModel extends GeneratorCommand
     {
         return [
             ['force', null, InputOption::VALUE_NONE, 'Overwrite existing files with generated ones.'],
+            ['settings', null, InputOption::VALUE_NONE, 'Generate a settings model.'],
         ];
     }
 }

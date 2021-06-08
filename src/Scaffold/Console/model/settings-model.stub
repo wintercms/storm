@@ -1,0 +1,18 @@
+<?php namespace {{studly_author}}\{{studly_plugin}}\Models;
+
+use Model;
+
+/**
+ * {{name}} Model
+ */
+class {{studly_name}} extends Model
+{
+    public $table = '{{lower_author}}_{{lower_plugin}}_{{snake_plural_name}}';
+    use \Winter\Storm\Database\Traits\Validation;
+
+    public $implement = ['System.Behaviors.SettingsModel'];
+
+    public $settingsCode = '{{lower_author}}_{{lower_plugin}}_{{lower_name}}';
+
+    public $settingsFields = 'fields.yaml';
+}
