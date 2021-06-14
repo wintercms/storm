@@ -1,9 +1,11 @@
 <?php namespace Winter\Storm\Extension;
 
+use App;
+use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
-use Exception;
+use Winter\Storm\Support\ClassLoader;
 
 /**
  * This extension trait is used when access to the underlying base class
@@ -79,7 +81,7 @@ trait ExtendableTrait
         }
 
         foreach ($uses as $use) {
-            $useClass = str_replace('.', '\\', trim($use));
+            $useClass = $this->extensionNormalizeClassName($use);
 
             /*
              * Soft implement
@@ -120,6 +122,21 @@ trait ExtendableTrait
     public static function clearExtendedClasses()
     {
         self::$extendableCallbacks = [];
+    }
+
+    /**
+     * Normalizes the provided extension name
+     *
+     * @param string $name
+     * @return string
+     */
+    protected function extensionNormalizeClassName(string $name): string
+    {
+        $name = str_replace('.', '\\', trim($name));
+        if (!is_null($this->extensionGetClassLoader()) && ($alias = $this->extensionGetClassLoader()->getAlias($name))) {
+            $name = $alias;
+        }
+        return $name;
     }
 
     /**
@@ -202,7 +219,7 @@ trait ExtendableTrait
             return $this;
         }
 
-        $extensionName = str_replace('.', '\\', trim($extensionName));
+        $extensionName = $this->extensionNormalizeClassName($extensionName);
 
         if (isset($this->extensionData['extensions'][$extensionName])) {
             throw new Exception(sprintf(
@@ -224,8 +241,7 @@ trait ExtendableTrait
      */
     public function isClassExtendedWith($name)
     {
-        $name = str_replace('.', '\\', trim($name));
-        return isset($this->extensionData['extensions'][$name]);
+        return isset($this->extensionData['extensions'][$this->extensionNormalizeClassName($name)]);
     }
 
     /**
@@ -238,8 +254,7 @@ trait ExtendableTrait
      */
     public function getClassExtension($name)
     {
-        $name = str_replace('.', '\\', trim($name));
-        return $this->extensionData['extensions'][$name] ?? null;
+        return $this->extensionData['extensions'][$this->extensionNormalizeClassName($name)] ?? null;
     }
 
     /**
@@ -467,6 +482,8 @@ trait ExtendableTrait
                 }
 
                 foreach ($uses as $use) {
+                    // Class alias checks not required here as the current name of the extension class doesn't
+                    // matter because as long as $useClassName is able to be instantiated the method will resolve
                     $useClassName = str_replace('.', '\\', trim($use));
 
                     $useClass = new ReflectionClass($useClassName);
@@ -489,15 +506,24 @@ trait ExtendableTrait
             }
         }
 
-        // $parent = get_parent_class($className);
-        // if ($parent !== false && method_exists($parent, '__callStatic')) {
-        //    return parent::__callStatic($name, $params);
-        // }
-
         throw new BadMethodCallException(sprintf(
             'Call to undefined method %s::%s()',
             $className,
             $name
         ));
+    }
+
+    /**
+     * Gets the class loader
+     *
+     * @return ClassLoader|null
+     */
+    protected function extensionGetClassLoader(): ?ClassLoader
+    {
+        if (!class_exists('App')) {
+            return null;
+        }
+
+        return App::make(ClassLoader::class);
     }
 }
