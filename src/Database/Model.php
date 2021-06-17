@@ -299,8 +299,7 @@ class Model extends EloquentModel
         /**
          * @event model.beforeSave
          * Called before the model is saved
-         * > **Note:** This is called both when creating and updating
-         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
+         * > **Note:** This is called both when creating and updating and is also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *
@@ -321,8 +320,7 @@ class Model extends EloquentModel
         /**
          * @event model.afterSave
          * Called after the model is saved
-         * > **Note:** This is called both when creating and updating
-         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
+         * > **Note:** This is called both when creating and updating and is also triggered in Winter\Storm\Halcyon\Model
          *
          * Example usage:
          *

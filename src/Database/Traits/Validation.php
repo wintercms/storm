@@ -1,13 +1,14 @@
 <?php namespace Winter\Storm\Database\Traits;
 
 use App;
-use Exception;
-use Input;
 use Lang;
-use Illuminate\Contracts\Validation\Rule;
-use Winter\Storm\Support\Facades\Validator;
+use Input;
+use Exception;
 use Illuminate\Support\MessageBag;
+use Illuminate\Contracts\Validation\Rule;
+use Winter\Storm\Support\Str;
 use Winter\Storm\Database\ModelException;
+use Winter\Storm\Support\Facades\Validator;
 
 trait Validation
 {
@@ -381,7 +382,7 @@ trait Validation
                 /*
                  * Remove primary key unique validation rule if the model already exists
                  */
-                if (($rulePart === 'unique' || starts_with($rulePart, 'unique:')) && $this->exists) {
+                if (($rulePart === 'unique' || starts_with($rulePart, 'unique:'))) {
                     $ruleParts[$key] = $this->processValidationUniqueRule($rulePart, $field);
                 }
                 /*
@@ -435,26 +436,43 @@ trait Validation
      */
     protected function processValidationUniqueRule($definition, $fieldName)
     {
+        $connection = '';
         list(
             $table,
             $column,
-            $key,
-            $keyName,
+            $ignoreValue,
+            $ignoreColumn,
             $whereColumn,
             $whereValue
-        ) = array_pad(explode(',', $definition), 6, null);
+        ) = array_pad(explode(',', $definition, 6), 6, null);
 
-        $table = 'unique:' . $this->getConnectionName()  . '.' . $this->getTable();
+        // Remove unique or unique: from the table name
+        $table = Str::after(Str::after($table, 'unique'), ':');
+
+        // Support table, connection.table, and null value
+        if (Str::contains($table, '.')) {
+            $connectionDetails = explode('.', $table);
+            $connection = $connectionDetails[0];
+            $table = $connectionDetails[1];
+        } elseif (empty($table)) {
+            $table = $this->getTable();
+        }
+        if (empty($connection)) {
+            $connection = $this->getConnectionName();
+        }
+
         $column = $column ?: $fieldName;
-        $key = $keyName ? $this->$keyName : $this->getKey();
-        $keyName = $keyName ?: $this->getKeyName();
+        $ignoreColumn = $ignoreColumn ?: $this->getKeyName();
+        $ignoreValue = ($ignoreValue && $ignoreValue !== 'NULL') ? $ignoreValue : $this->{$ignoreColumn};
+        if (is_null($ignoreValue)) {
+            $ignoreValue = 'NULL';
+        }
 
-        $params = [$table, $column, $key, $keyName];
+        $params = ["unique:{$connection}.{$table}", $column, $ignoreValue, $ignoreColumn];
 
         if ($whereColumn) {
             $params[] = $whereColumn;
         }
-
         if ($whereValue) {
             $params[] = $whereValue;
         }

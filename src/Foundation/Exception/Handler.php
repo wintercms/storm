@@ -1,7 +1,6 @@
 <?php namespace Winter\Storm\Foundation\Exception;
 
 use Log;
-use Event;
 use Closure;
 use Response;
 use Exception;
@@ -56,7 +55,7 @@ class Handler extends ExceptionHandler
          *         }
          *     });
          */
-        if (Event::fire('exception.beforeReport', [$exception], true) === false) {
+        if (app()->make('events')->fire('exception.beforeReport', [$exception], true) === false) {
             return;
         }
 
@@ -78,7 +77,7 @@ class Handler extends ExceptionHandler
          *         app('sentry')->captureException($exception);
          *     });
          */
-        Event::fire('exception.report', [$exception]);
+        app()->make('events')->fire('exception.report', [$exception]);
     }
 
     /**
@@ -90,10 +89,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if (!class_exists('Event')) {
-            return parent::render($request, $exception);
-        }
-
         $statusCode = $this->getStatusCode($exception);
         $response = $this->callCustomHandlers($exception);
 
@@ -105,7 +100,7 @@ class Handler extends ExceptionHandler
             return Response::make($response, $statusCode);
         }
 
-        if ($event = Event::fire('exception.beforeRender', [$exception, $statusCode, $request], true)) {
+        if ($event = app()->make('events')->fire('exception.beforeRender', [$exception, $statusCode, $request], true)) {
             return Response::make($event, $statusCode);
         }
 
