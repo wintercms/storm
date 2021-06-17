@@ -436,38 +436,6 @@ class QueryBuilder extends QueryBuilderBase
     }
 
     /**
-     * Run a pagination count query.
-     *
-     * @param array $columns
-     * @return array
-     */
-    protected function runPaginationCountQuery($columns = ['*'])
-    {
-        if ($this->groups || $this->havings) {
-            $clone = $this->cloneForPaginationCount();
-
-            return $this->newQuery()
-                ->from(new Expression('('.$clone->toSql().') as '.$this->grammar->wrap('aggregate_table')))
-                ->mergeBindings($clone)
-                ->setAggregate('count', $this->withoutSelectAliases($columns))
-                ->get()->all();
-        }
-
-        return parent::runPaginationCountQuery($columns);
-    }
-
-    /**
-     * Clone the existing query instance for usage in a pagination subquery.
-     *
-     * @return self
-     */
-    protected function cloneForPaginationCount()
-    {
-        return $this->cloneWithout(['orders', 'limit', 'offset'])
-            ->cloneWithoutBindings(['order']);
-    }
-
-    /**
      * Get the count of the total records for the paginator.
      *
      * @param  array  $columns
@@ -487,5 +455,42 @@ class QueryBuilder extends QueryBuilderBase
         }
 
         return (int) array_change_key_case((array) $results[0])['aggregate'];
+    }
+
+    /**
+     * Run a pagination count query.
+     *
+     * @param array $columns
+     * @return array
+     */
+    protected function runPaginationCountQuery($columns = ['*'])
+    {
+        if ($this->groups || $this->havings) {
+            $clone = $this->cloneForPaginationCount();
+
+            if (is_null($clone->columns) && !empty($this->joins)) {
+                $clone->select($this->from . '.*');
+            }
+
+            return $this->newQuery()
+                ->from(new Expression('(' . $clone->toSql() . ') as ' . $this->grammar->wrap('aggregate_table')))
+                ->mergeBindings($clone)
+                ->setAggregate('count', $this->withoutSelectAliases($columns))
+                ->get()
+                ->all();
+        }
+
+        return parent::runPaginationCountQuery($columns);
+    }
+
+    /**
+     * Clone the existing query instance for usage in a pagination subquery.
+     *
+     * @return self
+     */
+    protected function cloneForPaginationCount()
+    {
+        return $this->cloneWithout(['orders', 'limit', 'offset'])
+            ->cloneWithoutBindings(['order']);
     }
 }
