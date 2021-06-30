@@ -3,6 +3,8 @@
 use PhpParser\Error;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Stmt;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinterAbstract;
@@ -86,6 +88,21 @@ class ConfigFile
                     $target->value->args[1] = clone $target->value->args[0];
                 }
                 $target->value->args[1]->value->value = $value;
+                break;
+            case ConstFetch::class:
+                if (isset($target->name->parts[0])) {
+                    $target->name->parts[0] = $value;
+                }
+                break;
+            case ConstFetch::class:
+                if (isset($target->value->name->parts[0])) {
+                    $target->value->name->parts[0] = $value;
+                }
+                break;
+            case LNumber::class:
+                if (isset($target->value->value)) {
+                    $target->value->value = $value;
+                }
                 break;
         }
 
