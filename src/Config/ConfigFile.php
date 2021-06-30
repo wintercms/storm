@@ -7,6 +7,10 @@ use PhpParser\Node\Stmt;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinterAbstract;
 
+/**
+ * Class ConfigFile
+ * @package Winter\Storm\Config
+ */
 class ConfigFile
 {
     /**
