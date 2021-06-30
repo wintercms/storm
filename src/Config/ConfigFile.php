@@ -132,4 +132,12 @@ class ConfigFile
     {
         return $this->printer->prettyPrintFile($this->ast) . PHP_EOL;
     }
+
+    /**
+     * @return Node\Stmt[]|null
+     */
+    public function getAst()
+    {
+        return $this->ast;
+    }
 }
