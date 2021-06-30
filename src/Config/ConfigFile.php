@@ -74,10 +74,6 @@ class ConfigFile
     {
         $target = $this->seek(explode('.', $key), $this->ast[0]->expr->items);
 
-        if (!$target) {
-            dd($target, $key);
-        }
-
         switch (get_class($target->value)) {
             case String_::class:
                 $target->value->value = $value;
