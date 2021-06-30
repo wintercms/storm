@@ -1,12 +1,19 @@
-<?php
-
-namespace Winter\Storm\Config;
+<?php namespace Winter\Storm\Config;
 
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\PrettyPrinter\Standard;
 
+/**
+ * Class WinterPrinter
+ * @package Winter\Storm\Config
+ */
 class WinterPrinter extends Standard
 {
+    /**
+     * @param array $nodes
+     * @param bool $trailingComma
+     * @return string
+     */
     protected function pMaybeMultiline(array $nodes, bool $trailingComma = false)
     {
         if ($this->hasNodeWithComments($nodes) || (isset($nodes[0]) && $nodes[0] instanceof ArrayItem)) {
@@ -16,6 +23,10 @@ class WinterPrinter extends Standard
         }
     }
 
+    /**
+     * @param array $comments
+     * @return string
+     */
     protected function pComments(array $comments): string
     {
         $formattedComments = [];
