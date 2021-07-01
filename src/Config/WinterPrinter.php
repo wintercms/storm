@@ -35,6 +35,8 @@ class WinterPrinter extends Standard
             $formattedComments[] = str_replace("\n", $this->nl, $comment->getReformattedText());
         }
 
-        return $this->nl . implode($this->nl, $formattedComments) . $this->nl;
+        $padding = $comments[0]->getStartLine() !== $comments[count($comments) - 1]->getEndLine() ? $this->nl : '';
+
+        return $padding . implode($this->nl, $formattedComments) . $padding;
     }
 }
