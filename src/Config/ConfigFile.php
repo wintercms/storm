@@ -2,6 +2,7 @@
 
 use PhpParser\Error;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Scalar\LNumber;
@@ -72,11 +73,35 @@ class ConfigFile
      * @param $value
      * @return $this
      */
-    public function set(string $key, $value): ConfigFile
+    public function set(): ConfigFile
     {
+        $args = func_get_args();
+
+        if (count($args) === 1 && is_array($args[0])) {
+            foreach ($args[0] as $key => $value) {
+                $this->set($key, $value);
+            }
+
+            return $this;
+        }
+
+        if (count($args) !== 2 || !is_string($args[0])) {
+            throw new \InvalidArgumentException('invalid args passed');
+        }
+
+        list($key, $value) = $args;
+
         $target = $this->seek(explode('.', $key), $this->ast[0]->expr->items);
 
-        switch (get_class($target->value)) {
+        $valueType = gettype($value);
+        $class = get_class($target->value);
+
+        if ($valueType !== $this->getScalaFromNode($class)) {
+            $target->value = $this->makeAstNode($valueType, $value);
+            return $this;
+        }
+
+        switch ($class) {
             case String_::class:
                 $target->value->value = $value;
                 break;
@@ -94,11 +119,6 @@ class ConfigFile
                     $target->name->parts[0] = $value;
                 }
                 break;
-            case ConstFetch::class:
-                if (isset($target->value->name->parts[0])) {
-                    $target->value->name->parts[0] = $value;
-                }
-                break;
             case LNumber::class:
                 if (isset($target->value->value)) {
                     $target->value->value = $value;
@@ -107,6 +127,34 @@ class ConfigFile
         }
 
         return $this;
+    }
+
+    protected function makeAstNode(string $type, $value)
+    {
+        switch ($type) {
+            case 'string':
+                return new String_($value);
+            case 'boolean':
+                return new ConstFetch(new Name($value ? 'true' : 'false'));
+                break;
+            case 'integer':
+                return new LNumber($value);
+                break;
+            case 'unknown':
+            default:
+                throw new \RuntimeException('not implemented replacement type: ' . $type);
+                break;
+        }
+    }
+
+    public function getScalaFromNode(string $class): string
+    {
+        return [
+            String_::class => 'string',
+            FuncCall::class => 'function',
+            ConstFetch::class => 'const|boolean',
+            LNumber::class => 'int'
+        ][$class] ?? 'unknown';
     }
 
     /**
