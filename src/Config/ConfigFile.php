@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Config;
 
 use PhpParser\Error;
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
@@ -96,36 +97,18 @@ class ConfigFile
         $valueType = gettype($value);
         $class = get_class($target->value);
 
-        if ($valueType !== $this->getScalaFromNode($class)) {
-            $target->value = $this->makeAstNode($valueType, $value);
+        if ($class === FuncCall::class) {
+            if ($target->value->name->parts[0] !== 'env' || !isset($target->value->args[0])) {
+                return $this;
+            }
+            if (isset($target->value->args[0]) && !isset($target->value->args[1])) {
+                $target->value->args[1] = new Arg(new String_(''));
+            }
+            $target->value->args[1]->value->value = $value;
             return $this;
         }
 
-        switch ($class) {
-            case String_::class:
-                $target->value->value = $value;
-                break;
-            case FuncCall::class:
-                if ($target->value->name->parts[0] !== 'env' || !isset($target->value->args[0])) {
-                    break;
-                }
-                if (isset($target->value->args[0]) && !isset($target->value->args[1])) {
-                    $target->value->args[1] = clone $target->value->args[0];
-                }
-                $target->value->args[1]->value->value = $value;
-                break;
-            case ConstFetch::class:
-                if (isset($target->name->parts[0])) {
-                    $target->name->parts[0] = $value;
-                }
-                break;
-            case LNumber::class:
-                if (isset($target->value->value)) {
-                    $target->value->value = $value;
-                }
-                break;
-        }
-
+        $target->value = $this->makeAstNode($valueType, $value);
         return $this;
     }
 
@@ -145,16 +128,6 @@ class ConfigFile
                 throw new \RuntimeException('not implemented replacement type: ' . $type);
                 break;
         }
-    }
-
-    public function getScalaFromNode(string $class): string
-    {
-        return [
-            String_::class => 'string',
-            FuncCall::class => 'function',
-            ConstFetch::class => 'const|boolean',
-            LNumber::class => 'int'
-        ][$class] ?? 'unknown';
     }
 
     /**
