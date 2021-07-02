@@ -75,6 +75,39 @@ class ConfigFileTest extends TestCase
         unlink($tmpFile);
     }
 
+    public function testWriteEnvUpdates()
+    {
+        $filePath = __DIR__ . '/../fixtures/config/env-config.php';
+        $tmpFile = __DIR__ . '/../fixtures/config/temp-config.php';
+
+        $config = ConfigFile::read($filePath);
+        $config->write($tmpFile);
+
+        $result = include $tmpFile;
+
+        $this->assertArrayHasKey('sample', $result);
+        $this->assertArrayHasKey('value', $result['sample']);
+        $this->assertArrayHasKey('no_default', $result['sample']);
+        $this->assertEquals('default', $result['sample']['value']);
+        $this->assertNull($result['sample']['no_default']);
+
+        $config->set([
+            'sample.value' => 'winter',
+            'sample.no_default' => 'test',
+        ]);
+        $config->write($tmpFile);
+
+        $result = include $tmpFile;
+
+        $this->assertArrayHasKey('sample', $result);
+        $this->assertArrayHasKey('value', $result['sample']);
+        $this->assertArrayHasKey('no_default', $result['sample']);
+        $this->assertEquals('winter', $result['sample']['value']);
+        $this->assertEquals('test', $result['sample']['no_default']);
+
+        unlink($tmpFile);
+    }
+
     public function testCasting()
     {
         $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
