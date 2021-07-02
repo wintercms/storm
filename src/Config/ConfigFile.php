@@ -124,14 +124,10 @@ class ConfigFile
                 return new String_($value);
             case 'boolean':
                 return new ConstFetch(new Name($value ? 'true' : 'false'));
-                break;
             case 'integer':
                 return new LNumber($value);
-                break;
-            case 'unknown':
             default:
                 throw new \RuntimeException('not implemented replacement type: ' . $type);
-                break;
         }
     }
 
