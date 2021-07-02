@@ -53,6 +53,54 @@ class ConfigFileTest extends TestCase
         unlink($tmpFile);
     }
 
+    public function testWriteFileWithUpdatesArray()
+    {
+        $filePath = __DIR__ . '/../fixtures/config/sample-config.php';
+        $tmpFile = __DIR__ . '/../fixtures/config/temp-config.php';
+
+        $config = ConfigFile::read($filePath);
+        $config->set([
+            'connections.sqlite.driver' => 'winter',
+            'connections.sqlite.prefix' => 'test',
+        ]);
+        $config->write($tmpFile);
+
+        $result = include $tmpFile;
+        $this->assertArrayHasKey('connections', $result);
+        $this->assertArrayHasKey('sqlite', $result['connections']);
+        $this->assertArrayHasKey('driver', $result['connections']['sqlite']);
+        $this->assertEquals('winter', $result['connections']['sqlite']['driver']);
+        $this->assertEquals('test', $result['connections']['sqlite']['prefix']);
+
+        unlink($tmpFile);
+    }
+
+    public function testCasting()
+    {
+        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
+        $result = eval('?>' . $config->render());
+
+        $this->assertTrue(is_array($result));
+        $this->assertArrayHasKey('url', $result);
+        $this->assertEquals('http://localhost', $result['url']);
+
+        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
+        $config->set('url', false);
+        $result = eval('?>' . $config->render());
+
+        $this->assertTrue(is_array($result));
+        $this->assertArrayHasKey('url', $result);
+        $this->assertFalse($result['url']);
+
+        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
+        $config->set('url', 1234);
+        $result = eval('?>' . $config->render());
+
+        $this->assertTrue(is_array($result));
+        $this->assertArrayHasKey('url', $result);
+        $this->assertIsInt($result['url']);
+    }
+
     public function testRender()
     {
         /*
@@ -89,12 +137,12 @@ class ConfigFileTest extends TestCase
         $this->assertArrayHasKey('host', $result['connections']['mysql']);
         $this->assertEquals('127.0.0.1', $result['connections']['mysql']['host']);
 
-        /*
+        /*un-
          * Test alternative quoting
          */
         $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $config->set('timezone', 'The Fifth Dimension');
-        $config->set('timezoneAgain', 'The "Sixth" Dimension');
+        $config->set('timezone', 'The Fifth Dimension')
+            ->set('timezoneAgain', 'The "Sixth" Dimension');
         $result = eval('?>' . $config->render());
 
         $this->assertArrayHasKey('timezone', $result);
@@ -114,7 +162,7 @@ class ConfigFileTest extends TestCase
             ->set('connections.pgsql.password', true);
 
         $result = eval('?>' . $config->render());
-        
+
         $this->assertArrayHasKey('debug', $result);
         $this->assertArrayHasKey('debugAgain', $result);
         $this->assertArrayHasKey('bullyIan', $result);
