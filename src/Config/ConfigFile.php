@@ -112,6 +112,11 @@ class ConfigFile
         return $this;
     }
 
+    /**
+     * @param string $type
+     * @param $value
+     * @return ConstFetch|LNumber|String_
+     */
     protected function makeAstNode(string $type, $value)
     {
         switch ($type) {
