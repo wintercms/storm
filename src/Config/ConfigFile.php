@@ -63,7 +63,7 @@ class ConfigFile
             $ast = $parser->parse($content);
         } catch (Error $e) {
             // should add better handling
-            throw new Error($e);
+            throw new ApplicationException($e);
         }
 
         return new static($ast, $file);
