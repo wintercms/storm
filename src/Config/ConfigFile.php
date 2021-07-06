@@ -112,7 +112,7 @@ class ConfigFile
 
     /**
      * @param string $type
-     * @param $value
+     * @param mixed $value
      * @return ConstFetch|LNumber|String_
      */
     protected function makeAstNode(string $type, $value)
