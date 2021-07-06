@@ -152,6 +152,7 @@ class ConfigFile
 
     /**
      * @param string|null $filePath
+     * @return void
      */
     public function write(string $filePath = null): void
     {
