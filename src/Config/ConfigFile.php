@@ -70,24 +70,22 @@ class ConfigFile
     }
 
     /**
-     * @param string $key
-     * @param $value
+     * @param string|array $key
+     * @param string|null $value
      * @return $this
      */
-    public function set(): ConfigFile
+    public function set($key, string $value = null): ConfigFile
     {
-        $args = func_get_args();
-
-        if (count($args) === 1 && is_array($args[0])) {
-            foreach ($args[0] as $key => $value) {
-                $this->set($key, $value);
+        if (is_array($key)) {
+            foreach ($key as $name => $value) {
+                $this->set($name, $value);
             }
 
             return $this;
         }
 
-        if (count($args) !== 2 || !is_string($args[0])) {
-            throw new \InvalidArgumentException('invalid args passed');
+        if ($key && is_null($value)) {
+            throw new ApplicationException('You must specify a value to set for the given key.');
         }
 
         list($key, $value) = $args;
