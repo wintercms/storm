@@ -87,7 +87,7 @@ class CheckForTrustedProxies
         $proxies = $this->proxies();
 
         // If no proxies are trusted (or no headers are trusted), skip this process.
-        if (is_null($proxies) || $this->getTrustedHeaders() === -1) {
+        if (is_null($proxies) || $proxies === false || $this->getTrustedHeaders() === -1) {
             return;
         }
 
