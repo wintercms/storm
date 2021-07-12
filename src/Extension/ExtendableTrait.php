@@ -125,7 +125,7 @@ trait ExtendableTrait
     }
 
     /**
-     * Normalizes the provided extension name
+     * Normalizes the provided extension name allowing for the ClassLoader to inject aliased classes
      *
      * @param string $name
      * @return string
