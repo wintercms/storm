@@ -47,6 +47,11 @@ trait ExtendableTrait
     protected static $extendableGuardProperties = true;
 
     /**
+     * @var ClassLoader Class loader instance.
+     */
+    protected static $extendableClassLoader = null;
+
+    /**
      * This method should be called as part of the constructor.
      */
     public function extendableConstruct()
@@ -520,10 +525,14 @@ trait ExtendableTrait
      */
     protected function extensionGetClassLoader(): ?ClassLoader
     {
+        if (!is_null(self::$extendableClassLoader)) {
+            return self::$extendableClassLoader;
+        }
+
         if (!class_exists('App')) {
             return null;
         }
 
-        return App::make(ClassLoader::class);
+        return self::$extendableClassLoader = App::make(ClassLoader::class);
     }
 }
