@@ -108,7 +108,7 @@ class ClassLoader
      * Load the given class file.
      *
      * @param  string  $class
-     * @return void
+     * @return true|null
      */
     public function load($class)
     {
