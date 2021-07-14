@@ -18,24 +18,26 @@ use PhpParser\PrettyPrinterAbstract;
 class ConfigFile
 {
     /**
-     * @var null
+     * @var Stmt[]|null Abstract syntax tree produced by `PhpParser`
      */
     protected $ast = null;
     /**
-     * @var string|null
+     * @var string|null Source config file
      */
     protected $file = null;
     /**
-     * @var PrettyPrinterAbstract|WinterPrinter|null
+     * @var PrettyPrinterAbstract|WinterPrinter|null Printer used to define output syntax
      */
     protected $printer = null;
 
     /**
-     * Config constructor.
-     * @param $ast
+     * ConfigFile constructor.
+     *
+     * @param Stmt[]|null $ast
+     * @param string $file
      * @param PrettyPrinterAbstract|null $printer
      */
-    public function __construct($ast, string $file = null, PrettyPrinterAbstract $printer = null)
+    public function __construct(array $ast, string $file = null, PrettyPrinterAbstract $printer = null)
     {
         if (!($ast[0] instanceof Stmt\Return_)) {
             throw new \InvalidArgumentException('configs must start with a return statement');
@@ -47,6 +49,8 @@ class ConfigFile
     }
 
     /**
+     * Return a new instance of `ConfigFile` ready for modification of the file.
+     *
      * @param string $file
      * @return ConfigFile|null
      */
@@ -62,7 +66,6 @@ class ConfigFile
         try {
             $ast = $parser->parse($content);
         } catch (Error $e) {
-            // should add better handling
             throw new ApplicationException($e);
         }
 
@@ -70,6 +73,17 @@ class ConfigFile
     }
 
     /**
+     * Set a property within the config using dot syntax. Passing an array as param 1 is also supported.
+     *
+     * ```php
+     * $config->set('property.key.value', 'example');
+     * // or
+     * $config->set([
+     *     'property.key1.value' => 'example',
+     *     'property.key2.value' => 'example'
+     * ]);
+     * ```
+     *
      * @param string|array $key
      * @param string|null $value
      * @return $this
@@ -111,6 +125,8 @@ class ConfigFile
     }
 
     /**
+     * Generate an AST node, using `PhpParser` classes, for a value
+     *
      * @param string $type
      * @param mixed $value
      * @return ConstFetch|LNumber|String_
@@ -130,6 +146,8 @@ class ConfigFile
     }
 
     /**
+     * Get a referenced var from the `$pointer` array
+     *
      * @param array $path
      * @param $pointer
      * @return mixed|null
@@ -151,6 +169,8 @@ class ConfigFile
     }
 
     /**
+     * Write the current config to a file
+     *
      * @param string|null $filePath
      * @return void
      */
@@ -164,6 +184,8 @@ class ConfigFile
     }
 
     /**
+     * Get the printed AST as php code
+     *
      * @return string
      */
     public function render(): string
@@ -172,7 +194,9 @@ class ConfigFile
     }
 
     /**
-     * @return Node\Stmt[]|null
+     * Get currently loaded AST
+     *
+     * @return Stmt[]|null
      */
     public function getAst()
     {
