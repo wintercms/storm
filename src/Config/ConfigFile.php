@@ -73,7 +73,7 @@ class ConfigFile
     }
 
     /**
-     * Set a property within the config using dot syntax. Passing an array as param 1 is also supported.
+     * Set a property within the config using dot notation. Passing an array as param 1 is also supported.
      *
      * ```php
      * $config->set('property.key.value', 'example');
