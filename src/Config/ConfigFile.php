@@ -85,10 +85,10 @@ class ConfigFile
      * ```
      *
      * @param string|array $key
-     * @param string|null $value
+     * @param mixed|null $value
      * @return $this
      */
-    public function set($key, string $value = null): ConfigFile
+    public function set($key, $value = null): ConfigFile
     {
         if (is_array($key)) {
             foreach ($key as $name => $value) {
@@ -101,8 +101,6 @@ class ConfigFile
         if ($key && is_null($value)) {
             throw new ApplicationException('You must specify a value to set for the given key.');
         }
-
-        list($key, $value) = $args;
 
         $target = $this->seek(explode('.', $key), $this->ast[0]->expr->items);
 
@@ -121,6 +119,7 @@ class ConfigFile
         }
 
         $target->value = $this->makeAstNode($valueType, $value);
+
         return $this;
     }
 
