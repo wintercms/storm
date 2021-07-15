@@ -2,6 +2,7 @@
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\KeyGenerateCommand as KeyGenerateCommandBase;
+use Winter\Storm\Config\ConfigWriter;
 
 class KeyGenerateCommand extends KeyGenerateCommandBase
 {
@@ -45,11 +46,17 @@ class KeyGenerateCommand extends KeyGenerateCommandBase
             return $this->line('<comment>'.$key.'</comment>');
         }
 
-        // Next, we will replace the application key in the config file so it is
-        // automatically setup for this developer. This key gets generated using a
-        // secure random byte generator and is later base64 encoded for storage.
-        if (!$this->setKeyInConfigFile($key)) {
+        $currentKey = $this->laravel['config']['app.key'];
+
+        if (!empty($currentKey) && (!$this->confirmToProceed())) {
             return;
+        }
+
+        // Next, we will replace the application key in the env file (if it exists) or config file
+        // so it is automatically setup for this developer. This key gets generated using a
+        // secure random byte generator and is later base64 encoded for storage.
+        if (!$this->setKeyInEnvironmentFile($key)) {
+            $this->setKeyInConfigFile($key);
         }
 
         $this->laravel['config']['app.key'] = $key;
@@ -58,24 +65,48 @@ class KeyGenerateCommand extends KeyGenerateCommandBase
     }
 
     /**
+     * Set the application key in the environment file.
+     *
+     * @param string $key
+     * @return bool
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function setKeyInEnvironmentFile($key): bool
+    {
+        if (!$this->files->exists($this->laravel->environmentFilePath())) {
+            return false;
+        }
+
+        $contents = $this->files->get($this->laravel->environmentFilePath());
+
+        $matches = [];
+        preg_match($this->keyReplacementPattern(), $contents, $matches);
+
+        if (empty($matches)) {
+            return false;
+        }
+
+        $this->writeNewEnvironmentFileWith($key);
+
+        return true;
+    }
+
+    /**
      * Set the application key in the config file.
      *
      * @param  string  $key
      * @return bool
      */
-    protected function setKeyInConfigFile($key)
+    protected function setKeyInConfigFile(string $key): bool
     {
         if (!$this->confirmToProceed()) {
             return false;
         }
 
-        $currentKey = $this->laravel['config']['app.key'];
+        [$path] = $this->getKeyFile();
 
-        list($path, $contents) = $this->getKeyFile();
-
-        $contents = str_replace($currentKey, $key, $contents);
-
-        $this->files->put($path, $contents);
+        $writer = new ConfigWriter();
+        $writer->toFile($path, ['key' => $key]);
 
         return true;
     }
@@ -84,10 +115,23 @@ class KeyGenerateCommand extends KeyGenerateCommandBase
      * Get the key file and contents.
      *
      * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function getKeyFile()
+    protected function getKeyFile(): array
     {
-        $env = $this->option('env') ? $this->option('env').'/' : '';
+        $env = $this->hasOption('env') ? $this->option('env').'/' : $this->laravel->environment().'/';
+
+        $path = $this->laravel['path.config']."/{$env}app.php";
+
+        if ($this->files->exists($path)) {
+            $config = eval('?>'.$this->files->get($path));
+
+            if (!isset($config['key'])) {
+                $env = '';
+            }
+        } else {
+            $env = '';
+        }
 
         $contents = $this->files->get($path = $this->laravel['path.config']."/{$env}app.php");
 
