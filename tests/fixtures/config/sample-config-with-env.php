@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'timezone' => "October's time",
+    'timezone' => "UTC",
 
     "timezoneAgain"               =>         'Something "else"'         ,
 
