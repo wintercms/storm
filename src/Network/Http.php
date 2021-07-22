@@ -253,7 +253,10 @@ class Http
 
     /**
      * Execute the HTTP request.
-     * @return string response body
+     *
+     * Returns the Http instance in order to be able to inspect and retrieve the response.
+     *
+     * @return self
      */
     public function send()
     {
@@ -319,12 +322,19 @@ class Http
          * Handle output to file
          */
         if ($this->streamFile) {
+            // Header stream
+            $headerStream = fopen('php://temp', 'r+');
+
+            // File stream
             $stream = fopen($this->streamFile, 'w');
             if ($this->streamFilter) {
                 stream_filter_append($stream, $this->streamFilter, STREAM_FILTER_WRITE);
             }
+
             curl_setopt($curl, CURLOPT_HEADER, false);
+            curl_setopt($curl, CURLOPT_WRITEHEADER, $headerStream);
             curl_setopt($curl, CURLOPT_FILE, $stream);
+
             curl_exec($curl);
         }
         /*
@@ -347,6 +357,9 @@ class Http
         curl_close($curl);
 
         if ($this->streamFile) {
+            rewind($headerStream);
+            $this->headers = $this->headerToArray(stream_get_contents($headerStream));
+            fclose($headerStream);
             fclose($stream);
         }
 
@@ -402,14 +415,14 @@ class Http
             if ($delimiter !== false) {
                 $key = substr($singleHeader, 0, $delimiter);
                 $val = substr($singleHeader, $delimiter + 2);
-                $headers[$key] = $val;
+                $headers[$key] = trim($val);
             }
             else {
                 $delimiter = strpos($singleHeader, ' ');
                 if ($delimiter !== false) {
                     $key = substr($singleHeader, 0, $delimiter);
                     $val = substr($singleHeader, $delimiter + 1);
-                    $headers[$key] = $val;
+                    $headers[$key] = trim($val);
                 }
             }
         }
