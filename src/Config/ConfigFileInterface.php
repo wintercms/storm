@@ -1,5 +1,9 @@
 <?php namespace Winter\Storm\Config;
 
+// Returns are commented out as improved type variance is not supported until php 7.4
+// Ref: https://stitcher.io/blog/new-in-php-74#improved-type-variance-rfc
+// TODO: enable return types once support for <7.4 is dropped
+
 /**
  * Interface ConfigFileInterface
  * @package Winter\Storm\Config
@@ -12,7 +16,7 @@ interface ConfigFileInterface
      * @param string $file
      * @return ConfigFile|null
      */
-    public static function read(string $file): ?ConfigFileInterface;
+    public static function read(string $file); //: ?ConfigFileInterface;
 
     /**
      * Set a property within the config. Passing an array as param 1 is also supported.
@@ -20,7 +24,7 @@ interface ConfigFileInterface
      * @param mixed|null $value
      * @return $this
      */
-    public function set($key, $value = null): ConfigFileInterface;
+    public function set($key, $value = null); //: ConfigFileInterface;
 
     /**
      * Write the current config to a file
