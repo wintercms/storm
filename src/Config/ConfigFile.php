@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Config;
 
+use Winter\Storm\Config\ConfigFileInterface;
 use PhpParser\Error;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\FuncCall;
@@ -15,7 +16,7 @@ use PhpParser\PrettyPrinterAbstract;
  * Class ConfigFile
  * @package Winter\Storm\Config
  */
-class ConfigFile
+class ConfigFile implements ConfigFileInterface
 {
     /**
      * @var Stmt[]|null Abstract syntax tree produced by `PhpParser`
