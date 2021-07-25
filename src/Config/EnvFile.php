@@ -3,7 +3,6 @@
 use Winter\Storm\Config\ConfigFileInterface;
 use Dotenv\Environment\DotenvFactory;
 use Dotenv\Loader;
-use File;
 
 /**
  * Class EnvFile
@@ -89,7 +88,7 @@ class EnvFile implements ConfigFileInterface
             $filePath = $this->file;
         }
 
-        File::put($filePath, $this->render());
+        file_put_contents($filePath, $this->render());
     }
 
     /**
