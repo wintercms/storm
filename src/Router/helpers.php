@@ -62,7 +62,8 @@ if (!function_exists('http_build_str')) {
      * @param   string  $arg_separator  Argument separator to use (by default the INI setting arg_separator.output will be used, or "&" if neither is set.
      * @return  string                  Returns the built query as string on success or FALSE on failure.
      */
-    function http_build_str(array $query, $prefix = '', $arg_separator = null) {
+    function http_build_str(array $query, $prefix = '', $arg_separator = null)
+    {
         return \Winter\Storm\Router\UrlGenerator::buildStr($query, $prefix, $arg_separator);
     }
 }
