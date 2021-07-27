@@ -226,26 +226,16 @@ class UrlGeneratorTest extends TestCase
         foreach ($urlsToTest as $expected => $config) {
             $this->testBuiltUrl($expected, $config);
         }
-
-        /**
-         * @TODO: Tests to add
-         * - proper support for PHP html arrays in query strings
-         * - all of the original laravel tests
-         * - all of the tests from both PHP implementations
-         * - testing should use direct class method, not the helper wrapper
-         * - flags should be evaluated like the PHP C version
-         * - HTML injection attempts
-         */
     }
 
     public function testSimpleUrl()
     {
-
-        dd(http_build_url(
-            "http://site.testing.com/apreview/testing/a/09-20a13/pa0a4/?code=asdfghjkl",
-            array('path' => 'image/15.jpg'),
-            HTTP_URL_JOIN_PATH | HTTP_URL_STRIP_FRAGMENT | HTTP_URL_STRIP_QUERY
-          ));
+        /**
+         * @TODO: Tests to add
+         * - proper support for PHP html arrays in query strings
+         * - HTML injection attempts
+         */
+        // dd(http_build_url('https://example.com/testpage/?test="><img src="a" onerror="alert(1)"/>', null, HTTP_URL_JOIN_QUERY));
 
         $this->testBuiltUrl('https://wintercms.com/', [
             'url' => [

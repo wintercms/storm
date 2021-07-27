@@ -307,7 +307,7 @@ class UrlGenerator extends UrlGeneratorBase
             if (is_array($v)) {
                 $result[] = static::buildStr($v, $key, $argSeparator);
             } else {
-                $result[] = $key.'='.urlencode($v);
+                $result[] = $key.'='.rawurlencode($v);
             }
         }
 
