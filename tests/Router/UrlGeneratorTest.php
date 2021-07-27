@@ -35,7 +35,7 @@ class UrlGeneratorTest extends TestCase
     {
         $this->assertEquals('https://example.com/a/g', UrlGenerator::buildUrl(
             'https://example.com/',
-            '/a/b/c/./../../g',
+            '/a/b/c/./../../g'
         ));
     }
 
