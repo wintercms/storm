@@ -148,7 +148,9 @@ class UrlGenerator extends UrlGeneratorBase
                 if (!is_array($uQuery)) {
                     parse_str($uQuery, $uQuery);
                 }
-                if (!is_array($rQuery)) { parse_str($rQuery, $rQuery); }
+                if (!is_array($rQuery)) {
+                    parse_str($rQuery, $rQuery);
+                }
 
                 $uQuery = static::buildStr($uQuery);
                 $rQuery = static::buildStr($rQuery);
