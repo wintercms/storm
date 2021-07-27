@@ -37,7 +37,7 @@ if (!defined('HTTP_URL_STRIP_ALL')) {
 
 if (!function_exists('http_build_url')) {
     /**
-     * Polyfill for `http_build_url` method provided by PECL HTTP extension.
+     * Polyfill for the `http_build_url` function provided by PECL HTTP extension.
      *
      * @see \Winter\Storm\Router\UrlGenerator::buildUrl()
      * @param mixed $url
@@ -49,5 +49,20 @@ if (!function_exists('http_build_url')) {
     function http_build_url($url, $replace = [], $flags = HTTP_URL_REPLACE, array &$newUrl = [])
     {
         return \Winter\Storm\Router\UrlGenerator::buildUrl($url, $replace, $flags, $newUrl);
+    }
+}
+
+if (!function_exists('http_build_str')) {
+    /**
+     * Polyfill for the `http_build_url` function provided by PECL HTTP extension.
+     *
+     * @see \Winter\Storm\Router\UrlGenerator::buildStr()
+     * @param   array   $query          Associative array of query string parameters.
+     * @param   string  $prefix         Top level prefix.
+     * @param   string  $arg_separator  Argument separator to use (by default the INI setting arg_separator.output will be used, or "&" if neither is set.
+     * @return  string                  Returns the built query as string on success or FALSE on failure.
+     */
+    function http_build_str(array $query, $prefix = '', $arg_separator = null) {
+        return \Winter\Storm\Router\UrlGenerator::buildStr($query, $prefix, $arg_separator);
     }
 }
