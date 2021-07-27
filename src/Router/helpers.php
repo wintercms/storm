@@ -54,7 +54,7 @@ if (!function_exists('http_build_url')) {
 
 if (!function_exists('http_build_str')) {
     /**
-     * Polyfill for the `http_build_url` function provided by PECL HTTP extension.
+     * Polyfill for the `http_build_str` function provided by PECL HTTP extension.
      *
      * @see \Winter\Storm\Router\UrlGenerator::buildStr()
      * @param   array   $query          Associative array of query string parameters.

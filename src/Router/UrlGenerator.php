@@ -36,7 +36,7 @@ class UrlGenerator extends UrlGeneratorBase
      * @param string|array $url The URL parts, as an array. Must match the structure returned from a `parse_url` call.
      * @param string|array $replace The URL replacement parts. Allows a developer to replace certain sections of the URL with
      *                       a different value.
-     * @param mixed $flags A bitmask of binary or'ed HTTP_URL constants. By default, this is set to HTTP_URL_REPLACE.
+     * @param int $flags A bitmask of binary or'ed HTTP_URL constants. By default, this is set to HTTP_URL_REPLACE.
      * @param array $newUrl If set, this will be filled with the array parts of the composed URL, similar to the return
      *                      value of `parse_url`.
      * @return string The generated URL as a string
@@ -307,7 +307,7 @@ class UrlGenerator extends UrlGeneratorBase
             if (is_array($v)) {
                 $result[] = static::buildStr($v, $key, $argSeparator);
             } else {
-                $result[] = $key.'='.rawurlencode($v);
+                $result[] = $key . '=' . rawurlencode($v);
             }
         }
 
