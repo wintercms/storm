@@ -40,11 +40,13 @@ if (!function_exists('http_build_url')) {
      * Polyfill for the `http_build_url` function provided by PECL HTTP extension.
      *
      * @see \Winter\Storm\Router\UrlGenerator::buildUrl()
-     * @param mixed $url
-     * @param mixed $replace
-     * @param mixed $flags
-     * @param array $newUrl
-     * @return string
+     * @param string|array|false|null $url The URL parts, as an array. Must match the structure returned from a `parse_url` call.
+     * @param string|array|false|null $replace The URL replacement parts. Allows a developer to replace certain sections of the URL with
+     *                       a different value.
+     * @param int $flags A bitmask of binary or'ed HTTP_URL constants. By default, this is set to HTTP_URL_REPLACE.
+     * @param array $newUrl If set, this will be filled with the array parts of the composed URL, similar to the return
+     *                      value of `parse_url`.
+     * @return string The generated URL as a string
      */
     function http_build_url($url, $replace = [], $flags = HTTP_URL_REPLACE, array &$newUrl = [])
     {

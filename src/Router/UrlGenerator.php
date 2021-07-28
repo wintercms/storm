@@ -33,8 +33,8 @@ class UrlGenerator extends UrlGeneratorBase
      * array of values rather than just a query string.
      *
      * @see https://php.uz/manual/en/function.http-build-url.php
-     * @param string|array $url The URL parts, as an array. Must match the structure returned from a `parse_url` call.
-     * @param string|array $replace The URL replacement parts. Allows a developer to replace certain sections of the URL with
+     * @param string|array|false|null $url The URL parts, as an array. Must match the structure returned from a `parse_url` call.
+     * @param string|array|false|null $replace The URL replacement parts. Allows a developer to replace certain sections of the URL with
      *                       a different value.
      * @param int $flags A bitmask of binary or'ed HTTP_URL constants. By default, this is set to HTTP_URL_REPLACE.
      * @param array $newUrl If set, this will be filled with the array parts of the composed URL, similar to the return
