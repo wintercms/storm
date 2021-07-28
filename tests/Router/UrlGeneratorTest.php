@@ -25,6 +25,22 @@ class UrlGeneratorTest extends TestCase
         }
     }
 
+    public function testTrailingSlashes()
+    {
+        $generator = new UrlGenerator(
+            new RouteCollection,
+            Request::create('https://www.example.com/path/?query=arg#fragment')
+        );
+
+        // Always present after host
+        $this->assertEquals('https://www.example.com/', $generator->to(''));
+        $this->assertEquals('https://www.example.com/', $generator->to('/'));
+
+        // Never present after path
+        $this->assertEquals('https://www.example.com/test', $generator->to('/test'));
+        $this->assertEquals('https://www.example.com/test', $generator->to('/test/'));
+    }
+
     /**
      * Tests compliance with RFC 3986 5.2.4, Remove Dot Segements
      *
@@ -47,12 +63,6 @@ class UrlGeneratorTest extends TestCase
      */
     public function testComplianceWithPecl()
     {
-        $generator = new UrlGenerator(
-            new RouteCollection,
-            Request::create('https://www.example.com/path/?query=arg#fragment')
-        );
-        // dd($generator->to(''));
-
         $urlsToTest = [
             // Complex example from original http_build_url() docs
             // @see https://php.uz/manual/en/function.http-build-url.php

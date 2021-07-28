@@ -100,9 +100,6 @@ class UrlGenerator extends UrlGeneratorBase
                 }
             }
         };
-        if (!is_iterable($url) || !is_iterable($replace)) {
-            // dd($url, $replace, $flags);
-        }
         $cleanUrlArray($url);
         $cleanUrlArray($replace);
 
