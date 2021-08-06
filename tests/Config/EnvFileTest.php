@@ -133,7 +133,6 @@ class EnvFileTest extends TestCase
     public function testRender()
     {
         $filePath = __DIR__ . '/../fixtures/config/test.env';
-        $tmpFile = __DIR__ . '/../fixtures/config/temp-test.env';
 
         $env = EnvFile::read($filePath);
 
