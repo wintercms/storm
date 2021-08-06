@@ -16,6 +16,11 @@ class EnvFile implements ConfigFileInterface
     protected $env = [];
 
     /**
+     * @var array contains the env lookup map
+     */
+    protected $map = [];
+
+    /**
      * @var string|null contains the filepath used to read / write
      */
     protected $file = null;
@@ -25,10 +30,11 @@ class EnvFile implements ConfigFileInterface
      * @param array $env
      * @param string $file
      */
-    public function __construct(array $env, string $file)
+    public function __construct(string $file)
     {
-        $this->env = $env;
         $this->file = $file;
+
+        list($this->env, $this->map) = $this->parse($file);
     }
 
     /**
@@ -43,9 +49,7 @@ class EnvFile implements ConfigFileInterface
             $file = static::getEnvFilePath();
         }
 
-        $loader = new Loader([$file], new DotenvFactory(), false);
-
-        return new static($loader->load(), $file);
+        return new static($file);
     }
 
     /**
@@ -72,7 +76,33 @@ class EnvFile implements ConfigFileInterface
             return $this;
         }
 
-        $this->env[$key] = $value;
+        if (!isset($this->map[$key])) {
+            $this->env[] = [
+                'type' => 'var',
+                'key' => $key,
+                'value' => $value
+            ];
+
+            $this->map[$key] = count($this->env) - 1;
+
+            return $this;
+        }
+
+        $this->env[$this->map[$key]]['value'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Push a newline onto the end of the env file
+     *
+     * @return $this
+     */
+    public function addNewLine(): EnvFile
+    {
+        $this->env[] = [
+            'type' => 'nl'
+        ];
 
         return $this;
     }
@@ -99,52 +129,23 @@ class EnvFile implements ConfigFileInterface
     public function render(): string
     {
         $out = '';
-        $key = null;
-        // count the elements in each block
-        $count = 0;
 
-        $arrayKeys = array_keys($this->env);
+        foreach ($this->env as $env) {
 
-        foreach ($this->env as $item => $value) {
-            // get the prefix eg. DB_
-            $prefix = explode('_', $item)[0] ?? null;
-
-            if ($key && $key !== $prefix) {
-                // get the position of the prefix in the next position of $this->env
-                $pos = $this->strpos($arrayKeys[array_search($item, $arrayKeys) + 1] ?? '', $prefix);
-                if ($pos === 0 || $count > 1) {
-                    $out .= PHP_EOL;
-                    $count = 0;
-                }
+            if ($env['type'] === 'nl') {
+                $out .= PHP_EOL;
+                continue;
             }
 
-            if ($key && $key === $prefix) {
-                $count++;
+            if ($env['type'] === 'comment') {
+                $out .= $env['value'] . PHP_EOL;
+                continue;
             }
 
-            $key = $prefix;
-
-            $out .= $item . '=' . $this->wrapValue($value) . PHP_EOL;
+            $out .= $env['key'] . '=' . $this->wrapValue($env['value']) . PHP_EOL;
         }
 
         return $out;
-    }
-
-    /**
-     * Allow for haystack check before execution
-     *
-     * @param string $haystack
-     * @param string $needle
-     * @param int $offset
-     * @return false|int
-     */
-    public function strpos(string $haystack, string $needle, int $offset = 0)
-    {
-        if (!$haystack) {
-            return false;
-        }
-
-        return \strpos($haystack, $needle, $offset);
     }
 
     /**
@@ -182,13 +183,73 @@ class EnvFile implements ConfigFileInterface
     }
 
     /**
+     * Parse a .env file, returns an array of the env file data and a key => pos map
+     *
+     * @param string $file
+     * @return array
+     */
+    protected function parse(string $file): array
+    {
+        if (!file_exists($file) || !($contents = file($file)) || !count($contents)) {
+            return [[], []];
+        }
+
+        $env = [];
+        $map = [];
+        $commentCounter = 0;
+
+        foreach ($contents as $line) {
+            switch (!($line = trim($line)) ? 'nl' : (strpos($line, '#') === 0) ? 'comment' : 'var') {
+                case 'nl':
+                    $env[] = [
+                        'type' => 'nl'
+                    ];
+                    break;
+                case 'comment':
+                    $env[] = [
+                        'type'  => 'comment',
+                        'key'   => 'comment' . $commentCounter++,
+                        'value' => $line
+                    ];
+                    break;
+                case 'var':
+                    $parts = explode('=', $line);
+                    $env[] = [
+                        'type'  => 'var',
+                        'key'   => $parts[0],
+                        'value' => trim($parts[1], '"')
+                    ];
+                    break;
+            }
+        }
+
+        foreach ($env as $index => $item) {
+            if ($item['type'] !== 'var') {
+                continue;
+            }
+            $map[$item['key']] = $index;
+        }
+
+        return [$env, $map];
+    }
+
+    /**
      * Get the current env array
      *
      * @return array
      */
     public function getEnv(): array
     {
-        return $this->env;
+        $env = [];
+
+        foreach ($this->env as $item) {
+            if ($item['type'] !== 'var') {
+                continue;
+            }
+            $env[$item['key']] = $item['value'];
+        }
+
+        return $env;
     }
 
     /**
