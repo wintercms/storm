@@ -129,9 +129,7 @@ class EnvFile implements ConfigFileInterface
     public function render(): string
     {
         $out = '';
-
         foreach ($this->env as $env) {
-
             if ($env['type'] === 'nl') {
                 $out .= PHP_EOL;
                 continue;
@@ -199,7 +197,7 @@ class EnvFile implements ConfigFileInterface
         $commentCounter = 0;
 
         foreach ($contents as $line) {
-            switch (!($line = trim($line)) ? 'nl' : (strpos($line, '#') === 0) ? 'comment' : 'var') {
+            switch (!($line = trim($line)) ? 'nl' : ((strpos($line, '#') === 0) ? 'comment' : 'var')) {
                 case 'nl':
                     $env[] = [
                         'type' => 'nl'
