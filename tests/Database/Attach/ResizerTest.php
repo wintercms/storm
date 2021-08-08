@@ -385,6 +385,25 @@ class ResizerTest extends TestCase
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
+    public function testGetExtension()
+    {
+        $this->setSource(self::SRC_PORTRAIT); // gif extension
+        $this->createFixtureResizer();
+
+        // no extension provided in path, no extension provided in options, should return source extension.
+        $extension = $this->callProtectedMethod($this->resizer, 'getExtension', ['dummy']);
+        $this->assertEquals('gif', $extension);
+
+        // no extension provided in options, extension provided in path, should return path extension
+        $extension = $this->callProtectedMethod($this->resizer, 'getExtension', ['dummy.jpg']);
+        $this->assertEquals('jpg', $extension);
+
+        // extension provided in options and in path, should return extension from options
+        $this->resizer->setOptions(['extension' => 'png']);
+        $extension = $this->callProtectedMethod($this->resizer, 'getExtension', ['dummy.jpg']);
+        $this->assertEquals('png', $extension);
+    }
+
     /**
      * Set the source path and set the extension to match.
      * @param string $source Path to the source image for the Resizer
