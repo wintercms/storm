@@ -68,10 +68,10 @@ class Pivot extends Model
     /**
      * Set the keys for a save update query.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder
+     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected function setKeysForSaveQuery(BuilderBase $query)
+    protected function setKeysForSaveQuery($query)
     {
         $query->where($this->foreignKey, $this->getAttribute($this->foreignKey));
 

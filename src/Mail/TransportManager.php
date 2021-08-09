@@ -1,9 +1,13 @@
 <?php namespace Winter\Storm\Mail;
 
-use Illuminate\Mail\TransportManager as BaseTransportManager;
+use Illuminate\Mail\MailManager as BaseTransportManager;
 use Winter\Storm\Mail\Transport\MandrillTransport;
 use Winter\Storm\Mail\Transport\SparkPostTransport;
 
+/**
+ * @TODO check if this needs to be changed based on the change from TransportManager to MailManager
+ * See https://laravel.com/docs/7.x/releases#laravel-7  "Multiple Mail Drivers"
+ */
 class TransportManager extends BaseTransportManager
 {
     /**
