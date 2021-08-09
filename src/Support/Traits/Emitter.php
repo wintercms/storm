@@ -1,5 +1,8 @@
 <?php namespace Winter\Storm\Support\Traits;
 
+use Closure;
+use Opis\Closure\SerializableClosure as OpisSerializableClosure;
+
 /**
  * Adds event related features to any class.
  *
@@ -28,6 +31,9 @@ trait Emitter
      */
     public function bindEvent($event, $callback, $priority = 0)
     {
+        if ($callback instanceof Closure) {
+            $callback = new OpisSerializableClosure($callback);
+        }
         $this->emitterEventCollection[$event][$priority][] = $callback;
         unset($this->emitterEventSorted[$event]);
         return $this;
@@ -39,6 +45,9 @@ trait Emitter
      */
     public function bindEventOnce($event, $callback)
     {
+        if ($callback instanceof Closure) {
+            $callback = new OpisSerializableClosure($callback);
+        }
         $this->emitterSingleEventCollection[$event][] = $callback;
         return $this;
     }
@@ -116,6 +125,9 @@ trait Emitter
          */
         if (isset($this->emitterSingleEventCollection[$event])) {
             foreach ($this->emitterSingleEventCollection[$event] as $callback) {
+                if ($callback instanceof OpisSerializableClosure) {
+                    $callback = $callback->getClosure();
+                }
                 $response = call_user_func_array($callback, $params);
                 if (is_null($response)) {
                     continue;
@@ -138,6 +150,9 @@ trait Emitter
             }
 
             foreach ($this->emitterEventSorted[$event] as $callback) {
+                if ($callback instanceof OpisSerializableClosure) {
+                    $callback = $callback->getClosure();
+                }
                 $response = call_user_func_array($callback, $params);
                 if (is_null($response)) {
                     continue;
