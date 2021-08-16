@@ -265,6 +265,24 @@ class UrlGeneratorTest extends TestCase
         ]);
     }
 
+    public function testCommonClientProtocols()
+    {
+        // mailto:
+        $this->testBuiltUrl('mailto:winter%40example.com', [
+            'url' => 'mailto:winter@example.com',
+        ]);
+
+        // sms:
+        $this->testBuiltUrl('sms:18005555555', [
+            'url' => 'sms:18005555555',
+        ]);
+
+        // tel:
+        $this->testBuiltUrl('tel:18005555555', [
+            'url' => 'tel:18005555555',
+        ]);
+    }
+
     public function testUrlIsEncoded()
     {
         // Test encoding paths
