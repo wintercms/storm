@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Router;
 
+use Winter\Storm\Support\Str;
 use Illuminate\Routing\UrlGenerator as UrlGeneratorBase;
 
 class UrlGenerator extends UrlGeneratorBase
@@ -264,10 +265,30 @@ class UrlGenerator extends UrlGeneratorBase
 
         // Populate the query section
         if (isset($url['query']) && $url['query'] !== '') {
+            if (is_string($url['query'])) {
+                $queryParams = [];
+                $pairs = explode(ini_get('arg_separator.output') ?? '&', $url['query']);
+                foreach ($pairs as $pair) {
+                    $key = Str::before($pair, '=');
+                    $value = Str::after($pair, '=');
+                    if (Str::contains($pair, '=')) {
+                        if (Str::contains(urldecode($pair), '[')) {
+                            $queryParams[$key][] = $value;
+                        } else {
+                            $queryParams[$key] = $value;
+                        }
+                    } else {
+                        $queryParams[] = $key;
+                    }
+                }
+            } elseif (is_array($url['query'])) {
+                $queryParams = $url['query'];
+            }
+
             if (is_array($url['query'])) {
                 $url['query'] = static::buildStr($url['query']);
             }
-            $urlString .= '?' . $url['query'];
+            $urlString .= '?' . static::buildStr($queryParams);
         }
 
         // Populate the fragment section
@@ -302,14 +323,33 @@ class UrlGenerator extends UrlGeneratorBase
 
         $result = [];
 
+        $i = 0;
         foreach ($query as $k => $v) {
-            $key = $prefix ? "{$prefix}%5B{$k}%5D" : $k;
+            // Handle query args with the same keys
+            if ($i === $k) {
+                if ($prefix) {
+                    // Make sure the key is setup for array values
+                    if (Str::endsWith($prefix, '[]')) {
+                        $key = $prefix;
+                    } else {
+                        $key = "{$prefix}[]";
+                    }
+                } else {
+                    // Handle query args without values
+                    $key = $v;
+                    $v = null;
+                }
+            } else {
+                // Handle query args with named array elements
+                $key = $prefix ? "{$prefix}[{$k}]" : $k;
+            }
 
             if (is_array($v)) {
                 $result[] = static::buildStr($v, $key, $argSeparator);
             } else {
-                $result[] = $key . '=' . rawurlencode($v);
+                $result[] = rawurlencode(rawurldecode($key)) . (isset($v) ? '=' . rawurlencode(rawurldecode($v)) : '');
             }
+            $i++;
         }
 
         return implode($argSeparator, $result);

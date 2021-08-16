@@ -99,9 +99,9 @@ class UrlGeneratorTest extends TestCase
             ],
 
             // Join query, strip port, path, & fragment
-            'http://www.example.com/?a%5B0%5D=1&a%5B1%5D=b&b=c' => [
-                'url'     => 'http://www.example.com:8080/foo?a[0]=b#frag',
-                'replace' => '?a[0]=1&b=c&a[1]=b',
+            'http://www.example.com/?a%5B2%5D=1&a%5B3%5D=b&b=c' => [
+                'url'     => 'http://www.example.com:8080/foo?a[2]=b#frag',
+                'replace' => '?a[2]=1&b=c&a[3]=b',
                 'flags'   => HTTP_URL_JOIN_QUERY|HTTP_URL_STRIP_PORT|HTTP_URL_STRIP_FRAGMENT|HTTP_URL_STRIP_PATH,
             ],
 
@@ -240,13 +240,6 @@ class UrlGeneratorTest extends TestCase
 
     public function testSimpleUrl()
     {
-        /**
-         * @TODO: Tests to add
-         * - proper support for PHP html arrays in query strings
-         * - HTML injection attempts
-         */
-        // dd(http_build_url('https://example.com/testpage/?test="><img src="a" onerror="alert(1)"/>', null, HTTP_URL_JOIN_QUERY));
-
         $this->testBuiltUrl('https://wintercms.com/', [
             'url' => [
                 'scheme' => 'https',
@@ -272,9 +265,36 @@ class UrlGeneratorTest extends TestCase
         ]);
     }
 
-    public function testDontSquashQueryArgs()
+    public function testUrlIsEncoded()
     {
-        $this->testBuiltUrl('https://user:pass@github.com:80/wintercms/winter?test=1&test=2#comment1', [
+        $this->testBuiltUrl('https://example.com/testpage/?test=%22%3E%3Cimg%20src%3D%22a%22%20onerror%3D%22alert%281%29%22%2F%3E', [
+            'url' => 'https://example.com/testpage/?test="><img src="a" onerror="alert(1)"/>',
+        ]);
+
+        $this->testBuiltUrl('https://example.com/testpage/?%3E%3Cimg%20src=%22a%22%20onerror%3D%22alert%281%29%22%2F%3E', [
+            'url' => 'https://example.com/testpage/?><img src="a" onerror="alert(1)"/>',
+        ]);
+    }
+
+    public function testUrlIsNotDoubleEncoded()
+    {
+        $this->testBuiltUrl('https://example.com/testpage/?operator=%3E', [
+            'url' => 'https://example.com/testpage/?operator=%3E',
+        ]);
+        $this->testBuiltUrl('https://example.com/testpage/?operator%3E=%3E', [
+            'url' => 'https://example.com/testpage/?operator%3E=%3E',
+        ]);
+    }
+
+    /**
+     * PHP's $_GET squashes query params without square brackets [] so we should do the same
+     *
+     * @return void
+     */
+    public function testSquashQueryArgs()
+    {
+        // Squashed
+        $this->testBuiltUrl('https://user:pass@github.com:80/wintercms/winter?test=2#comment1', [
             'url' => [
                 'scheme' => 'https',
                 'user' => 'user',
@@ -283,6 +303,52 @@ class UrlGeneratorTest extends TestCase
                 'port' => 80,
                 'path' => '/wintercms/winter',
                 'query' => 'test=1&test=2',
+                'fragment' => 'comment1'
+            ],
+        ]);
+        // Unsquashed array input
+        $this->testBuiltUrl('https://user:pass@github.com:80/wintercms/winter?test%5B%5D=1&test%5B%5D=2#comment1', [
+            'url' => [
+                'scheme' => 'https',
+                'user' => 'user',
+                'pass' => 'pass',
+                'host' => 'github.com',
+                'port' => 80,
+                'path' => '/wintercms/winter',
+                'query' => [
+                    'test' => [1, 2],
+                ],
+                'fragment' => 'comment1'
+            ],
+        ]);
+        // Unsquashed array input with keys
+        $this->testBuiltUrl('https://user:pass@github.com:80/wintercms/winter?test%5Bkey1%5D=1&test%5Bkey2%5D=2#comment1', [
+            'url' => [
+                'scheme' => 'https',
+                'user' => 'user',
+                'pass' => 'pass',
+                'host' => 'github.com',
+                'port' => 80,
+                'path' => '/wintercms/winter',
+                'query' => [
+                    'test' => [
+                        'key1' => 1,
+                        'key2' => 2,
+                    ],
+                ],
+                'fragment' => 'comment1'
+            ],
+        ]);
+        // Unsquashed string input
+        $this->testBuiltUrl('https://user:pass@github.com:80/wintercms/winter?test%5B%5D=1&test%5B%5D=2#comment1', [
+            'url' => [
+                'scheme' => 'https',
+                'user' => 'user',
+                'pass' => 'pass',
+                'host' => 'github.com',
+                'port' => 80,
+                'path' => '/wintercms/winter',
+                'query' => 'test[]=1&test[]=2',
                 'fragment' => 'comment1'
             ],
         ]);
@@ -366,12 +432,12 @@ class UrlGeneratorTest extends TestCase
             'host' => 'github.com',
             'port' => 80,
             'path' => '/wintercms/winter',
-            'query' => 'test=1&test=2',
+            'query' => 'test=1&foo=bar',
             'fragment' => 'comment1'
         ];
 
         $this->assertEquals(
-            'https://github.com:80/wintercms/winter?test=1&test=2#comment1',
+            'https://github.com:80/wintercms/winter?test=1&foo=bar#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_AUTH)
         );
 
@@ -381,22 +447,22 @@ class UrlGeneratorTest extends TestCase
         );
 
         $this->assertEquals(
-            'https://github.com:80/wintercms/winter?test=1&test=2#comment1',
+            'https://github.com:80/wintercms/winter?test=1&foo=bar#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_USER)
         );
 
         $this->assertEquals(
-            'https://user@github.com:80/wintercms/winter?test=1&test=2#comment1',
+            'https://user@github.com:80/wintercms/winter?test=1&foo=bar#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_PASS)
         );
 
         $this->assertEquals(
-            'https://user:pass@github.com/wintercms/winter?test=1&test=2#comment1',
+            'https://user:pass@github.com/wintercms/winter?test=1&foo=bar#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_PORT)
         );
 
         $this->assertEquals(
-            'https://user:pass@github.com:80/?test=1&test=2#comment1',
+            'https://user:pass@github.com:80/?test=1&foo=bar#comment1',
             http_build_url($segments, [], HTTP_URL_STRIP_PATH)
         );
 
@@ -406,7 +472,7 @@ class UrlGeneratorTest extends TestCase
         );
 
         $this->assertEquals(
-            'https://user:pass@github.com:80/wintercms/winter?test=1&test=2',
+            'https://user:pass@github.com:80/wintercms/winter?test=1&foo=bar',
             http_build_url($segments, [], HTTP_URL_STRIP_FRAGMENT)
         );
 
