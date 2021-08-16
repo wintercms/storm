@@ -279,7 +279,6 @@ class UrlGeneratorTest extends TestCase
         $this->testBuiltUrl('https://example.com/testpage/?%3E%3Cimg%20src=%22a%22%20onerror%3D%22alert%281%29%22%2F%3E', [
             'url' => 'https://example.com/testpage/?><img src="a" onerror="alert(1)"/>',
         ]);
-
     }
 
     public function testUrlIsNotDoubleEncoded()
