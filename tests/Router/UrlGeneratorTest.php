@@ -267,17 +267,29 @@ class UrlGeneratorTest extends TestCase
 
     public function testUrlIsEncoded()
     {
+        // Test encoding paths
+        $this->testBuiltUrl('https://example.com/testpage/%22%3E%3Cimg%20src%3Da%20onerror%3Dalert%281%29%3E', [
+            'url' => 'https://example.com/testpage/"><img src%3da onerror%3dalert(1)>',
+        ]);
+
+        // Test encoding query params
         $this->testBuiltUrl('https://example.com/testpage/?test=%22%3E%3Cimg%20src%3D%22a%22%20onerror%3D%22alert%281%29%22%2F%3E', [
             'url' => 'https://example.com/testpage/?test="><img src="a" onerror="alert(1)"/>',
         ]);
-
         $this->testBuiltUrl('https://example.com/testpage/?%3E%3Cimg%20src=%22a%22%20onerror%3D%22alert%281%29%22%2F%3E', [
             'url' => 'https://example.com/testpage/?><img src="a" onerror="alert(1)"/>',
         ]);
+
     }
 
     public function testUrlIsNotDoubleEncoded()
     {
+        // Test encoded paths
+        $this->testBuiltUrl('https://example.com/testpage/operator/%3E', [
+            'url' => 'https://example.com/testpage/operator/%3E',
+        ]);
+
+        // Test encoded query params
         $this->testBuiltUrl('https://example.com/testpage/?operator=%3E', [
             'url' => 'https://example.com/testpage/?operator=%3E',
         ]);
