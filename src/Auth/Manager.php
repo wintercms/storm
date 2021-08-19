@@ -699,37 +699,38 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     /**
      * Impersonates the given user and sets properties in the session but not the cookie.
      *
-     * @param Models\User $user
+     * @param Models\User $impersonatee
      * @return void
      */
-    public function impersonate($user)
+    public function impersonate($impersonatee)
     {
-        // Get the current user
+        // Get the current user, i.e. the "impersonator"
         $userArray = $this->getPersistCodeFromSession();
-        $currentUserId = $userArray ? $userArray[0] : null;
-        $currentUser = $currentUserId ? $this->findUserById($currentUserId) : false;
+        $impersonatorId = $userArray ? $userArray[0] : null;
+        $impersonator = $impersonatorId ? $this->findUserById($impersonatorId) : false;
 
         /**
          * @event model.auth.beforeImpersonate
-         * Called before the user in question is impersonated
+         * Called before the user in question is impersonated. Current user is false when either the system or a
+         * user from a separate authentication system authorized the impersonation
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.auth.beforeImpersonate', function (\Winter\Storm\Database\Model|false $currentUser) use (\Winter\Storm\Database\Model $model) {
-         *         \Log::info($currentUser->full_name . ' is now impersonating ' . $model->full_name);
+         *     $model->bindEvent('model.auth.beforeImpersonate', function (\Winter\Storm\Database\Model|false $impersonator) use (\Winter\Storm\Database\Model $model) {
+         *         \Log::info($impersonator->full_name . ' is now impersonating ' . $model->full_name);
          *     });
          *
          */
-        $user->fireEvent('model.auth.beforeImpersonate', [$currentUser]);
+        $impersonatee->fireEvent('model.auth.beforeImpersonate', [$impersonator]);
 
-        // Impersonate the requested user by becoming them in the session
-        // without triggering login events and requiring the impersonated
-        // user to be activated
-        $this->setPersistCodeInSession($user, false);
+        // Impersonate the requested user by becoming them in the request & the session
+        // without triggering login events that could prevent the login from succeeding
+        $this->setPersistCodeInSession($impersonatee, false);
+        $this->user = $impersonatee;
 
         // Store the current user as the impersonator if this is the first impersonation
         if (!$this->isImpersonator()) {
-            Session::put($this->sessionKey . '_impersonate', $currentUserId ?: false);
+            Session::put($this->sessionKey . '_impersonator', $impersonatorId ?: false);
         }
     }
 
@@ -741,34 +742,39 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     {
         // Get the current user and the impersonating user
         $userArray = $this->getPersistCodeFromSession();
-        $currentUserId = $userArray ? $userArray[0] : null;
-        $oldUser = $this->getImpersonator();
+        $impersonateeId = $userArray ? $userArray[0] : null;
+        $impersonator = $this->getImpersonator();
 
-        if ($currentUserId && ($currentUser = $this->findUserById($currentUserId))) {
+        if ($impersonateeId && ($impersonatee = $this->findUserById($impersonateeId))) {
             /**
              * @event model.auth.afterImpersonate
              * Called after the model is booted
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.auth.afterImpersonate', function (\Winter\Storm\Database\Model|false $oldUser) use (\Winter\Storm\Database\Model $model) {
-             *         \Log::info($oldUser->full_name . ' has stopped impersonating ' . $model->full_name);
+             *     $model->bindEvent('model.auth.afterImpersonate', function (\Winter\Storm\Database\Model|false $impersonator) use (\Winter\Storm\Database\Model $model) {
+             *         \Log::info($impersonator->full_name . ' has stopped impersonating ' . $model->full_name);
              *     });
              *
              */
-            $currentUser->fireEvent('model.auth.afterImpersonate', [$oldUser]);
+            $impersonatee->fireEvent('model.auth.afterImpersonate', [$impersonator]);
         }
 
-        // Restore the session to the impersonator if possible, otherwise force a logout
-        if ($oldUser) {
-            $this->setPersistCodeInSession($oldUser, false);
+        // Restore the session to the impersonator if possible
+        if ($impersonator) {
+            $this->setPersistCodeInSession($impersonator, false);
+            $this->user = $impersonator;
         } else {
-            Session::invalidate();
-            Cookie::queue(Cookie::forget($this->sessionKey));
+            // Impersonation via "log in as" functionality from a different user system
+            // or by the system, no original user in the current auth system to restore to
+            // so just forget the information that makes this request authenticated as the
+            // impersonatee
+            Session::forget($this->sessionKey);
+            $this->user = null;
         }
 
         // Remove the impersonator flag
-        Session::forget($this->sessionKey . '_impersonate');
+        Session::forget($this->sessionKey . '_impersonator');
     }
 
     /**
@@ -778,7 +784,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      */
     public function isImpersonator()
     {
-        return Session::has($this->sessionKey . '_impersonate');
+        return Session::has($this->sessionKey . '_impersonator');
     }
 
     /**
@@ -792,11 +798,11 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
             return false;
         }
 
-        $oldUserId = Session::get($this->sessionKey . '_impersonate');
-        if ($oldUserId === false) {
+        $impersonatorId = Session::get($this->sessionKey . '_impersonator');
+        if ($impersonatorId === false) {
             return false;
         }
 
-        return $this->createUserModel()->find($id);
+        return $this->createUserModel()->find($impersonatorId);
     }
 }
