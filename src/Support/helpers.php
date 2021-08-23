@@ -81,7 +81,7 @@ if (!function_exists('post')) {
     function post($name = null, $default = null)
     {
         if (!in_array(Request::method(), ['POST', 'PUT', 'DELETE', 'PATCH'])) {
-            return null;
+            return $default;
         }
 
         if ($name === null) {
