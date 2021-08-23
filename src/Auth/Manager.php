@@ -736,7 +736,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
 
         if (!$canImpersonate) {
             // @TODO: translate / make exception more specific
-            throw new Exception("You cannot impersonate the selected user.");
+            throw new Exception('You cannot impersonate the selected user.');
         }
 
         // Impersonate the requested user by becoming them in the request & the session
