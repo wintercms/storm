@@ -669,7 +669,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     /**
      * Check if this user can be impersonated by the provided impersonator
      *
-     * @param static|false $impersonator The user attempting to impersonate this user, false when not available
+     * @param \Winter\Storm\Auth\Models\User|false $impersonator The user attempting to impersonate this user, false when not available
      * @return boolean
      */
     public function canBeImpersonated($impersonator = false)

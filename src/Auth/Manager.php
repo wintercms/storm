@@ -764,7 +764,8 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         if ($impersonateeId && ($impersonatee = $this->findUserById($impersonateeId))) {
             /**
              * @event model.auth.afterImpersonate
-             * Called after the model is booted
+             * Called after the user in question has stopped being impersonated. Current user is false when
+             * either the system or a user from a separate authentication system authorized the impersonation.
              *
              * Example usage:
              *
