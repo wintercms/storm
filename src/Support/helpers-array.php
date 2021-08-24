@@ -2,7 +2,6 @@
 
 use Winter\Storm\Support\Arr;
 
-
 //
 // Winter Helpers
 //

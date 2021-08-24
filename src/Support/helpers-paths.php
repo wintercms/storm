@@ -2,7 +2,6 @@
 
 use Winter\Storm\Filesystem\PathResolver;
 
-
 if (!function_exists('config_path')) {
     /**
      * Get the path to the config folder.
