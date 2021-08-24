@@ -705,10 +705,16 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      */
     public function impersonate($impersonatee)
     {
-        // Get the current user, i.e. the "impersonator"
-        $userArray = $this->getPersistCodeFromSession();
-        $impersonatorId = $userArray ? $userArray[0] : null;
-        $impersonator = $impersonatorId ? $this->findUserById($impersonatorId) : false;
+        // If the session is already being impersonated, then use the original impersonator
+        if ($this->isImpersonator()) {
+            $impersonator = $this->getImpersonator() ?: false;
+            $impersonatorId = $impersonator ? $impersonator->id : null;
+        } else {
+            // Get the current user
+            $userArray = $this->getPersistCodeFromSession();
+            $impersonatorId = $userArray ? $userArray[0] : null;
+            $impersonator = $impersonatorId ? $this->findUserById($impersonatorId) : false;
+        }
 
         /**
          * @event model.auth.beforeImpersonate
