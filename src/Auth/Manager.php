@@ -828,4 +828,18 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
 
         return $this->createUserModel()->find($impersonatorId);
     }
+
+    /**
+     * Gets the user for the request, taking into account impersonation
+     *
+     * @return mixed (Models\User || null)
+     */
+    public function getRealUser()
+    {
+        if ($impersonator = $this->getImpersonator()) {
+            return $impersonator;
+        } else {
+            return $this->getUser();
+        }
+    }
 }
