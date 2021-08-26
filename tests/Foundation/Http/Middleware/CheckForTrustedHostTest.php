@@ -164,7 +164,7 @@ class CheckForTrustedHostTest extends TestCase
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers, $servers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://test2.wintercms.com', $url);
+        $this->assertEquals('http://test2.wintercms.com/', $url);
     }
 
     public function testArrayFailTrustedHost()
