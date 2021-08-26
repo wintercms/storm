@@ -413,6 +413,23 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
                 $permissions = array_merge($permissions, $this->permissions);
             }
 
+            /**
+             * @event model.auth.getMergedPermissions
+             * Called during the generation of the local cache of merged permissions for the user instance.
+             * Can be used to modify the permissions that the user has acccess to.
+             *
+             * Example usage:
+             *
+             *     $model->bindEvent('model.auth.getMergedPermissions', function (array &$permissions) use ($model) {
+             *         if ($model->email === 'bob@example.com') {
+             *             unset($permissions['acme.plugin.manage_alices_records']);
+             *             $permissions['acme.plugin.manage_bobs_records'] = 1;
+             *         }
+             *     });
+             *
+             */
+            $this->fireEvent('model.auth.getMergedPermissions', [&$permissions]);
+
             $this->mergedPermissions = $permissions;
         }
 
