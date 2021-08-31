@@ -148,6 +148,9 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
         $this->forceSave();
     }
 
+    /**
+     *  Runs when the user account has been suspended. Override to perform an action.
+     */
     public function onSuspend()
     {
     }
