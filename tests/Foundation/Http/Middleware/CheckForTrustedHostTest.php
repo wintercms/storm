@@ -31,7 +31,7 @@ class CheckForTrustedHostTest extends TestCase
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://wintercms.com', $url);
+        $this->assertEquals('http://wintercms.com/', $url);
     }
 
     public function testTrustedHostWwwSubdomain()
@@ -41,7 +41,7 @@ class CheckForTrustedHostTest extends TestCase
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://www.wintercms.com', $url);
+        $this->assertEquals('http://www.wintercms.com/', $url);
     }
 
     public function testTrustedHostWwwSubdomainFailure()
@@ -61,13 +61,13 @@ class CheckForTrustedHostTest extends TestCase
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://wintercms.com', $url);
+        $this->assertEquals('http://wintercms.com/', $url);
 
         $headers = ['HOST' => 'www.wintercms.com'];
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://www.wintercms.com', $url);
+        $this->assertEquals('http://www.wintercms.com/', $url);
     }
 
     public function testTrustedIpHost()
@@ -77,7 +77,7 @@ class CheckForTrustedHostTest extends TestCase
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://127.0.0.1', $url);
+        $this->assertEquals('http://127.0.0.1/', $url);
     }
 
     public function testNoTrustedHostsSet()
@@ -87,7 +87,7 @@ class CheckForTrustedHostTest extends TestCase
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://malicious.com', $url);
+        $this->assertEquals('http://malicious.com/', $url);
     }
 
     public function testThrowExceptionForUntrustedHosts()
@@ -130,13 +130,13 @@ class CheckForTrustedHostTest extends TestCase
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers, $servers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://test123.wintercms.com', $url);
+        $this->assertEquals('http://test123.wintercms.com/', $url);
 
         $headers = ['HOST' => 'test456.wintercms.com'];
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers, $servers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://test456.wintercms.com', $url);
+        $this->assertEquals('http://test456.wintercms.com/', $url);
     }
 
     public function testRegexFailTrustedHost()
@@ -158,13 +158,13 @@ class CheckForTrustedHostTest extends TestCase
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers, $servers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://test1.wintercms.com', $url);
+        $this->assertEquals('http://test1.wintercms.com/', $url);
 
         $headers = ['HOST' => 'test2.wintercms.com'];
         $urlGenerator = $this->createUrlGenerator($trustedHosts, $headers, $servers);
         $url = $urlGenerator->to('/');
 
-        $this->assertEquals('http://test2.wintercms.com', $url);
+        $this->assertEquals('http://test2.wintercms.com/', $url);
     }
 
     public function testArrayFailTrustedHost()

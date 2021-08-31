@@ -7,6 +7,7 @@ use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Cached\CachedAdapter;
 use League\Flysystem\Rackspace\RackspaceAdapter;
 use Illuminate\Filesystem\FilesystemAdapter as BaseFilesystemAdapter;
+use RuntimeException;
 
 class FilesystemAdapter extends BaseFilesystemAdapter
 {
