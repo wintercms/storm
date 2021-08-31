@@ -81,6 +81,11 @@ class Throttle extends Model
 
         if ($this->getLoginAttempts() >= static::$attemptLimit) {
             $this->suspend();
+
+            /*
+            * Fire the user 'onSuspend' event
+            */
+            $this->user()->onSuspend();
         }
         else {
             $this->save();

@@ -148,6 +148,10 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
         $this->forceSave();
     }
 
+    public function onSuspend()
+    {
+    }
+
     /**
      * Delete the user groups
      * @return bool
