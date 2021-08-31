@@ -83,8 +83,8 @@ class Throttle extends Model
             $this->suspend();
 
             /*
-            * Fire the user 'onSuspend' event
-            */
+             * Fire the user 'onSuspend' event
+             */
             $this->user()->onSuspend();
         }
         else {
