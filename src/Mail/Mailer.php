@@ -91,7 +91,7 @@ class Mailer extends MailerBase
           *
           * Example usage (stops the sending process):
           *
-          *     Event::listen('mailer.prepareSend', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view (\Illuminate\Mail\Message) $message, (array) $data) {
+          *     Event::listen('mailer.prepareSend', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
           *         return false;
           *     });
           *
