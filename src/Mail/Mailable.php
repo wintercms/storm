@@ -47,6 +47,8 @@ class Mailable extends MailableBase
      */
     public function withSerializedData($data)
     {
+        $this->viewData['_current_locale'] = App::getLocale();
+        
         // Ensure that the current locale is stored with the rest of the data for proper translation of queued messages
         $defaultData = [
             '_current_locale' => App::getLocale(),
