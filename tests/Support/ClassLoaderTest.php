@@ -32,24 +32,10 @@ class ClassLoaderTest extends TestCase
         parent::tearDown();
     }
 
-    public function testClassesExist()
-    {
-        // Classes should be available from the class loader
-        $this->assertTrue(class_exists('Winter\Plugin\Classes\TestClass'));
-        $this->assertTrue(class_exists('Winter\Plugin\Models\TestModel'));
-
-        // Classes should not be available from the class loader (missing classes)
-        $this->assertFalse(class_exists('Winter\Plugin\Classes\MissingClass'));
-        $this->assertFalse(class_exists('Winter\Plugin\Widgets\MissingWidget'));
-
-        // Class should not be available from the class loader (misnamed namespace)
-        $this->assertFalse(class_exists('Winter\Plugin\Controllers\TestController'));
-    }
-
     public function testAliases()
     {
-        $this->assertFalse(class_exists('OldOrg\Plugin\Classes\TestClass'));
-        $this->assertFalse(class_exists('OldOrg\Plugin\Models\TestModel'));
+        $this->assertFalse(class_exists('OldOrg\Plugin\Classes\TestClass', false));
+        $this->assertFalse(class_exists('OldOrg\Plugin\Models\TestModel', false));
 
         // Alias missing classes
         $this->classLoader->addAliases([
@@ -57,10 +43,16 @@ class ClassLoaderTest extends TestCase
             'Winter\Plugin\Models\TestModel' => 'OldOrg\Plugin\Models\TestModel',
         ]);
 
+        // Check that class identifies as both original and alias
+        $newInstance = new Winter\Plugin\Classes\TestClass;
+        $this->assertTrue($newInstance instanceof Winter\Plugin\Classes\TestClass);
+        $this->assertTrue($newInstance instanceof OldOrg\Plugin\Classes\TestClass);
+
         $this->assertTrue(class_exists('OldOrg\Plugin\Classes\TestClass'));
         $this->assertTrue(class_exists('OldOrg\Plugin\Models\TestModel'));
 
         $instance = new OldOrg\Plugin\Classes\TestClass;
+        $this->assertInstanceOf('OldOrg\Plugin\Classes\TestClass', $instance);
         $this->assertInstanceOf('Winter\Plugin\Classes\TestClass', $instance);
 
         // Alias a class that exists - the original should still be used
@@ -75,8 +67,8 @@ class ClassLoaderTest extends TestCase
 
     public function testNamespaceAliases()
     {
-        $this->assertFalse(class_exists('OldOrgTwo\Plugin\Classes\TestClass'));
-        $this->assertFalse(class_exists('OldOrgTwo\Plugin\Models\TestModel'));
+        $this->assertFalse(class_exists('OldOrgTwo\Plugin\Classes\TestClass', false));
+        $this->assertFalse(class_exists('OldOrgTwo\Plugin\Models\TestModel', false));
 
         // Alias missing classes
         $this->classLoader->addNamespaceAliases([
@@ -87,6 +79,7 @@ class ClassLoaderTest extends TestCase
         $this->assertTrue(class_exists('OldOrgTwo\Plugin\Models\TestModel'));
 
         $instance = new OldOrgTwo\Plugin\Classes\TestClass;
+        $this->assertInstanceOf('OldOrgTwo\Plugin\Classes\TestClass', $instance);
         $this->assertInstanceOf('Winter\Plugin\Classes\TestClass', $instance);
 
         // Alias a class that exists - the original should still be used
@@ -96,5 +89,19 @@ class ClassLoaderTest extends TestCase
         $instance = new Winter\Plugin\Classes\TestClass;
         $this->assertInstanceOf('Winter\Plugin\Classes\TestClass', $instance);
         $this->assertFalse(class_exists('NewOrgTwo\Plugin\Classes\TestClass'));
+    }
+
+    public function testClassesExist()
+    {
+        // Classes should be available from the class loader
+        $this->assertTrue(class_exists('Winter\Plugin\Classes\TestClass'));
+        $this->assertTrue(class_exists('Winter\Plugin\Models\TestModel'));
+
+        // Classes should not be available from the class loader (missing classes)
+        $this->assertFalse(class_exists('Winter\Plugin\Classes\MissingClass'));
+        $this->assertFalse(class_exists('Winter\Plugin\Widgets\MissingWidget'));
+
+        // Class should not be available from the class loader (misnamed namespace)
+        $this->assertFalse(class_exists('Winter\Plugin\Controllers\TestController'));
     }
 }

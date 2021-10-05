@@ -76,6 +76,20 @@ class ClassLoader
     protected $namespaceAliases = [];
 
     /**
+     * Aliases that have been explicitly loaded.
+     *
+     * @var array
+     */
+    protected $loadedAliases = [];
+
+    /**
+     * Reversed classes to ignore for alias checks.
+     *
+     * @var array
+     */
+    protected $reversedClasses = [];
+
+    /**
      * Create a new package manifest instance.
      *
      * @param  \Winter\Storm\Filesystem\Filesystem  $files
@@ -94,34 +108,63 @@ class ClassLoader
      * Load the given class file.
      *
      * @param  string  $class
-     * @return void
+     * @return bool|null
      */
     public function load($class)
     {
+        $class = static::normalizeClass($class);
+
+        // If the class is already aliased, skip loading.
+        if (in_array($class, $this->loadedAliases) || in_array($class, $this->reversedClasses)) {
+            return true;
+        }
+
         if (
             isset($this->manifest[$class]) &&
             $this->isRealFilePath($path = $this->manifest[$class])
         ) {
             require_once $this->basePath.DIRECTORY_SEPARATOR.$path;
+
+            if (!is_null($reverse = $this->getReverseAlias($class))) {
+                if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
+                    class_alias($class, $reverse);
+                    $this->reversedClasses[] = $reverse;
+                }
+            }
+
             return true;
         }
 
-        list($lowerClass, $upperClass) = static::normalizeClass($class);
+        list($lowerClass, $upperClass, $lowerClassStudlyFile, $upperClassStudlyFile) = static::getPathsForClass($class);
 
         foreach ($this->directories as $directory) {
-            if ($this->isRealFilePath($path = $directory.DIRECTORY_SEPARATOR.$lowerClass)) {
-                $this->includeClass($class, $path);
-                return true;
-            }
+            $paths = [
+                $directory . DIRECTORY_SEPARATOR . $lowerClass,
+                $directory . DIRECTORY_SEPARATOR . $upperClass,
+                $directory . DIRECTORY_SEPARATOR . $lowerClassStudlyFile,
+                $directory . DIRECTORY_SEPARATOR . $upperClassStudlyFile,
+            ];
 
-            if ($this->isRealFilePath($path = $directory.DIRECTORY_SEPARATOR.$upperClass)) {
-                $this->includeClass($class, $path);
-                return true;
+            foreach ($paths as $path) {
+                if ($this->isRealFilePath($path)) {
+                    $this->includeClass($class, $path);
+
+                    if (!is_null($reverse = $this->getReverseAlias($class))) {
+                        if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
+                            class_alias($class, $reverse);
+                            $this->reversedClasses[] = $reverse;
+                        }
+                    }
+
+                    return true;
+                }
             }
         }
 
-        if (!is_null($alias = $this->getAlias($class))) {
-            return class_alias($alias, $class);
+        if (!is_null($alias = $this->getAlias($class)) && !in_array($class, $this->reversedClasses)) {
+            $this->loadedAliases[] = $class;
+            class_alias($alias, $class);
+            return true;
         }
     }
 
@@ -302,9 +345,50 @@ class ClassLoader
     }
 
     /**
-     * Get the normal file name for a class.
+     * Gets aliases registered for a namespace, if available.
      *
-     * @param  string  $class
+     * @param string $namespace
+     * @return array
+     */
+    public function getNamespaceAliases($namespace)
+    {
+        $aliases = [];
+        foreach ($this->namespaceAliases as $alias => $original) {
+            if ($namespace === $original) {
+                $aliases[] = $alias;
+            }
+        }
+
+        return $aliases;
+    }
+
+    /**
+     * Gets a reverse alias for a class, if available.
+     *
+     * @param string $class
+     * @return string|null
+     */
+    public function getReverseAlias($class)
+    {
+        if (count($this->namespaceAliases)) {
+            foreach ($this->namespaceAliases as $alias => $original) {
+                if (starts_with($class, $original)) {
+                    return str_replace($original, $alias, $class);
+                }
+            }
+        }
+
+        $aliasKey = array_search($class, $this->aliases);
+
+        return ($aliasKey !== false)
+            ? $aliasKey
+            : null;
+    }
+
+    /**
+     * Normalise the class name.
+     *
+     * @param string $class
      * @return string
      */
     protected static function normalizeClass($class)
@@ -312,10 +396,23 @@ class ClassLoader
         /*
          * Strip first slash
          */
-        if ($class[0] == '\\') {
+        if (substr($class, 0, 1) == '\\') {
             $class = substr($class, 1);
         }
 
+        return implode('\\', array_map(function ($part) {
+            return Str::studly($part);
+        }, explode('\\', $class)));
+    }
+
+    /**
+     * Get the possible paths for a class.
+     *
+     * @param  string  $class
+     * @return string
+     */
+    protected static function getPathsForClass($class)
+    {
         /*
          * Lowercase folders
          */
@@ -330,7 +427,10 @@ class ClassLoader
         $lowerClass = strtolower($directory) . DIRECTORY_SEPARATOR . $file . '.php';
         $upperClass = $directory . DIRECTORY_SEPARATOR . $file . '.php';
 
-        return [$lowerClass, $upperClass];
+        $lowerClassStudlyFile = strtolower($directory) . DIRECTORY_SEPARATOR . Str::studly($file) . '.php';
+        $upperClassStudlyFile = $directory . DIRECTORY_SEPARATOR . Str::studly($file) . '.php';
+
+        return [$lowerClass, $upperClass, $lowerClassStudlyFile, $upperClassStudlyFile];
     }
 
     /**

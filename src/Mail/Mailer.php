@@ -87,23 +87,24 @@ class Mailer extends MailerBase
           * Parameters:
           * - $view: View code as a string
           * - $message: Illuminate\Mail\Message object, check Swift_Mime_SimpleMessage for useful functions.
+          * - $data: Array
           *
           * Example usage (stops the sending process):
           *
-          *     Event::listen('mailer.prepareSend', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message) {
+          *     Event::listen('mailer.prepareSend', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
           *         return false;
           *     });
           *
           * Or
           *
-          *     $mailerInstance->bindEvent('mailer.prepareSend', function ((string) $view, (\Illuminate\Mail\Message) $message) {
+          *     $mailerInstance->bindEvent('mailer.prepareSend', function ((string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
           *         return false;
           *     });
           *
           */
         if (
-            ($this->fireEvent('mailer.prepareSend', [$view, $message], true) === false) ||
-            (Event::fire('mailer.prepareSend', [$this, $view, $message], true) === false)
+            ($this->fireEvent('mailer.prepareSend', [$view, $message, $data], true) === false) ||
+            (Event::fire('mailer.prepareSend', [$this, $view, $message, $data], true) === false)
         ) {
             return;
         }
@@ -120,19 +121,19 @@ class Mailer extends MailerBase
          *
          * Example usage (logs the message):
          *
-         *     Event::listen('mailer.send', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message) {
+         *     Event::listen('mailer.send', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
          *         \Log::info("Message was rendered with $view and sent");
          *     });
          *
          * Or
          *
-         *     $mailerInstance->bindEvent('mailer.send', function ((string) $view, (\Illuminate\Mail\Message) $message) {
+         *     $mailerInstance->bindEvent('mailer.send', function ((string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
          *         \Log::info("Message was rendered with $view and sent");
          *     });
          *
          */
-        $this->fireEvent('mailer.send', [$view, $message]);
-        Event::fire('mailer.send', [$this, $view, $message]);
+        $this->fireEvent('mailer.send', [$view, $message, $data]);
+        Event::fire('mailer.send', [$this, $view, $message, $data]);
     }
 
     /**
