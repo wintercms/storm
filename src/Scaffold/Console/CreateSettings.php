@@ -28,7 +28,7 @@ class CreateSettings extends GeneratorCommand
     protected $type = 'Settings Model';
 
     /**
-     * A mapping of stub to generated file.
+     * A mapping of stubs to generated files.
      *
      * @var array
      */
