@@ -130,17 +130,16 @@ class EnvFile implements ConfigFileInterface
     {
         $out = '';
         foreach ($this->env as $env) {
-            if ($env['type'] === 'nl') {
-                $out .= PHP_EOL;
-                continue;
+            switch ($env['type']) {
+                case 'comment':
+                    $out .= $env['value'];
+                    break;
+                case 'var':
+                    $out .= $env['key'] . '=' . $this->escapeValue($env['value']);
+                    break;
             }
 
-            if ($env['type'] === 'comment') {
-                $out .= $env['value'] . PHP_EOL;
-                continue;
-            }
-
-            $out .= $env['key'] . '=' . $this->wrapValue($env['value']) . PHP_EOL;
+            $out .= PHP_EOL;
         }
 
         return $out;
@@ -152,7 +151,7 @@ class EnvFile implements ConfigFileInterface
      * @param $value
      * @return string
      */
-    protected function wrapValue($value): string
+    protected function escapeValue($value): string
     {
         if (is_numeric($value)) {
             return $value;
@@ -194,31 +193,37 @@ class EnvFile implements ConfigFileInterface
 
         $env = [];
         $map = [];
-        $commentCounter = 0;
 
         foreach ($contents as $line) {
-            switch (!($line = trim($line)) ? 'nl' : ((strpos($line, '#') === 0) ? 'comment' : 'var')) {
-                case 'nl':
-                    $env[] = [
-                        'type' => 'nl'
-                    ];
-                    break;
-                case 'comment':
-                    $env[] = [
-                        'type'  => 'comment',
-                        'key'   => 'comment' . $commentCounter++,
-                        'value' => $line
-                    ];
-                    break;
-                case 'var':
-                    $parts = explode('=', $line);
-                    $env[] = [
-                        'type'  => 'var',
-                        'key'   => $parts[0],
-                        'value' => trim($parts[1], '"')
-                    ];
-                    break;
+            $type = !($line = trim($line))
+                ? 'nl'
+                : (
+                    str_starts_with($line, '#')
+                        ? 'comment'
+                        : 'var'
+                );
+
+            $entry = [
+                'type' => $type
+            ];
+
+            if ($type === 'var') {
+                if (strpos($line, '=') === false) {
+                    // if we cannot split the string, handle it the same as a comment
+                    // i.e. inject it back into the file as is
+                    $entry['type'] = $type = 'comment';
+                } else {
+                    list($key, $value) = explode('=', $line);
+                    $entry['key'] = trim($key);
+                    $entry['value'] = trim($value, '"');
+                }
             }
+
+            if ($type === 'comment') {
+                $entry['value'] = $line;
+            }
+
+            $env[] = $entry;
         }
 
         foreach ($env as $index => $item) {
