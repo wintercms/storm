@@ -19,6 +19,7 @@ class EnvFileTest extends TestCase
         $this->assertArrayHasKey('MAIL_HOST', $arr);
         $this->assertArrayHasKey('MAIL_DRIVER', $arr);
         $this->assertArrayHasKey('ROUTES_CACHE', $arr);
+        $this->assertArrayNotHasKey('KEY_WITH_NO_VALUE', $arr);
 
         $this->assertEquals('http://localhost', $arr['APP_URL']);
         $this->assertEquals('changeme', $arr['APP_KEY']);
@@ -42,6 +43,7 @@ class EnvFileTest extends TestCase
         $this->assertStringContainsString('MAIL_HOST="smtp.mailgun.org"', $result);
         $this->assertStringContainsString('ROUTES_CACHE=false', $result);
         $this->assertStringContainsString('ENABLE_CSRF=true', $result);
+        $this->assertStringContainsString('KEY_WITH_NO_VALUE', $result);
 
         unlink($tmpFile);
     }
@@ -63,6 +65,9 @@ class EnvFileTest extends TestCase
         $this->assertStringContainsString('MAIL_HOST="smtp.mailgun.org"', $result);
         $this->assertStringContainsString('ROUTES_CACHE=false', $result);
         $this->assertStringContainsString('ENABLE_CSRF=true', $result);
+        $this->assertStringContainsString('# HELLO WORLD', $result);
+        $this->assertStringContainsString('#ENV_TEST="wintercms"', $result);
+        $this->assertStringContainsString('KEY_WITH_NO_VALUE', $result);
 
         unlink($tmpFile);
     }
@@ -87,6 +92,9 @@ class EnvFileTest extends TestCase
         $this->assertStringContainsString('MAIL_HOST="smtp.mailgun.org"', $result);
         $this->assertStringContainsString('ROUTES_CACHE="winter"', $result);
         $this->assertStringContainsString('ENABLE_CSRF=true', $result);
+        $this->assertStringContainsString('# HELLO WORLD', $result);
+        $this->assertStringContainsString('#ENV_TEST="wintercms"', $result);
+        $this->assertStringContainsString('KEY_WITH_NO_VALUE', $result);
 
         unlink($tmpFile);
     }
