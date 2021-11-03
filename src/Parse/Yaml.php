@@ -85,7 +85,18 @@ class Yaml
         ], $options));
 
         $yaml = new Dumper;
-        return $yaml->dump($vars, $inline, 0, $exceptionOnInvalidType, $objectSupport);
+
+        if (!is_null($this->processor) && method_exists($this->processor, 'prerender')) {
+            $vars = $this->processor->prerender($vars);
+        }
+
+        $yamlContent = $yaml->dump($vars, $inline, 0, $exceptionOnInvalidType, $objectSupport);
+
+        if (!is_null($this->processor) && method_exists($this->processor, 'render')) {
+            $yamlContent = $this->processor->render($yamlContent);
+        }
+
+        return $yamlContent;
     }
 
     /**

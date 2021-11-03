@@ -3,7 +3,7 @@
 /**
  * Yaml processor contract.
  *
- * Allows for pre-or-post processing of YAML content during parsing.
+ * Allows for pre-or-post processing of YAML content during parsing or rendering.
  *
  * @author Winter CMS
  */
@@ -24,4 +24,20 @@ interface YamlProcessor
      * @return mixed
      */
     public function process($parsed);
+
+    /**
+     * Pre-process the data that will be rendered to a YAML string or file.
+     *
+     * @param mixed $data
+     * @return mixed
+     */
+    public function prerender($data);
+
+    /**
+     * Post-process a rendered YAML string or file.
+     *
+     * @param string $yaml
+     * @return string
+     */
+    public function render($yaml);
 }
