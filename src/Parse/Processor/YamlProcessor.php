@@ -25,7 +25,7 @@ abstract class YamlProcessor implements YamlProcessorContract
      */
     public function process($parsed)
     {
-        return (object) $parsed;
+        return $parsed;
     }
 
     /**
