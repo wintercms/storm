@@ -117,6 +117,8 @@ abstract class GeneratorCommand extends Command
         }
 
         $this->files->put($destinationFile, $destinationContent);
+
+        $this->comment('File generated: ' . str_replace(base_path(), '', $destinationFile));
     }
 
     /**

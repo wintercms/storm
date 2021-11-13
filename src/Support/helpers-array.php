@@ -42,7 +42,7 @@ if (!function_exists('array_accessible')) {
      * @param  mixed  $value
      * @return bool
      */
-    function array_add($value)
+    function array_accessible($value)
     {
         return Arr::accessible($value);
     }
