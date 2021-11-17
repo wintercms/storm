@@ -1,0 +1,15 @@
+<?php namespace {{studly_author}}\{{studly_plugin}}\Classes;
+
+
+/**
+ * {{title_name}} Class
+ */
+class {{studly_name}}  
+{
+ 
+
+    public function __construct()
+    {
+        //
+    }
+}

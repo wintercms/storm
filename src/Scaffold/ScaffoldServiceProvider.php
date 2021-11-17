@@ -8,6 +8,7 @@ use Winter\Storm\Scaffold\Console\CreatePlugin;
 use Winter\Storm\Scaffold\Console\CreateCommand;
 use Winter\Storm\Scaffold\Console\CreateComponent;
 use Winter\Storm\Scaffold\Console\CreateController;
+use Winter\Storm\Scaffold\Console\CreateClass;
 use Winter\Storm\Scaffold\Console\CreateFormWidget;
 use Winter\Storm\Scaffold\Console\CreateReportWidget;
 use Illuminate\Contracts\Support\DeferrableProvider;
@@ -25,6 +26,7 @@ class ScaffoldServiceProvider extends ServiceProvider implements DeferrableProvi
         'command.create.model' => CreateModel::class,
         'command.create.settings' => CreateSettings::class,
         'command.create.controller' => CreateController::class,
+        'command.create.class' => CreateClass::class,
         'command.create.component' => CreateComponent::class,
         'command.create.formwidget' => CreateFormWidget::class,
         'command.create.reportwidget' => CreateReportWidget::class,
@@ -46,6 +48,7 @@ class ScaffoldServiceProvider extends ServiceProvider implements DeferrableProvi
                     'command.create.model',
                     'command.create.settings',
                     'command.create.controller',
+                    'command.create.class',
                     'command.create.component',
                     'command.create.formwidget',
                     'command.create.reportwidget',
@@ -68,6 +71,7 @@ class ScaffoldServiceProvider extends ServiceProvider implements DeferrableProvi
             'command.create.model',
             'command.create.settings',
             'command.create.controller',
+            'command.create.class',
             'command.create.component',
             'command.create.formwidget',
             'command.create.reportwidget',
