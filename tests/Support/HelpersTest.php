@@ -1,20 +1,12 @@
 <?php
 
-use Winter\Storm\Foundation\Application;
 use Winter\Storm\Filesystem\PathResolver;
+use Winter\Storm\Support\Facades\Config;
 
 class HelpersTest extends TestCase
 {
     protected function setUp(): void
     {
-        // Mock application
-        $this->app = new Application('/tmp/custom-path');
-
-        // Mock Config facade
-        if (!class_exists('Config')) {
-            class_alias('Winter\Storm\Support\Facades\Config', 'Config');
-        }
-
         Config::shouldReceive('get')->andreturnUsing(function ($key) {
             switch ($key) {
                 case 'cms.storage.uploads.path':

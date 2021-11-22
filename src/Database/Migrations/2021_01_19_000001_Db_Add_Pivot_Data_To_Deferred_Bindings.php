@@ -2,6 +2,7 @@
 
 use Winter\Storm\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Winter\Storm\Support\Facades\Schema;
 
 class DbAddPivotDataToDeferredBindings extends Migration
 {

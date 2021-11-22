@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Database\Traits;
 
-use Db;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use DateTime;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
@@ -20,10 +20,16 @@ trait Revisionable
      * public $revisionableLimit = 500;
      */
 
-    /*
+    /**
      * You can change the relation name used to store revisions:
      *
      * const REVISION_HISTORY = 'revision_history';
+     */
+
+    /**
+     * @var bool Purge revision history on deletion.
+     *
+     * protected $purgeRevisions = false;
      */
 
     /**
@@ -61,10 +67,6 @@ trait Revisionable
             return;
         }
 
-        $relation = $this->getRevisionHistoryName();
-        $relationObject = $this->{$relation}();
-        $revisionModel = $relationObject->getRelated();
-
         $toSave = [];
         $dirty = $this->getDirty();
         foreach ($dirty as $attribute => $value) {
@@ -76,7 +78,7 @@ trait Revisionable
                 'field' => $attribute,
                 'old_value' => array_get($this->original, $attribute),
                 'new_value' => $value,
-                'revisionable_type' => $relationObject->getMorphClass(),
+                'revisionable_type' => $this->getRevisionMorphClass(),
                 'revisionable_id' => $this->getKey(),
                 'user_id' => $this->revisionableGetUser(),
                 'cast' => $this->revisionableGetCastType($attribute),
@@ -90,7 +92,7 @@ trait Revisionable
             return;
         }
 
-        Db::table($revisionModel->getTable())->insert($toSave);
+        $this->queryRevisionTable()->insert($toSave);
         $this->revisionableCleanUp();
     }
 
@@ -105,7 +107,11 @@ trait Revisionable
             class_uses_recursive(get_class($this))
         );
 
+        // If this model is not soft-deleted, delete revision history if "purgeRevisions" is enabled.
         if (!$softDeletes) {
+            if (property_exists($this, 'purgeRevisions') && $this->purgeRevisions === true) {
+
+            }
             return;
         }
 
@@ -113,23 +119,50 @@ trait Revisionable
             return;
         }
 
-        $relation = $this->getRevisionHistoryName();
-        $relationObject = $this->{$relation}();
-        $revisionModel = $relationObject->getRelated();
-
         $toSave = [
             'field' => 'deleted_at',
             'old_value' => null,
             'new_value' => $this->deleted_at,
-            'revisionable_type' => $relationObject->getMorphClass(),
+            'revisionable_type' => $this->getRevisionMorphClass(),
             'revisionable_id' => $this->getKey(),
             'user_id' => $this->revisionableGetUser(),
             'created_at' => new DateTime,
             'updated_at' => new DateTime
         ];
 
-        Db::table($revisionModel->getTable())->insert($toSave);
+        $this->queryRevisionTable()->insert($toSave);
         $this->revisionableCleanUp();
+    }
+
+    /**
+     * Gets the relation model.
+     *
+     * @return \Winter\Storm\Database\Relations\MorphToMany;
+     */
+    protected function getRevisionRelationObject()
+    {
+        $relation = $this->getRevisionHistoryName();
+        return $this->{$relation}();
+    }
+
+    /**
+     * Creates a new query to the revision table.
+     *
+     * @return \Winter\Storm\Database\Builder
+     */
+    protected function queryRevisionTable()
+    {
+        return DB::table($this->getRevisionRelationObject()->getRelated()->getTable());
+    }
+
+    /**
+     * Gets the class name to morph to for the revision.
+     *
+     * @return string
+     */
+    protected function getRevisionMorphClass()
+    {
+        return $this->getRevisionRelationObject()->getMorphClass();
     }
 
     /*
@@ -137,14 +170,11 @@ trait Revisionable
      */
     protected function revisionableCleanUp()
     {
-        $relation = $this->getRevisionHistoryName();
-        $relationObject = $this->{$relation}();
-
         $revisionLimit = property_exists($this, 'revisionableLimit')
             ? (int) $this->revisionableLimit
             : 500;
 
-        $toDelete = $relationObject
+        $toDelete = $this->getRevisionRelationObject()
             ->orderBy('id', 'desc')
             ->skip($revisionLimit)
             ->limit(64)
