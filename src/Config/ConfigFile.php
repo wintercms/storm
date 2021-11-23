@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Config;
 
+use PhpParser\Node\Expr\ArrayItem;
 use Winter\Storm\Config\ConfigFileInterface;
 use PhpParser\Error;
 use PhpParser\Node\Arg;
@@ -53,12 +54,18 @@ class ConfigFile implements ConfigFileInterface
      * Return a new instance of `ConfigFile` ready for modification of the file.
      *
      * @param string $file
+     * @param bool $createMissing
      * @return ConfigFile|null
      */
-    public static function read(string $file): ?ConfigFile
+    public static function read(string $file, bool $createMissing = false): ?ConfigFile
     {
         if (!file_exists($file)) {
-            throw new \InvalidArgumentException('file not found');
+            if (!$createMissing) {
+                throw new \InvalidArgumentException('file not found');
+            }
+
+            // create the file with an empty array
+            file_put_contents($file, sprintf('<?php%1$s%1$sreturn [];%1$s', PHP_EOL));
         }
 
         $content = file_get_contents($file);
@@ -103,9 +110,17 @@ class ConfigFile implements ConfigFileInterface
             throw new ApplicationException('You must specify a value to set for the given key.');
         }
 
-        $target = $this->seek(explode('.', $key), $this->ast[0]->expr->items);
-
         $valueType = gettype($value);
+        
+        if (!count($this->ast[0]->expr->items)) {
+            $this->ast[0]->expr->items[] = new ArrayItem(
+                $this->makeAstNode($valueType, $value),
+                $this->makeAstNode(gettype($key), $key)
+            );
+            return $this;
+        }
+
+        $target = $this->seek(explode('.', $key), $this->ast[0]->expr->items);
         $class = get_class($target->value);
 
         if ($class === FuncCall::class) {
