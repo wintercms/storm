@@ -5,20 +5,60 @@ use Illuminate\Database\Migrations\Migrator;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Pivot;
 use Winter\Storm\Database\Capsule\Manager as CapsuleManager;
+use Winter\Storm\Database\MemoryCache;
 use Winter\Storm\Database\Schema\Blueprint;
 use Winter\Storm\Events\Dispatcher;
 use Winter\Storm\Filesystem\Filesystem;
-use Winter\Storm\Foundation\Application;
-use Winter\Storm\Support\Facade;
 
 class DbTestCase extends TestCase
 {
+    /**
+     * Database capsule.
+     *
+     * @var \Winter\Storm\Database\Capsule\Manager
+     */
     public $db = null;
 
+    /**
+     * Migrator instance.
+     *
+     * @var \Illuminate\Database\Migrations\Migrator
+     */
     public $migrator = null;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
+        parent::setUp();
+
+        $this->createApplication();
+        $this->createDatabase();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->flushModelEventListeners();
+
+        if (!is_null($this->db)) {
+            unset($this->db);
+
+            // Flush DB memory cache to prevent cached queries from affecting results
+            MemoryCache::instance()->flush();
+        }
+
+        parent::tearDown();
+    }
+
+    /**
+     * Create a database instance using the Capsule Manager, for testing database operations.
+     *
+     * @return void
+     */
+    protected function createDatabase(): void
+    {
+        if (!is_null($this->db)) {
+            return;
+        }
+
         $this->db = new CapsuleManager;
         $this->db->addConnection([
             'driver'   => 'sqlite',
@@ -29,7 +69,8 @@ class DbTestCase extends TestCase
         $this->db->setAsGlobal();
         $this->db->bootEloquent();
 
-        $this->app = new Application('/tmp/custom-path');
+        Model::setEventDispatcher(new Dispatcher());
+
         $this->app->singleton('db', function ($app) {
             return $this->db->getDatabaseManager();
         });
@@ -38,12 +79,9 @@ class DbTestCase extends TestCase
                 return new Blueprint($table, $callback);
             });
         });
-        Facade::setFacadeApplication($this->app);
-
-        Model::setEventDispatcher(new Dispatcher());
     }
 
-    public function runMigrations()
+    protected function runMigrations(): void
     {
         if (is_null($this->migrator)) {
             $migrationRepo = new DatabaseMigrationRepository($this->db->getDatabaseManager(), 'migrations');
@@ -55,21 +93,13 @@ class DbTestCase extends TestCase
         $this->migrator->run(dirname(__DIR__) . '/src/Database/Migrations');
     }
 
-    public function tearDown(): void
-    {
-        $this->flushModelEventListeners();
-        Facade::clearResolvedInstances();
-        parent::tearDown();
-        unset($this->db);
-    }
-
     /**
      * The models in Winter use a static property to store their events, these
      * will need to be targeted and reset ready for a new test cycle.
      * Pivot models are an exception since they are internally managed.
      * @return void
      */
-    protected function flushModelEventListeners()
+    protected function flushModelEventListeners(): void
     {
         foreach (get_declared_classes() as $class) {
             // get_declared_classes() includes aliased classes, aliased classes are automatically lowercased
