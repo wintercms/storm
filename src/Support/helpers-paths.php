@@ -1,6 +1,7 @@
 <?php
 
 use Winter\Storm\Filesystem\PathResolver;
+use Winter\Storm\Support\Facades\Config;
 
 if (!function_exists('config_path')) {
     /**

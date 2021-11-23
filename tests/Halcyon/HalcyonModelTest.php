@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Winter\Storm\Halcyon\Model;
 use Winter\Storm\Halcyon\Datasource\Resolver;
 use Winter\Storm\Halcyon\Datasource\FileDatasource;
@@ -11,6 +12,17 @@ class HalcyonModelTest extends TestCase
 
     public function setUp(): void
     {
+        $this->createApplication();
+
+        $this->app->instance('request', Request::create(
+            '',
+            'GET',
+            [],
+            [],
+            [],
+            $_SERVER
+        ));
+
         include_once __DIR__.'/../fixtures/halcyon/models/Page.php';
         include_once __DIR__.'/../fixtures/halcyon/models/Menu.php';
         include_once __DIR__.'/../fixtures/halcyon/models/Content.php';

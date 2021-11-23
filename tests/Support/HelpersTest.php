@@ -1,5 +1,8 @@
 <?php
 
+use Winter\Storm\Config\FileLoader;
+use Winter\Storm\Config\Repository;
+use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Filesystem\PathResolver;
 use Winter\Storm\Support\Facades\Config;
 
@@ -7,6 +10,15 @@ class HelpersTest extends TestCase
 {
     protected function setUp(): void
     {
+        $this->createApplication();
+
+        $this->app->singleton('config', function ($app) {
+            return new Repository(
+                new FileLoader(new Filesystem, '/tmp/custom-path'),
+                'testing',
+            );
+        });
+
         Config::shouldReceive('get')->andreturnUsing(function ($key) {
             switch ($key) {
                 case 'cms.storage.uploads.path':

@@ -1,10 +1,9 @@
 <?php namespace Winter\Storm\Exception;
 
-use App;
-use Config;
-use Request;
-use Response;
 use Exception;
+use Illuminate\Support\Facades\App;
+use Winter\Storm\Support\Facades\Config;
+use Illuminate\Support\Facades\Request;
 
 /**
  * System Error Handler, this class handles application exception events.
