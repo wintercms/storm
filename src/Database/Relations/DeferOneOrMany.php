@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
 trait DeferOneOrMany
 {
     /**
-     * Returns the model query with deferred bindings added
+     * Returns the model query with deferred bindings added.
      * @return \Illuminate\Database\Query\Builder
      */
-    public function withDeferred($sessionKey)
+    public function withDeferred($sessionKey, $pivotWhere = null)
     {
         $modelQuery = $this->query;
 
@@ -24,20 +24,23 @@ trait DeferOneOrMany
             $this->orphanMode = true;
         }
 
-        $newQuery->where(function ($query) use ($sessionKey) {
+        $newQuery->where(function ($query) use ($sessionKey, $pivotWhere) {
 
             if ($this->parent->exists) {
                 if ($this instanceof MorphToMany) {
                     /*
                      * Custom query for MorphToMany since a "join" cannot be used
                      */
-                    $query->whereExists(function ($query) {
+                    $query->whereExists(function ($query) use ($pivotWhere) {
                         $query
                             ->select($this->parent->getConnection()->raw(1))
                             ->from($this->table)
                             ->where($this->getOtherKey(), DbDongle::raw(DbDongle::getTablePrefix().$this->related->getQualifiedKeyName()))
                             ->where($this->getForeignKey(), $this->parent->getKey())
                             ->where($this->getMorphType(), $this->getMorphClass());
+                        if ($pivotWhere) {
+                            $query->where($pivotWhere);
+                        }
                     });
                 }
                 elseif ($this instanceof BelongsToManyBase) {
