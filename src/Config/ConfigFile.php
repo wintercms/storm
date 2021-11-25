@@ -134,7 +134,7 @@ class ConfigFile implements ConfigFileInterface
         }
 
         // special handling of function objects
-        if (get_class($target->value) === FuncCall::class) {
+        if (get_class($target->value) === FuncCall::class && !$value instanceof ConfigFunction) {
             if ($target->value->name->parts[0] !== 'env' || !isset($target->value->args[0])) {
                 return $this;
             }
@@ -174,10 +174,14 @@ class ConfigFile implements ConfigFileInterface
      *
      * @param string $type
      * @param mixed $value
-     * @return ConstFetch|LNumber|String_
+     * @return ConstFetch|LNumber|String_|FuncCall
      */
     protected function makeAstNode(string $type, $value)
     {
+        if ($value instanceof ConfigFunction) {
+            $type = 'function';
+        }
+
         switch ($type) {
             case 'string':
                 return new String_($value);
@@ -185,6 +189,13 @@ class ConfigFile implements ConfigFileInterface
                 return new ConstFetch(new Name($value ? 'true' : 'false'));
             case 'integer':
                 return new LNumber($value);
+            case 'function':
+                return new FuncCall(
+                    new Name($value->getName()),
+                    array_map(function ($arg) {
+                        return new Arg($this->makeAstNode(gettype($arg), $arg));
+                    }, $value->getArgs())
+                );
             default:
                 throw new \RuntimeException('not implemented replacement type: ' . $type);
         }
@@ -271,6 +282,11 @@ class ConfigFile implements ConfigFileInterface
         }
 
         file_put_contents($filePath, $this->render());
+    }
+
+    public function function(string $name, array $args): ConfigFunction
+    {
+        return new ConfigFunction($name, $args);
     }
 
     /**
