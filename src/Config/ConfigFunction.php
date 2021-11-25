@@ -1,7 +1,10 @@
 <?php namespace Winter\Storm\Config;
 
 /**
- * This class is for use with ConfigFile.
+ * Class EnvFile
+ * @package Winter\Storm\Config
+ *
+ * This class is for use with ConfigFile as a method to inject a function call into a config file
  */
 class ConfigFunction
 {
