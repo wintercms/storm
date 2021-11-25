@@ -9,6 +9,15 @@ use PhpParser\PrettyPrinter\Standard;
  */
 class WinterPrinter extends Standard
 {
+    public function __construct(array $options = [])
+    {
+        if (!isset($options['shortArraySyntax'])) {
+            $options['shortArraySyntax'] = true;
+        }
+
+        parent::__construct($options);
+    }
+
     /**
      * @param array $nodes
      * @param bool $trailingComma
