@@ -115,7 +115,7 @@ class ConfigFile implements ConfigFileInterface
         // try to find a reference to ast object
         list($target, $remaining) = $this->seek(explode('.', $key), $this->ast[0]->expr);
 
-        $valueType = gettype($value);
+        $valueType = $value instanceof ConfigFunction ? 'function' : gettype($value);
 
         // part of a path found
         if ($target && $remaining) {
@@ -134,7 +134,7 @@ class ConfigFile implements ConfigFileInterface
         }
 
         // special handling of function objects
-        if (get_class($target->value) === FuncCall::class && !$value instanceof ConfigFunction) {
+        if (get_class($target->value) === FuncCall::class && $valueType !== 'function') {
             if ($target->value->name->parts[0] !== 'env' || !isset($target->value->args[0])) {
                 return $this;
             }
@@ -178,10 +178,6 @@ class ConfigFile implements ConfigFileInterface
      */
     protected function makeAstNode(string $type, $value)
     {
-        if ($value instanceof ConfigFunction) {
-            $type = 'function';
-        }
-
         switch ($type) {
             case 'string':
                 return new String_($value);
