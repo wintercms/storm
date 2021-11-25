@@ -225,4 +225,162 @@ class ConfigFileTest extends TestCase
         $this->assertArrayHasKey('aNumber', $result);
         $this->assertEquals(69, $result['aNumber']);
     }
+
+    public function testReadCreateFile()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+
+        $this->assertFalse(file_exists($file));
+
+        $config = ConfigFile::read($file, true);
+
+        $this->assertInstanceOf(ConfigFile::class, $config);
+
+        $config->write();
+
+        $this->assertTrue(file_exists($file));
+        $this->assertEquals(sprintf('<?php%1$s%1$sreturn [];%1$s', PHP_EOL), file_get_contents($file));
+
+        unlink($file);
+    }
+
+    public function testWriteDotNotation()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+        $config->set('w.i.n.t.e.r', 'cms');
+
+        $result = eval('?>' . $config->render());
+
+        $this->assertArrayHasKey('w', $result);
+        $this->assertArrayHasKey('i', $result['w']);
+        $this->assertArrayHasKey('n', $result['w']['i']);
+        $this->assertArrayHasKey('t', $result['w']['i']['n']);
+        $this->assertArrayHasKey('e', $result['w']['i']['n']['t']);
+        $this->assertArrayHasKey('r', $result['w']['i']['n']['t']['e']);
+        $this->assertEquals('cms', $result['w']['i']['n']['t']['e']['r']);
+    }
+
+    public function testWriteDotNotationMixedCase()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+        $config->set('w.0.n.1.e.2', 'cms');
+
+        $result = eval('?>' . $config->render());
+
+        $this->assertArrayHasKey('w', $result);
+        $this->assertArrayHasKey(0, $result['w']);
+        $this->assertArrayHasKey('n', $result['w'][0]);
+        $this->assertArrayHasKey(1, $result['w'][0]['n']);
+        $this->assertArrayHasKey('e', $result['w'][0]['n'][1]);
+        $this->assertArrayHasKey(2, $result['w'][0]['n'][1]['e']);
+        $this->assertEquals('cms', $result['w'][0]['n'][1]['e'][2]);
+    }
+
+    public function testWriteDotNotationMultiple()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+        $config->set('w.i.n.t.e.r', 'Winter CMS');
+        $config->set('w.i.n.b', 'is');
+        $config->set('w.i.n.t.a', 'very');
+        $config->set('w.i.n.c.l', 'good');
+        $config->set('w.i.n.c.e', 'and');
+        $config->set('w.i.n.c.f', 'awesome');
+        $config->set('w.i.n.g', 'for');
+        $config->set('w.i.2.g', 'development');
+
+        $config->write();
+
+        $contents = file_get_contents($file);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'w' => [
+        'i' => [
+            'n' => [
+                't' => [
+                    'e' => [
+                        'r' => 'Winter CMS',
+                    ],
+                    'a' => 'very',
+                ],
+                'b' => 'is',
+                'c' => [
+                    'l' => 'good',
+                    'e' => 'and',
+                    'f' => 'awesome',
+                ],
+                'g' => 'for',
+            ],
+            2 => [
+                'g' => 'development',
+            ],
+        ],
+    ],
+];
+
+PHP;
+
+        $this->assertEquals($expected, $contents);
+
+        unlink($file);
+    }
+
+    public function testWriteDotDuplicateIntKeys()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+        $config->set([
+            'w.i.n.t.e.r' => 'Winter CMS',
+            'w.i.2.g' => 'development',
+        ]);
+        $config->set('w.i.2.g', 'development');
+
+        $config->write();
+
+        $contents = file_get_contents($file);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'w' => [
+        'i' => [
+            'n' => [
+                't' => [
+                    'e' => [
+                        'r' => 'Winter CMS',
+                    ],
+                ],
+            ],
+            2 => [
+                'g' => 'development',
+            ],
+        ],
+    ],
+];
+
+PHP;
+
+        $this->assertEquals($expected, $contents);
+
+        unlink($file);
+    }
+
+    public function testWriteIllegalOffset()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $this->expectException(\ApplicationException::class);
+
+        $config->set([
+            'w.i.n.t.e.r' => 'Winter CMS',
+            'w.i.n.t.e.r.2' => 'test',
+        ]);
+    }
 }
