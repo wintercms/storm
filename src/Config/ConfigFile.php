@@ -1,8 +1,9 @@
 <?php namespace Winter\Storm\Config;
 
-use PhpParser\Node\Expr\ArrayItem;
 use Winter\Storm\Config\ConfigFileInterface;
 use PhpParser\Error;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
@@ -12,6 +13,7 @@ use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Stmt;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinterAbstract;
+use Winter\Storm\Exception\ApplicationException;
 
 /**
  * Class ConfigFile
@@ -59,22 +61,22 @@ class ConfigFile implements ConfigFileInterface
      */
     public static function read(string $file, bool $createMissing = false): ?ConfigFile
     {
-        if (!file_exists($file)) {
-            if (!$createMissing) {
-                throw new \InvalidArgumentException('file not found');
-            }
+        $exists = file_exists($file);
 
-            // create the file with an empty array
-            file_put_contents($file, sprintf('<?php%1$s%1$sreturn [];%1$s', PHP_EOL));
+        if (!$exists && !$createMissing) {
+            throw new \InvalidArgumentException('file not found');
         }
 
-        $content = file_get_contents($file);
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
 
         try {
-            $ast = $parser->parse($content);
+            $ast = $parser->parse(
+                $exists
+                    ? file_get_contents($file)
+                    : sprintf('<?php%1$s%1$sreturn [];%1$s', PHP_EOL)
+            );
         } catch (Error $e) {
-            throw new ApplicationException($e);
+            throw new \ApplicationException($e);
         }
 
         return new static($ast, $file);
@@ -110,20 +112,29 @@ class ConfigFile implements ConfigFileInterface
             throw new ApplicationException('You must specify a value to set for the given key.');
         }
 
+        // try to find a reference to ast object
+        list($target, $remaining) = $this->seek(explode('.', $key), $this->ast[0]->expr);
+
         $valueType = gettype($value);
-        
-        if (!count($this->ast[0]->expr->items)) {
-            $this->ast[0]->expr->items[] = new ArrayItem(
-                $this->makeAstNode($valueType, $value),
-                $this->makeAstNode(gettype($key), $key)
-            );
+
+        // part of a path found
+        if ($target && $remaining) {
+            $target->value->items[] = $this->makeArrayItem(implode('.', $remaining), $valueType, $value);
             return $this;
         }
 
-        $target = $this->seek(explode('.', $key), $this->ast[0]->expr->items);
-        $class = get_class($target->value);
+        // path to not found
+        if (is_null($target)) {
+            $this->ast[0]->expr->items[] = $this->makeArrayItem($key, $valueType, $value);
+            return $this;
+        }
 
-        if ($class === FuncCall::class) {
+        if (!isset($target->value)) {
+            return $this;
+        }
+
+        // special handling of function objects
+        if (get_class($target->value) === FuncCall::class) {
             if ($target->value->name->parts[0] !== 'env' || !isset($target->value->args[0])) {
                 return $this;
             }
@@ -134,9 +145,28 @@ class ConfigFile implements ConfigFileInterface
             return $this;
         }
 
+        // default update in place
         $target->value = $this->makeAstNode($valueType, $value);
 
         return $this;
+    }
+
+    /**
+     * Creates either a simple array item or a recursive array of items
+     *
+     * @param string $key
+     * @param string $valueType
+     * @param $value
+     * @return ArrayItem
+     */
+    protected function makeArrayItem(string $key, string $valueType, $value): ArrayItem
+    {
+        return (str_contains($key, '.'))
+            ? $this->makeAstArrayRecursive($key, $valueType, $value)
+            : new ArrayItem(
+                $this->makeAstNode($valueType, $value),
+                $this->makeAstNode(gettype($key), $key)
+            );
     }
 
     /**
@@ -161,26 +191,71 @@ class ConfigFile implements ConfigFileInterface
     }
 
     /**
-     * Get a referenced var from the `$pointer` array
+     * Returns an ArrayItem generated from a dot notation path
      *
-     * @param array $path
-     * @param $pointer
-     * @return mixed|null
+     * @param string $key
+     * @param string $valueType
+     * @param $value
+     * @return ArrayItem
      */
-    protected function seek(array $path, &$pointer)
+    protected function makeAstArrayRecursive(string $key, string $valueType, $value): ArrayItem
     {
-        $key = array_shift($path);
-        foreach ($pointer as $index => &$item) {
-            if ($item->key->value === $key) {
-                if (!empty($path)) {
-                    return $this->seek($path, $item->value->items);
-                }
+        $path = array_reverse(explode('.', $key));
 
-                return $item;
+        $arrayItem = $this->makeAstNode($valueType, $value);
+
+        foreach ($path as $index => $pathKey) {
+            if (is_numeric($pathKey)) {
+                $pathKey = (int) $pathKey;
+            }
+            $arrayItem = new ArrayItem($arrayItem, $this->makeAstNode(gettype($pathKey), $pathKey));
+
+            if ($index !== array_key_last($path)) {
+                $arrayItem = new Array_([$arrayItem]);
             }
         }
 
-        return null;
+        return $arrayItem;
+    }
+
+    /**
+     * Attempt to find the parent object of the targeted path.
+     * If the path cannot be found completely, return the nearest parent and the remainder of the path
+     *
+     * @param array $path
+     * @param $pointer
+     * @param int $depth
+     * @return array
+     */
+    protected function seek(array $path, &$pointer, int $depth = 0): array
+    {
+        if (!$pointer) {
+            return [null, $path];
+        }
+
+        $key = array_shift($path);
+
+        if (isset($pointer->value) && !($pointer->value instanceof ArrayItem || $pointer->value instanceof Array_)) {
+            throw new ApplicationException(sprintf(
+                'Illegal offset, you are trying to set a position occupied by a value (%s)',
+                get_class($pointer->value)
+            ));
+        }
+
+        foreach (($pointer->items ?? $pointer->value->items) as $index => &$item) {
+            // loose checking to allow for int keys
+            if ($item->key->value == $key) {
+                if (!empty($path)) {
+                    return $this->seek($path, $item, ++$depth);
+                }
+
+                return [$item, []];
+            }
+        }
+
+        array_unshift($path, $key);
+
+        return [($depth > 0) ? $pointer : null, $path];
     }
 
     /**
