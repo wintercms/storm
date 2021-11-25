@@ -383,4 +383,55 @@ PHP;
             'w.i.n.t.e.r.2' => 'test',
         ]);
     }
+
+    public function testWriteFunctionCall()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'key' => $config->function('env', ['KEY_A', true])
+        ]);
+
+        $config->set([
+            'key2' => new \Winter\Storm\Config\ConfigFunction('nl2br', ['KEY_B', false])
+        ]);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'key' => env('KEY_A', true),
+    'key2' => nl2br('KEY_B', false),
+];
+
+PHP;
+
+        $this->assertEquals($expected, $config->render());
+    }
+
+    public function testWriteFunctionCallOverwrite()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'key' => $config->function('env', ['KEY_A', true])
+        ]);
+
+        $config->set([
+            'key' => new \Winter\Storm\Config\ConfigFunction('nl2br', ['KEY_B', false])
+        ]);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'key' => nl2br('KEY_B', false),
+];
+
+PHP;
+
+        $this->assertEquals($expected, $config->render());
+    }
 }
