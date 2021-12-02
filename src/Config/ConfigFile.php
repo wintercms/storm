@@ -108,10 +108,6 @@ class ConfigFile implements ConfigFileInterface
             return $this;
         }
 
-        if ($key && is_null($value)) {
-            throw new ApplicationException('You must specify a value to set for the given key.');
-        }
-
         // try to find a reference to ast object
         list($target, $remaining) = $this->seek(explode('.', $key), $this->ast[0]->expr);
 
@@ -178,7 +174,7 @@ class ConfigFile implements ConfigFileInterface
      */
     protected function makeAstNode(string $type, $value)
     {
-        switch ($type) {
+        switch (strtolower($type)) {
             case 'string':
                 return new String_($value);
             case 'boolean':
@@ -192,6 +188,9 @@ class ConfigFile implements ConfigFileInterface
                         return new Arg($this->makeAstNode(gettype($arg), $arg));
                     }, $value->getArgs())
                 );
+            case 'null':
+                return new ConstFetch(new Name('null'));
+                break;
             default:
                 throw new \RuntimeException('not implemented replacement type: ' . $type);
         }
