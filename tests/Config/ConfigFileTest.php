@@ -434,4 +434,27 @@ PHP;
 
         $this->assertEquals($expected, $config->render());
     }
+
+    public function testInsertNull()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'key' => $config->function('env', ['KEY_A', null]),
+            'key2' => null
+        ]);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'key' => env('KEY_A', null),
+    'key2' => null,
+];
+
+PHP;
+
+        $this->assertEquals($expected, $config->render());
+    }
 }
