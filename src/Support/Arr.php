@@ -28,23 +28,4 @@ class Arr extends ArrHelper
 
         return $results;
     }
-
-    /**
-     * Transform a dot-notated array into a normal array.
-     *
-     * Courtesy of https://github.com/laravel/framework/issues/1851#issuecomment-20796924
-     *
-     * @param array $dotArray
-     * @return array
-     */
-    public static function undot(array $dotArray)
-    {
-        $array = [];
-
-        foreach ($dotArray as $key => $value) {
-            static::set($array, $key, $value);
-        }
-
-        return $array;
-    }
 }
