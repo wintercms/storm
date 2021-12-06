@@ -1,6 +1,9 @@
 <?php namespace Winter\Storm\Foundation\Bootstrap;
 
 use Dotenv\Dotenv;
+use Dotenv\Repository\RepositoryBuilder;
+use Dotenv\Repository\Adapter\EnvConstAdapter;
+use Dotenv\Repository\Adapter\PutenvAdapter;
 use Dotenv\Exception\InvalidPathException;
 use Symfony\Component\Console\Input\ArgvInput;
 use Illuminate\Contracts\Foundation\Application;
@@ -18,7 +21,12 @@ class LoadEnvironmentVariables
         $this->checkForSpecificEnvironmentFile($app);
 
         try {
-            DotEnv::create($app->environmentPath(), $app->environmentFile())->load();
+            $repository = RepositoryBuilder::createWithNoAdapters()
+                ->addAdapter(EnvConstAdapter::class)
+                ->addWriter(PutenvAdapter::class)
+                ->make();
+
+            DotEnv::create($repository, $app->environmentPath(), $app->environmentFile())->load();
         }
         catch (InvalidPathException $e) {
             //
