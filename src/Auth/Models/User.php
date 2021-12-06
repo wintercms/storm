@@ -395,7 +395,9 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     }
 
     /**
-     * Returns an array of merged permissions for each group the user is in.
+     * Returns an array of merged permissions based on the user's individual
+     * permissions and their group permissions
+     *
      * @return array
      */
     public function getMergedPermissions()
@@ -658,5 +660,20 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     public function getRandomString($length = 42)
     {
         return Str::random($length);
+    }
+
+    //
+    // Impersonation
+    //
+
+    /**
+     * Check if this user can be impersonated by the provided impersonator
+     *
+     * @param \Winter\Storm\Auth\Models\User|false $impersonator The user attempting to impersonate this user, false when not available
+     * @return boolean
+     */
+    public function canBeImpersonated($impersonator = false)
+    {
+        return true;
     }
 }

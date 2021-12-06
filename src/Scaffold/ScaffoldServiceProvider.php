@@ -2,6 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 use Winter\Storm\Scaffold\Console\CreateModel;
+use Winter\Storm\Scaffold\Console\CreateSettings;
 use Winter\Storm\Scaffold\Console\CreateTheme;
 use Winter\Storm\Scaffold\Console\CreatePlugin;
 use Winter\Storm\Scaffold\Console\CreateCommand;
@@ -22,6 +23,7 @@ class ScaffoldServiceProvider extends ServiceProvider implements DeferrableProvi
         'command.create.theme' => CreateTheme::class,
         'command.create.plugin' => CreatePlugin::class,
         'command.create.model' => CreateModel::class,
+        'command.create.settings' => CreateSettings::class,
         'command.create.controller' => CreateController::class,
         'command.create.component' => CreateComponent::class,
         'command.create.formwidget' => CreateFormWidget::class,
@@ -42,6 +44,7 @@ class ScaffoldServiceProvider extends ServiceProvider implements DeferrableProvi
                     'command.create.theme',
                     'command.create.plugin',
                     'command.create.model',
+                    'command.create.settings',
                     'command.create.controller',
                     'command.create.component',
                     'command.create.formwidget',
@@ -63,6 +66,7 @@ class ScaffoldServiceProvider extends ServiceProvider implements DeferrableProvi
             'command.create.theme',
             'command.create.plugin',
             'command.create.model',
+            'command.create.settings',
             'command.create.controller',
             'command.create.component',
             'command.create.formwidget',
