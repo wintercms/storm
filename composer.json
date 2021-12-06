@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": "^8.0.2",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-dom": "*",
