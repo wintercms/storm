@@ -450,6 +450,7 @@ class Application extends ApplicationBase
             'encrypter'            => [\Illuminate\Encryption\Encrypter::class, \Illuminate\Contracts\Encryption\Encrypter::class],
             'db'                   => [\Illuminate\Database\DatabaseManager::class, \Illuminate\Database\ConnectionResolverInterface::class],
             'db.connection'        => [\Illuminate\Database\Connection::class, \Illuminate\Database\ConnectionInterface::class],
+            'db.schema'            => [\Illuminate\Database\Schema\Builder::class],
             'events'               => [\Illuminate\Events\Dispatcher::class, \Illuminate\Contracts\Events\Dispatcher::class],
             'files'                => [\Illuminate\Filesystem\Filesystem::class],
             'filesystem'           => [\Winter\Storm\Filesystem\FilesystemManager::class, \Illuminate\Contracts\Filesystem\Factory::class],
