@@ -201,7 +201,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      * Finds a user by the given credentials.
      *
      * @param array $credentials The credentials to find a user by
-     * @throws AuthException If the credentials are invalid
+     * @throws AuthenticationException If the credentials are invalid
      * @return Models\User The requested user
      */
     public function findUserByCredentials(array $credentials)
@@ -210,7 +210,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         $loginName = $model->getLoginName();
 
         if (!array_key_exists($loginName, $credentials)) {
-            throw new AuthException(sprintf('Login attribute "%s" was not provided.', $loginName));
+            throw new AuthenticationException(sprintf('Login attribute "%s" was not provided.', $loginName));
         }
 
         $query = $this->createUserModelQuery();
@@ -232,7 +232,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
 
         $user = $query->first();
         if (!$this->validateUserModel($user)) {
-            throw new AuthException('A user was not found with the given credentials.');
+            throw new AuthenticationException('A user was not found with the given credentials.');
         }
 
         /*
@@ -242,14 +242,14 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
             if (!$user->checkHashValue($credential, $value)) {
                 // Incorrect password
                 if ($credential === 'password') {
-                    throw new AuthException(sprintf(
+                    throw new AuthenticationException(sprintf(
                         'A user was found to match all plain text credentials however hashed credential "%s" did not match.',
                         $credential
                     ));
                 }
 
                 // User not found
-                throw new AuthException('A user was not found with the given credentials.');
+                throw new AuthenticationException('A user was not found with the given credentials.');
             }
         }
 
@@ -293,7 +293,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     {
         $user = $this->findUserByLogin($loginName);
         if (!$user) {
-            throw new AuthException("A user was not found with the given credentials.");
+            throw new AuthenticationException("A user was not found with the given credentials.");
         }
 
         $userId = $user->getKey();
@@ -346,7 +346,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      *
      * @param array $credentials The user login details
      * @param bool $remember Store a non-expire cookie for the user
-     * @throws AuthException If authentication fails
+     * @throws AuthenticationException If authentication fails
      * @return Models\User The successfully logged in user
      */
     public function attempt(array $credentials = [], $remember = false)
@@ -380,11 +380,11 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         $loginCredentialKey = isset($credentials[$loginName]) ? $loginName : 'login';
 
         if (empty($credentials[$loginCredentialKey])) {
-            throw new AuthException(sprintf('The "%s" attribute is required.', $loginCredentialKey));
+            throw new AuthenticationException(sprintf('The "%s" attribute is required.', $loginCredentialKey));
         }
 
         if (empty($credentials['password'])) {
-            throw new AuthException('The password attribute is required.');
+            throw new AuthenticationException('The password attribute is required.');
         }
 
         /*
@@ -410,7 +410,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         try {
             $user = $this->findUserByCredentials($credentials);
         }
-        catch (AuthException $ex) {
+        catch (AuthenticationException $ex) {
             if ($this->useThrottle) {
                 $throttle->addLoginAttempt();
             }
@@ -606,7 +606,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     /**
      * Logs in the given user and sets properties
      * in the session.
-     * @throws AuthException If the user is not activated and $this->requireActivation = true
+     * @throws AuthenticationException If the user is not activated and $this->requireActivation = true
      */
     public function login(Authenticatable $user, $remember = true)
     {
@@ -616,7 +616,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         // Deny users that aren't activated when activation is required
         if ($this->requireActivation && !$user->is_activated) {
             $login = $user->getLogin();
-            throw new AuthException(sprintf(
+            throw new AuthenticationException(sprintf(
                 'Cannot login user "%s" as they are not activated.',
                 $login
             ));
@@ -741,8 +741,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         }
 
         if (!$canImpersonate) {
-            // @TODO: translate / make exception more specific
-            throw new Exception('You cannot impersonate the selected user.');
+            throw new AuthorizationException('You cannot impersonate the selected user.');
         }
 
         // Impersonate the requested user by becoming them in the request & the session
