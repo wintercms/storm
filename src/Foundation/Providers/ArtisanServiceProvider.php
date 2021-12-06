@@ -19,7 +19,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'ConfigClear'           => \Illuminate\Foundation\Console\ConfigClearCommand::class,
         'Down'                  => \Illuminate\Foundation\Console\DownCommand::class,
         'Environment'           => \Illuminate\Foundation\Console\EnvironmentCommand::class,
-        'KeyGenerate'           => KeyGenerateCommand::class,
+        'KeyGenerate'           => \Winter\Storm\Foundation\Console\KeyGenerateCommand::class,
         'Optimize'              => \Illuminate\Foundation\Console\OptimizeCommand::class,
         'PackageDiscover'       => \Illuminate\Foundation\Console\PackageDiscoverCommand::class,
         'QueueFailed'           => \Illuminate\Queue\Console\ListFailedCommand::class,
