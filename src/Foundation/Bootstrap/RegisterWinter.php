@@ -25,6 +25,9 @@ class RegisterWinter
         $app->singleton('string', function () {
             return new \Winter\Storm\Support\Str;
         });
+        $app->singleton('svg', function () {
+            return new \Winter\Storm\Support\Svg;
+        });
 
         /*
          * Change paths based on config

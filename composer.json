@@ -44,7 +44,8 @@
         "league/csv": "~9.1",
         "nesbot/carbon": "^2.0",
         "laravel/framework": "~6.0",
-        "laravel/tinker": "~2.0"
+        "laravel/tinker": "~2.0",
+        "enshrined/svg-sanitize": "^0.14.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.5.12|^9.3.3",
