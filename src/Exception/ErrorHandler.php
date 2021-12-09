@@ -4,7 +4,7 @@ use App;
 use Config;
 use Request;
 use Response;
-use Exception;
+use Throwable;
 
 /**
  * System Error Handler, this class handles application exception events.
@@ -27,10 +27,10 @@ class ErrorHandler
      * All exceptions are piped through this method from the framework workflow. This method will mask
      * any foreign exceptions with a "scent" of the native application's exception, so it can render
      * correctly when displayed on the error page.
-     * @param Exception $proposedException The exception candidate that has been thrown.
+     * @param Throwable $proposedException The exception candidate that has been thrown.
      * @return mixed Error page contents
      */
-    public function handleException(Exception $proposedException)
+    public function handleException(Throwable $proposedException)
     {
         // Disable the error handler for test and CLI environment
         if (App::runningUnitTests() || App::runningInConsole()) {
@@ -57,7 +57,7 @@ class ErrorHandler
         }
 
         // If the exception is already our brand, use it.
-        if ($proposedException instanceof BaseException) {
+        if ($proposedException instanceof ExceptionBase) {
             $exception = $proposedException;
         }
         // If there is an active mask prepared, use that.
@@ -76,10 +76,10 @@ class ErrorHandler
 
     /**
      * Prepares a mask exception to be used when any exception fires.
-     * @param Exception $exception The mask exception.
+     * @param Throwable $exception The mask exception.
      * @return void
      */
-    public static function applyMask(Exception $exception)
+    public static function applyMask(Throwable $exception)
     {
         if (static::$activeMask !== null) {
             array_push(static::$maskLayers, static::$activeMask);
@@ -105,10 +105,10 @@ class ErrorHandler
     /**
      * Returns a more descriptive error message if application
      * debug mode is turned on.
-     * @param Exception $exception
+     * @param Throwable $exception
      * @return string
      */
-    public static function getDetailedMessage($exception)
+    public static function getDetailedMessage(Throwable $exception)
     {
         /*
          * Application Exceptions never display a detailed error
