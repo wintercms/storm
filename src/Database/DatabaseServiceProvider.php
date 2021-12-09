@@ -56,7 +56,11 @@ class DatabaseServiceProvider extends DatabaseServiceProviderBase
         });
 
         $this->app->bind('db.schema', function ($app) {
-            return $app['db']->connection()->getSchemaBuilder();
+            $builder = $app['db']->connection()->getSchemaBuilder();
+
+            $app['events']->fire('db.schema.getBuilder', [$builder]);
+
+            return $builder;
         });
 
         $this->app->singleton('db.dongle', function ($app) {

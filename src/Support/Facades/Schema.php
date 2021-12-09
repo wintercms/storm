@@ -42,10 +42,6 @@ class Schema extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        $builder = static::$app['db']->connection()->getSchemaBuilder();
-
-        static::$app['events']->fire('db.schema.getBuilder', [$builder]);
-
-        return $builder;
+        return 'db.schema';
     }
 }
