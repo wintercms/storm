@@ -183,6 +183,11 @@ class Mailer extends MailerBase
 
     /**
      * Add the content to a given message.
+     * Overrides the Laravel defaults to provide the following functionality:
+     * - Events (global & local):
+     *  - mailer.beforeAddContent
+     *  - mailer.addContent
+     * - Support for the Winter MailParser
      *
      * @param  \Illuminate\Mail\Message $message
      * @param  string $view
@@ -305,8 +310,7 @@ class Mailer extends MailerBase
         if (!$view instanceof MailableContract) {
             $mailable = $this->buildQueueMailable($view, $data, $callback, $queue);
             $queue = null;
-        }
-        else {
+        } else {
             $mailable = $view;
             $queue = $queue ?? $data;
         }
@@ -343,8 +347,7 @@ class Mailer extends MailerBase
         if (!$view instanceof MailableContract) {
             $mailable = $this->buildQueueMailable($view, $data, $callback, $queue);
             $queue = null;
-        }
-        else {
+        } else {
             $mailable = $view;
             $queue = $queue ?? $data;
         }
@@ -402,8 +405,7 @@ class Mailer extends MailerBase
     {
         if (!is_array($view)) {
             $view = ['raw' => $view];
-        }
-        elseif (!array_key_exists('raw', $view)) {
+        } elseif (!array_key_exists('raw', $view)) {
             $view['raw'] = true;
         }
 
@@ -430,8 +432,7 @@ class Mailer extends MailerBase
         if (is_bool($options)) {
             $queue = $options;
             $bcc = false;
-        }
-        else {
+        } else {
             extract(array_merge([
                 'queue' => false,
                 'bcc'   => false
@@ -442,7 +443,6 @@ class Mailer extends MailerBase
         $recipients = $this->processRecipients($recipients);
 
         return $this->{$method}($view, $data, function ($message) use ($recipients, $callback, $bcc) {
-
             $method = $bcc === true ? 'bcc' : 'to';
 
             foreach ($recipients as $address => $name) {
@@ -470,13 +470,11 @@ class Mailer extends MailerBase
 
         if (is_string($recipients)) {
             $result[$recipients] = null;
-        }
-        elseif (is_array($recipients) || $recipients instanceof Collection) {
+        } elseif (is_array($recipients) || $recipients instanceof Collection) {
             foreach ($recipients as $address => $person) {
                 if (is_string($person)) {
                     $result[$address] = $person;
-                }
-                elseif (is_object($person)) {
+                } elseif (is_object($person)) {
                     if (empty($person->email) && empty($person->address)) {
                         continue;
                     }
@@ -484,8 +482,7 @@ class Mailer extends MailerBase
                     $address = !empty($person->email) ? $person->email : $person->address;
                     $name = !empty($person->name) ? $person->name : null;
                     $result[$address] = $name;
-                }
-                elseif (is_array($person)) {
+                } elseif (is_array($person)) {
                     if (!$address = array_get($person, 'email', array_get($person, 'address'))) {
                         continue;
                     }
@@ -493,8 +490,7 @@ class Mailer extends MailerBase
                     $result[$address] = array_get($person, 'name');
                 }
             }
-        }
-        elseif (is_object($recipients)) {
+        } elseif (is_object($recipients)) {
             if (!empty($recipients->email) || !empty($recipients->address)) {
                 $address = !empty($recipients->email) ? $recipients->email : $recipients->address;
                 $name = !empty($recipients->name) ? $recipients->name : null;
