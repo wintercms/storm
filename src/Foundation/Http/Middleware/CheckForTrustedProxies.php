@@ -130,30 +130,40 @@ class CheckForTrustedProxies
         $headers = $this->headers();
 
         switch ($headers) {
-            case 'HEADER_X_FORWARDED_AWS_ELB':
-            case Request::HEADER_X_FORWARDED_AWS_ELB:
-                return Request::HEADER_X_FORWARDED_AWS_ELB;
-                break;
             case 'HEADER_FORWARDED':
             case Request::HEADER_FORWARDED:
                 return Request::HEADER_FORWARDED;
-                break;
-            case 'HEADER_X_FORWARDED_ALL':
-            case Request::HEADER_X_FORWARDED_ALL:
-                return Request::HEADER_X_FORWARDED_ALL;
-                break;
+
+            case 'HEADER_X_FORWARDED_FOR':
+            case Request::HEADER_X_FORWARDED_FOR:
+                return Request::HEADER_X_FORWARDED_FOR;
+
             case 'HEADER_X_FORWARDED_HOST':
             case Request::HEADER_X_FORWARDED_HOST:
                 return Request::HEADER_X_FORWARDED_HOST;
-                break;
-            case 'HEADER_X_FORWARDED_PORT':
-            case Request::HEADER_X_FORWARDED_PORT:
-                return Request::HEADER_X_FORWARDED_PORT;
-                break;
+
             case 'HEADER_X_FORWARDED_PROTO':
             case Request::HEADER_X_FORWARDED_PROTO:
                 return Request::HEADER_X_FORWARDED_PROTO;
-                break;
+
+            case 'HEADER_X_FORWARDED_PORT':
+            case Request::HEADER_X_FORWARDED_PORT:
+                return Request::HEADER_X_FORWARDED_PORT;
+
+            case 'HEADER_X_FORWARDED_PREFIX':
+            case Request::HEADER_X_FORWARDED_PREFIX:
+                return Request::HEADER_X_FORWARDED_PREFIX;
+
+            case 'HEADER_X_FORWARDED_ALL':
+                return Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO;
+
+            case 'HEADER_X_FORWARDED_AWS_ELB':
+            case Request::HEADER_X_FORWARDED_AWS_ELB:
+                return Request::HEADER_X_FORWARDED_AWS_ELB;
+
+            case 'HEADER_X_FORWARDED_TRAEFIK':
+            case Request::HEADER_X_FORWARDED_TRAEFIK:
+                return Request::HEADER_X_FORWARDED_TRAEFIK;
         }
 
         return $headers;
