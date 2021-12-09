@@ -71,7 +71,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
      */
     protected function registerKeyGenerateCommand()
     {
-        $this->app->singleton('command.key.generate', function ($app) {
+        $this->app->singleton(KeyGenerateCommand::class, function ($app) {
             return new KeyGenerateCommand($app['files']);
         });
     }
@@ -83,8 +83,6 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
      */
     protected function registerClearCompiledCommand()
     {
-        $this->app->singleton('command.clear-compiled', function () {
-            return new ClearCompiledCommand;
-        });
+        $this->app->singleton(ClearCompiledCommand::class);
     }
 }
