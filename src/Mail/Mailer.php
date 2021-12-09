@@ -22,10 +22,17 @@ class Mailer extends MailerBase
 
     /**
      * Send a new message using a view.
+     * Overrides the Laravel defaults to provide the following functionality:
+     * - Events (global & local):
+     *  - mailer.beforeSend
+     *  - mailer.prepareSend
+     *  - mailer.send
+     * - Custom addContent() behavior
+     * - Support for bypassing all addContent behavior when passing $view['raw' => true]
      *
-     * @param  string|array $view
-     * @param  array $data
-     * @param  \Closure|string $callback
+     * @param  \Illuminate\Contracts\Mail\Mailable|string|array  $view
+     * @param  array  $data
+     * @param  \Closure|string|null  $callback
      * @return \Illuminate\Mail\SentMessage|null
      */
     public function send($view, array $data = [], $callback = null)
@@ -58,24 +65,33 @@ class Mailer extends MailerBase
             return $this->sendMailable($view);
         }
 
-        /*
-         * Inherit logic from Illuminate\Mail\Mailer
-         */
+        // First we need to parse the view, which could either be a string or an array
+        // containing both an HTML and plain text versions of the view which should
+        // be used when sending an e-mail. We will extract both of them out here.
         list($view, $plain, $raw) = $this->parseView($view);
 
         $data['message'] = $message = $this->createMessage();
 
+        // Once we have retrieved the view content for the e-mail we will set the body
+        // of this message using the HTML type, which will provide a simple wrapper
+        // to creating view based emails that are able to receive arrays of data.
         if ($callback !== null) {
             call_user_func($callback, $message);
         }
 
+        // When $raw === true, attach the content directly to the
+        // message without any form of parsing or events being fired.
+        // @see https://github.com/wintercms/storm/commit/7fdc46cb6c2424436b1eb1cb1a66223785d7520f
+        // @see https://github.com/wintercms/storm/commit/aa1e96c5741f14900311daa2cad3826aaf97f6c8
         if (is_bool($raw) && $raw === true) {
             $this->addContentRaw($message, $view, $plain);
-        }
-        else {
+        } else {
             $this->addContent($message, $view, $plain, $raw, $data);
         }
 
+        // If a global "to" address has been set, we will set that address on the mail
+        // message. This is primarily useful during local development in which each
+        // message should be delivered into a single mail address for inspection.
         if (isset($this->to['address'])) {
             $this->setGlobalToAndRemoveCcAndBcc($message);
         }
@@ -109,31 +125,41 @@ class Mailer extends MailerBase
             return;
         }
 
-        /*
-         * Send the message
-         */
-        $this->sendSymfonyMessage($message->getSymfonyMessage());
-        $this->dispatchSentEvent($message);
+        // Next we will determine if the message should be sent. We give the developer
+        // one final chance to stop this message and then we will send it to all of
+        // its recipients. We will then fire the sent event for the sent message.
+        $symfonyMessage = $message->getSymfonyMessage();
 
-        /**
-         * @event mailer.send
-         * Fires after the message has been sent
-         *
-         * Example usage (logs the message):
-         *
-         *     Event::listen('mailer.send', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
-         *         \Log::info("Message was rendered with $view and sent");
-         *     });
-         *
-         * Or
-         *
-         *     $mailerInstance->bindEvent('mailer.send', function ((string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
-         *         \Log::info("Message was rendered with $view and sent");
-         *     });
-         *
-         */
-        $this->fireEvent('mailer.send', [$view, $message, $data]);
-        Event::fire('mailer.send', [$this, $view, $message, $data]);
+        $sentMessage = null;
+        if ($this->shouldSendMessage($symfonyMessage, $data)) {
+            $sentMessage = $this->sendSymfonyMessage($symfonyMessage);
+
+            $this->dispatchSentEvent($message, $data);
+
+            $sentMessage = new SentMessage($sentMessage);
+
+            /**
+             * @event mailer.send
+             * Fires after the message has been sent
+             *
+             * Example usage (logs the message):
+             *
+             *     Event::listen('mailer.send', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
+             *         \Log::info("Message was rendered with $view and sent");
+             *     });
+             *
+             * Or
+             *
+             *     $mailerInstance->bindEvent('mailer.send', function ((string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
+             *         \Log::info("Message was rendered with $view and sent");
+             *     });
+             *
+             */
+            $this->fireEvent('mailer.send', [$view, $message, $data]);
+            Event::fire('mailer.send', [$this, $view, $message, $data]);
+        }
+
+        return $sentMessage;
     }
 
     /**
@@ -461,7 +487,7 @@ class Mailer extends MailerBase
     }
 
     /**
-     * Add the raw content to a given message.
+     * Add the raw content to the provided message.
      *
      * @param  \Illuminate\Mail\Message  $message
      * @param  string  $html
@@ -471,11 +497,11 @@ class Mailer extends MailerBase
     protected function addContentRaw($message, $html, $text)
     {
         if (isset($html)) {
-            $message->setBody($html, 'text/html');
+            $message->html($html);
         }
 
         if (isset($text)) {
-            $message->addPart($text, 'text/plain');
+            $message->text($text);
         }
     }
 
