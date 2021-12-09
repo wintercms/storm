@@ -26,7 +26,7 @@ class Mailer extends MailerBase
      * @param  string|array $view
      * @param  array $data
      * @param  \Closure|string $callback
-     * @return mixed
+     * @return \Illuminate\Mail\SentMessage|null
      */
     public function send($view, array $data = [], $callback = null)
     {
@@ -86,7 +86,7 @@ class Mailer extends MailerBase
           *
           * Parameters:
           * - $view: View code as a string
-          * - $message: Illuminate\Mail\Message object, check Swift_Mime_SimpleMessage for useful functions.
+          * - $message: Illuminate\Mail\Message object, check Symfony\Component\Mime\Email for useful functions.
           * - $data: Array
           *
           * Example usage (stops the sending process):
@@ -112,7 +112,7 @@ class Mailer extends MailerBase
         /*
          * Send the message
          */
-        $this->sendSwiftMessage($message->getSwiftMessage());
+        $this->sendSymfonyMessage($message->getSymfonyMessage());
         $this->dispatchSentEvent($message);
 
         /**
@@ -145,7 +145,7 @@ class Mailer extends MailerBase
      * @param  array $data
      * @param  mixed $callback
      * @param  array $options
-     * @return void
+     * @return mixed
      */
     public function sendTo($recipients, $view, array $data = [], $callback = null, $options = [])
     {
@@ -285,7 +285,7 @@ class Mailer extends MailerBase
      *
      * @param  string  $text
      * @param  mixed  $callback
-     * @return int
+     * @return \Illuminate\Mail\SentMessage|null
      */
     public function raw($view, $callback)
     {
@@ -305,7 +305,7 @@ class Mailer extends MailerBase
      * @param  string  $view
      * @param  mixed   $callback
      * @param  array   $options
-     * @return int
+     * @return \Illuminate\Mail\SentMessage|null
      */
     public function rawTo($recipients, $view, $callback = null, $options = [])
     {
@@ -420,7 +420,7 @@ class Mailer extends MailerBase
             /*
              * Subject
              */
-            $customSubject = $message->getSwiftMessage()->getSubject();
+            $customSubject = $message->getSymfonyMessage()->getSubject();
             if (
                 empty($customSubject) &&
                 ($subject = array_get($result['settings'], 'subject'))

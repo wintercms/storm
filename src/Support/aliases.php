@@ -292,9 +292,6 @@ class_alias(\Winter\Storm\Mail\Mailable::class, \October\Rain\Mail\Mailable::cla
 class_alias(\Winter\Storm\Mail\Mailer::class, \October\Rain\Mail\Mailer::class);
 class_alias(\Winter\Storm\Mail\MailParser::class, \October\Rain\Mail\MailParser::class);
 class_alias(\Winter\Storm\Mail\MailServiceProvider::class, \October\Rain\Mail\MailServiceProvider::class);
-class_alias(\Winter\Storm\Mail\Transport\MandrillTransport::class, \October\Rain\Mail\Transport\MandrillTransport::class);
-class_alias(\Winter\Storm\Mail\Transport\SparkPostTransport::class, \October\Rain\Mail\Transport\SparkPostTransport::class);
-class_alias(\Winter\Storm\Mail\TransportManager::class, \October\Rain\Mail\TransportManager::class);
 
 /**
  * Alias October\Rain\Network
