@@ -148,7 +148,7 @@ class Filesystem extends FilesystemBase
      */
     public function isLocalDisk($disk)
     {
-        return ($disk->getDriver()->getAdapter() instanceof \League\Flysystem\Adapter\Local);
+        return ($disk->getAdapter() instanceof \League\Flysystem\Local\LocalFilesystemAdapter);
     }
 
     /**
