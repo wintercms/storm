@@ -208,7 +208,7 @@ class_alias(\Winter\Storm\Extension\ExtensionTrait::class, \October\Rain\Extensi
  */
 class_alias(\Winter\Storm\Filesystem\Definitions::class, \October\Rain\Filesystem\Definitions::class);
 class_alias(\Winter\Storm\Filesystem\Filesystem::class, \October\Rain\Filesystem\Filesystem::class);
-class_alias(\Winter\Storm\Filesystem\FilesystemAdapter::class, \October\Rain\Filesystem\FilesystemAdapter::class);
+class_alias(\Illuminate\Filesystem\FilesystemAdapter::class, \October\Rain\Filesystem\FilesystemAdapter::class);
 class_alias(\Winter\Storm\Filesystem\FilesystemManager::class, \October\Rain\Filesystem\FilesystemManager::class);
 class_alias(\Winter\Storm\Filesystem\FilesystemServiceProvider::class, \October\Rain\Filesystem\FilesystemServiceProvider::class);
 class_alias(\Winter\Storm\Filesystem\PathResolver::class, \October\Rain\Filesystem\PathResolver::class);
