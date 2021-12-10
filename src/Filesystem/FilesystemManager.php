@@ -1,8 +1,6 @@
 <?php namespace Winter\Storm\Filesystem;
 
-use OpenCloud\Rackspace;
 use League\Flysystem\FilesystemInterface;
-use League\Flysystem\Rackspace\RackspaceAdapter;
 use Illuminate\Filesystem\FilesystemManager as BaseFilesystemManager;
 
 class FilesystemManager extends BaseFilesystemManager
