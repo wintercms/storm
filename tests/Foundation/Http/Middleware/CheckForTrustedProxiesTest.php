@@ -34,7 +34,7 @@ class CheckForTrustedProxiesTest extends TestCase
     public function testTrustedProxy()
     {
         $request = $this->createProxiedRequest();
-        $request->setTrustedProxies(['173.174.200.38'], 'HEADER_X_FORWARDED_ALL');
+        $request->setTrustedProxies(['173.174.200.38'], Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO);
 
         $this->assertEquals('192.168.10.10', $request->getClientIp());
         $this->assertEquals('https', $request->getScheme());
@@ -255,7 +255,7 @@ class CheckForTrustedProxiesTest extends TestCase
         );
 
         // Reset trusted proxies and headers
-        $request->setTrustedProxies([], 'HEADER_X_FORWARDED_ALL');
+        $request->setTrustedProxies([], Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO);
 
         return $request;
     }
