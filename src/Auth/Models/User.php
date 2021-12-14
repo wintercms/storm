@@ -53,7 +53,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     protected $hidden = ['password', 'reset_password_code', 'activation_code', 'persist_code'];
 
     /**
-     * @var array The attributes that aren't mass assignable.
+     * @var string[]|bool The attributes that aren't mass assignable.
      */
     protected $guarded = ['is_superuser', 'reset_password_code', 'activation_code', 'persist_code', 'role_id'];
 
@@ -150,7 +150,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     /**
      * Delete the user groups
-     * @return bool
+     * @return void
      */
     public function afterDelete()
     {
@@ -341,7 +341,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     /**
      * Returns the role assigned to this user.
-     * @return Winter\Storm\Auth\Models\Role
+     * @return \Winter\Storm\Auth\Models\Role|null
      */
     public function getRole()
     {
@@ -404,8 +404,9 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     {
         if (!$this->mergedPermissions) {
             $permissions = [];
+            $role = $this->getRole();
 
-            if (($role = $this->getRole()) && is_array($role->permissions)) {
+            if ($role && is_array($role->permissions)) {
                 $permissions = array_merge($permissions, $role->permissions);
             }
 
@@ -558,12 +559,13 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     /**
      * Validate any set permissions.
-     * @param array $permissions
+     * @param string $permissions
      * @return void
      */
     public function setPermissionsAttribute($permissions)
     {
         $permissions = json_decode($permissions, true) ?: [];
+
         foreach ($permissions as $permission => &$value) {
             if (!in_array($value = (int) $value, $this->allowedPermissionsValues)) {
                 throw new InvalidArgumentException(sprintf(

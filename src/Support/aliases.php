@@ -100,7 +100,6 @@ class_alias(\Winter\Storm\Config\Repository::class, \October\Rain\Config\Reposit
 /**
  * Alias October\Rain\Cookie
  */
-class_alias(\Winter\Storm\Cookie\CookieValuePrefix::class, \October\Rain\Cookie\CookieValuePrefix::class);
 class_alias(\Winter\Storm\Cookie\Middleware\EncryptCookies::class, \October\Rain\Cookie\Middleware\EncryptCookies::class);
 
 /**

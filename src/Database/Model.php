@@ -613,7 +613,7 @@ class Model extends EloquentModel
      * Create a new Eloquent query builder for the model.
      *
      * @param  \Winter\Storm\Database\QueryBuilder $query
-     * @return \Winter\Storm\Database\Builder|static
+     * @return \Winter\Storm\Database\Builder
      */
     public function newEloquentBuilder($query)
     {

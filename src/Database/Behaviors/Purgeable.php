@@ -4,10 +4,14 @@ class Purgeable extends \Winter\Storm\Extension\ExtensionBase
 {
     /**
      * @var array List of attribute names which should not be saved to the database.
-     *
-     * public $purgeable = [];
      */
+    public $purgeable = [];
 
+    /**
+     * Model to purge.
+     *
+     * @var \Winter\Storm\Database\Model
+     */
     protected $model;
 
     public function __construct($parent)

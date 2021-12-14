@@ -29,7 +29,7 @@ class Group extends Model
     ];
 
     /**
-     * @var array The attributes that aren't mass assignable.
+     * @var string[]|bool The attributes that aren't mass assignable.
      */
     protected $guarded = [];
 

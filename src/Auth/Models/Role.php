@@ -44,7 +44,7 @@ class Role extends Model
     protected $allowedPermissionsValues = [0, 1];
 
     /**
-     * @var array The attributes that aren't mass assignable.
+     * @var string[]|bool The attributes that aren't mass assignable.
      */
     protected $guarded = [];
 
@@ -161,12 +161,13 @@ class Role extends Model
 
     /**
      * Validate the permissions when set.
-     * @param  array  $permissions
+     * @param  string  $permissions
      * @return void
      */
     public function setPermissionsAttribute($permissions)
     {
         $permissions = json_decode($permissions, true);
+
         foreach ($permissions as $permission => $value) {
             if (!in_array($value = (int) $value, $this->allowedPermissionsValues)) {
                 throw new InvalidArgumentException(sprintf(
