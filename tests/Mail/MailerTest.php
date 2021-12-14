@@ -1,6 +1,7 @@
 <?php
 
 use Winter\Storm\Mail\Mailer;
+use Illuminate\Mail\Transport\ArrayTransport;
 
 class MailerTest extends TestCase
 {
@@ -101,7 +102,7 @@ class MailerTest extends TestCase
 
     protected function makeMailer()
     {
-        return new Mailer("TestMailer", new FactoryMailerTest, new SwiftMailerTest, new DispatcherMailerTest);
+        return new Mailer("TestMailer", new FactoryMailerTest, new ArrayTransport, new DispatcherMailerTest);
     }
 }
 
@@ -113,13 +114,6 @@ class FactoryMailerTest extends \Illuminate\View\Factory
 }
 
 class DispatcherMailerTest extends \Illuminate\Events\Dispatcher
-{
-    public function __construct()
-    {
-    }
-}
-
-class SwiftMailerTest extends \Swift_Mailer
 {
     public function __construct()
     {
