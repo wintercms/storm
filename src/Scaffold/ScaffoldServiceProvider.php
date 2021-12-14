@@ -1,15 +1,6 @@
 <?php namespace Winter\Storm\Scaffold;
 
 use Illuminate\Support\ServiceProvider;
-use Winter\Storm\Scaffold\Console\CreateModel;
-use Winter\Storm\Scaffold\Console\CreateSettings;
-use Winter\Storm\Scaffold\Console\CreateTheme;
-use Winter\Storm\Scaffold\Console\CreatePlugin;
-use Winter\Storm\Scaffold\Console\CreateCommand;
-use Winter\Storm\Scaffold\Console\CreateComponent;
-use Winter\Storm\Scaffold\Console\CreateController;
-use Winter\Storm\Scaffold\Console\CreateFormWidget;
-use Winter\Storm\Scaffold\Console\CreateReportWidget;
 use Illuminate\Contracts\Support\DeferrableProvider;
 
 class ScaffoldServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -20,15 +11,15 @@ class ScaffoldServiceProvider extends ServiceProvider implements DeferrableProvi
      * @var array
      */
     public $singletons = [
-        'command.create.theme' => CreateTheme::class,
-        'command.create.plugin' => CreatePlugin::class,
-        'command.create.model' => CreateModel::class,
-        'command.create.settings' => CreateSettings::class,
-        'command.create.controller' => CreateController::class,
-        'command.create.component' => CreateComponent::class,
-        'command.create.formwidget' => CreateFormWidget::class,
-        'command.create.reportwidget' => CreateReportWidget::class,
-        'command.create.command' => CreateCommand::class,
+        'command.create.theme' => \Winter\Storm\Scaffold\Console\CreateTheme::class,
+        'command.create.plugin' => \Winter\Storm\Scaffold\Console\CreatePlugin::class,
+        'command.create.model' => \Winter\Storm\Scaffold\Console\CreateModel::class,
+        'command.create.settings' => \Winter\Storm\Scaffold\Console\CreateSettings::class,
+        'command.create.controller' => \Winter\Storm\Scaffold\Console\CreateController::class,
+        'command.create.component' => \Winter\Storm\Scaffold\Console\CreateComponent::class,
+        'command.create.formwidget' => \Winter\Storm\Scaffold\Console\CreateFormWidget::class,
+        'command.create.reportwidget' => \Winter\Storm\Scaffold\Console\CreateReportWidget::class,
+        'command.create.command' => \Winter\Storm\Scaffold\Console\CreateCommand::class,
     ];
 
     /**

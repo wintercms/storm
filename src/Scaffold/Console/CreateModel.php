@@ -7,11 +7,11 @@ use Symfony\Component\Console\Input\InputArgument;
 class CreateModel extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The default command name for lazy loading.
      *
-     * @var string
+     * @var string|null
      */
-    protected $name = 'create:model';
+    protected static $defaultName = 'create:model';
 
     /**
      * The console command description.

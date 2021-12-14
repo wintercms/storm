@@ -7,11 +7,11 @@ use Symfony\Component\Console\Input\InputArgument;
 class CreateReportWidget extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The default command name for lazy loading.
      *
-     * @var string
+     * @var string|null
      */
-    protected $name = 'create:reportwidget';
+    protected static $defaultName = 'create:reportwidget';
 
     /**
      * The console command description.

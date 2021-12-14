@@ -7,11 +7,11 @@ use Symfony\Component\Console\Input\InputArgument;
 class CreateFormWidget extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The default command name for lazy loading.
      *
-     * @var string
+     * @var string|null
      */
-    protected $name = 'create:formwidget';
+    protected static $defaultName = 'create:formwidget';
 
     /**
      * The console command description.

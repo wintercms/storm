@@ -8,11 +8,11 @@ use Symfony\Component\Console\Input\InputArgument;
 class CreateTheme extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The default command name for lazy loading.
      *
-     * @var string
+     * @var string|null
      */
-    protected $name = 'create:theme';
+    protected static $defaultName = 'create:theme';
 
     /**
      * The console command description.

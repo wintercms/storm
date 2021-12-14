@@ -1,17 +1,16 @@
 <?php namespace Winter\Storm\Scaffold\Console;
 
 use Winter\Storm\Scaffold\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
 class CreateSettings extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The default command name for lazy loading.
      *
-     * @var string
+     * @var string|null
      */
-    protected $name = 'create:settings {plugin} {settings=Settings}';
+    protected static $defaultName = 'create:settings';
 
     /**
      * The console command description.

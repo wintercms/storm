@@ -8,11 +8,11 @@ use Winter\Storm\Support\Str;
 class CreateController extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The default command name for lazy loading.
      *
-     * @var string
+     * @var string|null
      */
-    protected $name = 'create:controller';
+    protected static $defaultName = 'create:controller';
 
     /**
      * The console command description.
