@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Support;
 
-use Opis\Closure\SerializableClosure;
+use Laravel\SerializableClosure\SerializableClosure;
 use Closure;
 
 class Serialisation

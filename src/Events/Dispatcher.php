@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Events;
 
 use Closure;
-use Opis\Closure\SerializableClosure;
+use Laravel\SerializableClosure\SerializableClosure;
 use ReflectionClass;
 use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Serialisation;
