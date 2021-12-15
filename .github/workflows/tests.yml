@@ -14,13 +14,13 @@ jobs:
       max-parallel: 6
       matrix:
         operatingSystem: [ubuntu-latest, windows-latest]
-        phpVersion: ['7.2', '7.3', '7.4', '8.0']
+        phpVersion: ['8.0', '8.1']
       fail-fast: false
     runs-on: ${{ matrix.operatingSystem }}
     name: ${{ matrix.operatingSystem }} / PHP ${{ matrix.phpVersion }}
     env:
       extensions: curl, fileinfo, gd, mbstring, openssl, pdo, pdo_sqlite, sqlite3, xml, zip
-      key: winter-storm-cache-v1.1.2
+      key: winter-storm-cache-v1.2
     steps:
       - name: Checkout changes
         uses: actions/checkout@v2
@@ -62,7 +62,7 @@ jobs:
         run: composer install --no-interaction --no-progress --no-scripts
 
       - name: Setup problem matchers for PHPUnit
-        if: matrix.phpVersion == '7.4'
+        if: matrix.phpVersion == '8.1'
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Run tests

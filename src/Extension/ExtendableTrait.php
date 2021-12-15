@@ -6,6 +6,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
 use Winter\Storm\Support\ClassLoader;
+use Winter\Storm\Support\Serialisation;
 
 /**
  * This extension trait is used when access to the underlying base class
@@ -63,7 +64,7 @@ trait ExtendableTrait
         foreach ($classes as $class) {
             if (isset(self::$extendableCallbacks[$class]) && is_array(self::$extendableCallbacks[$class])) {
                 foreach (self::$extendableCallbacks[$class] as $callback) {
-                    call_user_func($callback, $this);
+                    call_user_func(Serialisation::unwrapClosure($callback), $this);
                 }
             }
         }
@@ -116,8 +117,7 @@ trait ExtendableTrait
         ) {
             self::$extendableCallbacks[$class] = [];
         }
-
-        self::$extendableCallbacks[$class][] = $callback;
+        self::$extendableCallbacks[$class][] = Serialisation::wrapClosure($callback);
     }
 
     /**
@@ -188,8 +188,7 @@ trait ExtendableTrait
         ) {
             $method = [$extensionObj, $method];
         }
-
-        $this->extensionData['dynamicMethods'][$dynamicName] = $method;
+        $this->extensionData['dynamicMethods'][$dynamicName] = Serialisation::wrapClosure($method);
     }
 
     /**
@@ -438,7 +437,7 @@ trait ExtendableTrait
             $dynamicCallable = $this->extensionData['dynamicMethods'][$name];
 
             if (is_callable($dynamicCallable)) {
-                return call_user_func_array($dynamicCallable, array_values($params));
+                return call_user_func_array(Serialisation::unwrapClosure($dynamicCallable), array_values($params));
             }
         }
 

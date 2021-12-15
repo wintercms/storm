@@ -102,7 +102,7 @@ class File extends Model
         }
 
         $this->file_name = $uploadedFile->getClientOriginalName();
-        $this->file_size = $uploadedFile->getClientSize();
+        $this->file_size = $uploadedFile->getSize();
         $this->content_type = $uploadedFile->getMimeType();
         $this->disk_name = $this->getDiskName();
 

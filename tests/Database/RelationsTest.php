@@ -262,7 +262,7 @@ class RelationsTest extends DbTestCase
     }
 }
 
-class Category extends \October\Rain\Database\Model
+class Category extends \Winter\Storm\Database\Model
 {
     public $table = 'categories';
 

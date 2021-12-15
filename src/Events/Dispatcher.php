@@ -1,10 +1,14 @@
 <?php namespace Winter\Storm\Events;
 
+use Closure;
+use Laravel\SerializableClosure\SerializableClosure;
 use ReflectionClass;
 use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Serialisation;
 use Winter\Storm\Support\Str;
 use Illuminate\Events\Dispatcher as BaseDispatcher;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Events\QueuedClosure;
 
 class Dispatcher extends BaseDispatcher
 {
@@ -25,13 +29,28 @@ class Dispatcher extends BaseDispatcher
     /**
      * Register an event listener with the dispatcher.
      *
-     * @param  string|array  $events
-     * @param  mixed  $listener
-     * @param  int  $priority
+     * @param  string|array|Closure|QueuedClosure  $events
+     * @param  mixed  $listener when the third parameter is omitted and a Closure or QueuedClosure is provided
+     * this parameter is used as an integer this is used as priority value
+     * @param int $priority
      * @return void
      */
-    public function listen($events, $listener, $priority = 0)
+    public function listen($events, $listener = null, $priority = 0)
     {
+        if ($events instanceof Closure || $events instanceof  QueuedClosure) {
+            if ($priority === 0 && (is_int($listener) || filter_var($listener, FILTER_VALIDATE_INT))) {
+                $priority = (int)$listener;
+            }
+        }
+        if ($events instanceof Closure) {
+            return $this->listen($this->firstClosureParameterType($events), $events, $priority);
+        } elseif ($events instanceof QueuedClosure) {
+            return $this->listen($this->firstClosureParameterType($events->closure), $events->resolve(), $priority);
+        } elseif ($listener instanceof QueuedClosure) {
+            $listener = $listener->resolve();
+        }
+        $listener = Serialisation::wrapClosure($listener);
+
         foreach ((array) $events as $event) {
             if (Str::contains($event, '*')) {
                 $this->setupWildcardListen($event, $listener);
@@ -109,6 +128,9 @@ class Dispatcher extends BaseDispatcher
         }
 
         foreach ($this->getListeners($event) as $listener) {
+            if ($listener instanceof SerializableClosure) {
+                $listener = $listener->getClosure();
+            }
             $response = $listener($event, $payload);
 
             // If a response is returned from the listener and event halting is enabled
@@ -171,7 +193,7 @@ class Dispatcher extends BaseDispatcher
 
         // If listeners exist for the given event, we will sort them by the priority
         // so that we can call them in the correct order. We will cache off these
-        // sorted event listeners so we do not have to re-sort on every events.
+        // sorted event listeners so we do not have to re-sort on every event.
         if (isset($this->listeners[$eventName])) {
             krsort($this->listeners[$eventName]);
 
