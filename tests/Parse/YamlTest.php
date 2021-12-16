@@ -2,7 +2,6 @@
 
 use Winter\Storm\Parse\Processor\YamlProcessor;
 use Symfony\Component\Yaml\Exception\ParseException;
-use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
 use Winter\Storm\Parse\Processor\Symfony3Processor;
 use Winter\Storm\Parse\Yaml as YamlParser;
 
@@ -201,7 +200,7 @@ class YamlTest extends TestCase
             $yaml
         );
     }
-    
+
     public function testSymfony3YamlFile()
     {
         // This YAML file should not be parseable by default

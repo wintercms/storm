@@ -1,7 +1,5 @@
 <?php namespace Winter\Storm\Parse\Processor;
 
-use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
-
 /**
  * Symfony/Yaml 3 processor.
  *
@@ -10,7 +8,7 @@ use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
  *
  * @author Winter CMS
  */
-class Symfony3Processor implements YamlProcessor
+class Symfony3Processor extends YamlProcessor
 {
     /**
      * @inheritDoc
