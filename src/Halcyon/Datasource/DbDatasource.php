@@ -23,48 +23,42 @@ use Winter\Storm\Support\Facades\DB;
 class DbDatasource extends Datasource
 {
     /**
-     * @var string The identifier for this datasource instance
+     * The identifier for this datasource instance
      */
-    protected $source;
+    protected string $source;
 
     /**
-     * @var string The table name of the datasource
+     * The table name of the datasource
      */
-    protected $table;
+    protected string $table;
 
     /**
-     * Create a new datasource instance.
+     * Create a new database datasource instance.
      *
      * @param string $source The source identifier for this datasource instance
      * @param string $table The table for this database datasource
-     * @return void
      */
     public function __construct(string $source, string $table)
     {
         $this->source = $source;
-
         $this->table = $table;
-
         $this->postProcessor = new Processor;
     }
 
     /**
      * Get the base QueryBuilder object.
-     *
-     * @return \Illuminate\Database\Query\Builder
      */
-    public function getBaseQuery()
+    public function getBaseQuery(): \Winter\Storm\Database\QueryBuilder
     {
         return DB::table($this->table)->enableDuplicateCache();
     }
 
     /**
-     * Get the QueryBuilder object
+     * Get the QueryBuilder object.
      *
-     * @param bool $ignoreDeleted Flag to ignore deleted records, defaults to true
-     * @return \Illuminate\Database\Query\Builder
+     * @param bool $ignoreDeleted Ignore deleted records. Defaults to `true`.
      */
-    public function getQuery($ignoreDeleted = true)
+    public function getQuery(bool $ignoreDeleted = true): \Winter\Storm\Database\QueryBuilder
     {
         $query = $this->getBaseQuery();
 
@@ -92,27 +86,22 @@ class DbDatasource extends Datasource
     }
 
     /**
-     * Helper to make file path.
+     * Helper method to make the full file path to the model.
      *
-     * @param string $dirName
-     * @param string $fileName
-     * @param string $extension
-     * @return string
+     * @param string $dirName The directory in which the model is stored.
+     * @param string $fileName The filename of the model.
+     * @param string $extension The file extension of the model.
+     * @return string The full file path.
      */
-    protected function makeFilePath(string $dirName, string $fileName, string $extension)
+    protected function makeFilePath(string $dirName, string $fileName, string $extension): string
     {
         return $dirName . '/' . $fileName . '.' . $extension;
     }
 
     /**
-     * Returns a single template.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return mixed
+     * @inheritDoc
      */
-    public function selectOne(string $dirName, string $fileName, string $extension)
+    public function selectOne(string $dirName, string $fileName, string $extension): ?array
     {
         $result = $this->getQuery()->where('path', $this->makeFilePath($dirName, $fileName, $extension))->first();
 
@@ -129,20 +118,9 @@ class DbDatasource extends Datasource
     }
 
     /**
-     * Returns all templates.
-     *
-     * @param  string  $dirName
-     * @param array $options Array of options, [
-     *                          'columns'    => ['fileName', 'mtime', 'content'], // Only return specific columns
-     *                          'extensions' => ['htm', 'md', 'twig'],            // Extensions to search for
-     *                          'fileMatch'  => '*gr[ae]y',                       // Shell matching pattern to match the filename against using the fnmatch function
-     *                          'orders'     => false                             // Not implemented
-     *                          'limit'      => false                             // Not implemented
-     *                          'offset'     => false                             // Not implemented
-     *                      ];
-     * @return array
+     * @inheritDoc
      */
-    public function select(string $dirName, array $options = [])
+    public function select(string $dirName, array $options = []): array
     {
         // Initialize result set
         $result = [];
@@ -227,15 +205,9 @@ class DbDatasource extends Datasource
     }
 
     /**
-     * Creates a new template.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @param  string  $content
-     * @return int
+     * @inheritDoc
      */
-    public function insert(string $dirName, string $fileName, string $extension, string $content)
+    public function insert(string $dirName, string $fileName, string $extension, string $content): int
     {
         $path = $this->makeFilePath($dirName, $fileName, $extension);
 
@@ -284,17 +256,9 @@ class DbDatasource extends Datasource
     }
 
     /**
-     * Updates an existing template.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @param  string  $content
-     * @param  string  $oldFileName Defaults to null
-     * @param  string  $oldExtension Defaults to null
-     * @return int
+     * @inheritDoc
      */
-    public function update(string $dirName, string $fileName, string $extension, string $content, $oldFileName = null, $oldExtension = null)
+    public function update(string $dirName, string $fileName, string $extension, string $content, ?string $oldFileName = null, ?string $oldExtension = null): int
     {
         $path = $this->makeFilePath($dirName, $fileName, $extension);
 
@@ -344,14 +308,9 @@ class DbDatasource extends Datasource
     }
 
     /**
-     * Run a delete statement against the datasource.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return bool
+     * @inheritDoc
      */
-    public function delete(string $dirName, string $fileName, string $extension)
+    public function delete(string $dirName, string $fileName, string $extension): bool
     {
         try {
             // Get the existing record
@@ -378,14 +337,9 @@ class DbDatasource extends Datasource
     }
 
     /**
-     * Return the last modified date of an object
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return int|null
+     * @inheritDoc
      */
-    public function lastModified(string $dirName, string $fileName, string $extension)
+    public function lastModified(string $dirName, string $fileName, string $extension): ?int
     {
         try {
             return Carbon::parse($this->getQuery()
@@ -397,32 +351,17 @@ class DbDatasource extends Datasource
     }
 
     /**
-     * Generate a cache key unique to this datasource.
-     *
-     * @param  string  $name
-     * @return string
+     * @inheritDoc
      */
-    public function makeCacheKey($name = '')
-    {
-        return (string) crc32($this->source . $name);
-    }
-
-    /**
-     * Generate a paths cache key unique to this datasource
-     *
-     * @return string
-     */
-    public function getPathsCacheKey()
+    public function getPathsCacheKey(): string
     {
         return 'halcyon-datastore-db-' . $this->table . '-' . $this->source;
     }
 
     /**
-     * Get all available paths within this datastore
-     *
-     * @return array $paths ['path/to/file1.md' => true (path can be handled and exists), 'path/to/file2.md' => false (path can be handled but doesn't exist)]
-     */
-    public function getAvailablePaths()
+     * @inheritDoc
+     **/
+    public function getAvailablePaths(): array
     {
         /**
          * @event halcyon.datasource.db.beforeGetAvailablePaths

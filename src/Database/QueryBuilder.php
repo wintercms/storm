@@ -389,10 +389,8 @@ class QueryBuilder extends QueryBuilderBase
 
     /**
      * Enable the memory cache on the query.
-     *
-     * @return \Illuminate\Database\Query\Builder|static
      */
-    public function enableDuplicateCache()
+    public function enableDuplicateCache(): static
     {
         $this->cachingDuplicateQueries = true;
 
@@ -401,10 +399,8 @@ class QueryBuilder extends QueryBuilderBase
 
     /**
      * Disable the memory cache on the query.
-     *
-     * @return \Illuminate\Database\Query\Builder|static
      */
-    public function disableDuplicateCache()
+    public function disableDuplicateCache(): static
     {
         $this->cachingDuplicateQueries = false;
 

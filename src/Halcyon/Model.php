@@ -21,7 +21,7 @@ use Exception;
  *
  * @author Alexey Bobkov, Samuel Georges
  */
-class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
+class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
     use \Winter\Storm\Support\Traits\Emitter;
 
@@ -147,10 +147,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     protected static $booted = [];
 
     /**
-     * Create a new Halcyon model instance.
-     *
-     * @param  array  $attributes
-     * @return void
+     * @inheritDoc
      */
     public function __construct(array $attributes = [])
     {
@@ -1516,7 +1513,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Get the cache manager instance.
      *
-     * @return \Illuminate\Cache\CacheManager
+     * @return \Illuminate\Cache\CacheManager|null
      */
     public static function getCacheManager()
     {
@@ -1560,9 +1557,13 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      */
     public static function flushDuplicateCache()
     {
-        if (MemoryCacheManager::isEnabled() && self::getCacheManager() !== null) {
-            self::getCacheManager()->driver()->flushInternalCache();
+        if (!MemoryCacheManager::isEnabled() || self::getCacheManager() === null) {
+            return;
         }
+
+        /** @var \Winter\Storm\Halcyon\MemoryRepository */
+        $cacheDriver = self::getCacheManager()->driver();
+        $cacheDriver->flushInternalCache();
     }
 
     /**

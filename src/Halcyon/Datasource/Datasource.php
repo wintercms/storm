@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Halcyon\Datasource;
 
+use \Winter\Storm\Halcyon\Processors\Processor;
+
 /**
  * Datasource base class.
  */
@@ -8,21 +10,19 @@ abstract class Datasource implements DatasourceInterface
     use \Winter\Storm\Support\Traits\Emitter;
 
     /**
-     * @var bool Indicates if the record is currently being force deleted.
+     * Indicates if the record is currently being force deleted.
      */
-    protected $forceDeleting = false;
+    protected bool $forceDeleting = false;
 
     /**
      * The query post processor implementation.
-     *
-     * @var \Winter\Storm\Halcyon\Processors\Processor
      */
-    protected $postProcessor;
+    protected Processor $postProcessor;
 
     /**
      * @inheritDoc
      */
-    public function getPostProcessor()
+    public function getPostProcessor(): Processor
     {
         return $this->postProcessor;
     }
@@ -30,32 +30,32 @@ abstract class Datasource implements DatasourceInterface
     /**
      * @inheritDoc
      */
-    abstract public function selectOne(string $dirName, string $fileName, string $extension);
+    abstract public function selectOne(string $dirName, string $fileName, string $extension): ?array;
 
     /**
      * @inheritDoc
      */
-    abstract public function select(string $dirName, array $options = []);
+    abstract public function select(string $dirName, array $options = []): array;
 
     /**
      * @inheritDoc
      */
-    abstract public function insert(string $dirName, string $fileName, string $extension, string $content);
+    abstract public function insert(string $dirName, string $fileName, string $extension, string $content): int;
 
     /**
      * @inheritDoc
      */
-    abstract public function update(string $dirName, string $fileName, string $extension, string $content, $oldFileName = null, $oldExtension = null);
+    abstract public function update(string $dirName, string $fileName, string $extension, string $content, ?string $oldFileName = null, ?string $oldExtension = null): int;
 
     /**
      * @inheritDoc
      */
-    abstract public function delete(string $dirName, string $fileName, string $extension);
+    abstract public function delete(string $dirName, string $fileName, string $extension): bool;
 
     /**
      * @inheritDoc
      */
-    public function forceDelete(string $dirName, string $fileName, string $extension)
+    public function forceDelete(string $dirName, string $fileName, string $extension): bool
     {
         $this->forceDeleting = true;
 
@@ -69,23 +69,23 @@ abstract class Datasource implements DatasourceInterface
     /**
      * @inheritDoc
      */
-    abstract public function lastModified(string $dirName, string $fileName, string $extension);
+    abstract public function lastModified(string $dirName, string $fileName, string $extension): ?int;
 
     /**
      * @inheritDoc
      */
-    public function makeCacheKey($name = '')
+    public function makeCacheKey(string $name = ''): string
     {
-        return (string) crc32($name);
+        return hash('crc32b', $name);
     }
 
     /**
      * @inheritDoc
      */
-    abstract public function getPathsCacheKey();
+    abstract public function getPathsCacheKey(): string;
 
     /**
      * @inheritDoc
      */
-    abstract public function getAvailablePaths();
+    abstract public function getAvailablePaths(): array;
 }

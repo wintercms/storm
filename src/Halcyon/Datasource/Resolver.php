@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Halcyon\Datasource;
 
+use Winter\Storm\Halcyon\Exception\MissingDatasourceException;
+
 class Resolver implements ResolverInterface
 {
     /**
@@ -7,20 +9,17 @@ class Resolver implements ResolverInterface
      *
      * @var array
      */
-    protected $datasources = [];
+    protected array $datasources = [];
 
     /**
      * The default datasource name.
-     *
-     * @var string
      */
-    protected $default;
+    protected ?string $default;
 
     /**
      * Create a new datasource resolver instance.
      *
-     * @param  array  $datasources
-     * @return void
+     * @param array $datasources
      */
     public function __construct(array $datasources = [])
     {
@@ -30,60 +29,50 @@ class Resolver implements ResolverInterface
     }
 
     /**
-     * Get a database datasource instance.
-     *
-     * @param  string  $name
-     * @return \Winter\Storm\Halcyon\Datasource\DatasourceInterface
+     * @inheritDoc
      */
-    public function datasource($name = null)
+    public function datasource(string $name = null): DatasourceInterface
     {
         if (is_null($name)) {
             $name = $this->getDefaultDatasource();
+        }
+        if (!array_key_exists($name, $this->datasources)) {
+            throw new MissingDatasourceException(
+                sprintf('The Halcyon datasource "%s" does not exist.', $name)
+            );
         }
 
         return $this->datasources[$name];
     }
 
     /**
-     * Add a datasource to the resolver.
-     *
-     * @param  string  $name
-     * @param  \Winter\Storm\Halcyon\Datasource\DatasourceInterface  $datasource
-     * @return void
+     * @inheritDoc
      */
-    public function addDatasource($name, DatasourceInterface $datasource)
+    public function addDatasource(string $name, DatasourceInterface $datasource): void
     {
         $this->datasources[$name] = $datasource;
     }
 
     /**
-     * Check if a datasource has been registered.
-     *
-     * @param  string  $name
-     * @return bool
+     * @inheritDoc
      */
-    public function hasDatasource($name)
+    public function hasDatasource(string $name): bool
     {
-        return isset($this->datasources[$name]);
+        return array_key_exists($name, $this->datasources);
     }
 
     /**
-     * Get the default datasource name.
-     *
-     * @return string
+     * @inheritDoc
      */
-    public function getDefaultDatasource()
+    public function getDefaultDatasource(): string
     {
         return $this->default;
     }
 
     /**
-     * Set the default datasource name.
-     *
-     * @param  string  $name
-     * @return void
+     * @inheritDoc
      */
-    public function setDefaultDatasource($name)
+    public function setDefaultDatasource(string $name): void
     {
         $this->default = $name;
     }

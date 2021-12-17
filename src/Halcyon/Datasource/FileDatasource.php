@@ -1,5 +1,8 @@
 <?php namespace Winter\Storm\Halcyon\Datasource;
 
+use Exception;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Filesystem\PathResolver;
 use Winter\Storm\Halcyon\Processors\Processor;
@@ -8,9 +11,6 @@ use Winter\Storm\Halcyon\Exception\DeleteFileException;
 use Winter\Storm\Halcyon\Exception\FileExistsException;
 use Winter\Storm\Halcyon\Exception\InvalidFileNameException;
 use Winter\Storm\Halcyon\Exception\CreateDirectoryException;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use Exception;
 
 /**
  * File based datasource.
@@ -19,17 +19,13 @@ class FileDatasource extends Datasource
 {
     /**
      * The local path where the datasource can be found.
-     *
-     * @var string
      */
-    protected $basePath;
+    protected string $basePath;
 
     /**
      * The filesystem instance.
-     *
-     * @var \Winter\Storm\Filesystem\Filesystem
      */
-    protected $files;
+    protected \Winter\Storm\Filesystem\Filesystem $files;
 
     /**
      * Resolved path map.
@@ -48,21 +44,14 @@ class FileDatasource extends Datasource
     public function __construct(string $basePath, Filesystem $files)
     {
         $this->basePath = $basePath;
-
         $this->files = $files;
-
         $this->postProcessor = new Processor;
     }
 
     /**
-     * Returns a single template.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return mixed
+     * @inheritDoc
      */
-    public function selectOne(string $dirName, string $fileName, string $extension)
+    public function selectOne(string $dirName, string $fileName, string $extension): ?array
     {
         try {
             $path = $this->makeFilePath($dirName, $fileName, $extension);
@@ -72,27 +61,15 @@ class FileDatasource extends Datasource
                 'content'  => $this->files->get($path),
                 'mtime'    => $this->files->lastModified($path)
             ];
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             return null;
         }
     }
 
     /**
-     * Returns all templates.
-     *
-     * @param string $dirName
-     * @param array $options Array of options, [
-     *                          'columns'    => ['fileName', 'mtime', 'content'], // Only return specific columns
-     *                          'extensions' => ['htm', 'md', 'twig'],            // Extensions to search for
-     *                          'fileMatch'  => '*gr[ae]y',                       // Shell matching pattern to match the filename against using the fnmatch function
-     *                          'orders'     => false                             // Not implemented
-     *                          'limit'      => false                             // Not implemented
-     *                          'offset'     => false                             // Not implemented
-     *                      ];
-     * @return array
+     * @inheritDoc
      */
-    public function select(string $dirName, array $options = [])
+    public function select(string $dirName, array $options = []): array
     {
         // Prepare query options
         $queryOptions = array_merge([
@@ -175,15 +152,9 @@ class FileDatasource extends Datasource
     }
 
     /**
-     * Creates a new template.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @param  string  $content
-     * @return int
+     * @inheritDoc
      */
-    public function insert(string $dirName, string $fileName, string $extension, string $content)
+    public function insert(string $dirName, string $fileName, string $extension, string $content): int
     {
         $this->validateDirectoryForSave($dirName, $fileName, $extension);
 
@@ -195,24 +166,15 @@ class FileDatasource extends Datasource
 
         try {
             return $this->files->put($path, $content);
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw (new CreateFileException)->setInvalidPath($path);
         }
     }
 
     /**
-     * Updates an existing template.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @param  string  $content
-     * @param  string  $oldFileName Defaults to null
-     * @param  string  $oldExtension Defaults to null
-     * @return int
+     * @inheritDoc
      */
-    public function update(string $dirName, string $fileName, string $extension, string $content, $oldFileName = null, $oldExtension = null)
+    public function update(string $dirName, string $fileName, string $extension, string $content, ?string $oldFileName = null, ?string $oldExtension = null): int
     {
         $this->validateDirectoryForSave($dirName, $fileName, $extension);
 
@@ -241,48 +203,35 @@ class FileDatasource extends Datasource
 
         try {
             return $this->files->put($path, $content);
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw (new CreateFileException)->setInvalidPath($path);
         }
     }
 
     /**
-     * Run a delete statement against the datasource.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return bool
+     * @inheritDoc
      */
-    public function delete(string $dirName, string $fileName, string $extension)
+    public function delete(string $dirName, string $fileName, string $extension): bool
     {
         $path = $this->makeFilePath($dirName, $fileName, $extension);
 
         try {
             return $this->files->delete($path);
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw (new DeleteFileException)->setInvalidPath($path);
         }
     }
 
     /**
-     * Run a delete statement against the datasource.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return int|null
+     * @inheritDoc
      */
-    public function lastModified(string $dirName, string $fileName, string $extension)
+    public function lastModified(string $dirName, string $fileName, string $extension): ?int
     {
         try {
             $path = $this->makeFilePath($dirName, $fileName, $extension);
 
             return $this->files->lastModified($path);
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             return null;
         }
     }
@@ -290,12 +239,11 @@ class FileDatasource extends Datasource
     /**
      * Ensure the requested file can be created in the requested directory.
      *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return void
+     * @param string $dirName The directory in which the model is stored.
+     * @param string $fileName The filename of the model.
+     * @param string $extension The file extension of the model.
      */
-    protected function validateDirectoryForSave(string $dirName, string $fileName, string $extension)
+    protected function validateDirectoryForSave(string $dirName, string $fileName, string $extension): void
     {
         $path = $this->makeFilePath($dirName, $fileName, $extension);
         $dirPath = $this->makeDirectoryPath($dirName);
@@ -333,7 +281,7 @@ class FileDatasource extends Datasource
      * @throws InvalidFileNameException If the path is outside of the basePath of the datasource
      * @return string
      */
-    protected function makeDirectoryPath($dirName, $relativePath = '')
+    protected function makeDirectoryPath(string $dirName, string $relativePath = ''): string
     {
         $base = $this->basePath . '/' . $dirName;
         $path = !empty($relativePath) ? $base . '/' . $relativePath : $base;
@@ -351,54 +299,38 @@ class FileDatasource extends Datasource
     }
 
     /**
-     * Helper to make file path.
+     * Helper method to make the full file path to the model.
      *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return string
+     * @param string $dirName The directory in which the model is stored.
+     * @param string $fileName The filename of the model.
+     * @param string $extension The file extension of the model.
+     * @return string The full file path.
      */
-    protected function makeFilePath(string $dirName, string $fileName, string $extension)
+    protected function makeFilePath(string $dirName, string $fileName, string $extension): string
     {
         return $this->makeDirectoryPath($dirName, $fileName . '.' . $extension);
     }
 
     /**
-     * Generate a cache key unique to this datasource.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    public function makeCacheKey($name = '')
-    {
-        return (string) crc32($this->basePath . $name);
-    }
-
-    /**
      * Returns the base path for this datasource.
-     * @return string
      */
-    public function getBasePath()
+    public function getBasePath(): string
     {
         return $this->basePath;
     }
 
     /**
-     * Generate a paths cache key unique to this datasource
-     *
-     * @return string
+     * @inheritDoc
      */
-    public function getPathsCacheKey()
+    public function getPathsCacheKey(): string
     {
         return 'halcyon-datastore-file-' . $this->basePath;
     }
 
     /**
-     * Get all available paths within this datastore
-     *
-     * @return array $paths ['path/to/file1.md' => true (path can be handled and exists), 'path/to/file2.md' => false (path can be handled but doesn't exist)]
+     * @inheritDoc
      */
-    public function getAvailablePaths()
+    public function getAvailablePaths(): array
     {
         $pathsCache = [];
         $it = (is_dir($this->basePath))
