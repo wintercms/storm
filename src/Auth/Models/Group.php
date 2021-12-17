@@ -4,6 +4,8 @@ use Winter\Storm\Database\Model;
 
 /**
  * Group model
+ *
+ * @method \Winter\Storm\Database\Relations\BelongsToMany users() Users relation.
  */
 class Group extends Model
 {

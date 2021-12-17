@@ -6,6 +6,15 @@ use Winter\Storm\Auth\Manager;
 
 /**
  * User Preferences model
+ *
+ * @property string|array|null $value Represents the value of the preference.
+ * @property string|null $namespace Represents the namespace of the preference.
+ * @property string|null $group Represents the group of the preference.
+ * @property string|null $item Represents the item name of the preference.
+ * @property int|null $user_id Represents the user ID that this preference belongs to.
+ *
+ * @method static \Winter\Storm\Database\QueryBuilder applyKeyAndUser($key, $user = null) Scope to find a setting record
+ *  for the specified module (or plugin) name, setting name and user.
  */
 class Preferences extends Model
 {
@@ -158,6 +167,7 @@ class Preferences extends Model
 
     /**
      * Scope to find a setting record for the specified module (or plugin) name, setting name and user.
+     * @param \Winter\Storm\Database\QueryBuilder $query
      * @param string $key Specifies the setting key value, for example 'backend:items.perpage'
      * @param mixed $user An optional user object.
      * @return mixed Returns the found record or null.
