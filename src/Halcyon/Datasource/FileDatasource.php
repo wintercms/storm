@@ -15,7 +15,7 @@ use Exception;
 /**
  * File based datasource.
  */
-class FileDatasource extends Datasource implements DatasourceInterface
+class FileDatasource extends Datasource
 {
     /**
      * The local path where the datasource can be found.
@@ -94,14 +94,16 @@ class FileDatasource extends Datasource implements DatasourceInterface
      */
     public function select(string $dirName, array $options = [])
     {
-        extract(array_merge([
+        // Prepare query options
+        $queryOptions = array_merge([
             'columns'     => null,  // Only return specific columns (fileName, mtime, content)
             'extensions'  => null,  // Match specified extensions
             'fileMatch'   => null,  // Match the file name using fnmatch()
             'orders'      => null,  // @todo
             'limit'       => null,  // @todo
             'offset'      => null   // @todo
-        ], $options));
+        ], $options);
+        extract($queryOptions);
 
         $result = [];
         $dirPath = $this->makeDirectoryPath($dirName);
@@ -110,11 +112,12 @@ class FileDatasource extends Datasource implements DatasourceInterface
             return $result;
         }
 
-        if ($columns === ['*'] || !is_array($columns)) {
-            $columns = null;
-        }
-        else {
-            $columns = array_flip($columns);
+        if (isset($columns)) {
+            if ($columns === ['*'] || !is_array($columns)) {
+                $columns = null;
+            } else {
+                $columns = array_flip($columns);
+            }
         }
 
         $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
@@ -131,7 +134,7 @@ class FileDatasource extends Datasource implements DatasourceInterface
              * Filter by extension
              */
             $fileExt = $it->getExtension();
-            if ($extensions !== null && !in_array($fileExt, $extensions)) {
+            if (isset($extensions) && !in_array($fileExt, $extensions)) {
                 $it->next();
                 continue;
             }
@@ -144,7 +147,7 @@ class FileDatasource extends Datasource implements DatasourceInterface
             /*
              * Filter by file name match
              */
-            if ($fileMatch !== null && !fnmatch($fileMatch, $fileName)) {
+            if (isset($fileMatch) && !fnmatch($fileMatch, $fileName)) {
                 $it->next();
                 continue;
             }
@@ -155,11 +158,11 @@ class FileDatasource extends Datasource implements DatasourceInterface
 
             $item['fileName'] = $fileName;
 
-            if (!$columns || array_key_exists('content', $columns)) {
+            if (!isset($columns) || array_key_exists('content', $columns)) {
                 $item['content'] = $this->files->get($path);
             }
 
-            if (!$columns || array_key_exists('mtime', $columns)) {
+            if (!isset($columns) || array_key_exists('mtime', $columns)) {
                 $item['mtime'] = $this->files->lastModified($path);
             }
 
@@ -178,7 +181,7 @@ class FileDatasource extends Datasource implements DatasourceInterface
      * @param  string  $fileName
      * @param  string  $extension
      * @param  string  $content
-     * @return bool
+     * @return int
      */
     public function insert(string $dirName, string $fileName, string $extension, string $content)
     {
@@ -270,7 +273,7 @@ class FileDatasource extends Datasource implements DatasourceInterface
      * @param  string  $dirName
      * @param  string  $fileName
      * @param  string  $extension
-     * @return int
+     * @return int|null
      */
     public function lastModified(string $dirName, string $fileName, string $extension)
     {
@@ -368,7 +371,7 @@ class FileDatasource extends Datasource implements DatasourceInterface
      */
     public function makeCacheKey($name = '')
     {
-        return crc32($this->basePath . $name);
+        return (string) crc32($this->basePath . $name);
     }
 
     /**

@@ -21,12 +21,13 @@ class SectionParser
      */
     public static function render($data, $options = [])
     {
-        extract(array_merge([
+        $sectionOptions = array_merge([
             'wrapCodeInPhpTags' => true,
             'isCompoundObject'  => true
-        ], $options));
+        ], $options);
+        extract($sectionOptions);
 
-        if (!$isCompoundObject) {
+        if (!isset($isCompoundObject) || $isCompoundObject === false) {
             return array_get($data, 'content');
         }
 
@@ -58,7 +59,7 @@ class SectionParser
         }
 
         if ($code) {
-            if ($wrapCodeInPhpTags) {
+            if (isset($wrapCodeInPhpTags) && $wrapCodeInPhpTags === true) {
                 $code = preg_replace('/^\<\?php/', '', $code);
                 $code = preg_replace('/^\<\?/', '', $code);
                 $code = preg_replace('/\?>$/', '', $code);
@@ -98,9 +99,10 @@ class SectionParser
      */
     public static function parse($content, $options = [])
     {
-        extract(array_merge([
+        $sectionOptions = array_merge([
             'isCompoundObject' => true
-        ], $options));
+        ], $options);
+        extract($sectionOptions);
 
         $result = [
             'settings' => [],
@@ -108,7 +110,7 @@ class SectionParser
             'markup'   => null
         ];
 
-        if (!$isCompoundObject || !strlen($content)) {
+        if (!isset($isCompoundObject) || $isCompoundObject === false || !strlen($content)) {
             return $result;
         }
 
@@ -120,7 +122,7 @@ class SectionParser
         }
 
         if ($count >= 3) {
-            $result['settings'] = @$iniParser->parse($sections[0], true)
+            $result['settings'] = @$iniParser->parse($sections[0])
                 ?: [self::ERROR_INI => $sections[0]];
 
             $result['code'] = $sections[1];
@@ -132,7 +134,7 @@ class SectionParser
             $result['markup'] = $sections[2];
         }
         elseif ($count == 2) {
-            $result['settings'] = @$iniParser->parse($sections[0], true)
+            $result['settings'] = @$iniParser->parse($sections[0])
                 ?: [self::ERROR_INI => $sections[0]];
 
             $result['markup'] = $sections[1];
@@ -182,9 +184,9 @@ class SectionParser
      * Returns the line number of a found instance of CMS object section separator (==).
      * @param string $content Object content
      * @param int $instance Which instance to look for
-     * @return int The line number the instance was found.
+     * @return int|null The line number the instance was found.
      */
-    private static function calculateLinePosition($content, $instance = 1)
+    public static function calculateLinePosition($content, $instance = 1)
     {
         $count = 0;
         $lines = explode(PHP_EOL, $content);
@@ -193,7 +195,7 @@ class SectionParser
                 $count++;
             }
 
-            if ($count == $instance) {
+            if ($count === $instance) {
                 return static::adjustLinePosition($content, $number);
             }
         }
@@ -209,7 +211,7 @@ class SectionParser
      * @param int $startLine The calculated starting line from calculateLinePosition()
      * @return int The adjusted line number.
      */
-    private static function adjustLinePosition($content, $startLine = -1)
+    public static function adjustLinePosition($content, $startLine = -1)
     {
         // Account for the separator itself.
         $startLine++;

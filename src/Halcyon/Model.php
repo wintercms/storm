@@ -15,6 +15,11 @@ use Exception;
 /**
  * This is a base template object. Equivalent to a Model in ORM.
  *
+ * The following properties and methods may be available:
+ *
+ * @property string|null $fileName Halcyon models generally provide a filename of the model being manipulated.
+ * @method \Illuminate\Support\MessageBag|null errors() If the Validation trait is attached to the model, this method will provide the validation errors.
+ *
  * @author Alexey Bobkov, Samuel Georges
  */
 class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
@@ -406,7 +411,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
 
     /**
      * Returns true if the object was loaded from the cache.
-     * @return boolean
+     * @return void
      */
     public function setLoadedFromCache($value)
     {

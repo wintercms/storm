@@ -44,7 +44,7 @@ class MemoryRepository extends Repository
     /**
      * Store an item in the cache.
      *
-     * @param  string  $key
+     * @param  string|array  $key
      * @param  mixed   $value
      * @param  \DateTimeInterface|\DateInterval|int  $seconds
      * @return bool
@@ -92,12 +92,12 @@ class MemoryRepository extends Repository
      *
      * @param  string  $key
      * @param  mixed   $value
-     * @return void
+     * @return bool
      */
     public function forever($key, $value)
     {
         $this->putInMemoryCache($key, $value);
-        parent::forever($key, $value);
+        return parent::forever($key, $value);
     }
 
     /**
@@ -128,8 +128,8 @@ class MemoryRepository extends Repository
      * Retrieve an item from the internal memory cache without trying the external driver.
      * Used in testing
      *
-     * @param $key
-     * @return mixed
+     * @param string $key
+     * @return mixed|null
      */
     public function getFromMemoryCache($key)
     {
@@ -140,8 +140,8 @@ class MemoryRepository extends Repository
      * Puts an item in the memory cache, but not in the external cache.
      * Used in testing
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param mixed $value
      */
     public function putInMemoryCache($key, $value)
     {

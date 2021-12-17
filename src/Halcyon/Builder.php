@@ -6,7 +6,7 @@ use Winter\Storm\Halcyon\Exception\MissingFileNameException;
 use Winter\Storm\Halcyon\Exception\InvalidFileNameException;
 use Winter\Storm\Halcyon\Exception\InvalidExtensionException;
 use BadMethodCallException;
-use ApplicationException;
+use Winter\Storm\Exception\ApplicationException;
 
 /**
  * Query builder
@@ -39,84 +39,84 @@ class Builder
     /**
      * The columns that should be returned.
      *
-     * @var array
+     * @var array|null
      */
     public $columns;
 
     /**
      * Filter the query by these file extensions.
      *
-     * @var array
+     * @var array|null
      */
     public $extensions;
 
     /**
      * The directory name which the query is targeting.
      *
-     * @var string
+     * @var string|null
      */
     public $from;
 
     /**
      * Query should pluck a single record.
      *
-     * @var bool
+     * @var array|null
      */
     public $selectSingle;
 
     /**
      * Match files using the specified pattern.
      *
-     * @var string
+     * @var string|null
      */
     public $fileMatch;
 
     /**
      * The orderings for the query.
      *
-     * @var array
+     * @var array|null
      */
     public $orders;
 
     /**
      * The maximum number of records to return.
      *
-     * @var int
+     * @var int|null
      */
     public $limit;
 
     /**
      * The number of records to skip.
      *
-     * @var int
+     * @var int|null
      */
     public $offset;
 
     /**
      * The key that should be used when caching the query.
      *
-     * @var string
+     * @var string|null
      */
     protected $cacheKey;
 
     /**
      * The number of minutes to cache the query.
      *
-     * @var int
+     * @var int|null
      */
     protected $cacheMinutes;
 
     /**
      * The tags for the query cache.
      *
-     * @var array
+     * @var array|null
      */
     protected $cacheTags;
 
     /**
      * The cache driver to be used.
      *
-     * @var string
+     * @var string|null
      */
     protected $cacheDriver;
 
@@ -335,12 +335,12 @@ class Builder
      * Insert a new record into the datasource.
      *
      * @param  array  $values
-     * @return bool
+     * @return int
      */
     public function insert(array $values)
     {
         if (empty($values)) {
-            return true;
+            throw new ApplicationException('You must provide values to insert');
         }
 
         $this->validateFileName();
@@ -392,7 +392,7 @@ class Builder
     /**
      * Delete a record from the database.
      *
-     * @return int
+     * @return bool
      */
     public function delete()
     {
@@ -528,7 +528,7 @@ class Builder
      * Template directory and file names can contain only alphanumeric symbols, dashes and dots.
      * @param string $filePath Specifies a path to validate
      * @param integer $maxNesting Specifies the maximum allowed nesting level
-     * @return void
+     * @return bool
      */
     protected function validateFileNamePath($filePath, $maxNesting = 2)
     {
@@ -697,7 +697,7 @@ class Builder
     /**
      * Get the cache object with tags assigned, if applicable.
      *
-     * @return \Illuminate\Cache\CacheManager
+     * @return \Illuminate\Contracts\Cache\Repository
      */
     protected function getCache()
     {
@@ -737,7 +737,7 @@ class Builder
     /**
      * Get the Closure callback used when caching queries.
      *
-     * @param  string  $fileName
+     * @param  string|array  $columns
      * @return \Closure
      */
     protected function getCacheCallback($columns)
@@ -749,8 +749,8 @@ class Builder
 
     /**
      * Initialize the cache data of each record.
-     * @param  array  $data
-     * @return array
+     * @param  \Winter\Storm\Halcyon\Collection|array  $data
+     * @return \Winter\Storm\Halcyon\Collection|array
      */
     protected function processInitCacheData($data)
     {

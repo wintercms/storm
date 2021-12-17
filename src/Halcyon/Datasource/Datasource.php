@@ -3,7 +3,7 @@
 /**
  * Datasource base class.
  */
-class Datasource
+abstract class Datasource implements DatasourceInterface
 {
     use \Winter\Storm\Support\Traits\Emitter;
 
@@ -30,27 +30,64 @@ class Datasource
     }
 
     /**
-     * Force the deletion of a record against the datasource
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return void
+     * @inheritDoc
+     */
+    abstract public function selectOne(string $dirName, string $fileName, string $extension);
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function select(string $dirName, array $options = []);
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function insert(string $dirName, string $fileName, string $extension, string $content);
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function update(string $dirName, string $fileName, string $extension, string $content, $oldFileName = null, $oldExtension = null);
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function delete(string $dirName, string $fileName, string $extension);
+
+    /**
+     * @inheritDoc
      */
     public function forceDelete(string $dirName, string $fileName, string $extension)
     {
         $this->forceDeleting = true;
 
-        $this->delete($dirName, $fileName, $extension);
+        $success = $this->delete($dirName, $fileName, $extension);
 
         $this->forceDeleting = false;
+
+        return $success;
     }
 
     /**
-     * Generate a cache key unique to this datasource.
+     * @inheritDoc
+     */
+    abstract public function lastModified(string $dirName, string $fileName, string $extension);
+
+    /**
+     * @inheritDoc
      */
     public function makeCacheKey($name = '')
     {
-        return crc32($name);
+        return (string) crc32($name);
     }
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function getPathsCacheKey();
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function getAvailablePaths();
 }

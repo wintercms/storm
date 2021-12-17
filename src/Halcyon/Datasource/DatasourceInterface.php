@@ -28,8 +28,8 @@ interface DatasourceInterface
      * @param  string  $dirName
      * @param  string  $fileName
      * @param  string  $extension
-     * @param  array   $content
-     * @return bool
+     * @param  string  $content
+     * @return int
      */
     public function insert(string $dirName, string $fileName, string $extension, string $content);
 
@@ -39,7 +39,7 @@ interface DatasourceInterface
      * @param  string  $dirName
      * @param  string  $fileName
      * @param  string  $extension
-     * @param  array   $content
+     * @param  string   $content
      * @param  string  $oldFileName Defaults to null
      * @param  string  $oldExtension Defaults to null
      * @return int
@@ -72,7 +72,7 @@ interface DatasourceInterface
      * @param  string  $dirName
      * @param  string  $fileName
      * @param  string  $extension
-     * @return int
+     * @return int|null
      */
     public function lastModified(string $dirName, string $fileName, string $extension);
 

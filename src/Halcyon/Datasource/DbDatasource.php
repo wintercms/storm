@@ -1,12 +1,12 @@
 <?php namespace Winter\Storm\Halcyon\Datasource;
 
-use Db;
 use Exception;
 use Carbon\Carbon;
 use Winter\Storm\Halcyon\Processors\Processor;
 use Winter\Storm\Halcyon\Exception\CreateFileException;
 use Winter\Storm\Halcyon\Exception\DeleteFileException;
 use Winter\Storm\Halcyon\Exception\FileExistsException;
+use Winter\Storm\Support\Facades\DB;
 
 /**
  * Database based data source
@@ -20,7 +20,7 @@ use Winter\Storm\Halcyon\Exception\FileExistsException;
  *  - updated_at, datetime
  *  - deleted_at, datetime, nullable
  */
-class DbDatasource extends Datasource implements DatasourceInterface
+class DbDatasource extends Datasource
 {
     /**
      * @var string The identifier for this datasource instance
@@ -49,18 +49,20 @@ class DbDatasource extends Datasource implements DatasourceInterface
     }
 
     /**
-     * Get the base QueryBuilder object
+     * Get the base QueryBuilder object.
+     *
+     * @return \Illuminate\Database\Query\Builder
      */
     public function getBaseQuery()
     {
-        return Db::table($this->table)->enableDuplicateCache();
+        return DB::table($this->table)->enableDuplicateCache();
     }
 
     /**
      * Get the QueryBuilder object
      *
      * @param bool $ignoreDeleted Flag to ignore deleted records, defaults to true
-     * @return QueryBuilder
+     * @return \Illuminate\Database\Query\Builder
      */
     public function getQuery($ignoreDeleted = true)
     {
@@ -146,16 +148,20 @@ class DbDatasource extends Datasource implements DatasourceInterface
         $result = [];
 
         // Prepare query options
-        extract(array_merge([
+        $queryOptions = array_merge([
             'columns'     => null,  // Only return specific columns (fileName, mtime, content)
             'extensions'  => null,  // Match specified extensions
             'fileMatch'   => null,  // Match the file name using fnmatch()
             'orders'      => null,  // @todo
             'limit'       => null,  // @todo
             'offset'      => null   // @todo
-        ], $options));
+        ], $options);
+        extract($queryOptions);
 
-        if ($columns === ['*'] || !is_array($columns)) {
+        if (
+            isset($columns)
+            && ($columns === ['*'] || !is_array($columns))
+        ) {
             $columns = null;
         }
 
@@ -163,7 +169,7 @@ class DbDatasource extends Datasource implements DatasourceInterface
         $query = $this->getQuery()->where('path', 'like', $dirName . '%');
 
         // Apply the extensions filter
-        if (is_array($extensions) && !empty($extensions)) {
+        if (!empty($extensions) && is_array($extensions)) {
             $query->where(function ($query) use ($extensions) {
                 // Get the first extension to query for
                 $query->where('path', 'like', '%' . '.' . array_pop($extensions));
@@ -189,7 +195,7 @@ class DbDatasource extends Datasource implements DatasourceInterface
             }
 
             // Apply the columns filter on the data returned
-            if (is_null($columns)) {
+            if (!isset($columns)) {
                 $resultItem = [
                     'fileName' => $fileName,
                     'content'  => $item->content,
@@ -227,7 +233,7 @@ class DbDatasource extends Datasource implements DatasourceInterface
      * @param  string  $fileName
      * @param  string  $extension
      * @param  string  $content
-     * @return bool
+     * @return int
      */
     public function insert(string $dirName, string $fileName, string $extension, string $content)
     {
@@ -377,7 +383,7 @@ class DbDatasource extends Datasource implements DatasourceInterface
      * @param  string  $dirName
      * @param  string  $fileName
      * @param  string  $extension
-     * @return int
+     * @return int|null
      */
     public function lastModified(string $dirName, string $fileName, string $extension)
     {
@@ -385,8 +391,7 @@ class DbDatasource extends Datasource implements DatasourceInterface
             return Carbon::parse($this->getQuery()
                     ->where('path', $this->makeFilePath($dirName, $fileName, $extension))
                     ->first()->updated_at)->timestamp;
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             return null;
         }
     }
@@ -399,7 +404,7 @@ class DbDatasource extends Datasource implements DatasourceInterface
      */
     public function makeCacheKey($name = '')
     {
-        return crc32($this->source . $name);
+        return (string) crc32($this->source . $name);
     }
 
     /**
