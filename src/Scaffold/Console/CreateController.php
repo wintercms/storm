@@ -1,8 +1,6 @@
 <?php namespace Winter\Storm\Scaffold\Console;
 
 use Winter\Storm\Scaffold\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 use Winter\Storm\Support\Str;
 
 class CreateController extends GeneratorCommand
@@ -13,6 +11,17 @@ class CreateController extends GeneratorCommand
      * @var string|null
      */
     protected static $defaultName = 'create:controller';
+
+    /**
+     * The name and signature of this command.
+     *
+     * @var string
+     */
+    protected $signature = 'create:controller
+        {plugin : The name of the plugin. <info>(eg: Winter.Blog)</info>}
+        {controller : The name of the controller to generate. <info>(eg: Posts)</info>}
+        {--force : Overwrite existing files with generated files.}
+        {--model= : Defines the model name to use. If not provided, the singular name of the controller is used.}';
 
     /**
      * The console command description.
@@ -73,32 +82,6 @@ class CreateController extends GeneratorCommand
             'model' => $model,
             'author' => $author,
             'plugin' => $plugin
-        ];
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['plugin', InputArgument::REQUIRED, 'The name of the plugin to create. Eg: Winter.Blog'],
-            ['controller', InputArgument::REQUIRED, 'The name of the controller. Eg: Posts'],
-        ];
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['force', null, InputOption::VALUE_NONE, 'Overwrite existing files with generated ones.'],
-            ['model', null, InputOption::VALUE_OPTIONAL, 'Define which model name to use, otherwise the singular controller name is used.'],
         ];
     }
 }

@@ -1,8 +1,6 @@
 <?php namespace Winter\Storm\Scaffold\Console;
 
 use Winter\Storm\Scaffold\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
 class CreateFormWidget extends GeneratorCommand
 {
@@ -12,6 +10,16 @@ class CreateFormWidget extends GeneratorCommand
      * @var string|null
      */
     protected static $defaultName = 'create:formwidget';
+
+    /**
+     * The name and signature of this command.
+     *
+     * @var string
+     */
+    protected $signature = 'create:formwidget
+        {plugin : The name of the plugin. <info>(eg: Winter.Blog)</info>}
+        {widget : The name of the form widget to generate. <info>(eg: PostList)</info>}
+        {--force : Overwrite existing files with generated files.}';
 
     /**
      * The console command description.
@@ -58,31 +66,6 @@ class CreateFormWidget extends GeneratorCommand
             'name' => $widget,
             'author' => $author,
             'plugin' => $plugin
-        ];
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['plugin', InputArgument::REQUIRED, 'The name of the plugin. Eg: Winter.Blog'],
-            ['widget', InputArgument::REQUIRED, 'The name of the form widget. Eg: PostList'],
-        ];
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['force', null, InputOption::VALUE_NONE, 'Overwrite existing files with generated ones.'],
         ];
     }
 }

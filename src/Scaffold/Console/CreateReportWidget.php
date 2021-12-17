@@ -1,8 +1,6 @@
 <?php namespace Winter\Storm\Scaffold\Console;
 
 use Winter\Storm\Scaffold\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
 class CreateReportWidget extends GeneratorCommand
 {
@@ -12,6 +10,16 @@ class CreateReportWidget extends GeneratorCommand
      * @var string|null
      */
     protected static $defaultName = 'create:reportwidget';
+
+    /**
+     * The name and signature of this command.
+     *
+     * @var string
+     */
+    protected $signature = 'create:reportwidget
+        {plugin : The name of the plugin. <info>(eg: Winter.Blog)</info>}
+        {widget : The name of the report widget to generate. <info>(eg: PostViews)</info>}
+        {--force : Overwrite existing files with generated files.}';
 
     /**
      * The console command description.
@@ -56,31 +64,6 @@ class CreateReportWidget extends GeneratorCommand
             'name' => $widget,
             'author' => $author,
             'plugin' => $plugin
-        ];
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['plugin', InputArgument::REQUIRED, 'The name of the plugin. Eg: Winter.Google'],
-            ['widget', InputArgument::REQUIRED, 'The name of the report widget. Eg: TopPages'],
-        ];
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['force', null, InputOption::VALUE_NONE, 'Overwrite existing files with generated ones.'],
         ];
     }
 }
