@@ -210,11 +210,14 @@ class FileLoader implements LoaderInterface
     /**
      * Get the configuration path for a namespace.
      *
-     * @param string $namespace
+     * @param string|null $namespace
      * @return string|null
      */
-    protected function getPath($namespace)
+    protected function getPath($namespace = null)
     {
+        if (is_null($namespace)) {
+            return $this->defaultPath;
+        }
         if (isset($this->hints[$namespace])) {
             return $this->hints[$namespace];
         }
