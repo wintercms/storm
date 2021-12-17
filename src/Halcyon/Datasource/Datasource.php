@@ -20,9 +20,7 @@ abstract class Datasource implements DatasourceInterface
     protected $postProcessor;
 
     /**
-     * Get the query post processor used by the connection.
-     *
-     * @return \Winter\Storm\Halcyon\Processors\Processor
+     * @inheritDoc
      */
     public function getPostProcessor()
     {

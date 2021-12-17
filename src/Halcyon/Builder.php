@@ -315,7 +315,7 @@ class Builder
      * Execute the query as a "select" statement.
      *
      * @param  array  $columns
-     * @return \Winter\Storm\Halcyon\Collection|static[]
+     * @return \Winter\Storm\Halcyon\Collection
      */
     public function get($columns = ['*'])
     {

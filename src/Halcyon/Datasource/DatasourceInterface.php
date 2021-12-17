@@ -2,6 +2,12 @@
 
 interface DatasourceInterface
 {
+    /**
+     * Get the query post processor used by the connection.
+     *
+     * @return \Winter\Storm\Halcyon\Processors\Processor
+     */
+    public function getPostProcessor();
 
     /**
      * Returns a single template.
