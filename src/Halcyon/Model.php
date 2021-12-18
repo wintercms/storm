@@ -683,7 +683,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
          * @see Winter\Storm\Database\Model::getAttributeValue
          */
         $attr = $this->fireEvent('model.beforeGetAttribute', [$key], true);
-        if ($attr !== null) {
+        if (!is_null($attr)) {
             return $attr;
         }
 
@@ -700,7 +700,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
          * @see Winter\Storm\Database\Model::getAttributeValue
          */
         $_attr = $this->fireEvent('model.getAttribute', [$key, $value], true);
-        if ($_attr !== null) {
+        if (!is_null($_attr)) {
             return $_attr;
         }
 
@@ -1557,7 +1557,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      */
     public static function flushDuplicateCache()
     {
-        if (!MemoryCacheManager::isEnabled() || self::getCacheManager() === null) {
+        if (!MemoryCacheManager::isEnabled() || is_null(self::getCacheManager())) {
             return;
         }
 
