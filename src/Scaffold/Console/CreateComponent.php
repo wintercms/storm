@@ -1,17 +1,25 @@
 <?php namespace Winter\Storm\Scaffold\Console;
 
 use Winter\Storm\Scaffold\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
 class CreateComponent extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The default command name for lazy loading.
+     *
+     * @var string|null
+     */
+    protected static $defaultName = 'create:component';
+
+    /**
+     * The name and signature of this command.
      *
      * @var string
      */
-    protected $name = 'create:component';
+    protected $signature = 'create:component
+        {plugin : The name of the plugin. <info>(eg: Winter.Blog)</info>}
+        {component : The name of the component to generate. <info>(eg: Posts)</info>}
+        {--force : Overwrite existing files with generated files.}';
 
     /**
      * The console command description.
@@ -55,31 +63,6 @@ class CreateComponent extends GeneratorCommand
             'name' => $component,
             'author' => $author,
             'plugin' => $plugin
-        ];
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['plugin', InputArgument::REQUIRED, 'The name of the plugin to create. Eg: Winter.Blog'],
-            ['component', InputArgument::REQUIRED, 'The name of the component. Eg: Posts'],
-        ];
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['force', null, InputOption::VALUE_NONE, 'Overwrite existing files with generated ones.']
         ];
     }
 }

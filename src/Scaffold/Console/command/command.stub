@@ -9,7 +9,7 @@ class {{studly_name}} extends Command
     /**
      * @var string The console command name.
      */
-    protected $name = '{{lower_plugin}}:{{lower_name}}';
+    protected static $defaultName = '{{lower_plugin}}:{{lower_name}}';
 
     /**
      * @var string The console command description.

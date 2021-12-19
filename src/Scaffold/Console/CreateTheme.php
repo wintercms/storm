@@ -2,17 +2,24 @@
 
 use Exception;
 use Winter\Storm\Scaffold\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
 class CreateTheme extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The default command name for lazy loading.
+     *
+     * @var string|null
+     */
+    protected static $defaultName = 'create:theme';
+
+    /**
+     * The name and signature of this command.
      *
      * @var string
      */
-    protected $name = 'create:theme';
+    protected $signature = 'create:theme
+        {theme : The name of the theme to create. <info>(eg: MyTheme)</info>}
+        {--force : Overwrite existing files with generated files.}';
 
     /**
      * The console command description.
@@ -110,29 +117,5 @@ class CreateTheme extends GeneratorCommand
         }
 
         $this->files->put($destinationFile, $destinationContent);
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['theme', InputArgument::REQUIRED, 'The code of the theme to create. Eg: example.com'],
-        ];
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['force', null, InputOption::VALUE_NONE, 'Overwrite existing files with generated ones.'],
-        ];
     }
 }
