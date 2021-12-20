@@ -1,7 +1,6 @@
 <?php namespace Winter\Storm\Database;
 
 use Illuminate\Database\Eloquent\Model as ModelBase;
-use Illuminate\Database\Eloquent\Builder as BuilderBase;
 
 class Pivot extends Model
 {
@@ -34,35 +33,63 @@ class Pivot extends Model
     protected $guarded = [];
 
     /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
      * Create a new pivot model instance.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $parent
-     * @param  array   $attributes
+     * @param  array  $attributes
      * @param  string  $table
-     * @param  bool    $exists
-     * @return void
+     * @param  bool  $exists
+     * @return static
      */
-    public function __construct(ModelBase $parent, $attributes, $table, $exists = false)
+    public static function fromAttributes(Model $parent, $attributes, $table, $exists = false)
     {
-        parent::__construct();
-
-        // The pivot model is a "dynamic" model since we will set the tables dynamically
-        // for the instance. This allows it work for any intermediate tables for the
-        // many to many relationship that are defined by this developer's classes.
-        $this->setRawAttributes($attributes, true);
-
-        $this->setTable($table);
-
-        $this->setConnection($parent->getConnectionName());
+        $instance = new static;
 
         // We store off the parent instance so we will access the timestamp column names
         // for the model, since the pivot model timestamps aren't easily configurable
         // from the developer's point of view. We can use the parents to get these.
-        $this->parent = $parent;
+        $instance->parent = $parent;
 
-        $this->exists = $exists;
+        $instance->timestamps = $instance->hasTimestampAttributes($attributes);
 
-        $this->timestamps = $this->hasTimestampAttributes();
+        // The pivot model is a "dynamic" model since we will set the tables dynamically
+        // for the instance. This allows it work for any intermediate tables for the
+        // many to many relationship that are defined by this developer's classes.
+        $instance->setConnection($parent->getConnectionName())
+            ->setTable($table)
+            ->forceFill($attributes)
+            ->syncOriginal();
+
+        $instance->exists = $exists;
+
+        return $instance;
+    }
+
+    /**
+     * Create a new pivot model from raw values returned from a query.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  array  $attributes
+     * @param  string  $table
+     * @param  bool  $exists
+     * @return static
+     */
+    public static function fromRawAttributes(Model $parent, $attributes, $table, $exists = false)
+    {
+        $instance = static::fromAttributes($parent, [], $table, $exists);
+
+        $instance->timestamps = $instance->hasTimestampAttributes($attributes);
+
+        $instance->setRawAttributes($attributes, $exists);
+
+        return $instance;
     }
 
     /**

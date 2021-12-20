@@ -1,13 +1,13 @@
 <?php namespace Winter\Storm\Database;
 
 use Closure;
+use Exception;
+use DateTimeInterface;
 use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Argon\Argon;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
-use DateTimeInterface;
-use Exception;
 
 /**
  * Active Record base class.
@@ -16,7 +16,7 @@ use Exception;
  *
  * @author Alexey Bobkov, Samuel Georges
  */
-class Model extends EloquentModel
+class Model extends EloquentModel implements ModelInterface
 {
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
@@ -723,7 +723,7 @@ class Model extends EloquentModel
     {
         return $using
             ? $using::fromRawAttributes($parent, $attributes, $table, $exists)
-            : new Pivot($parent, $attributes, $table, $exists);
+            : Pivot::fromAttributes($parent, $attributes, $table, $exists);
     }
 
     /**
@@ -741,7 +741,7 @@ class Model extends EloquentModel
 
         if (!is_null($definition) && array_key_exists('pivotModel', $definition)) {
             $pivotModel = $definition['pivotModel'];
-            return new $pivotModel($parent, $attributes, $table, $exists);
+            return $pivotModel::fromAttributes($parent, $attributes, $table, $exists);
         }
     }
 
