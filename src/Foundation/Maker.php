@@ -5,6 +5,8 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use ReflectionClass;
 use ReflectionParameter;
+use ReflectionNamedType;
+use ReflectionUnionType;
 
 class Maker
 {
@@ -22,20 +24,13 @@ class Maker
      * Maker constructor.
      *
      * @param Container $container
-     * @return void
      */
     public function __construct(Container $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * @param       $abstract
-     * @param array $parameters
-     *
-     * @return mixed
-     */
-    public function make($abstract, $parameters = [])
+    public function make($abstract, array $parameters = [])
     {
         return $this->build(
             $this->getBinding($abstract),
@@ -43,12 +38,6 @@ class Maker
         );
     }
 
-    /**
-     * @param $abstract
-     * @param $concrete
-     *
-     * @return void
-     */
     public function bind($abstract, Closure $concrete)
     {
         $this->bindings[$abstract] = $concrete;
@@ -125,11 +114,9 @@ class Maker
 
             if (array_key_exists($parameter->name, $primitives)) {
                 $dependencies[] = $primitives[$parameter->name];
-            }
-            elseif (is_null($dependency)) {
+            } elseif (is_null($dependency)) {
                 $dependencies[] = $this->resolvePrimitive($parameter);
-            }
-            else {
+            } elseif ($dependency instanceof ReflectionUnionType === false) {
                 $dependencies[] = $this->resolveClass($parameter);
             }
         }
@@ -145,10 +132,12 @@ class Maker
      */
     protected function resolveClass(ReflectionParameter $parameter)
     {
+        /** @var ReflectionNamedType */
+        $type = $parameter->getType();
+
         try {
-            return $this->getFromContainer($parameter->getType()->getName());
-        }
-        catch (BindingResolutionException $e) {
+            return $this->getFromContainer($type->getName());
+        } catch (BindingResolutionException $e) {
             if ($parameter->isOptional()) {
                 return $parameter->getDefaultValue();
             }
@@ -156,19 +145,12 @@ class Maker
         }
     }
 
-    /**
-     * @param $abstract
-     *
-     * @return mixed
-     */
     protected function getBinding($abstract)
     {
         return $this->isBound($abstract) ? $this->bindings[$abstract] : $abstract;
     }
 
     /**
-     * @param $abstract
-     *
      * @return bool
      */
     protected function isBound($abstract)

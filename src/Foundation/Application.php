@@ -214,7 +214,7 @@ class Application extends ApplicationBase
     /**
      * Set the temp path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setTempPath($path)
     {
@@ -237,7 +237,7 @@ class Application extends ApplicationBase
     /**
      * Set the uploads path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setUploadsPath($path)
     {
@@ -260,7 +260,7 @@ class Application extends ApplicationBase
     /**
      * Set the media path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setMediaPath($path)
     {
@@ -301,7 +301,7 @@ class Application extends ApplicationBase
      */
     public function before($callback)
     {
-        return $this['router']->before($callback);
+        $this['router']->before($callback);
     }
 
     /**
@@ -312,7 +312,7 @@ class Application extends ApplicationBase
      */
     public function after($callback)
     {
-        return $this['router']->after($callback);
+        $this['router']->after($callback);
     }
 
     /**
@@ -380,12 +380,12 @@ class Application extends ApplicationBase
     /**
      * Register all of the configured providers.
      *
-     * @var bool $isRetry If true, this is a second attempt without the cached packages.
+     * @param bool $isRetry If true, this is a second attempt without the cached packages.
      * @return void
      */
     public function registerConfiguredProviders($isRetry = false)
     {
-        $providers = Collection::make($this->config['app.providers'])
+        $providers = Collection::make($this->get('config')['app.providers'])
                         ->partition(function ($provider) {
                             return Str::startsWith($provider, 'Illuminate\\');
                         });

@@ -6,6 +6,11 @@ use Illuminate\Foundation\Console\KeyGenerateCommand as KeyGenerateCommandBase;
 class KeyGenerateCommand extends KeyGenerateCommandBase
 {
     /**
+     * Filesystem instance.
+     */
+    protected \Illuminate\Filesystem\Filesystem $files;
+
+    /**
      * Create a new key generator command.
      *
      * @param  \Illuminate\Filesystem\Filesystem  $files
@@ -28,7 +33,8 @@ class KeyGenerateCommand extends KeyGenerateCommandBase
         $key = $this->generateRandomKey();
 
         if ($this->option('show')) {
-            return $this->line('<comment>'.$key.'</comment>');
+            $this->line('<comment>'.$key.'</comment>');
+            return;
         }
 
         // Next, we will replace the application key in the config file so it is

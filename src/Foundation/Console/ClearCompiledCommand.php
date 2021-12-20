@@ -11,6 +11,7 @@ class ClearCompiledCommand extends ClearCompiledCommandBase
      */
     public function handle()
     {
+        /** @phpstan-ignore-next-line */
         if (file_exists($classesPath = $this->laravel->getCachedClassesPath())) {
             @unlink($classesPath);
         }
