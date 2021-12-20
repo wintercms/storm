@@ -11,3 +11,6 @@ parameters:
     databaseMigrationsPath:
         - src/Auth/Migrations
         - src/Database/Migrations
+    ignoreErrors:
+        - message: '#calls parent::__#'
+          path: src/Extension/ExtendableTrait.php
