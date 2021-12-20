@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Filesystem;
 
-use Config;
+use Winter\Storm\Support\Facades\Config;
 use Exception;
 
 /**
@@ -13,21 +13,26 @@ class Definitions
 {
 
     /**
-     * Entry point to request a definition set.
-     * @param $type string
-     * @return array
+     * Lock down the constructor for this class.
      */
-    public static function get($type)
+    final public function __construct()
     {
-        return (new self)->getDefinitions($type);
+    }
+
+    /**
+     * Entry point to request a definition set.
+     */
+    public static function get(string $type): array
+    {
+        return (new static)->getDefinitions($type);
     }
 
     /**
      * Returns a definition set from config or from the default sets.
-     * @param $type string
-     * @return array
+     *
+     * @throws Exception If the provided definition type does not exist.
      */
-    public function getDefinitions($type)
+    public function getDefinitions(string $type): array
     {
         if (!method_exists($this, $type)) {
             throw new Exception(sprintf('No such definition set exists for "%s"', $type));
@@ -37,13 +42,13 @@ class Definitions
     }
 
     /**
-     * Determines if a path should be ignored, sourced from the ignoreFiles
-     * and ignorePatterns definitions.
+     * Determines if a path should be ignored based on the ignoreFiles and ignorePatterns definitions.
+     *
+     * Returns `true` if the path is visible, `false` otherwise.
+     *
      * @todo Efficiency of this method can be improved.
-     * @param string $path Specifies a path to check.
-     * @return boolean Returns TRUE if the path is visible.
      */
-    public static function isPathIgnored($path)
+    public static function isPathIgnored(string $path): bool
     {
         $ignoreNames = self::get('ignoreFiles');
         $ignorePatterns = self::get('ignorePatterns');
@@ -63,10 +68,12 @@ class Definitions
 
     /**
      * Files that can be safely ignored.
-     * This list can be customized with config:
-     * - cms.fileDefinitions.ignoreFiles
+     *
+     * This list can be customized with the config:
+     *
+     * `cms.fileDefinitions.ignoreFiles`
      */
-    protected function ignoreFiles()
+    protected function ignoreFiles(): array
     {
         return [
             '.svn',
@@ -78,10 +85,12 @@ class Definitions
 
     /**
      * File patterns that can be safely ignored.
-     * This list can be customized with config:
-     * - cms.fileDefinitions.ignorePatterns
+     *
+     * This list can be customized with the config:
+     *
+     * `cms.fileDefinitions.ignorePatterns`
      */
-    protected function ignorePatterns()
+    protected function ignorePatterns(): array
     {
         return [
             '^\..*'
@@ -90,10 +99,12 @@ class Definitions
 
     /**
      * Extensions that are particularly benign.
+     *
      * This list can be customized with config:
-     * - cms.fileDefinitions.defaultExtensions
+     *
+     * `cms.fileDefinitions.defaultExtensions`
      */
-    protected function defaultExtensions()
+    protected function defaultExtensions(): array
     {
         return [
             'jpg',
@@ -142,10 +153,12 @@ class Definitions
 
     /**
      * Extensions seen as public assets.
+     *
      * This list can be customized with config:
-     * - cms.fileDefinitions.assetExtensions
+     *
+     * `cms.fileDefinitions.assetExtensions`
      */
-    protected function assetExtensions()
+    protected function assetExtensions(): array
     {
         return [
             'jpg',
@@ -171,10 +184,12 @@ class Definitions
 
     /**
      * Extensions typically used as images.
+     *
      * This list can be customized with config:
-     * - cms.fileDefinitions.imageExtensions
+     *
+     * `cms.fileDefinitions.imageExtensions`
      */
-    protected function imageExtensions()
+    protected function imageExtensions(): array
     {
         return [
             'jpg',
@@ -188,10 +203,12 @@ class Definitions
 
     /**
      * Extensions typically used as video files.
+     *
      * This list can be customized with config:
-     * - cms.fileDefinitions.videoExtensions
+     *
+     * `cms.fileDefinitions.videoExtensions`
      */
-    protected function videoExtensions()
+    protected function videoExtensions(): array
     {
         return [
             'mp4',
@@ -206,10 +223,12 @@ class Definitions
 
     /**
      * Extensions typically used as audio files.
+     *
      * This list can be customized with config:
-     * - cms.fileDefinitions.audioExtensions
+     *
+     * `cms.fileDefinitions.audioExtensions`
      */
-    protected function audioExtensions()
+    protected function audioExtensions(): array
     {
         return [
             'mp3',

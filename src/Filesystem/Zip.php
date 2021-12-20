@@ -50,22 +50,23 @@ use ZipArchive;
 class Zip extends ZipArchive
 {
     /**
-     * @var string Folder prefix
+     * Folder prefix
      */
-    protected $folderPrefix = '';
+    protected string $folderPrefix = '';
 
     /**
-     * Extract an existing zip file.
-     * @param  string $source Path for the existing zip
-     * @param  string $destination Path to extract the zip files
-     * @param  array  $options
-     * @return bool
+     * Lock down the constructor for this class.
      */
-    public static function extract($source, $destination, $options = [])
+    final public function __construct()
     {
-        extract(array_merge([
-            'mask' => 0777
-        ], $options));
+    }
+
+    /**
+     * Extracts an existing ZIP file.
+     */
+    public static function extract(string $source, string $destination, array $options = []): bool
+    {
+        $mask = $options['mask'] ?? 0777;
 
         if (file_exists($destination) || mkdir($destination, $mask, true)) {
             $zip = new ZipArchive;
@@ -80,24 +81,20 @@ class Zip extends ZipArchive
     }
 
     /**
-     * Creates a new empty zip file.
-     * @param  string $destination Path for the new zip
-     * @param  mixed  $source
-     * @param  array  $options
-     * @return self
+     * Creates a new empty Zip file, optionally populating it with given source files.
+     *
+     * Source can be a single path, an array of paths or a callback which allows you to manipulate the Zip file.
      */
-    public static function make($destination, $source, $options = [])
+    public static function make(string $destination, string|callable|array|null $source = null, array $options = []): static
     {
-        $zip = new self;
+        $zip = new static;
         $zip->open($destination, ZIPARCHIVE::CREATE | ZipArchive::OVERWRITE);
 
         if (is_string($source)) {
             $zip->add($source, $options);
-        }
-        elseif (is_callable($source)) {
+        } elseif (is_callable($source)) {
             $source($zip);
-        }
-        elseif (is_array($source)) {
+        } elseif (is_array($source)) {
             foreach ($source as $_source) {
                 $zip->add($_source, $options);
             }
@@ -108,13 +105,13 @@ class Zip extends ZipArchive
     }
 
     /**
-     * Includes a source to the Zip
-     * @param mixed $source
-     * @param array $options
-     * @return self
+     * Adds a source file or directory to a Zip file.
      */
-    public function add($source, $options = [])
+    public function add(string $source, array $options = []): self
     {
+        $recursive = (bool) ($options['recursive'] ?? true);
+        $includeHidden = isset($options['includeHidden']) && $options['includeHidden'] === true;
+
         /*
          * A directory has been supplied, convert it to a useful glob
          *
@@ -124,23 +121,18 @@ class Zip extends ZipArchive
          * - starts with '..' but has at least one character after it
          */
         if (is_dir($source)) {
-            $includeHidden = isset($options['includeHidden']) && $options['includeHidden'];
             $wildcard = $includeHidden ? '{*,.[!.]*,..?*}' : '*';
             $source = implode('/', [dirname($source), basename($source), $wildcard]);
         }
 
-        extract(array_merge([
-            'recursive' => true,
-            'includeHidden' => false,
-            'basedir' => dirname($source),
-            'baseglob' => basename($source)
-        ], $options));
+        $basedir = dirname($source);
+        $baseglob = basename($source);
 
         if (is_file($source)) {
             $files = [$source];
+            $folders = [];
             $recursive = false;
-        }
-        else {
+        } else {
             $files = glob($source, GLOB_BRACE);
             $folders = glob(dirname($source) . '/*', GLOB_ONLYDIR);
         }
@@ -173,12 +165,11 @@ class Zip extends ZipArchive
     }
 
     /**
-     * Creates a new folder inside the Zip and adds source files (optional)
-     * @param  string $name Folder name
-     * @param  mixed  $source
-     * @return self
+     * Creates a new folder inside the Zip file, and optionally adds the given source files/folders to this folder.
+     *
+     * Source can be a single path, an array of paths or a callback which allows you to manipulate the Zip file.
      */
-    public function folder($name, $source = null)
+    public function folder(string $name, string|callable|array|null $source = null): self
     {
         $prefix = $this->folderPrefix;
         $this->addEmptyDir($prefix . $name);
@@ -190,11 +181,9 @@ class Zip extends ZipArchive
 
         if (is_string($source)) {
             $this->add($source);
-        }
-        elseif (is_callable($source)) {
+        } elseif (is_callable($source)) {
             $source($this);
-        }
-        elseif (is_array($source)) {
+        } elseif (is_array($source)) {
             foreach ($source as $_source) {
                 $this->add($_source);
             }
@@ -205,12 +194,11 @@ class Zip extends ZipArchive
     }
 
     /**
-     * Removes a file or folder from the zip collection.
+     * Removes file(s) or folder(s) from the Zip file.
+     *
      * Does not support wildcards.
-     * @param  string $source
-     * @return self
      */
-    public function remove($source)
+    public function remove(array|string $source): self
     {
         if (is_array($source)) {
             foreach ($source as $_source) {
@@ -237,12 +225,9 @@ class Zip extends ZipArchive
     }
 
     /**
-     * Removes a prefix from a path.
-     * @param  string $prefix /var/sites/
-     * @param  string $path /var/sites/moo/cow/
-     * @return string moo/cow/
+     * Removes a prefix from a given path.
      */
-    protected function removePathPrefix($prefix, $path)
+    protected function removePathPrefix(string $prefix, string $path): string
     {
         return (strpos($path, $prefix) === 0)
             ? substr($path, strlen($prefix))
