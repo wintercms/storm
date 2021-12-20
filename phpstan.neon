@@ -7,3 +7,6 @@ parameters:
     level: 5
     excludePaths:
         - src/Assetic/*
+    databaseMigrationsPath:
+        - src/Auth/Migrations
+        - src/Database/Migrations
