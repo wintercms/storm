@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Halcyon;
 
 use BadMethodCallException;
+use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Exception\SystemException;
 use Winter\Storm\Halcyon\Datasource\DatasourceInterface;
 use Winter\Storm\Halcyon\Processors\Processor;
