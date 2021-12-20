@@ -5,6 +5,8 @@ use Winter\Storm\Database\Model;
 
 /**
  * Role model
+ *
+ * @property array $permissions Permissions array.
  */
 class Role extends Model
 {

@@ -8,6 +8,12 @@ use Exception;
 
 /**
  * User model
+ *
+ * @property array|null $groups Related groups.
+ * @property \Winter\Storm\Auth\Models\Role|null $role Related role.
+ * @property array $permissions Permissions array.
+ * @method \Winter\Storm\Database\Relations\BelongsToMany groups() Group relation.
+ * @method \Winter\Storm\Database\Relations\BelongsTo role() Role relation.
  */
 class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 {
