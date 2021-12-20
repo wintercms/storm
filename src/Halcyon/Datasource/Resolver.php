@@ -64,9 +64,9 @@ class Resolver implements ResolverInterface
     /**
      * @inheritDoc
      */
-    public function getDefaultDatasource(): string
+    public function getDefaultDatasource(): ?string
     {
-        return $this->default;
+        return $this->default ?? null;
     }
 
     /**
