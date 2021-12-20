@@ -6,6 +6,9 @@ use Illuminate\Cookie\Middleware\EncryptCookies as EncryptCookiesBase;
 
 class EncryptCookies extends EncryptCookiesBase
 {
+    /**
+     * @inheritDoc
+     */
     public function __construct(EncrypterContract $encrypter)
     {
         parent::__construct($encrypter);
