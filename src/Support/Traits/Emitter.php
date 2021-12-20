@@ -139,7 +139,7 @@ trait Emitter
      * @param string $event Event name
      * @param array $params Event parameters
      * @param boolean $halt Halt after first non-null result
-     * @return array|mixed|null If halted, the first non-null result. If not halted, an array of event results. Returns 
+     * @return array|mixed|null If halted, the first non-null result. If not halted, an array of event results. Returns
      *  null if no listeners returned a result.
      */
     public function fireEvent($event, $params = [], $halt = false)
