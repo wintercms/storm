@@ -43,7 +43,7 @@ class FormBuilder
     /**
      * The current model instance for the form.
      *
-     * @var mixed
+     * @var object|array|null
      */
     protected $model;
 
@@ -105,10 +105,8 @@ class FormBuilder
 
     /**
      * Open up a new HTML form and includes a session key.
-     * @param array $options
-     * @return string
      */
-    public function open(array $options = [])
+    public function open(array $options = []): string
     {
         $method = strtoupper(array_get($options, 'method', 'post'));
         $request = array_get($options, 'request');
@@ -162,11 +160,8 @@ class FormBuilder
 
     /**
      * Helper for opening a form used for an AJAX call.
-     * @param string $handler Request handler name, eg: onUpdate
-     * @param array $options
-     * @return string
      */
-    public function ajax($handler, array $options = [])
+    public function ajax(string|array $handler, array $options = []): string
     {
         if (is_array($handler)) {
             $handler = implode('::', $handler);
@@ -194,12 +189,8 @@ class FormBuilder
 
     /**
      * Create a new model based form builder.
-     *
-     * @param  mixed  $model
-     * @param  array  $options
-     * @return string
      */
-    public function model($model, array $options = [])
+    public function model(object|array $model, array $options = []): string
     {
         $this->model = $model;
 
@@ -208,21 +199,16 @@ class FormBuilder
 
     /**
      * Set the model instance on the form builder.
-     *
-     * @param  mixed  $model
-     * @return void
      */
-    public function setModel($model)
+    public function setModel(object|array|null $model): void
     {
         $this->model = $model;
     }
 
     /**
      * Close the current form.
-     *
-     * @return string
      */
-    public function close()
+    public function close(): string
     {
         $this->labels = [];
 
@@ -233,10 +219,8 @@ class FormBuilder
 
     /**
      * Generate a hidden field with the current CSRF token.
-     *
-     * @return string
      */
-    public function token()
+    public function token(): string
     {
         $token = !empty($this->csrfToken)
             ? $this->csrfToken
@@ -247,13 +231,8 @@ class FormBuilder
 
     /**
      * Create a form label element.
-     *
-     * @param  string  $name
-     * @param  string  $value
-     * @param  array   $options
-     * @return string
      */
-    public function label($name, $value = null, $options = [])
+    public function label(string $name, string $value = '', array $options = []): string
     {
         $this->labels[] = $name;
 
@@ -266,26 +245,16 @@ class FormBuilder
 
     /**
      * Format the label value.
-     *
-     * @param  string  $name
-     * @param  string|null  $value
-     * @return string
      */
-    protected function formatLabel($name, $value)
+    protected function formatLabel(string $name, string $value = ''): string
     {
         return $value ?: ucwords(str_replace('_', ' ', $name));
     }
 
     /**
      * Create a form input field.
-     *
-     * @param  string  $type
-     * @param  string  $name
-     * @param  string  $value
-     * @param  array   $options
-     * @return string
      */
-    public function input($type, $name, $value = null, $options = [])
+    public function input(string $type, string $name, ?string $value = null, array $options = []): string
     {
         if (!isset($options['name'])) {
             $options['name'] = $name;
@@ -312,76 +281,48 @@ class FormBuilder
 
     /**
      * Create a text input field.
-     *
-     * @param  string  $name
-     * @param  string  $value
-     * @param  array   $options
-     * @return string
      */
-    public function text($name, $value = null, $options = [])
+    public function text(string $name, ?string $value = null, array $options = []): string
     {
         return $this->input('text', $name, $value, $options);
     }
 
     /**
      * Create a password input field.
-     *
-     * @param  string  $name
-     * @param  array   $options
-     * @return string
      */
-    public function password($name, $options = [])
+    public function password(string $name, array $options = []): string
     {
         return $this->input('password', $name, '', $options);
     }
 
     /**
      * Create a hidden input field.
-     *
-     * @param  string  $name
-     * @param  string  $value
-     * @param  array   $options
-     * @return string
      */
-    public function hidden($name, $value = null, $options = [])
+    public function hidden(string $name, ?string $value = null, array $options = []): string
     {
         return $this->input('hidden', $name, $value, $options);
     }
 
     /**
-     * Create an e-mail input field.
-     *
-     * @param  string  $name
-     * @param  string  $value
-     * @param  array   $options
-     * @return string
+     * Create an email input field.
      */
-    public function email($name, $value = null, $options = [])
+    public function email(string $name, ?string $value = null, array $options = []): string
     {
         return $this->input('email', $name, $value, $options);
     }
 
     /**
-     * Create a url input field.
-     *
-     * @param  string  $name
-     * @param  string  $value
-     * @param  array   $options
-     * @return string
+     * Create a URL input field.
      */
-    public function url($name, $value = null, $options = [])
+    public function url(string $name, ?string $value = null, array $options = []): string
     {
         return $this->input('url', $name, $value, $options);
     }
 
     /**
      * Create a file input field.
-     *
-     * @param  string  $name
-     * @param  array   $options
-     * @return string
      */
-    public function file($name, $options = [])
+    public function file(string $name, array $options = []): string
     {
         return $this->input('file', $name, null, $options);
     }
@@ -392,13 +333,8 @@ class FormBuilder
 
     /**
      * Create a textarea input field.
-     *
-     * @param  string  $name
-     * @param  string  $value
-     * @param  array   $options
-     * @return string
      */
-    public function textarea($name, $value = null, $options = [])
+    public function textarea(string $name, ?string $value = null, array $options = []): string
     {
         if (!isset($options['name'])) {
             $options['name'] = $name;
@@ -425,11 +361,8 @@ class FormBuilder
 
     /**
      * Set the text area size on the attributes.
-     *
-     * @param  array  $options
-     * @return array
      */
-    protected function setTextAreaSize($options)
+    protected function setTextAreaSize(array $options): array
     {
         if (isset($options['size'])) {
             return $this->setQuickTextAreaSize($options);
@@ -447,11 +380,8 @@ class FormBuilder
 
     /**
      * Set the text area size using the quick "size" attribute.
-     *
-     * @param  array  $options
-     * @return array
      */
-    protected function setQuickTextAreaSize($options)
+    protected function setQuickTextAreaSize(array $options): array
     {
         $segments = explode('x', $options['size']);
 
@@ -464,13 +394,8 @@ class FormBuilder
 
     /**
      * Create a select box field with empty option support.
-     * @param  string  $name
-     * @param  array   $list
-     * @param  string  $selected
-     * @param  array   $options
-     * @return string
      */
-    public function select($name, $list = [], $selected = null, $options = [])
+    public function select(string $name, array $list = [], ?string $selected = null, array $options = []): string
     {
         if (array_key_exists('emptyOption', $options)) {
             $list = ['' => $options['emptyOption']] + $list;
@@ -508,15 +433,8 @@ class FormBuilder
 
     /**
      * Create a select range field.
-     *
-     * @param  string  $name
-     * @param  string  $begin
-     * @param  string  $end
-     * @param  string  $selected
-     * @param  array   $options
-     * @return string
      */
-    public function selectRange($name, $begin, $end, $selected = null, $options = [])
+    public function selectRange(string $name, string|int|float $begin, string|int|float $end, ?string $selected = null, array $options = []): string
     {
         $range = array_combine($range = range($begin, $end), $range);
 
@@ -525,34 +443,24 @@ class FormBuilder
 
     /**
      * Create a select year field.
-     *
-     * @param  string  $name
-     * @param  string  $begin
-     * @param  string  $end
-     * @param  string  $selected
-     * @param  array   $options
-     * @return string
      */
-    public function selectYear()
+    public function selectYear(string $name, int $begin = 1900, ?int $end = null, ?string $selected = null, array $options = []): string
     {
-        return call_user_func_array([$this, 'selectRange'], func_get_args());
+        if (is_null($end)) {
+            $end = (int) date('Y');
+        }
+        return $this->selectRange($name, $begin, $end, $selected, $options);
     }
 
     /**
      * Create a select month field.
-     *
-     * @param  string  $name
-     * @param  string  $selected
-     * @param  array   $options
-     * @param  string  $format
-     * @return string
      */
-    public function selectMonth($name, $selected = null, $options = [], $format = '%B')
+    public function selectMonth(string $name, ?string $selected = null, array $options = [], $format = '%B'): string
     {
         $months = [];
 
         foreach (range(1, 12) as $month) {
-            $months[$month] = strftime($format, mktime(0, 0, 0, $month, 1));
+            $months[$month] = strftime($format, mktime(12, 0, 0, $month, 1));
         }
 
         return $this->select($name, $months, $selected, $options);
@@ -566,7 +474,7 @@ class FormBuilder
      * @param  string  $selected
      * @return string
      */
-    public function getSelectOption($display, $value, $selected)
+    public function getSelectOption(string|array $display, string $value, ?string $selected = null)
     {
         if (is_array($display)) {
             return $this->optionGroup($display, $value, $selected);
