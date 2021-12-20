@@ -14,7 +14,7 @@ use Throwable;
 class ErrorHandler
 {
     /**
-     * @var ExceptionBase A prepared mask exception used to mask any exception fired.
+     * @var Throwable|null A prepared mask exception used to mask any exception fired.
      */
     protected static $activeMask;
 
@@ -61,7 +61,7 @@ class ErrorHandler
             $exception = $proposedException;
         }
         // If there is an active mask prepared, use that.
-        elseif (static::$activeMask !== null) {
+        elseif (static::$activeMask !== null && static::$activeMask instanceof ExceptionBase) {
             $exception = static::$activeMask;
             $exception->setMask($proposedException);
         }
@@ -149,9 +149,9 @@ class ErrorHandler
 
     /**
      * Displays the detailed system exception page.
-     * @return View Object containing the error page.
+     * @return \Illuminate\View\View|string Object containing the error page.
      */
-    public function handleDetailedError($exception)
+    public function handleDetailedError(Throwable $exception)
     {
         return 'Error: ' . $exception->getMessage();
     }

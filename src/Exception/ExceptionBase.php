@@ -14,7 +14,7 @@ use Throwable;
 class ExceptionBase extends Exception
 {
     /**
-     * @var Exception If this exception is acting as a mask, this property stores the face exception.
+     * @var Throwable If this exception is acting as a mask, this property stores the face exception.
      */
     protected $mask;
 
@@ -39,7 +39,7 @@ class ExceptionBase extends Exception
     protected $errorType;
 
     /**
-     * @var stdObject Cached code information for highlighting code.
+     * @var object Cached code information for highlighting code.
      */
     protected $highlight;
 
@@ -147,7 +147,7 @@ class ExceptionBase extends Exception
     /**
      * Generates information used for highlighting the area of code in context of the exception line number.
      * The highlighted block of code will be six (6) lines before and after the problem line number.
-     * @return array Highlight information as an array, the following keys are supplied:
+     * @return object Highlight information as an object, the following keys are supplied:
      * startLine - The starting line number, 6 lines before the error line.
      * endLine - The ending line number, 6 lines after the error line.
      * errorLine - The focused error line number.
@@ -235,7 +235,7 @@ class ExceptionBase extends Exception
 
             $args = null;
             if (isset($event['args']) && count($event['args'])) {
-                $args = $this->formatStackArguments($event['args'], false);
+                $args = $this->formatStackArguments($event['args']);
             }
 
             $result[] = (object)[
