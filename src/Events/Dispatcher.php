@@ -44,11 +44,14 @@ class Dispatcher extends BaseDispatcher
         }
         if ($events instanceof Closure) {
             $this->listen($this->firstClosureParameterType($events), $events, $priority);
+            return;
         } elseif ($events instanceof QueuedClosure) {
             $this->listen($this->firstClosureParameterType($events->closure), $events->resolve(), $priority);
+            return;
         } elseif ($listener instanceof QueuedClosure) {
             $listener = $listener->resolve();
         }
+
         $listener = Serialisation::wrapClosure($listener);
 
         foreach ((array) $events as $event) {
