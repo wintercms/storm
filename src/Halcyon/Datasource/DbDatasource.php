@@ -86,12 +86,12 @@ class DbDatasource extends Datasource
     }
 
     /**
-     * Helper method to make the full file path to the model.
+     * Helper method to combine the provided directory, filename and extension into a single path.
      *
      * @param string $dirName The directory in which the model is stored.
      * @param string $fileName The filename of the model.
      * @param string $extension The file extension of the model.
-     * @return string The full file path.
+     * @return string The combined path.
      */
     protected function makeFilePath(string $dirName, string $fileName, string $extension): string
     {
