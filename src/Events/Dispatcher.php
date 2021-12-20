@@ -43,9 +43,9 @@ class Dispatcher extends BaseDispatcher
             }
         }
         if ($events instanceof Closure) {
-            return $this->listen($this->firstClosureParameterType($events), $events, $priority);
+            $this->listen($this->firstClosureParameterType($events), $events, $priority);
         } elseif ($events instanceof QueuedClosure) {
-            return $this->listen($this->firstClosureParameterType($events->closure), $events->resolve(), $priority);
+            $this->listen($this->firstClosureParameterType($events->closure), $events->resolve(), $priority);
         } elseif ($listener instanceof QueuedClosure) {
             $listener = $listener->resolve();
         }
@@ -184,8 +184,8 @@ class Dispatcher extends BaseDispatcher
     /**
      * Sort the listeners for a given event by priority.
      *
-     * @param  string  $eventName
-     * @return array
+     * @param string $eventName
+     * @return void
      */
     protected function sortListeners($eventName)
     {
