@@ -1,12 +1,12 @@
 <?php namespace Winter\Storm\Halcyon;
 
+use BadMethodCallException;
+use Winter\Storm\Exception\SystemException;
 use Winter\Storm\Halcyon\Datasource\DatasourceInterface;
 use Winter\Storm\Halcyon\Processors\Processor;
 use Winter\Storm\Halcyon\Exception\MissingFileNameException;
 use Winter\Storm\Halcyon\Exception\InvalidFileNameException;
 use Winter\Storm\Halcyon\Exception\InvalidExtensionException;
-use BadMethodCallException;
-use Winter\Storm\Exception\ApplicationException;
 
 /**
  * Query builder
@@ -334,13 +334,14 @@ class Builder
     /**
      * Insert a new record into the datasource.
      *
-     * @param  array  $values
-     * @return int
+     * @param array $values The values to store in the model.
+     * @return int The filesize of the created model file.
+     * @throws SystemException If no values are provided.
      */
-    public function insert(array $values)
+    public function insert(array $values): int
     {
         if (empty($values)) {
-            throw new ApplicationException('You must provide values to insert');
+            throw new SystemException('You must provide values to insert into the Halcyon model');
         }
 
         $this->validateFileName();
@@ -360,10 +361,10 @@ class Builder
     /**
      * Update a record in the datasource.
      *
-     * @param  array  $values
-     * @return int
+     * @param array $values The values to store in the model.
+     * @return int The filesize of the created model file.
      */
-    public function update(array $values)
+    public function update(array $values = []): int
     {
         $this->validateFileName();
 
