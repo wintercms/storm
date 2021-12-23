@@ -194,15 +194,11 @@ ESC;
 
     public function testUpdatePageRenameFileCase()
     {
-        // This test fails locally when attempting to save the file after renaming it
-        // Claims to fail because it can't create the file, and to check write permissions but
-        // actually fails due to "file_put_contents(/tests/fixtures/halcyon/themes/theme1/pages/test.htm):
-        // Failed to open stream: Cannot allocate memory, and I'm not sure why yet.
-        $this->markTestSkipped("@TODO: Failing");
+        $originalFile = __DIR__.'/../fixtures/halcyon/themes/theme1/pages/Test.htm';
+        $renamedFile = __DIR__.'/../fixtures/halcyon/themes/theme1/pages/test.htm';
 
-        $fileHelper = new Filesystem;
-
-        @unlink($targetFile = __DIR__.'/../fixtures/halcyon/themes/theme1/pages/Test.htm');
+        @unlink($originalFile);
+        @unlink($renamedFile);
 
         $page = HalcyonTestPage::create([
             'fileName' => 'Test',
@@ -210,15 +206,27 @@ ESC;
             'markup' => '<p>I have an upper case, it should be lower</p>'
         ]);
 
-        $this->assertFileExists($targetFile);
+        // If the "renamed" file exists at this point we are on a case insensitive file system
+        // and this test will be unable to produce accurate results so skip it
+        // This test fails locally on Homestead on Mac OS when attempting to save the file after
+        // renaming it, most likely due to the case insensitive default file system on Mac OS
+        // Claims to fail because it can't create the file, and to check write permissions but
+        // actually fails due to "file_put_contents(/tests/fixtures/halcyon/themes/theme1/
+        // pages/test.htm): Failed to open stream: Cannot allocate memory
+        if (file_exists($renamedFile)) {
+            $page->delete();
+            $this->markTestSkipped("Test cannot successfully run on a case insensitive file system");
+        }
+
+        $this->assertFileExists($originalFile);
 
         $page->fileName = 'test';
         $page->save();
 
-        $newTargetFile = __DIR__.'/../fixtures/halcyon/themes/theme1/pages/test.htm';
-        $this->assertFileExists($newTargetFile);
+        $this->assertFileExists($renamedFile);
 
-        @unlink($newTargetFile);
+        @unlink($originalFile);
+        @unlink($renamedFile);
     }
 
     public function testUpdateContentRenameExtension()
