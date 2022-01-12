@@ -18,6 +18,11 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     protected $user;
 
     /**
+     * @var Models\User The user that is impersonating the currently logged in user when applicable
+     */
+    protected $impersonator;
+
+    /**
      * @var array In memory throttle cache [md5($userId.$ipAddress) => $this->throttleModel]
      */
     protected $throttle = [];
@@ -752,6 +757,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         // Store the current user as the impersonator if this is the first impersonation
         if (!$this->isImpersonator()) {
             Session::put($this->sessionKey . '_impersonator', $impersonatorId ?: false);
+            $this->impersonator = $impersonator;
         }
     }
 
@@ -797,6 +803,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
 
         // Remove the impersonator flag
         Session::forget($this->sessionKey . '_impersonator');
+        $this->impersonator = null;
     }
 
     /**
@@ -825,7 +832,11 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
             return false;
         }
 
-        return $this->createUserModel()->find($impersonatorId);
+        if ($this->impersonator) {
+            return $this->impersonator;
+        }
+
+        return $this->impersonator = $this->createUserModel()->find($impersonatorId);
     }
 
     /**
