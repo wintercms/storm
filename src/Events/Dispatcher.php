@@ -3,8 +3,7 @@
 use Closure;
 use Laravel\SerializableClosure\SerializableClosure;
 use ReflectionClass;
-use Winter\Storm\Support\Arr;
-use Winter\Storm\Support\Serialisation;
+use Winter\Storm\Support\Serialization;
 use Winter\Storm\Support\Str;
 use Illuminate\Events\Dispatcher as BaseDispatcher;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -37,9 +36,9 @@ class Dispatcher extends BaseDispatcher
      */
     public function listen($events, $listener = null, $priority = 0)
     {
-        if ($events instanceof Closure || $events instanceof  QueuedClosure) {
+        if ($events instanceof Closure || $events instanceof QueuedClosure) {
             if ($priority === 0 && (is_int($listener) || filter_var($listener, FILTER_VALIDATE_INT))) {
-                $priority = (int)$listener;
+                $priority = (int) $listener;
             }
         }
         if ($events instanceof Closure) {
@@ -49,7 +48,7 @@ class Dispatcher extends BaseDispatcher
         } elseif ($listener instanceof QueuedClosure) {
             $listener = $listener->resolve();
         }
-        $listener = Serialisation::wrapClosure($listener);
+        $listener = Serialization::wrapClosure($listener);
 
         foreach ((array) $events as $event) {
             if (Str::contains($event, '*')) {

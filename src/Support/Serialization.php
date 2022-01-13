@@ -1,12 +1,16 @@
 <?php namespace Winter\Storm\Support;
 
-use Laravel\SerializableClosure\SerializableClosure;
 use Closure;
+use Laravel\SerializableClosure\SerializableClosure;
 
-class Serialisation
+/**
+ * Helper class for interacting with SerializableClosures
+ */
+class Serialization
 {
     /**
      * Wraps a closure in a SerializableClosure, returns the provided object if it's not a closure.
+     *
      * @param Closure|mixed $callable provided callable to be wrapped if it's a closure
      * @return mixed|SerializableClosure
      */
@@ -19,8 +23,10 @@ class Serialisation
     }
 
     /**
-     * if the provided argument is an instance of SerializableClosure it gets unwrapped
-     * and the original closure returned, which is the recommended behaviour.
+     * If the provided argument is an instance of SerializableClosure it gets unwrapped
+     * and the original closure returned, which is the recommended behaviour. Otherwise
+     * the provided value is returned unmodified
+     *
      * @param SerializableClosure|mixed $callable
      * @return Closure|mixed
      */
