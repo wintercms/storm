@@ -376,7 +376,7 @@ PHP;
         $file = __DIR__ . '/../fixtures/config/empty.php';
         $config = ConfigFile::read($file, true);
 
-        $this->expectException(\ApplicationException::class);
+        $this->expectException(\Winter\Storm\Exception\SystemException::class);
 
         $config->set([
             'w.i.n.t.e.r' => 'Winter CMS',
