@@ -175,4 +175,50 @@ class HttpTest extends TestCase
         $this->Http->setOption(CURLOPT_POSTFIELDS, 'foobar');
         $this->assertEquals('foo=bar&bar=foo', $this->Http->getRequestData());
     }
+
+    public function testGetApiPingEndpoint()
+    {
+        $http = $this->Http->get('https://api.wintercms.com/marketplace/ping');
+
+        // Ensure Http class has necessary request config
+        $this->assertInstanceOf(Http::class, $http);
+        $this->assertEquals('GET', $http->method);
+        $this->assertEquals('https://api.wintercms.com/marketplace/ping', $http->url);
+        $this->assertEquals('pong', $http->body);
+
+        // Check some headers
+        $this->assertIsArray($http->headers);
+        $this->assertNotEmpty($http->headers);
+        $this->assertEquals('200', $http->headers['HTTP/2']);
+        $this->assertStringContainsString('text/html', $http->headers['content-type']);
+    }
+
+    public function testGetApiPingEndpointToFile()
+    {
+        // Temp file for test case
+        $tmpFile = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . '.response.file';
+
+        $http = $this->Http->get('https://api.wintercms.com/marketplace/ping', function ($http) use ($tmpFile) {
+            $http->toFile($tmpFile);
+        });
+
+        // Ensure Http class has necessary request config
+        $this->assertInstanceOf(Http::class, $http);
+        $this->assertEquals('GET', $http->method);
+        $this->assertEquals('https://api.wintercms.com/marketplace/ping', $http->url);
+
+        // Ensure body is empty in the Http instance, but has been written to the file
+        $this->assertEmpty($http->body);
+        $this->assertFileExists($tmpFile);
+        $this->assertEquals('pong', file_get_contents($tmpFile));
+
+        // Delete temp file
+        @unlink($tmpFile);
+
+        // Check some headers (headers should still exist in the Http instance)
+        $this->assertIsArray($http->headers);
+        $this->assertNotEmpty($http->headers);
+        $this->assertEquals('200', $http->headers['HTTP/2']);
+        $this->assertStringContainsString('text/html', $http->headers['content-type']);
+    }
 }
