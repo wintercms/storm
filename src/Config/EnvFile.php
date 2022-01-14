@@ -175,7 +175,8 @@ class EnvFile implements ConfigFileInterface
             case 'null':
                 return $value;
             default:
-                return '"' . $value . '"';
+                // addslashes() wont work as it'll escape single quotes and they will be read literally
+                return '"' . str_replace('"', '\"', $value) . '"';
         }
     }
 
