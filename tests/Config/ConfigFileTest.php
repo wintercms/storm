@@ -457,4 +457,111 @@ PHP;
 
         $this->assertEquals($expected, $config->render());
     }
+
+    public function testSortAsc()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'b.b' => 'b',
+            'b.a' => 'a',
+            'a.a.b' => 'b',
+            'a.a.a' => 'a',
+            'a.c' => 'c',
+            'a.b' => 'b',
+        ]);
+
+        $config->sort();
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'a' => [
+        'a' => [
+            'a' => 'a',
+            'b' => 'b',
+        ],
+        'b' => 'b',
+        'c' => 'c',
+    ],
+    'b' => [
+        'a' => 'a',
+        'b' => 'b',
+    ],
+];
+
+PHP;
+
+        $this->assertEquals($expected, $config->render());
+    }
+
+
+    public function testSortDesc()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'b.a' => 'a',
+            'a.a.a' => 'a',
+            'a.a.b' => 'b',
+            'a.b' => 'b',
+            'a.c' => 'c',
+            'b.b' => 'b',
+        ]);
+
+        $config->sort(ConfigFile::SORT_DESC);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'b' => [
+        'b' => 'b',
+        'a' => 'a',
+    ],
+    'a' => [
+        'c' => 'c',
+        'b' => 'b',
+        'a' => [
+            'b' => 'b',
+            'a' => 'a',
+        ],
+    ],
+];
+
+PHP;
+
+        $this->assertEquals($expected, $config->render());
+    }
+
+    public function testSortUsort()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'a' => 'a',
+            'c' => 'c',
+            'b' => 'b'
+        ]);
+
+        $config->sort(function ($a, $b) {
+            return $a->key->value === 'b' || $b->key->value === 'b' ? 0 : 1;
+        });
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'c' => 'c',
+    'a' => 'a',
+    'b' => 'b',
+];
+
+PHP;
+        $this->assertEquals($expected, $config->render());
+    }
 }
