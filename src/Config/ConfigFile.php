@@ -13,7 +13,7 @@ use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Stmt;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinterAbstract;
-use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Exception\SystemException;
 
 /**
  * Class ConfigFile
@@ -76,7 +76,7 @@ class ConfigFile implements ConfigFileInterface
                     : sprintf('<?php%1$s%1$sreturn [];%1$s', PHP_EOL)
             );
         } catch (Error $e) {
-            throw new \ApplicationException($e);
+            throw new SystemException($e);
         }
 
         return new static($ast, $file);
@@ -242,7 +242,7 @@ class ConfigFile implements ConfigFileInterface
         $key = array_shift($path);
 
         if (isset($pointer->value) && !($pointer->value instanceof ArrayItem || $pointer->value instanceof Array_)) {
-            throw new ApplicationException(sprintf(
+            throw new SystemException(sprintf(
                 'Illegal offset, you are trying to set a position occupied by a value (%s)',
                 get_class($pointer->value)
             ));
