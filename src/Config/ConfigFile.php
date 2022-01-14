@@ -21,6 +21,9 @@ use Winter\Storm\Exception\SystemException;
  */
 class ConfigFile implements ConfigFileInterface
 {
+    const SORT_ASC = 'asc';
+    const SORT_DESC = 'desc';
+
     /**
      * @var Stmt[]|null Abstract syntax tree produced by `PhpParser`
      */
@@ -262,6 +265,71 @@ class ConfigFile implements ConfigFileInterface
         array_unshift($path, $key);
 
         return [($depth > 0) ? $pointer : null, $path];
+    }
+
+    /**
+     * Sort the config, supports: ConfigFile::SORT_ASC, ConfigFile::SORT_DESC, callable
+     *
+     * @param string|callable
+     * @return ConfigFile
+     */
+    public function sort($type = self::SORT_ASC): ConfigFile
+    {
+        if (is_callable($type)) {
+            usort($this->ast[0]->expr->items, $type);
+            return $this;
+        }
+
+        switch ($type) {
+            case static::SORT_ASC:
+                $this->sortAsc($this->ast[0]->expr->items);
+                break;
+            case static::SORT_DESC:
+                $this->sortDesc($this->ast[0]->expr->items);
+                break;
+            default:
+                throw new \InvalidArgumentException('sort type not implmented');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Asc recursive sort an Array_ item array
+     *
+     * @param array
+     * @return void
+     */
+    protected function sortAsc(array &$array): void
+    {
+        foreach ($array as &$item) {
+            if (isset($item->value) && $item->value instanceof Array_) {
+                $this->sortAsc($item->value->items);
+            }
+        }
+
+        usort($array, function ($a, $b) {
+            return $a->key->value <=> $b->key->value;
+        });
+    }
+
+    /**
+     * Desc recursive sort an Array_ item array
+     *
+     * @param array
+     * @return void
+     */
+    protected function sortDesc(array &$array): void
+    {
+        foreach ($array as &$item) {
+            if (isset($item->value) && $item->value instanceof Array_) {
+                $this->sortDesc($item->value->items);
+            }
+        }
+
+        usort($array, function ($a, $b) {
+            return $b->key->value <=> $a->key->value;
+        });
     }
 
     /**
