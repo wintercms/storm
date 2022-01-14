@@ -135,9 +135,9 @@ class ConfigFile implements ConfigFileInterface
                 return $this;
             }
             if (isset($target->value->args[0]) && !isset($target->value->args[1])) {
-                $target->value->args[1] = new Arg(new String_(''));
+                $target->value->args[1] = new Arg($this->makeAstNode($valueType, $value));
             }
-            $target->value->args[1]->value->value = $value;
+            $target->value->args[1]->value = $this->makeAstNode($valueType, $value);
             return $this;
         }
 
