@@ -76,7 +76,7 @@ class ConfigFile implements ConfigFileInterface
             $ast = $parser->parse(
                 $exists
                     ? file_get_contents($file)
-                    : sprintf('<?php%1$s%1$sreturn [];%1$s', PHP_EOL)
+                    : sprintf('<?php%1$s%1$sreturn [];%1$s', "\n")
             );
         } catch (Error $e) {
             throw new SystemException($e);
