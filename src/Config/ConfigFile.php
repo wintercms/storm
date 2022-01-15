@@ -270,22 +270,20 @@ class ConfigFile implements ConfigFileInterface
     /**
      * Sort the config, supports: ConfigFile::SORT_ASC, ConfigFile::SORT_DESC, callable
      *
-     * @param string|callable
+     * @param string|callable $mode
      * @return ConfigFile
      */
-    public function sort($type = self::SORT_ASC): ConfigFile
+    public function sort($mode = self::SORT_ASC): ConfigFile
     {
-        if (is_callable($type)) {
-            usort($this->ast[0]->expr->items, $type);
+        if (is_callable($mode)) {
+            usort($this->ast[0]->expr->items, $mode);
             return $this;
         }
 
-        switch ($type) {
+        switch ($mode) {
             case static::SORT_ASC:
-                $this->sortAsc($this->ast[0]->expr->items);
-                break;
             case static::SORT_DESC:
-                $this->sortDesc($this->ast[0]->expr->items);
+                $this->sortRecursive($this->ast[0]->expr->items, $mode);
                 break;
             default:
                 throw new \InvalidArgumentException('sort type not implmented');
@@ -295,40 +293,24 @@ class ConfigFile implements ConfigFileInterface
     }
 
     /**
-     * Asc recursive sort an Array_ item array
+     * Recursive sort an Array_ item array
      *
-     * @param array
+     * @param array $array
+     * @param string $mode
      * @return void
      */
-    protected function sortAsc(array &$array): void
+    protected function sortRecursive(array &$array, string $mode): void
     {
         foreach ($array as &$item) {
             if (isset($item->value) && $item->value instanceof Array_) {
-                $this->sortAsc($item->value->items);
+                $this->sortRecursive($item->value->items, $mode);
             }
         }
 
-        usort($array, function ($a, $b) {
-            return $a->key->value <=> $b->key->value;
-        });
-    }
-
-    /**
-     * Desc recursive sort an Array_ item array
-     *
-     * @param array
-     * @return void
-     */
-    protected function sortDesc(array &$array): void
-    {
-        foreach ($array as &$item) {
-            if (isset($item->value) && $item->value instanceof Array_) {
-                $this->sortDesc($item->value->items);
-            }
-        }
-
-        usort($array, function ($a, $b) {
-            return $b->key->value <=> $a->key->value;
+        usort($array, function ($a, $b) use ($mode) {
+            return $mode === static::SORT_ASC
+                ? $a->key->value <=> $b->key->value
+                : $b->key->value <=> $a->key->value;
         });
     }
 
