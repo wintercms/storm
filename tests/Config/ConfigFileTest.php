@@ -544,21 +544,23 @@ PHP;
 
         $config->set([
             'a' => 'a',
-            'c' => 'c',
             'b' => 'b'
         ]);
 
         $config->sort(function ($a, $b) {
-            return $a->key->value === 'b' || $b->key->value === 'b' ? 0 : 1;
+            static $i;
+            if (!isset($i)) {
+                $i = 1;
+            }
+            return $i--;
         });
 
         $expected = <<<PHP
 <?php
 
 return [
-    'c' => 'c',
-    'a' => 'a',
     'b' => 'b',
+    'a' => 'a',
 ];
 
 PHP;
