@@ -341,7 +341,7 @@ class ConfigFile implements ConfigFileInterface
      */
     public function render(): string
     {
-        return $this->printer->prettyPrintFile($this->ast) . PHP_EOL;
+        return $this->printer->prettyPrintFile($this->ast) . "\n";
     }
 
     /**
