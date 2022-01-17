@@ -295,8 +295,7 @@ class ConfigFileTest extends TestCase
 
         $contents = file_get_contents($file);
 
-        $expected = <<<PHP
-<?php
+        $expected = "<?php
 
 return [
     'w' => [
@@ -323,7 +322,7 @@ return [
     ],
 ];
 
-PHP;
+";
 
         $this->assertEquals($expected, $contents);
 
@@ -344,8 +343,7 @@ PHP;
 
         $contents = file_get_contents($file);
 
-        $expected = <<<PHP
-<?php
+        $expected = "<?php
 
 return [
     'w' => [
@@ -364,7 +362,7 @@ return [
     ],
 ];
 
-PHP;
+";
 
         $this->assertEquals($expected, $contents);
 
@@ -397,15 +395,14 @@ PHP;
             'key2' => new \Winter\Storm\Config\ConfigFunction('nl2br', ['KEY_B', false])
         ]);
 
-        $expected = <<<PHP
-<?php
+        $expected = "<?php
 
 return [
     'key' => env('KEY_A', true),
     'key2' => nl2br('KEY_B', false),
 ];
 
-PHP;
+";
 
         $this->assertEquals($expected, $config->render());
     }
@@ -423,14 +420,13 @@ PHP;
             'key' => new \Winter\Storm\Config\ConfigFunction('nl2br', ['KEY_B', false])
         ]);
 
-        $expected = <<<PHP
-<?php
+        $expected = "<?php
 
 return [
     'key' => nl2br('KEY_B', false),
 ];
 
-PHP;
+";
 
         $this->assertEquals($expected, $config->render());
     }
@@ -445,15 +441,14 @@ PHP;
             'key2' => null
         ]);
 
-        $expected = <<<PHP
-<?php
+        $expected = "<?php
 
 return [
     'key' => env('KEY_A', null),
     'key2' => null,
 ];
 
-PHP;
+";
 
         $this->assertEquals($expected, $config->render());
     }
@@ -474,8 +469,7 @@ PHP;
 
         $config->sort();
 
-        $expected = <<<PHP
-<?php
+        $expected = "<?php
 
 return [
     'a' => [
@@ -492,7 +486,7 @@ return [
     ],
 ];
 
-PHP;
+";
 
         $this->assertEquals($expected, $config->render());
     }
@@ -514,8 +508,7 @@ PHP;
 
         $config->sort(ConfigFile::SORT_DESC);
 
-        $expected = <<<PHP
-<?php
+        $expected = "<?php
 
 return [
     'b' => [
@@ -532,7 +525,7 @@ return [
     ],
 ];
 
-PHP;
+";
 
         $this->assertEquals($expected, $config->render());
     }
@@ -555,15 +548,14 @@ PHP;
             return $i--;
         });
 
-        $expected = <<<PHP
-<?php
+        $expected = "<?php
 
 return [
     'b' => 'b',
     'a' => 'a',
 ];
 
-PHP;
+";
         $this->assertEquals($expected, $config->render());
     }
 }
