@@ -321,7 +321,6 @@ return [
         ],
     ],
 ];
-
 ";
 
         $this->assertEquals($expected, $contents);
@@ -361,7 +360,6 @@ return [
         ],
     ],
 ];
-
 ";
 
         $this->assertEquals($expected, $contents);
@@ -401,7 +399,6 @@ return [
     'key' => env('KEY_A', true),
     'key2' => nl2br('KEY_B', false),
 ];
-
 ";
 
         $this->assertEquals($expected, $config->render());
@@ -425,7 +422,6 @@ return [
 return [
     'key' => nl2br('KEY_B', false),
 ];
-
 ";
 
         $this->assertEquals($expected, $config->render());
@@ -447,7 +443,6 @@ return [
     'key' => env('KEY_A', null),
     'key2' => null,
 ];
-
 ";
 
         $this->assertEquals($expected, $config->render());
@@ -485,7 +480,6 @@ return [
         'b' => 'b',
     ],
 ];
-
 ";
 
         $this->assertEquals($expected, $config->render());
@@ -524,7 +518,6 @@ return [
         ],
     ],
 ];
-
 ";
 
         $this->assertEquals($expected, $config->render());
@@ -554,7 +547,6 @@ return [
     'b' => 'b',
     'a' => 'a',
 ];
-
 ";
         $this->assertEquals($expected, $config->render());
     }
