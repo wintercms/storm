@@ -295,7 +295,8 @@ class ConfigFileTest extends TestCase
 
         $contents = file_get_contents($file);
 
-        $expected = "<?php
+        $expected = <<<PHP
+<?php
 
 return [
     'w' => [
@@ -321,9 +322,10 @@ return [
         ],
     ],
 ];
-";
 
-        $this->assertEquals($expected, $contents);
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $contents);
 
         unlink($file);
     }
@@ -342,7 +344,8 @@ return [
 
         $contents = file_get_contents($file);
 
-        $expected = "<?php
+        $expected = <<<PHP
+<?php
 
 return [
     'w' => [
@@ -360,9 +363,10 @@ return [
         ],
     ],
 ];
-";
 
-        $this->assertEquals($expected, $contents);
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $contents);
 
         unlink($file);
     }
@@ -393,15 +397,17 @@ return [
             'key2' => new \Winter\Storm\Config\ConfigFunction('nl2br', ['KEY_B', false])
         ]);
 
-        $expected = "<?php
+        $expected = <<<PHP
+<?php
 
 return [
     'key' => env('KEY_A', true),
     'key2' => nl2br('KEY_B', false),
 ];
-";
 
-        $this->assertEquals($expected, $config->render());
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
     }
 
     public function testWriteFunctionCallOverwrite()
@@ -417,14 +423,16 @@ return [
             'key' => new \Winter\Storm\Config\ConfigFunction('nl2br', ['KEY_B', false])
         ]);
 
-        $expected = "<?php
+        $expected = <<<PHP
+<?php
 
 return [
     'key' => nl2br('KEY_B', false),
 ];
-";
 
-        $this->assertEquals($expected, $config->render());
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
     }
 
     public function testInsertNull()
@@ -437,15 +445,17 @@ return [
             'key2' => null
         ]);
 
-        $expected = "<?php
+        $expected = <<<PHP
+<?php
 
 return [
     'key' => env('KEY_A', null),
     'key2' => null,
 ];
-";
 
-        $this->assertEquals($expected, $config->render());
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
     }
 
     public function testSortAsc()
@@ -464,7 +474,8 @@ return [
 
         $config->sort();
 
-        $expected = "<?php
+        $expected = <<<PHP
+<?php
 
 return [
     'a' => [
@@ -480,9 +491,10 @@ return [
         'b' => 'b',
     ],
 ];
-";
 
-        $this->assertEquals($expected, $config->render());
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
     }
 
 
@@ -502,7 +514,8 @@ return [
 
         $config->sort(ConfigFile::SORT_DESC);
 
-        $expected = "<?php
+        $expected = <<<PHP
+<?php
 
 return [
     'b' => [
@@ -518,9 +531,10 @@ return [
         ],
     ],
 ];
-";
 
-        $this->assertEquals($expected, $config->render());
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
     }
 
     public function testSortUsort()
@@ -541,13 +555,15 @@ return [
             return $i--;
         });
 
-        $expected = "<?php
+        $expected = <<<PHP
+<?php
 
 return [
     'b' => 'b',
     'a' => 'a',
 ];
-";
-        $this->assertEquals($expected, $config->render());
+
+PHP;
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
     }
 }
