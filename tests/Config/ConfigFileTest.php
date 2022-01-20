@@ -239,7 +239,7 @@ class ConfigFileTest extends TestCase
         $config->write();
 
         $this->assertTrue(file_exists($file));
-        $this->assertEquals(sprintf('<?php%1$s%1$sreturn [];%1$s', PHP_EOL), file_get_contents($file));
+        $this->assertEquals(sprintf('<?php%1$s%1$sreturn [];%1$s', "\n"), file_get_contents($file));
 
         unlink($file);
     }
