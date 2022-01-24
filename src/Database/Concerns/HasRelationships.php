@@ -169,7 +169,18 @@ trait HasRelationships
     public function getRelationTypeDefinitions($type)
     {
         if (in_array($type, static::$relationTypes)) {
-            return $this->{$type};
+            $definitions = $this->{$type} ?: [];
+
+            // Handle renaming otherKey to relatedKey
+            // @see https://github.com/laravel/framework/commit/d2a77776295cb155b985526c1fa1fddc190adb07
+            // @since v1.1.8
+            foreach ($definitions as $relation => $options) {
+                if (array_key_exists('otherKey', $options) && !array_key_exists('relatedKey', $options)) {
+                    $definitions[$relation]['relatedKey'] = $options['otherKey'];
+                }
+            }
+
+            return $definitions;
         }
 
         return [];
@@ -309,18 +320,18 @@ trait HasRelationships
         switch ($relationType) {
             case 'hasOne':
             case 'hasMany':
-                $relation = $this->validateRelationArgs($relationName, ['key', 'otherKey']);
-                $relationObj = $this->$relationType($relation[0], $relation['key'], $relation['otherKey'], $relationName);
+                $relation = $this->validateRelationArgs($relationName, ['key', 'relatedKey']);
+                $relationObj = $this->$relationType($relation[0], $relation['key'], $relation['relatedKey'], $relationName);
                 break;
 
             case 'belongsTo':
-                $relation = $this->validateRelationArgs($relationName, ['key', 'otherKey']);
-                $relationObj = $this->$relationType($relation[0], $relation['key'], $relation['otherKey'], $relationName);
+                $relation = $this->validateRelationArgs($relationName, ['key', 'relatedKey']);
+                $relationObj = $this->$relationType($relation[0], $relation['key'], $relation['relatedKey'], $relationName);
                 break;
 
             case 'belongsToMany':
-                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps']);
-                $relationObj = $this->$relationType($relation[0], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
+                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps']);
+                $relationObj = $this->$relationType($relation[0], $relation['table'], $relation['key'], $relation['relatedKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
                 break;
 
             case 'morphTo':
@@ -335,13 +346,13 @@ trait HasRelationships
                 break;
 
             case 'morphToMany':
-                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
-                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], false, $relationName);
+                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
+                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['relatedKey'], $relation['parentKey'], $relation['relatedKey'], false, $relationName);
                 break;
 
             case 'morphedByMany':
-                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
-                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
+                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
+                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['relatedKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
                 break;
 
             case 'attachOne':
@@ -352,8 +363,8 @@ trait HasRelationships
 
             case 'hasOneThrough':
             case 'hasManyThrough':
-                $relation = $this->validateRelationArgs($relationName, ['key', 'throughKey', 'otherKey', 'secondOtherKey'], ['through']);
-                $relationObj = $this->$relationType($relation[0], $relation['through'], $relation['key'], $relation['throughKey'], $relation['otherKey'], $relation['secondOtherKey']);
+                $relation = $this->validateRelationArgs($relationName, ['key', 'throughKey', 'relatedKey', 'secondOtherKey'], ['through']);
+                $relationObj = $this->$relationType($relation[0], $relation['through'], $relation['key'], $relation['throughKey'], $relation['relatedKey'], $relation['secondOtherKey']);
                 break;
 
             default:

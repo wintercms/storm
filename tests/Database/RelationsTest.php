@@ -306,6 +306,8 @@ class Post extends \Winter\Storm\Database\Model
             Term::class,
             'table'     => 'posts_terms',
             'key'       => 'post_id',
+            // Explicitly test pre: 1.1.8 option name
+            // @see https://github.com/laravel/framework/commit/d2a77776295cb155b985526c1fa1fddc190adb07
             'otherKey'  => 'term_id',
             'pivot'     => ['data'],
             'timestamps' => true,
@@ -315,7 +317,7 @@ class Post extends \Winter\Storm\Database\Model
             Term::class,
             'table'     => 'posts_terms',
             'key'       => 'post_id',
-            'otherKey'  => 'term_id',
+            'relatedKey'  => 'term_id',
             'pivot'     => ['data'],
             'timestamps' => true,
             'conditions' => 'type = "label"',
@@ -324,7 +326,7 @@ class Post extends \Winter\Storm\Database\Model
             Term::class,
             'table'     => 'posts_terms',
             'key'       => 'post_id',
-            'otherKey'  => 'term_id',
+            'relatedKey'  => 'term_id',
             'timestamps' => true,
         ],
     ];
@@ -357,8 +359,8 @@ class Term extends \Winter\Storm\Database\Model
             'Post',
             'table'      => 'posts_terms',
             'key'        => 'term_id',
-            'otherKey'   => 'post_id',
-            'pivot'     => ['data'],
+            'relatedKey' => 'post_id',
+            'pivot'      => ['data'],
             'timestamps' => true,
             'conditions' => 'type = "post"',
         ],

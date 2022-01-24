@@ -46,7 +46,7 @@ class MorphToMany extends BelongsToMany
      * @param  string  $name
      * @param  string  $table
      * @param  string  $foreignKey
-     * @param  string  $otherKey
+     * @param  string  $relatedKey
      * @param  string  $relationName
      * @param  bool  $inverse
      * @return void
@@ -57,7 +57,7 @@ class MorphToMany extends BelongsToMany
         $name,
         $table,
         $foreignKey,
-        $otherKey,
+        $relatedKey,
         $parentKey,
         $relatedKey,
         $relationName = null,
@@ -74,7 +74,7 @@ class MorphToMany extends BelongsToMany
             $parent,
             $table,
             $foreignKey,
-            $otherKey,
+            $relatedKey,
             $parentKey,
             $relatedKey,
             $relationName
