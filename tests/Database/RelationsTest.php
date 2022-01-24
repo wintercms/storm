@@ -317,7 +317,7 @@ class Post extends \Winter\Storm\Database\Model
             Term::class,
             'table'     => 'posts_terms',
             'key'       => 'post_id',
-            'relatedKey'  => 'term_id',
+            'relatedPivotKey'  => 'term_id',
             'pivot'     => ['data'],
             'timestamps' => true,
             'conditions' => 'type = "label"',
@@ -326,7 +326,7 @@ class Post extends \Winter\Storm\Database\Model
             Term::class,
             'table'     => 'posts_terms',
             'key'       => 'post_id',
-            'relatedKey'  => 'term_id',
+            'relatedPivotKey'  => 'term_id',
             'timestamps' => true,
         ],
     ];

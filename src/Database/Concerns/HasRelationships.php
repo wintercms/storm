@@ -178,9 +178,9 @@ trait HasRelationships
                 if (
                     is_array($options)
                     && array_key_exists('otherKey', $options)
-                    && !array_key_exists('relatedKey', $options)
+                    && !array_key_exists('relatedPivotKey', $options)
                 ) {
-                    $definitions[$relation]['relatedKey'] = $options['otherKey'];
+                    $definitions[$relation]['relatedPivotKey'] = $options['otherKey'];
                 }
             }
 
@@ -334,7 +334,7 @@ trait HasRelationships
                 break;
 
             case 'belongsToMany':
-                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps']);
+                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedPivotKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps']);
                 $relationObj = $this->$relationType($relation[0], $relation['table'], $relation['key'], $relation['relatedKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
                 if (!empty($relation['pivotModel'])) {
                     $relationObj->using($relation['pivotModel']);
@@ -353,12 +353,12 @@ trait HasRelationships
                 break;
 
             case 'morphToMany':
-                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
+                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedPivotKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
                 $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['relatedKey'], $relation['parentKey'], $relation['relatedKey'], false, $relationName);
                 break;
 
             case 'morphedByMany':
-                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
+                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedPivotKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
                 $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['relatedKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
                 break;
 
