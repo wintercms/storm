@@ -362,7 +362,10 @@ trait HasRelationships
 
             case 'morphedByMany':
                 $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedPivotKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
-                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['relatedKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
+                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['relatedPivotKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
+                if (!empty($relation['pivotModel'])) {
+                    $relationObj->using($relation['pivotModel']);
+                }
                 break;
 
             case 'attachOne':
