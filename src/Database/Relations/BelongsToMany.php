@@ -28,6 +28,8 @@ class BelongsToMany extends BelongsToManyBase
      * @param  string  $table
      * @param  string  $foreignPivotKey
      * @param  string  $relatedPivotKey
+     * @param  string  $parentKey
+     * @param  string  $relatedKey
      * @param  string  $relationName
      * @return void
      */

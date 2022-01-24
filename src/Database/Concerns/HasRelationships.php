@@ -336,6 +336,9 @@ trait HasRelationships
             case 'belongsToMany':
                 $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'relatedKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps']);
                 $relationObj = $this->$relationType($relation[0], $relation['table'], $relation['key'], $relation['relatedKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
+                if (!empty($relation['pivotModel'])) {
+                    $relationObj->using($relation['pivotModel']);
+                }
                 break;
 
             case 'morphTo':
