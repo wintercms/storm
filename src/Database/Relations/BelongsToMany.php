@@ -97,9 +97,9 @@ class BelongsToMany extends BelongsToManyBase
     public function sync($ids, $detaching = true)
     {
         $changed = parent::sync($ids, $detaching);
-        
+
         $this->flushDuplicateCache();
-        
+
         return $changed;
     }
 
@@ -121,6 +121,7 @@ class BelongsToMany extends BelongsToManyBase
      * @param mixed $id
      * @param array $attributes
      * @param bool  $touch
+     * @return void
      */
     public function attach($id, array $attributes = [], $touch = true)
     {
@@ -145,14 +146,7 @@ class BelongsToMany extends BelongsToManyBase
             return;
         }
 
-        // Here we will insert the attachment records into the pivot table. Once we have
-        // inserted the records, we will touch the relationships if necessary and the
-        // function will return. We can parse the IDs before inserting the records.
-        $this->newPivotStatement()->insert($insertData);
-
-        if ($touch) {
-            $this->touchIfTouching();
-        }
+        parent::attach($id, $attributes, $touch);
 
         /**
          * @event model.relation.afterAttach
