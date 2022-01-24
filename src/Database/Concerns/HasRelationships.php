@@ -175,7 +175,11 @@ trait HasRelationships
             // @see https://github.com/laravel/framework/commit/d2a77776295cb155b985526c1fa1fddc190adb07
             // @since v1.1.8
             foreach ($definitions as $relation => $options) {
-                if (array_key_exists('otherKey', $options) && !array_key_exists('relatedKey', $options)) {
+                if (
+                    is_array($options)
+                    && array_key_exists('otherKey', $options)
+                    && !array_key_exists('relatedKey', $options)
+                ) {
                     $definitions[$relation]['relatedKey'] = $options['otherKey'];
                 }
             }
