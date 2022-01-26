@@ -1,6 +1,7 @@
 <?php namespace {{studly_author}}\{{studly_name}};
 
 use Backend;
+use Backend\Models\UserRole;
 use System\Classes\PluginBase;
 
 /**
@@ -69,7 +70,8 @@ class Plugin extends PluginBase
         return [
             '{{lower_author}}.{{lower_name}}.some_permission' => [
                 'tab' => '{{name}}',
-                'label' => 'Some permission'
+                'label' => 'Some permission',
+                'roles' => [UserRole::CODE_DEVELOPER, UserRole::CODE_PUBLISHER],
             ],
         ];
     }
