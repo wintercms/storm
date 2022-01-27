@@ -417,6 +417,41 @@ PHP;
         $this->assertEquals(str_replace("\r", '', $expected), $config->render());
     }
 
+    public function testSetNumericArray()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'winter' => [
+                1 => 'a',
+                2 => 'b',
+            ],
+            'cms' => [
+                0 => 'a',
+                1 => 'b'
+            ]
+        ]);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'winter' => [
+        1 => 'a',
+        2 => 'b',
+    ],
+    'cms' => [
+        'a',
+        'b',
+    ],
+];
+
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+    }
+
     public function testWriteConstCall()
     {
         $file = __DIR__ . '/../fixtures/config/empty.php';
