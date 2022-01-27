@@ -213,10 +213,7 @@ class ConfigFile implements ConfigFileInterface
         return ($caster = function ($array, $ast) use (&$caster) {
             $useKeys = [];
             foreach (array_keys($array) as $i => $key) {
-                $useKeys[$key] = false;
-                if (!is_numeric($key) || $key !== $i) {
-                    $useKeys[$key] = true;
-                }
+                $useKeys[$key] = (!is_numeric($key) || $key !== $i);
             }
             foreach ($array as $key => $item) {
                 if (is_array($item)) {
