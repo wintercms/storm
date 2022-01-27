@@ -22,7 +22,7 @@ class ConfigConst
     }
 
     /**
-     * Get the function name
+     * Get the const name
      *
      * @return string
      */
