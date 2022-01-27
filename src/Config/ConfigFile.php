@@ -343,7 +343,7 @@ class ConfigFile implements ConfigFileInterface
                 $this->sortRecursive($this->ast[0]->expr->items, $mode);
                 break;
             default:
-                throw new \InvalidArgumentException('sort type not implmented');
+                throw new \InvalidArgumentException('sort type not implemented');
         }
 
         return $this;
