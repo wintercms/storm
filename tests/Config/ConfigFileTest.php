@@ -384,6 +384,110 @@ PHP;
         ]);
     }
 
+    public function testSetArray()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'w' => [
+                'i' => 'n',
+                't' => [
+                    'e',
+                    'r'
+                ]
+            ]
+        ]);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'w' => [
+        'i' => 'n',
+        't' => [
+            'e',
+            'r',
+        ],
+    ],
+];
+
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+    }
+
+    public function testWriteConstCall()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'curl_port' => $config->const('CURLOPT_PORT')
+        ]);
+
+        $config->set([
+            'curl_return' => new \Winter\Storm\Config\ConfigConst('CURLOPT_RETURNTRANSFER')
+        ]);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'curl_port' => CURLOPT_PORT,
+    'curl_return' => CURLOPT_RETURNTRANSFER,
+];
+
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+    }
+
+    public function testWriteArrayFunctionsAndConstCall()
+    {
+        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $config = ConfigFile::read($file, true);
+
+        $config->set([
+            'path.to.config' => [
+                'test' => $config->function('env', ['TEST_KEY', 'default']),
+                'details' => [
+                    'test1',
+                    'test2',
+                    'additional' => [
+                        $config->const('\Winter\Storm\Config\ConfigFile::SORT_ASC'),
+                        $config->const('\Winter\Storm\Config\ConfigFile::SORT_DESC')
+                    ]
+                ]
+            ]
+        ]);
+
+        $expected = <<<PHP
+<?php
+
+return [
+    'path' => [
+        'to' => [
+            'config' => [
+                'test' => env('TEST_KEY', 'default'),
+                'details' => [
+                    'test1',
+                    'test2',
+                    'additional' => [
+                        \Winter\Storm\Config\ConfigFile::SORT_ASC,
+                        \Winter\Storm\Config\ConfigFile::SORT_DESC,
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
+
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+    }
+
     public function testWriteFunctionCall()
     {
         $file = __DIR__ . '/../fixtures/config/empty.php';
