@@ -114,7 +114,7 @@ class ConfigFile implements ConfigFileInterface
         // try to find a reference to ast object
         list($target, $remaining) = $this->seek(explode('.', $key), $this->ast[0]->expr);
 
-        $valueType = $value instanceof ConfigFunction ? 'function' : gettype($value);
+        $valueType = $this->getType($value);
 
         // part of a path found
         if ($target && $remaining) {
@@ -164,7 +164,7 @@ class ConfigFile implements ConfigFileInterface
             ? $this->makeAstArrayRecursive($key, $valueType, $value)
             : new ArrayItem(
                 $this->makeAstNode($valueType, $value),
-                $this->makeAstNode(gettype($key), $key)
+                $this->makeAstNode($this->getType($key), $key)
             );
     }
 
@@ -173,7 +173,7 @@ class ConfigFile implements ConfigFileInterface
      *
      * @param string $type
      * @param mixed $value
-     * @return ConstFetch|LNumber|String_|FuncCall
+     * @return ConstFetch|LNumber|String_|Array_|FuncCall
      */
     protected function makeAstNode(string $type, $value)
     {
@@ -188,15 +188,72 @@ class ConfigFile implements ConfigFileInterface
                 return new FuncCall(
                     new Name($value->getName()),
                     array_map(function ($arg) {
-                        return new Arg($this->makeAstNode(gettype($arg), $arg));
+                        return new Arg($this->makeAstNode($this->getType($arg), $arg));
                     }, $value->getArgs())
                 );
+            case 'const':
+                return new ConstFetch(new Name($value->getName()));
             case 'null':
                 return new ConstFetch(new Name('null'));
-                break;
+            case 'array':
+                return $this->castArray($value);
             default:
                 throw new \RuntimeException('not implemented replacement type: ' . $type);
         }
+    }
+
+    /**
+     * Cast an array to AST
+     *
+     * @param array $array
+     * @return Array_
+     */
+    protected function castArray(array $array): Array_
+    {
+        return ($caster = function ($array, $ast) use (&$caster) {
+            $useKeys = [];
+            $keys = array_keys($array);
+            for ($i = 0; $i < count($keys); $i++) {
+                $useKeys[$keys[$i]] = false;
+                if (!is_numeric($keys[$i]) || $keys[$i] !== $i) {
+                    $useKeys[$keys[$i]] = true;
+                }
+            }
+            foreach ($array as $key => $item) {
+                if (is_array($item)) {
+                    $ast->items[] = new ArrayItem(
+                        $caster($item, new Array_()),
+                        ($useKeys[$key] ? $this->makeAstNode($this->getType($key), $key) : null)
+                    );
+                    continue;
+                }
+                $ast->items[] = new ArrayItem(
+                    $this->makeAstNode($this->getType($item), $item),
+                    ($useKeys[$key] ? $this->makeAstNode($this->getType($key), $key) : null)
+                );
+            }
+
+            return $ast;
+        })($array, new Array_());
+    }
+
+    /**
+     * Returns type of var passed
+     *
+     * @param mixed $var
+     * @return string
+     */
+    protected function getType($var): string
+    {
+        if ($var instanceof ConfigFunction) {
+            return 'function';
+        }
+
+        if ($var instanceof ConfigConst) {
+            return 'const';
+        }
+
+        return gettype($var);
     }
 
     /**
@@ -217,7 +274,7 @@ class ConfigFile implements ConfigFileInterface
             if (is_numeric($pathKey)) {
                 $pathKey = (int) $pathKey;
             }
-            $arrayItem = new ArrayItem($arrayItem, $this->makeAstNode(gettype($pathKey), $pathKey));
+            $arrayItem = new ArrayItem($arrayItem, $this->makeAstNode($this->getType($pathKey), $pathKey));
 
             if ($index !== array_key_last($path)) {
                 $arrayItem = new Array_([$arrayItem]);
@@ -235,6 +292,7 @@ class ConfigFile implements ConfigFileInterface
      * @param $pointer
      * @param int $depth
      * @return array
+     * @throws SystemException
      */
     protected function seek(array $path, &$pointer, int $depth = 0): array
     {
@@ -329,9 +387,27 @@ class ConfigFile implements ConfigFileInterface
         file_put_contents($filePath, $this->render());
     }
 
+    /**
+     * Returns a new instance of ConfigFunction
+     *
+     * @param string $name
+     * @param array $args
+     * @return ConfigFunction
+     */
     public function function(string $name, array $args): ConfigFunction
     {
         return new ConfigFunction($name, $args);
+    }
+
+    /**
+     * Returns a new instance of ConfigConst
+     *
+     * @param string $name
+     * @return ConfigConst
+     */
+    public function const(string $name): ConfigConst
+    {
+        return new ConfigConst($name);
     }
 
     /**
