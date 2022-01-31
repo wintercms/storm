@@ -36,7 +36,8 @@ class RoutingServiceProvider extends RoutingServiceProviderBase
                 $app->rebinding(
                     'request',
                     $this->requestRebinder()
-                )
+                ),
+                $app['config']['app.asset_url'] ?? null
             );
 
             $url->setSessionResolver(function () {
