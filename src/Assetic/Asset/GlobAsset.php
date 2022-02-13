@@ -11,6 +11,7 @@
 
 use Winter\Storm\Assetic\Filter\FilterInterface;
 use Winter\Storm\Assetic\Util\VarUtils;
+use Traversable;
 
 /**
  * A collection of assets loaded by glob.
@@ -74,7 +75,7 @@ class GlobAsset extends AssetCollection
         return parent::getLastModified();
     }
 
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         if (!$this->initialized) {
             $this->initialize();

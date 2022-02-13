@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Assetic\Util;
 
+use Traversable;
+
 /*
  * This file is part of the Assetic package, an OpenSky project.
  *
@@ -25,12 +27,12 @@ class TraversableString implements \IteratorAggregate, \Countable
         $this->many = $many;
     }
 
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->many);
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->many);
     }

@@ -10,6 +10,7 @@
  */
 
 use Winter\Storm\Assetic\Asset\AssetInterface;
+use Traversable;
 
 /**
  * A collection of filters.
@@ -68,12 +69,12 @@ class FilterCollection implements FilterInterface, \IteratorAggregate, \Countabl
         }
     }
 
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->filters);
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->filters);
     }

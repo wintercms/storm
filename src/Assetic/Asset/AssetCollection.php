@@ -13,6 +13,7 @@ use Winter\Storm\Assetic\Asset\Iterator\AssetCollectionFilterIterator;
 use Winter\Storm\Assetic\Asset\Iterator\AssetCollectionIterator;
 use Winter\Storm\Assetic\Filter\FilterCollection;
 use Winter\Storm\Assetic\Filter\FilterInterface;
+use Traversable;
 
 /**
  * A collection of assets.
@@ -210,7 +211,7 @@ class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
     /**
      * Returns an iterator for looping recursively over unique leaves.
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \RecursiveIteratorIterator(new AssetCollectionFilterIterator(new AssetCollectionIterator($this, $this->clones)));
     }

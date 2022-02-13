@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Assetic\Factory\Resource;
 
+use Traversable;
+
 /*
  * This file is part of the Assetic package, an OpenSky project.
  *
@@ -68,7 +70,7 @@ class DirectoryResource implements IteratorResourceInterface
         return $this->path;
     }
 
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return is_dir($this->path)
             ? new DirectoryResourceIterator($this->getInnerIterator())
