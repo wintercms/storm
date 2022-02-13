@@ -70,7 +70,7 @@ class Application extends ApplicationBase
      *
      * @return string
      */
-    public function langPath()
+    public function langPath($path = '')
     {
         return PathResolver::join($this->basePath, '/lang');
     }
