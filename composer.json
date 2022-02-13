@@ -43,7 +43,7 @@
         "twig/twig": "~2.0",
         "league/csv": "~9.1",
         "nesbot/carbon": "^2.0",
-        "laravel/framework": "9.x-dev",
+        "laravel/framework": "~9.0",
         "laravel/tinker": "dev-develop"
     },
     "require-dev": {
