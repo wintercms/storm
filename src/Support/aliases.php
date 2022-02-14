@@ -370,7 +370,7 @@ class_alias(\Winter\Storm\Support\Facades\Input::class, \October\Rain\Support\Fa
 class_alias(\Winter\Storm\Support\Facades\Mail::class, \October\Rain\Support\Facades\Mail::class);
 class_alias(\Winter\Storm\Support\Facades\Markdown::class, \October\Rain\Support\Facades\Markdown::class);
 class_alias(\Winter\Storm\Support\Facades\Schema::class, \October\Rain\Support\Facades\Schema::class);
-class_alias(\Winter\Storm\Support\Facades\Str::class, \October\Rain\Support\Facades\Str::class);
+class_alias(\Winter\Storm\Support\Str::class, \October\Rain\Support\Facades\Str::class);
 class_alias(\Winter\Storm\Support\Facades\Twig::class, \October\Rain\Support\Facades\Twig::class);
 class_alias(\Winter\Storm\Support\Facades\Url::class, \October\Rain\Support\Facades\Url::class);
 class_alias(\Winter\Storm\Support\Facades\Validator::class, \October\Rain\Support\Facades\Validator::class);
