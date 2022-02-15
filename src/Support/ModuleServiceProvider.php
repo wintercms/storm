@@ -34,7 +34,7 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
              */
             $routesFile = base_path() . '/modules/' . $module . '/routes.php';
             if (File::isFile($routesFile)) {
-                require $routesFile;
+                $this->loadRoutesFrom($routesFile);
             }
         }
     }
