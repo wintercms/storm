@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Alias Winter\Storm\Auth\AuthException
+ * @since v1.1.7
+ */
+class_alias(\Winter\Storm\Auth\AuthenticationException::class, \Winter\Storm\Auth\AuthException::class);
+
+/**
  * Alias October\Rain\Argon
  */
 class_alias(\Winter\Storm\Argon\Argon::class, \October\Rain\Argon\Argon::class);

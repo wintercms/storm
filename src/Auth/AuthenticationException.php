@@ -10,7 +10,7 @@ use Lang;
  *
  * @author Alexey Bobkov, Samuel Georges
  */
-class AuthException extends ApplicationException
+class AuthenticationException extends ApplicationException
 {
     /**
      * @var boolean Use less specific error messages.

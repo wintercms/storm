@@ -1,12 +1,12 @@
 <div data-control="toolbar">
     <a
         href="<?= Backend::url('{{lower_author}}/{{lower_plugin}}/{{lower_name}}/create') ?>"
-        class="btn btn-primary oc-icon-plus">
+        class="btn btn-primary wn-icon-plus">
         New {{title_singular_name}}
     </a>
 
     <button
-        class="btn btn-danger oc-icon-trash-o"
+        class="btn btn-danger wn-icon-trash-o"
         disabled="disabled"
         onclick="$(this).data('request-data', { checked: $('.control-list').listWidget('getChecked') })"
         data-request="onDelete"
