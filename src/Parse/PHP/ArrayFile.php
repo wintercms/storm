@@ -239,7 +239,7 @@ class ArrayFile implements FileInterface
             return 'function';
         }
 
-        if ($var instanceof PHPConst) {
+        if ($var instanceof PHPConstant) {
             return 'const';
         }
 
@@ -389,14 +389,14 @@ class ArrayFile implements FileInterface
     }
 
     /**
-     * Returns a new instance of PHPConst
+     * Returns a new instance of PHPConstant
      *
      * @param string $name
-     * @return PHPConst
+     * @return PHPConstant
      */
-    public function const(string $name): PHPConst
+    public function const(string $name): PHPConstant
     {
-        return new PHPConst($name);
+        return new PHPConstant($name);
     }
 
     /**

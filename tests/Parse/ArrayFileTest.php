@@ -462,7 +462,7 @@ PHP;
         ]);
 
         $arrayFile->set([
-            'curl_return' => new \Winter\Storm\Parse\PHP\PHPConst('CURLOPT_RETURNTRANSFER')
+            'curl_return' => new \Winter\Storm\Parse\PHP\PHPConstant('CURLOPT_RETURNTRANSFER')
         ]);
 
         $expected = <<<PHP

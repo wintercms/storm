@@ -3,7 +3,7 @@
 /**
  * Used with ArrayFile to inject a constant into a PHP array file
  */
-class PHPConst
+class PHPConstant
 {
     /**
      * @var string function name
