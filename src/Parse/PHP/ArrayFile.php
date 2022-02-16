@@ -1,4 +1,4 @@
-<?php namespace Winter\Storm\Config;
+<?php namespace Winter\Storm\Parse\PHP;
 
 use PhpParser\Error;
 use PhpParser\Node\Expr\Array_;
@@ -24,43 +24,41 @@ class ArrayFile implements FileInterface
      * @var Stmt[]|null Abstract syntax tree produced by `PhpParser`
      */
     protected $ast = null;
+
     /**
-     * @var string|null Source config file
+     * @var string|null Path to the file
      */
-    protected $file = null;
+    protected $filePath = null;
+
     /**
-     * @var PrettyPrinterAbstract|WinterPrinter|null Printer used to define output syntax
+     * @var PrettyPrinterAbstract|ArrayPrinter|null Printer used to define output syntax
      */
     protected $printer = null;
 
     /**
-     * ConfigFile constructor.
-     *
-     * @param Stmt[]|null $ast
-     * @param string $file
-     * @param PrettyPrinterAbstract|null $printer
+     * ArrayFile constructor.
      */
-    public function __construct(array $ast, string $file = null, PrettyPrinterAbstract $printer = null)
+    public function __construct(array $ast, string $filePath = null, PrettyPrinterAbstract $printer = null)
     {
         if (!($ast[0] instanceof Stmt\Return_)) {
-            throw new \InvalidArgumentException('configs must start with a return statement');
+            throw new \InvalidArgumentException('ArrayFiles must start with a return statement');
         }
 
         $this->ast = $ast;
-        $this->file = $file;
-        $this->printer = $printer ?? new WinterPrinter();
+        $this->filePath = $filePath;
+        $this->printer = $printer ?? new ArrayPrinter();
     }
 
     /**
-     * Return a new instance of `ConfigFile` ready for modification of the file.
+     * Return a new instance of `ArrayFile` ready for modification of the file.
      *
-     * @param string $file
+     * @param string $filePath
      * @param bool $createMissing
-     * @return ConfigFile|null
+     * @return ArrayFile|null
      */
-    public static function read(string $file, bool $createMissing = false): ?ConfigFile
+    public static function read(string $filePath, bool $createMissing = false): ?ArrayFile
     {
-        $exists = file_exists($file);
+        $exists = file_exists($filePath);
 
         if (!$exists && !$createMissing) {
             throw new \InvalidArgumentException('file not found');
@@ -71,14 +69,14 @@ class ArrayFile implements FileInterface
         try {
             $ast = $parser->parse(
                 $exists
-                    ? file_get_contents($file)
+                    ? file_get_contents($filePath)
                     : sprintf('<?php%1$s%1$sreturn [];%1$s', "\n")
             );
         } catch (Error $e) {
             throw new SystemException($e);
         }
 
-        return new static($ast, $file);
+        return new static($ast, $filePath);
     }
 
     /**
@@ -97,7 +95,7 @@ class ArrayFile implements FileInterface
      * @param mixed|null $value
      * @return $this
      */
-    public function set($key, $value = null): ConfigFile
+    public function set($key, $value = null): ArrayFile
     {
         if (is_array($key)) {
             foreach ($key as $name => $value) {
@@ -237,11 +235,11 @@ class ArrayFile implements FileInterface
      */
     protected function getType($var): string
     {
-        if ($var instanceof ConfigFunction) {
+        if ($var instanceof PHPFunction) {
             return 'function';
         }
 
-        if ($var instanceof ConfigConst) {
+        if ($var instanceof PHPConst) {
             return 'const';
         }
 
@@ -318,12 +316,11 @@ class ArrayFile implements FileInterface
     }
 
     /**
-     * Sort the config, supports: ConfigFile::SORT_ASC, ConfigFile::SORT_DESC, callable
+     * Sort the config, supports: ArrayFile::SORT_ASC, ArrayFile::SORT_DESC, callable
      *
      * @param string|callable $mode
-     * @return ConfigFile
      */
-    public function sort($mode = self::SORT_ASC): ConfigFile
+    public function sort($mode = self::SORT_ASC): ArrayFile
     {
         if (is_callable($mode)) {
             usort($this->ast[0]->expr->items, $mode);
@@ -372,34 +369,34 @@ class ArrayFile implements FileInterface
      */
     public function write(string $filePath = null): void
     {
-        if (!$filePath && $this->file) {
-            $filePath = $this->file;
+        if (!$filePath && $this->filePath) {
+            $filePath = $this->filePath;
         }
 
         file_put_contents($filePath, $this->render());
     }
 
     /**
-     * Returns a new instance of ConfigFunction
+     * Returns a new instance of PHPFunction
      *
      * @param string $name
      * @param array $args
-     * @return ConfigFunction
+     * @return PHPFunction
      */
-    public function function(string $name, array $args): ConfigFunction
+    public function function(string $name, array $args): PHPFunction
     {
-        return new ConfigFunction($name, $args);
+        return new PHPFunction($name, $args);
     }
 
     /**
-     * Returns a new instance of ConfigConst
+     * Returns a new instance of PHPConst
      *
      * @param string $name
-     * @return ConfigConst
+     * @return PHPConst
      */
-    public function const(string $name): ConfigConst
+    public function const(string $name): PHPConst
     {
-        return new ConfigConst($name);
+        return new PHPConst($name);
     }
 
     /**

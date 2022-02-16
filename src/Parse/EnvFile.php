@@ -1,14 +1,11 @@
-<?php namespace  Winter\Storm\Config;
+<?php namespace  Winter\Storm\Parse;
 
-use Winter\Storm\Config\ConfigFileInterface;
-use Dotenv\Environment\DotenvFactory;
-use Dotenv\Loader;
+use Winter\Storm\Parse\Contracts\FileInterface;
 
 /**
  * Class EnvFile
- * @package Winter\Storm\Config
  */
-class EnvFile implements ConfigFileInterface
+class EnvFile implements FileInterface
 {
     /**
      * @var array contains the env during modification
@@ -23,33 +20,30 @@ class EnvFile implements ConfigFileInterface
     /**
      * @var string|null contains the filepath used to read / write
      */
-    protected $file = null;
+    protected $filePath = null;
 
     /**
      * EnvFile constructor.
      * @param array $env
-     * @param string $file
+     * @param string $filePath
      */
-    public function __construct(string $file)
+    public function __construct(string $filePath)
     {
-        $this->file = $file;
+        $this->filePath = $filePath;
 
-        list($this->env, $this->map) = $this->parse($file);
+        list($this->env, $this->map) = $this->parse($filePath);
     }
 
     /**
      * Return a new instance of `EnvFile` ready for modification of the file.
-     *
-     * @param string|null $file
-     * @return EnvFile|null
      */
-    public static function read(?string $file = null): ?EnvFile
+    public static function read(?string $filePath = null): ?EnvFile
     {
-        if (!$file) {
-            $file = static::getEnvFilePath();
+        if (!$filePath) {
+            $filePath = base_path('.env');
         }
 
-        return new static($file);
+        return new static($filePath);
     }
 
     /**
@@ -115,7 +109,7 @@ class EnvFile implements ConfigFileInterface
     public function write(string $filePath = null): void
     {
         if (!$filePath) {
-            $filePath = $this->file;
+            $filePath = $this->filePath;
         }
 
         file_put_contents($filePath, $this->render());
@@ -183,12 +177,12 @@ class EnvFile implements ConfigFileInterface
     /**
      * Parse a .env file, returns an array of the env file data and a key => pos map
      *
-     * @param string $file
+     * @param string $filePath
      * @return array
      */
-    protected function parse(string $file): array
+    protected function parse(string $filePath): array
     {
-        if (!file_exists($file) || !($contents = file($file)) || !count($contents)) {
+        if (!file_exists($filePath) || !($contents = file($filePath)) || !count($contents)) {
             return [[], []];
         }
 
@@ -254,15 +248,5 @@ class EnvFile implements ConfigFileInterface
         }
 
         return $env;
-    }
-
-    /**
-     * Get the default env file path
-     *
-     * @return string
-     */
-    public static function getEnvFilePath(): string
-    {
-        return base_path('.env');
     }
 }

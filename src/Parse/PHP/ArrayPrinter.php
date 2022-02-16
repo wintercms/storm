@@ -1,13 +1,9 @@
-<?php namespace Winter\Storm\Config;
+<?php namespace Winter\Storm\Parse\PHP;
 
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\PrettyPrinter\Standard;
 
-/**
- * Class WinterPrinter
- * @package Winter\Storm\Config
- */
-class WinterPrinter extends Standard
+class ArrayPrinter extends Standard
 {
     public function __construct(array $options = [])
     {
@@ -32,10 +28,6 @@ class WinterPrinter extends Standard
         }
     }
 
-    /**
-     * @param array $comments
-     * @return string
-     */
     protected function pComments(array $comments): string
     {
         $formattedComments = [];

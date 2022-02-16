@@ -1,12 +1,12 @@
 <?php
 
-use Winter\Storm\Config\EnvFile;
+use Winter\Storm\Parse\EnvFile;
 
 class EnvFileTest extends TestCase
 {
     public function testReadFile()
     {
-        $filePath = __DIR__ . '/../fixtures/config/test.env';
+        $filePath = __DIR__ . '/../fixtures/parse/test.env';
 
         $env = EnvFile::read($filePath);
 
@@ -30,8 +30,8 @@ class EnvFileTest extends TestCase
 
     public function testWriteFile()
     {
-        $filePath = __DIR__ . '/../fixtures/config/test.env';
-        $tmpFile = __DIR__ . '/../fixtures/config/temp-test.env';
+        $filePath = __DIR__ . '/../fixtures/parse/test.env';
+        $tmpFile = __DIR__ . '/../fixtures/parse/temp-test.env';
 
         $env = EnvFile::read($filePath);
         $env->write($tmpFile);
@@ -50,8 +50,8 @@ class EnvFileTest extends TestCase
 
     public function testWriteFileWithUpdates()
     {
-        $filePath = __DIR__ . '/../fixtures/config/test.env';
-        $tmpFile = __DIR__ . '/../fixtures/config/temp-test.env';
+        $filePath = __DIR__ . '/../fixtures/parse/test.env';
+        $tmpFile = __DIR__ . '/../fixtures/parse/temp-test.env';
 
         $env = EnvFile::read($filePath);
         $env->set('APP_KEY', 'winter');
@@ -74,8 +74,8 @@ class EnvFileTest extends TestCase
 
     public function testWriteFileWithUpdatesArray()
     {
-        $filePath = __DIR__ . '/../fixtures/config/test.env';
-        $tmpFile = __DIR__ . '/../fixtures/config/temp-test.env';
+        $filePath = __DIR__ . '/../fixtures/parse/test.env';
+        $tmpFile = __DIR__ . '/../fixtures/parse/temp-test.env';
 
         $env = EnvFile::read($filePath);
         $env->set([
@@ -101,8 +101,8 @@ class EnvFileTest extends TestCase
 
     public function testCasting()
     {
-        $filePath = __DIR__ . '/../fixtures/config/test.env';
-        $tmpFile = __DIR__ . '/../fixtures/config/temp-test.env';
+        $filePath = __DIR__ . '/../fixtures/parse/test.env';
+        $tmpFile = __DIR__ . '/../fixtures/parse/temp-test.env';
 
         $env = EnvFile::read($filePath);
         $env->set(['APP_KEY' => 'winter']);
@@ -140,7 +140,7 @@ class EnvFileTest extends TestCase
 
     public function testRender()
     {
-        $filePath = __DIR__ . '/../fixtures/config/test.env';
+        $filePath = __DIR__ . '/../fixtures/parse/test.env';
 
         $env = EnvFile::read($filePath);
 

@@ -1,18 +1,18 @@
 <?php
 
-use Winter\Storm\Config\ConfigFile;
+use Winter\Storm\Parse\PHP\ArrayFile;
 
-class ConfigFileTest extends TestCase
+class ArrayFileTest extends TestCase
 {
     public function testReadFile()
     {
-        $filePath = __DIR__ . '/../fixtures/config/sample-config.php';
+        $filePath = __DIR__ . '/../fixtures/parse/sample-array-file.php';
 
-        $config = ConfigFile::read($filePath);
+        $arrayFile = ArrayFile::read($filePath);
 
-        $this->assertInstanceOf(ConfigFile::class, $config);
+        $this->assertInstanceOf(ArrayFile::class, $arrayFile);
 
-        $ast = $config->getAst();
+        $ast = $arrayFile->getAst();
 
         $this->assertTrue(isset($ast[0]->expr->items[0]->key->value));
         $this->assertEquals('debug', $ast[0]->expr->items[0]->key->value);
@@ -20,11 +20,11 @@ class ConfigFileTest extends TestCase
 
     public function testWriteFile()
     {
-        $filePath = __DIR__ . '/../fixtures/config/sample-config.php';
-        $tmpFile = __DIR__ . '/../fixtures/config/temp-config.php';
+        $filePath = __DIR__ . '/../fixtures/parse/sample-array-file.php';
+        $tmpFile = __DIR__ . '/../fixtures/parse/temp-array-file.php';
 
-        $config = ConfigFile::read($filePath);
-        $config->write($tmpFile);
+        $arrayFile = ArrayFile::read($filePath);
+        $arrayFile->write($tmpFile);
 
         $result = include $tmpFile;
         $this->assertArrayHasKey('connections', $result);
@@ -37,12 +37,12 @@ class ConfigFileTest extends TestCase
 
     public function testWriteFileWithUpdates()
     {
-        $filePath = __DIR__ . '/../fixtures/config/sample-config.php';
-        $tmpFile = __DIR__ . '/../fixtures/config/temp-config.php';
+        $filePath = __DIR__ . '/../fixtures/parse/sample-array-file.php';
+        $tmpFile = __DIR__ . '/../fixtures/parse/temp-array-file.php';
 
-        $config = ConfigFile::read($filePath);
-        $config->set('connections.sqlite.driver', 'winter');
-        $config->write($tmpFile);
+        $arrayFile = ArrayFile::read($filePath);
+        $arrayFile->set('connections.sqlite.driver', 'winter');
+        $arrayFile->write($tmpFile);
 
         $result = include $tmpFile;
         $this->assertArrayHasKey('connections', $result);
@@ -55,15 +55,15 @@ class ConfigFileTest extends TestCase
 
     public function testWriteFileWithUpdatesArray()
     {
-        $filePath = __DIR__ . '/../fixtures/config/sample-config.php';
-        $tmpFile = __DIR__ . '/../fixtures/config/temp-config.php';
+        $filePath = __DIR__ . '/../fixtures/parse/sample-array-file.php';
+        $tmpFile = __DIR__ . '/../fixtures/parse/temp-array-file.php';
 
-        $config = ConfigFile::read($filePath);
-        $config->set([
+        $arrayFile = ArrayFile::read($filePath);
+        $arrayFile->set([
             'connections.sqlite.driver' => 'winter',
             'connections.sqlite.prefix' => 'test',
         ]);
-        $config->write($tmpFile);
+        $arrayFile->write($tmpFile);
 
         $result = include $tmpFile;
         $this->assertArrayHasKey('connections', $result);
@@ -77,11 +77,11 @@ class ConfigFileTest extends TestCase
 
     public function testWriteEnvUpdates()
     {
-        $filePath = __DIR__ . '/../fixtures/config/env-config.php';
-        $tmpFile = __DIR__ . '/../fixtures/config/temp-config.php';
+        $filePath = __DIR__ . '/../fixtures/parse/env-config.php';
+        $tmpFile = __DIR__ . '/../fixtures/parse/temp-array-file.php';
 
-        $config = ConfigFile::read($filePath);
-        $config->write($tmpFile);
+        $arrayFile = ArrayFile::read($filePath);
+        $arrayFile->write($tmpFile);
 
         $result = include $tmpFile;
 
@@ -91,11 +91,11 @@ class ConfigFileTest extends TestCase
         $this->assertEquals('default', $result['sample']['value']);
         $this->assertNull($result['sample']['no_default']);
 
-        $config->set([
+        $arrayFile->set([
             'sample.value' => 'winter',
             'sample.no_default' => 'test',
         ]);
-        $config->write($tmpFile);
+        $arrayFile->write($tmpFile);
 
         $result = include $tmpFile;
 
@@ -110,24 +110,24 @@ class ConfigFileTest extends TestCase
 
     public function testCasting()
     {
-        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $result = eval('?>' . $config->render());
+        $arrayFile = ArrayFile::read(__DIR__ . '/../fixtures/parse/sample-array-file.php');
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertTrue(is_array($result));
         $this->assertArrayHasKey('url', $result);
         $this->assertEquals('http://localhost', $result['url']);
 
-        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $config->set('url', false);
-        $result = eval('?>' . $config->render());
+        $arrayFile = ArrayFile::read(__DIR__ . '/../fixtures/parse/sample-array-file.php');
+        $arrayFile->set('url', false);
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertTrue(is_array($result));
         $this->assertArrayHasKey('url', $result);
         $this->assertFalse($result['url']);
 
-        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $config->set('url', 1234);
-        $result = eval('?>' . $config->render());
+        $arrayFile = ArrayFile::read(__DIR__ . '/../fixtures/parse/sample-array-file.php');
+        $arrayFile->set('url', 1234);
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertTrue(is_array($result));
         $this->assertArrayHasKey('url', $result);
@@ -139,9 +139,9 @@ class ConfigFileTest extends TestCase
         /*
          * Rewrite a single level string
          */
-        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $config->set('url', 'https://wintercms.com');
-        $result = eval('?>' . $config->render());
+        $arrayFile = ArrayFile::read(__DIR__ . '/../fixtures/parse/sample-array-file.php');
+        $arrayFile->set('url', 'https://wintercms.com');
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertTrue(is_array($result));
         $this->assertArrayHasKey('url', $result);
@@ -150,9 +150,9 @@ class ConfigFileTest extends TestCase
         /*
          * Rewrite a second level string
          */
-        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $config->set('memcached.host', '69.69.69.69');
-        $result = eval('?>' . $config->render());
+        $arrayFile = ArrayFile::read(__DIR__ . '/../fixtures/parse/sample-array-file.php');
+        $arrayFile->set('memcached.host', '69.69.69.69');
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertArrayHasKey('memcached', $result);
         $this->assertArrayHasKey('host', $result['memcached']);
@@ -161,9 +161,9 @@ class ConfigFileTest extends TestCase
         /*
          * Rewrite a third level string
          */
-        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $config->set('connections.mysql.host', '127.0.0.1');
-        $result = eval('?>' . $config->render());
+        $arrayFile = ArrayFile::read(__DIR__ . '/../fixtures/parse/sample-array-file.php');
+        $arrayFile->set('connections.mysql.host', '127.0.0.1');
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertArrayHasKey('connections', $result);
         $this->assertArrayHasKey('mysql', $result['connections']);
@@ -173,10 +173,10 @@ class ConfigFileTest extends TestCase
         /*un-
          * Test alternative quoting
          */
-        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $config->set('timezone', 'The Fifth Dimension')
+        $arrayFile = ArrayFile::read(__DIR__ . '/../fixtures/parse/sample-array-file.php');
+        $arrayFile->set('timezone', 'The Fifth Dimension')
             ->set('timezoneAgain', 'The "Sixth" Dimension');
-        $result = eval('?>' . $config->render());
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertArrayHasKey('timezone', $result);
         $this->assertArrayHasKey('timezoneAgain', $result);
@@ -186,15 +186,15 @@ class ConfigFileTest extends TestCase
         /*
          * Rewrite a boolean
          */
-        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $config->set('debug', false)
+        $arrayFile = ArrayFile::read(__DIR__ . '/../fixtures/parse/sample-array-file.php');
+        $arrayFile->set('debug', false)
             ->set('debugAgain', true)
             ->set('bullyIan', true)
             ->set('booLeeIan', false)
             ->set('memcached.weight', false)
             ->set('connections.pgsql.password', true);
 
-        $result = eval('?>' . $config->render());
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertArrayHasKey('debug', $result);
         $this->assertArrayHasKey('debugAgain', $result);
@@ -218,9 +218,9 @@ class ConfigFileTest extends TestCase
         /*
          * Rewrite an integer
          */
-        $config = ConfigFile::read(__DIR__ . '/../fixtures/config/sample-config.php');
-        $config->set('aNumber', 69);
-        $result = eval('?>' . $config->render());
+        $arrayFile = ArrayFile::read(__DIR__ . '/../fixtures/parse/sample-array-file.php');
+        $arrayFile->set('aNumber', 69);
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertArrayHasKey('aNumber', $result);
         $this->assertEquals(69, $result['aNumber']);
@@ -228,15 +228,15 @@ class ConfigFileTest extends TestCase
 
     public function testReadCreateFile()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
 
         $this->assertFalse(file_exists($file));
 
-        $config = ConfigFile::read($file, true);
+        $arrayFile = ArrayFile::read($file, true);
 
-        $this->assertInstanceOf(ConfigFile::class, $config);
+        $this->assertInstanceOf(ArrayFile::class, $arrayFile);
 
-        $config->write();
+        $arrayFile->write();
 
         $this->assertTrue(file_exists($file));
         $this->assertEquals(sprintf('<?php%1$s%1$sreturn [];%1$s', "\n"), file_get_contents($file));
@@ -246,11 +246,11 @@ class ConfigFileTest extends TestCase
 
     public function testWriteDotNotation()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
-        $config->set('w.i.n.t.e.r', 'cms');
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
+        $arrayFile->set('w.i.n.t.e.r', 'cms');
 
-        $result = eval('?>' . $config->render());
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertArrayHasKey('w', $result);
         $this->assertArrayHasKey('i', $result['w']);
@@ -263,11 +263,11 @@ class ConfigFileTest extends TestCase
 
     public function testWriteDotNotationMixedCase()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
-        $config->set('w.0.n.1.e.2', 'cms');
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
+        $arrayFile->set('w.0.n.1.e.2', 'cms');
 
-        $result = eval('?>' . $config->render());
+        $result = eval('?>' . $arrayFile->render());
 
         $this->assertArrayHasKey('w', $result);
         $this->assertArrayHasKey(0, $result['w']);
@@ -280,18 +280,18 @@ class ConfigFileTest extends TestCase
 
     public function testWriteDotNotationMultiple()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
-        $config->set('w.i.n.t.e.r', 'Winter CMS');
-        $config->set('w.i.n.b', 'is');
-        $config->set('w.i.n.t.a', 'very');
-        $config->set('w.i.n.c.l', 'good');
-        $config->set('w.i.n.c.e', 'and');
-        $config->set('w.i.n.c.f', 'awesome');
-        $config->set('w.i.n.g', 'for');
-        $config->set('w.i.2.g', 'development');
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
+        $arrayFile->set('w.i.n.t.e.r', 'Winter CMS');
+        $arrayFile->set('w.i.n.b', 'is');
+        $arrayFile->set('w.i.n.t.a', 'very');
+        $arrayFile->set('w.i.n.c.l', 'good');
+        $arrayFile->set('w.i.n.c.e', 'and');
+        $arrayFile->set('w.i.n.c.f', 'awesome');
+        $arrayFile->set('w.i.n.g', 'for');
+        $arrayFile->set('w.i.2.g', 'development');
 
-        $config->write();
+        $arrayFile->write();
 
         $contents = file_get_contents($file);
 
@@ -332,15 +332,15 @@ PHP;
 
     public function testWriteDotDuplicateIntKeys()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
-        $config->set([
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
+        $arrayFile->set([
             'w.i.n.t.e.r' => 'Winter CMS',
             'w.i.2.g' => 'development',
         ]);
-        $config->set('w.i.2.g', 'development');
+        $arrayFile->set('w.i.2.g', 'development');
 
-        $config->write();
+        $arrayFile->write();
 
         $contents = file_get_contents($file);
 
@@ -373,12 +373,12 @@ PHP;
 
     public function testWriteIllegalOffset()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
         $this->expectException(\Winter\Storm\Exception\SystemException::class);
 
-        $config->set([
+        $arrayFile->set([
             'w.i.n.t.e.r' => 'Winter CMS',
             'w.i.n.t.e.r.2' => 'test',
         ]);
@@ -386,10 +386,10 @@ PHP;
 
     public function testSetArray()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
+        $arrayFile->set([
             'w' => [
                 'i' => 'n',
                 't' => [
@@ -414,15 +414,15 @@ return [
 
 PHP;
 
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
     public function testSetNumericArray()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
+        $arrayFile->set([
             'winter' => [
                 1 => 'a',
                 2 => 'b',
@@ -449,20 +449,20 @@ return [
 
 PHP;
 
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
     public function testWriteConstCall()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
-            'curl_port' => $config->const('CURLOPT_PORT')
+        $arrayFile->set([
+            'curl_port' => $arrayFile->const('CURLOPT_PORT')
         ]);
 
-        $config->set([
-            'curl_return' => new \Winter\Storm\Config\ConfigConst('CURLOPT_RETURNTRANSFER')
+        $arrayFile->set([
+            'curl_return' => new \Winter\Storm\Parse\PHP\PHPConst('CURLOPT_RETURNTRANSFER')
         ]);
 
         $expected = <<<PHP
@@ -475,23 +475,23 @@ return [
 
 PHP;
 
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
     public function testWriteArrayFunctionsAndConstCall()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
+        $arrayFile->set([
             'path.to.config' => [
-                'test' => $config->function('env', ['TEST_KEY', 'default']),
+                'test' => $arrayFile->function('env', ['TEST_KEY', 'default']),
                 'details' => [
                     'test1',
                     'test2',
                     'additional' => [
-                        $config->const('\Winter\Storm\Config\ConfigFile::SORT_ASC'),
-                        $config->const('\Winter\Storm\Config\ConfigFile::SORT_DESC')
+                        $arrayFile->const('\Winter\Storm\Parse\PHP\ArrayFile::SORT_ASC'),
+                        $arrayFile->const('\Winter\Storm\Parse\PHP\ArrayFile::SORT_DESC')
                     ]
                 ]
             ]
@@ -509,8 +509,8 @@ return [
                     'test1',
                     'test2',
                     'additional' => [
-                        \Winter\Storm\Config\ConfigFile::SORT_ASC,
-                        \Winter\Storm\Config\ConfigFile::SORT_DESC,
+                        \Winter\Storm\Parse\PHP\ArrayFile::SORT_ASC,
+                        \Winter\Storm\Parse\PHP\ArrayFile::SORT_DESC,
                     ],
                 ],
             ],
@@ -520,20 +520,20 @@ return [
 
 PHP;
 
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
     public function testWriteFunctionCall()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
-            'key' => $config->function('env', ['KEY_A', true])
+        $arrayFile->set([
+            'key' => $arrayFile->function('env', ['KEY_A', true])
         ]);
 
-        $config->set([
-            'key2' => new \Winter\Storm\Config\ConfigFunction('nl2br', ['KEY_B', false])
+        $arrayFile->set([
+            'key2' => new \Winter\Storm\Parse\PHP\PHPFunction('nl2br', ['KEY_B', false])
         ]);
 
         $expected = <<<PHP
@@ -546,20 +546,20 @@ return [
 
 PHP;
 
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
     public function testWriteFunctionCallOverwrite()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
-            'key' => $config->function('env', ['KEY_A', true])
+        $arrayFile->set([
+            'key' => $arrayFile->function('env', ['KEY_A', true])
         ]);
 
-        $config->set([
-            'key' => new \Winter\Storm\Config\ConfigFunction('nl2br', ['KEY_B', false])
+        $arrayFile->set([
+            'key' => new \Winter\Storm\Parse\PHP\PHPFunction('nl2br', ['KEY_B', false])
         ]);
 
         $expected = <<<PHP
@@ -571,16 +571,16 @@ return [
 
 PHP;
 
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
     public function testInsertNull()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
-            'key' => $config->function('env', ['KEY_A', null]),
+        $arrayFile->set([
+            'key' => $arrayFile->function('env', ['KEY_A', null]),
             'key2' => null
         ]);
 
@@ -594,15 +594,15 @@ return [
 
 PHP;
 
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
     public function testSortAsc()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
+        $arrayFile->set([
             'b.b' => 'b',
             'b.a' => 'a',
             'a.a.b' => 'b',
@@ -611,7 +611,7 @@ PHP;
             'a.b' => 'b',
         ]);
 
-        $config->sort();
+        $arrayFile->sort();
 
         $expected = <<<PHP
 <?php
@@ -633,16 +633,16 @@ return [
 
 PHP;
 
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
 
     public function testSortDesc()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
+        $arrayFile->set([
             'b.a' => 'a',
             'a.a.a' => 'a',
             'a.a.b' => 'b',
@@ -651,7 +651,7 @@ PHP;
             'b.b' => 'b',
         ]);
 
-        $config->sort(ConfigFile::SORT_DESC);
+        $arrayFile->sort(ArrayFile::SORT_DESC);
 
         $expected = <<<PHP
 <?php
@@ -673,20 +673,20 @@ return [
 
 PHP;
 
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
     public function testSortUsort()
     {
-        $file = __DIR__ . '/../fixtures/config/empty.php';
-        $config = ConfigFile::read($file, true);
+        $file = __DIR__ . '/../fixtures/parse/empty.php';
+        $arrayFile = ArrayFile::read($file, true);
 
-        $config->set([
+        $arrayFile->set([
             'a' => 'a',
             'b' => 'b'
         ]);
 
-        $config->sort(function ($a, $b) {
+        $arrayFile->sort(function ($a, $b) {
             static $i;
             if (!isset($i)) {
                 $i = 1;
@@ -703,6 +703,6 @@ return [
 ];
 
 PHP;
-        $this->assertEquals(str_replace("\r", '', $expected), $config->render());
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 }

@@ -1,12 +1,9 @@
-<?php namespace Winter\Storm\Config;
+<?php namespace Winter\Storm\Parse\PHP;
 
 /**
- * Class ConfigFunction
- * @package Winter\Storm\Config
- *
- * This class is for use with ConfigFile as a method to inject a function call into a config file
+ * Used with ArrayFile to inject a function call into a PHP array file
  */
-class ConfigFunction
+class PHPFunction
 {
     /**
      * @var string function name

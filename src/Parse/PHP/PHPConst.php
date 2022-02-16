@@ -1,21 +1,15 @@
-<?php namespace Winter\Storm\Config;
+<?php namespace Winter\Storm\Parse\PHP;
 
 /**
- * Class ConfigConst
- * @package Winter\Storm\Config
- *
- * This class is for use with ConfigFile as a method to inject a constant into a config file
+ * Used with ArrayFile to inject a constant into a PHP array file
  */
-class ConfigConst
+class PHPConst
 {
     /**
      * @var string function name
      */
     protected $name;
 
-    /**
-     * @param string $name
-     */
     public function __construct(string $name)
     {
         $this->name = $name;
@@ -23,8 +17,6 @@ class ConfigConst
 
     /**
      * Get the const name
-     *
-     * @return string
      */
     public function getName(): string
     {
