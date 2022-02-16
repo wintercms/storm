@@ -1,6 +1,5 @@
 <?php namespace Winter\Storm\Config;
 
-use Winter\Storm\Config\ConfigFileInterface;
 use PhpParser\Error;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
@@ -14,12 +13,9 @@ use PhpParser\Node\Stmt;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinterAbstract;
 use Winter\Storm\Exception\SystemException;
+use Winter\Storm\Parse\Contracts\FileInterface;
 
-/**
- * Class ConfigFile
- * @package Winter\Storm\Config
- */
-class ConfigFile implements ConfigFileInterface
+class ArrayFile implements FileInterface
 {
     const SORT_ASC = 'asc';
     const SORT_DESC = 'desc';
