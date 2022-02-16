@@ -394,7 +394,7 @@ class ArrayFile implements DataFileInterface
      * @param string $name
      * @return PHPConstant
      */
-    public function const(string $name): PHPConstant
+    public function constant(string $name): PHPConstant
     {
         return new PHPConstant($name);
     }

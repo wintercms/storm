@@ -458,7 +458,7 @@ PHP;
         $arrayFile = ArrayFile::open($file, true);
 
         $arrayFile->set([
-            'curl_port' => $arrayFile->const('CURLOPT_PORT')
+            'curl_port' => $arrayFile->constant('CURLOPT_PORT')
         ]);
 
         $arrayFile->set([
@@ -490,8 +490,8 @@ PHP;
                     'test1',
                     'test2',
                     'additional' => [
-                        $arrayFile->const('\Winter\Storm\Parse\PHP\ArrayFile::SORT_ASC'),
-                        $arrayFile->const('\Winter\Storm\Parse\PHP\ArrayFile::SORT_DESC')
+                        $arrayFile->constant('\Winter\Storm\Parse\PHP\ArrayFile::SORT_ASC'),
+                        $arrayFile->constant('\Winter\Storm\Parse\PHP\ArrayFile::SORT_DESC')
                     ]
                 ]
             ]
