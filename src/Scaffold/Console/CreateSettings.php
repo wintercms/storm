@@ -1,17 +1,25 @@
 <?php namespace Winter\Storm\Scaffold\Console;
 
 use Winter\Storm\Scaffold\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
 class CreateSettings extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The default command name for lazy loading.
+     *
+     * @var string|null
+     */
+    protected static $defaultName = 'create:settings';
+
+    /**
+     * The name and signature of this command.
      *
      * @var string
      */
-    protected $name = 'create:settings {plugin} {settings=Settings}';
+    protected $signature = 'create:settings
+        {plugin : The name of the plugin. <info>(eg: Winter.Blog)</info>}
+        {settings : The name of the settings model to generate. <info>(eg: BlogSettings)</info>}
+        {--force : Overwrite existing files with generated files.}';
 
     /**
      * The console command description.
@@ -55,19 +63,6 @@ class CreateSettings extends GeneratorCommand
             'name' => $settings,
             'author' => $author,
             'plugin' => $plugin
-        ];
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['plugin', InputArgument::REQUIRED, 'The name of the plugin. Eg: Winter.Blog'],
-            ['settings', InputArgument::OPTIONAL, 'The name of the settings model. Eg: Settings'],
         ];
     }
 }

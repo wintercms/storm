@@ -214,7 +214,7 @@ class_alias(\Winter\Storm\Extension\ExtensionTrait::class, \October\Rain\Extensi
  */
 class_alias(\Winter\Storm\Filesystem\Definitions::class, \October\Rain\Filesystem\Definitions::class);
 class_alias(\Winter\Storm\Filesystem\Filesystem::class, \October\Rain\Filesystem\Filesystem::class);
-class_alias(\Winter\Storm\Filesystem\FilesystemAdapter::class, \October\Rain\Filesystem\FilesystemAdapter::class);
+class_alias(\Illuminate\Filesystem\FilesystemAdapter::class, \October\Rain\Filesystem\FilesystemAdapter::class);
 class_alias(\Winter\Storm\Filesystem\FilesystemManager::class, \October\Rain\Filesystem\FilesystemManager::class);
 class_alias(\Winter\Storm\Filesystem\FilesystemServiceProvider::class, \October\Rain\Filesystem\FilesystemServiceProvider::class);
 class_alias(\Winter\Storm\Filesystem\PathResolver::class, \October\Rain\Filesystem\PathResolver::class);
@@ -298,9 +298,6 @@ class_alias(\Winter\Storm\Mail\Mailable::class, \October\Rain\Mail\Mailable::cla
 class_alias(\Winter\Storm\Mail\Mailer::class, \October\Rain\Mail\Mailer::class);
 class_alias(\Winter\Storm\Mail\MailParser::class, \October\Rain\Mail\MailParser::class);
 class_alias(\Winter\Storm\Mail\MailServiceProvider::class, \October\Rain\Mail\MailServiceProvider::class);
-class_alias(\Winter\Storm\Mail\Transport\MandrillTransport::class, \October\Rain\Mail\Transport\MandrillTransport::class);
-class_alias(\Winter\Storm\Mail\Transport\SparkPostTransport::class, \October\Rain\Mail\Transport\SparkPostTransport::class);
-class_alias(\Winter\Storm\Mail\TransportManager::class, \October\Rain\Mail\TransportManager::class);
 
 /**
  * Alias October\Rain\Network
@@ -373,7 +370,7 @@ class_alias(\Winter\Storm\Support\Facades\Input::class, \October\Rain\Support\Fa
 class_alias(\Winter\Storm\Support\Facades\Mail::class, \October\Rain\Support\Facades\Mail::class);
 class_alias(\Winter\Storm\Support\Facades\Markdown::class, \October\Rain\Support\Facades\Markdown::class);
 class_alias(\Winter\Storm\Support\Facades\Schema::class, \October\Rain\Support\Facades\Schema::class);
-class_alias(\Winter\Storm\Support\Facades\Str::class, \October\Rain\Support\Facades\Str::class);
+class_alias(\Winter\Storm\Support\Str::class, \October\Rain\Support\Facades\Str::class);
 class_alias(\Winter\Storm\Support\Facades\Twig::class, \October\Rain\Support\Facades\Twig::class);
 class_alias(\Winter\Storm\Support\Facades\Url::class, \October\Rain\Support\Facades\Url::class);
 class_alias(\Winter\Storm\Support\Facades\Validator::class, \October\Rain\Support\Facades\Validator::class);

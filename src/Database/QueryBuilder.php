@@ -237,9 +237,8 @@ class QueryBuilder extends QueryBuilderBase
      * also strips off any orderBy clause.
      *
      * @param  string  $columns
-     * @return int
      */
-    public function count($columns = '*')
+    public function count($columns = '*'): int
     {
         $previousOrders = $this->orders;
 

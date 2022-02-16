@@ -3,13 +3,15 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
 
 class {{studly_name}} extends Command
 {
     /**
      * @var string The console command name.
      */
-    protected $name = '{{lower_plugin}}:{{lower_name}}';
+    protected static $defaultName = '{{lower_plugin}}:{{lower_name}}';
 
     /**
      * @var string The console command description.
@@ -41,5 +43,21 @@ class {{studly_name}} extends Command
     protected function getOptions()
     {
         return [];
+    }
+
+    /**
+     * Provide autocompletion for this command's input
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        // Suggest values for arguments provided by this command
+        // if ($input->mustSuggestArgumentValuesFor('nameOfArgument')) {
+        //     $suggestions->suggestValues(['valid', 'argument', 'values', 'here']]);
+        // }
+
+        // Suggest values for options provided by this command
+        // if ($input->mustSuggestOptionValuesFor('nameOfOption')) {
+        //     $suggestions->suggestValues(['valid', 'option', 'values', 'here']);
+        // }
     }
 }

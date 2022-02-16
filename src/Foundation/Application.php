@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\ProviderRepository;
-use Symfony\Component\Debug\Exception\FatalErrorException;
+use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
 use Winter\Storm\Router\RoutingServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
@@ -70,9 +70,9 @@ class Application extends ApplicationBase
      *
      * @return string
      */
-    public function langPath()
+    public function langPath($path = '')
     {
-        return PathResolver::join($this->basePath, '/lang');
+        return PathResolver::join($this->basePath, '/lang' . (!empty($path) ? "/$path" : ''));
     }
 
     /**
@@ -334,7 +334,7 @@ class Application extends ApplicationBase
      */
     public function fatal(Closure $callback)
     {
-        $this->error(function (FatalErrorException $e) use ($callback) {
+        $this->error(function (FatalError $e) use ($callback) {
             return call_user_func($callback, $e);
         });
     }
@@ -450,6 +450,7 @@ class Application extends ApplicationBase
             'encrypter'            => [\Illuminate\Encryption\Encrypter::class, \Illuminate\Contracts\Encryption\Encrypter::class],
             'db'                   => [\Illuminate\Database\DatabaseManager::class, \Illuminate\Database\ConnectionResolverInterface::class],
             'db.connection'        => [\Illuminate\Database\Connection::class, \Illuminate\Database\ConnectionInterface::class],
+            'db.schema'            => [\Illuminate\Database\Schema\Builder::class],
             'events'               => [\Illuminate\Events\Dispatcher::class, \Illuminate\Contracts\Events\Dispatcher::class],
             'files'                => [\Illuminate\Filesystem\Filesystem::class],
             'filesystem'           => [\Winter\Storm\Filesystem\FilesystemManager::class, \Illuminate\Contracts\Filesystem\Factory::class],
@@ -542,5 +543,21 @@ class Application extends ApplicationBase
     public function getCachedClassesPath()
     {
         return PathResolver::join($this->storagePath(), '/framework/classes.php');
+    }
+
+    /**
+     * Get the application namespace.
+     *
+     * @return string
+     */
+    public function getNamespace()
+    {
+        /**
+         * @TODO: Review calls to $app->getNamespace() that assume a single application namespace
+         * (Usually \App) instead of a collection of modules & plugins that all form the namespace.
+         * This is typically used for autoloading files and cleaning up output to remove extra
+         * unnecessary paths but those tasks should be handled completely differently in Winter CMS.
+         */
+        return '';
     }
 }

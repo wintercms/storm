@@ -247,6 +247,35 @@ class ExtendableTest extends TestCase
         $this->assertContains('getFooAnotherWay', $methods);
         $this->assertNotContains('missingFunction', $methods);
     }
+
+    public function testClosureSerialization()
+    {
+        $test_string = 'hello world';
+        BasicExtendable::extend(function (BasicExtendable $class) use ($test_string) {
+            $class->addDynamicMethod('foobar', function () use ($test_string) {
+                $x = function () use ($test_string) {
+                    return $test_string;
+                };
+                return $x();
+            });
+            $class->addDynamicMethod('bazbal', function () use ($test_string) {
+                return function () use ($test_string) {
+                    return $test_string;
+                };
+            });
+        });
+
+        $subject = new BasicExtendable();
+
+        $serialized = serialize($subject);
+
+        $unserialized = unserialize($serialized);
+
+        $this->assertEquals($test_string, $unserialized->foobar());
+        $test = $unserialized->bazbal();
+        $this->assertInstanceOf(Closure::class, $test);
+        $this->assertEquals($test(), $test_string);
+    }
 }
 
 //
@@ -353,6 +382,10 @@ class ExtendableTestExampleClass
     {
         return 'winter';
     }
+}
+
+class BasicExtendable extends Extendable
+{
 }
 
 /*
