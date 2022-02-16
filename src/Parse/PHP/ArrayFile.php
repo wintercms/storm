@@ -13,9 +13,9 @@ use PhpParser\Node\Stmt;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinterAbstract;
 use Winter\Storm\Exception\SystemException;
-use Winter\Storm\Parse\Contracts\FileInterface;
+use Winter\Storm\Parse\Contracts\DataFileInterface;
 
-class ArrayFile implements FileInterface
+class ArrayFile implements DataFileInterface
 {
     const SORT_ASC = 'asc';
     const SORT_DESC = 'desc';
@@ -56,7 +56,7 @@ class ArrayFile implements FileInterface
      * @param bool $createMissing
      * @return ArrayFile|null
      */
-    public static function read(string $filePath, bool $createMissing = false): ?ArrayFile
+    public static function open(string $filePath, bool $createMissing = false): ?ArrayFile
     {
         $exists = file_exists($filePath);
 

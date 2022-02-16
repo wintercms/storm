@@ -8,7 +8,7 @@ class EnvFileTest extends TestCase
     {
         $filePath = __DIR__ . '/../fixtures/parse/test.env';
 
-        $env = EnvFile::read($filePath);
+        $env = EnvFile::open($filePath);
 
         $this->assertInstanceOf(EnvFile::class, $env);
 
@@ -33,7 +33,7 @@ class EnvFileTest extends TestCase
         $filePath = __DIR__ . '/../fixtures/parse/test.env';
         $tmpFile = __DIR__ . '/../fixtures/parse/temp-test.env';
 
-        $env = EnvFile::read($filePath);
+        $env = EnvFile::open($filePath);
         $env->write($tmpFile);
 
         $result = file_get_contents($tmpFile);
@@ -53,7 +53,7 @@ class EnvFileTest extends TestCase
         $filePath = __DIR__ . '/../fixtures/parse/test.env';
         $tmpFile = __DIR__ . '/../fixtures/parse/temp-test.env';
 
-        $env = EnvFile::read($filePath);
+        $env = EnvFile::open($filePath);
         $env->set('APP_KEY', 'winter');
         $env->write($tmpFile);
 
@@ -77,7 +77,7 @@ class EnvFileTest extends TestCase
         $filePath = __DIR__ . '/../fixtures/parse/test.env';
         $tmpFile = __DIR__ . '/../fixtures/parse/temp-test.env';
 
-        $env = EnvFile::read($filePath);
+        $env = EnvFile::open($filePath);
         $env->set([
             'APP_KEY' => 'winter',
             'ROUTES_CACHE' => 'winter',
@@ -104,7 +104,7 @@ class EnvFileTest extends TestCase
         $filePath = __DIR__ . '/../fixtures/parse/test.env';
         $tmpFile = __DIR__ . '/../fixtures/parse/temp-test.env';
 
-        $env = EnvFile::read($filePath);
+        $env = EnvFile::open($filePath);
         $env->set(['APP_KEY' => 'winter']);
         $env->write($tmpFile);
 
@@ -142,7 +142,7 @@ class EnvFileTest extends TestCase
     {
         $filePath = __DIR__ . '/../fixtures/parse/test.env';
 
-        $env = EnvFile::read($filePath);
+        $env = EnvFile::open($filePath);
 
         $this->assertEquals(file_get_contents($filePath), $env->render());
     }

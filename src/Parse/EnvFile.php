@@ -1,11 +1,11 @@
 <?php namespace  Winter\Storm\Parse;
 
-use Winter\Storm\Parse\Contracts\FileInterface;
+use Winter\Storm\Parse\Contracts\DataFileInterface;
 
 /**
  * Class EnvFile
  */
-class EnvFile implements FileInterface
+class EnvFile implements DataFileInterface
 {
     /**
      * @var array contains the env during modification
@@ -37,7 +37,7 @@ class EnvFile implements FileInterface
     /**
      * Return a new instance of `EnvFile` ready for modification of the file.
      */
-    public static function read(?string $filePath = null): ?EnvFile
+    public static function open(?string $filePath = null): ?EnvFile
     {
         if (!$filePath) {
             $filePath = base_path('.env');

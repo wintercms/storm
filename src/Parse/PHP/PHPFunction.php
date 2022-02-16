@@ -6,11 +6,12 @@
 class PHPFunction
 {
     /**
-     * @var string function name
+     * @var string Function name
      */
     protected $name;
+
     /**
-     * @var array function arguments
+     * @var array Function arguments
      */
     protected $args;
 

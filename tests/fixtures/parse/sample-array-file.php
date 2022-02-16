@@ -15,6 +15,7 @@ return [
 
     'debug' => true,
 
+    // phpcs:ignore
     "debugAgain"  =>  FALSE ,
 
     "bullyIan" => 0,
