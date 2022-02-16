@@ -544,4 +544,20 @@ class Application extends ApplicationBase
     {
         return PathResolver::join($this->storagePath(), '/framework/classes.php');
     }
+
+    /**
+     * Get the application namespace.
+     *
+     * @return string
+     */
+    public function getNamespace()
+    {
+        /**
+         * @TODO: Review calls to $app->getNamespace() that assume a single application namespace
+         * (Usually \App) instead of a collection of modules & plugins that all form the namespace.
+         * This is typically used for autoloading files and cleaning up output to remove extra
+         * unnecessary paths but those tasks should be handled completely differently in Winter CMS.
+         */
+        return '';
+    }
 }
