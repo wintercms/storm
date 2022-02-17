@@ -52,15 +52,14 @@ class ArrayFile implements DataFileInterface
     /**
      * Return a new instance of `ArrayFile` ready for modification of the file.
      *
-     * @param string $filePath
-     * @param bool $createMissing
-     * @return ArrayFile|null
+     * @throws \InvalidArgumentException if the provided path doesn't exist and $throwIfMissing is true
+     * @throws SystemException if the provided path is unable to be parsed
      */
-    public static function open(string $filePath, bool $createMissing = false): ?ArrayFile
+    public static function open(string $filePath, bool $throwIfMissing = false): ?ArrayFile
     {
         $exists = file_exists($filePath);
 
-        if (!$exists && !$createMissing) {
+        if (!$exists && $throwIfMissing) {
             throw new \InvalidArgumentException('file not found');
         }
 
@@ -93,7 +92,6 @@ class ArrayFile implements DataFileInterface
      *
      * @param string|array $key
      * @param mixed|null $value
-     * @return $this
      */
     public function set($key, $value = null): ArrayFile
     {
@@ -149,8 +147,7 @@ class ArrayFile implements DataFileInterface
      *
      * @param string $key
      * @param string $valueType
-     * @param $value
-     * @return ArrayItem
+     * @param mixed $value
      */
     protected function makeArrayItem(string $key, string $valueType, $value): ArrayItem
     {
@@ -167,6 +164,7 @@ class ArrayFile implements DataFileInterface
      *
      * @param string $type
      * @param mixed $value
+     * @throws \RuntimeException If $type is not one of 'string', 'boolean', 'integer', 'function', 'const', 'null', or 'array'
      * @return ConstFetch|LNumber|String_|Array_|FuncCall
      */
     protected function makeAstNode(string $type, $value)
@@ -192,15 +190,12 @@ class ArrayFile implements DataFileInterface
             case 'array':
                 return $this->castArray($value);
             default:
-                throw new \RuntimeException('not implemented replacement type: ' . $type);
+                throw new \RuntimeException("An unimlemented replacement type ($type) was encountered");
         }
     }
 
     /**
      * Cast an array to AST
-     *
-     * @param array $array
-     * @return Array_
      */
     protected function castArray(array $array): Array_
     {
@@ -231,7 +226,6 @@ class ArrayFile implements DataFileInterface
      * Returns type of var passed
      *
      * @param mixed $var
-     * @return string
      */
     protected function getType($var): string
     {
@@ -251,8 +245,7 @@ class ArrayFile implements DataFileInterface
      *
      * @param string $key
      * @param string $valueType
-     * @param $value
-     * @return ArrayItem
+     * @param mixed $value
      */
     protected function makeAstArrayRecursive(string $key, string $valueType, $value): ArrayItem
     {
@@ -281,8 +274,7 @@ class ArrayFile implements DataFileInterface
      * @param array $path
      * @param $pointer
      * @param int $depth
-     * @return array
-     * @throws SystemException
+     * @throws SystemException if trying to set a position that is already occupied by a value
      */
     protected function seek(array $path, &$pointer, int $depth = 0): array
     {
@@ -319,6 +311,7 @@ class ArrayFile implements DataFileInterface
      * Sort the config, supports: ArrayFile::SORT_ASC, ArrayFile::SORT_DESC, callable
      *
      * @param string|callable $mode
+     * @throws \InvalidArgumentException if the provided sort type is not a callable or one of static::SORT_ASC or static::SORT_DESC
      */
     public function sort($mode = self::SORT_ASC): ArrayFile
     {
@@ -333,7 +326,7 @@ class ArrayFile implements DataFileInterface
                 $this->sortRecursive($this->ast[0]->expr->items, $mode);
                 break;
             default:
-                throw new \InvalidArgumentException('sort type not implemented');
+                throw new \InvalidArgumentException('Requested sort type is invalid');
         }
 
         return $this;
@@ -341,10 +334,6 @@ class ArrayFile implements DataFileInterface
 
     /**
      * Recursive sort an Array_ item array
-     *
-     * @param array $array
-     * @param string $mode
-     * @return void
      */
     protected function sortRecursive(array &$array, string $mode): void
     {
@@ -363,9 +352,6 @@ class ArrayFile implements DataFileInterface
 
     /**
      * Write the current config to a file
-     *
-     * @param string|null $filePath
-     * @return void
      */
     public function write(string $filePath = null): void
     {
@@ -378,10 +364,6 @@ class ArrayFile implements DataFileInterface
 
     /**
      * Returns a new instance of PHPFunction
-     *
-     * @param string $name
-     * @param array $args
-     * @return PHPFunction
      */
     public function function(string $name, array $args): PHPFunction
     {
@@ -390,9 +372,6 @@ class ArrayFile implements DataFileInterface
 
     /**
      * Returns a new instance of PHPConstant
-     *
-     * @param string $name
-     * @return PHPConstant
      */
     public function constant(string $name): PHPConstant
     {
@@ -400,9 +379,7 @@ class ArrayFile implements DataFileInterface
     }
 
     /**
-     * Get the printed AST as php code
-     *
-     * @return string
+     * Get the printed AST as PHP code
      */
     public function render(): string
     {
