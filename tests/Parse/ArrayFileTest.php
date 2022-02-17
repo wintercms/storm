@@ -232,7 +232,7 @@ class ArrayFileTest extends TestCase
 
         $this->assertFalse(file_exists($file));
 
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $this->assertInstanceOf(ArrayFile::class, $arrayFile);
 
@@ -247,7 +247,7 @@ class ArrayFileTest extends TestCase
     public function testWriteDotNotation()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
         $arrayFile->set('w.i.n.t.e.r', 'cms');
 
         $result = eval('?>' . $arrayFile->render());
@@ -264,7 +264,7 @@ class ArrayFileTest extends TestCase
     public function testWriteDotNotationMixedCase()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
         $arrayFile->set('w.0.n.1.e.2', 'cms');
 
         $result = eval('?>' . $arrayFile->render());
@@ -281,7 +281,7 @@ class ArrayFileTest extends TestCase
     public function testWriteDotNotationMultiple()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
         $arrayFile->set('w.i.n.t.e.r', 'Winter CMS');
         $arrayFile->set('w.i.n.b', 'is');
         $arrayFile->set('w.i.n.t.a', 'very');
@@ -333,7 +333,7 @@ PHP;
     public function testWriteDotDuplicateIntKeys()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
         $arrayFile->set([
             'w.i.n.t.e.r' => 'Winter CMS',
             'w.i.2.g' => 'development',
@@ -374,7 +374,7 @@ PHP;
     public function testWriteIllegalOffset()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $this->expectException(\Winter\Storm\Exception\SystemException::class);
 
@@ -384,10 +384,19 @@ PHP;
         ]);
     }
 
+    public function testThrowExceptionIfMissing()
+    {
+        $file = __DIR__ . '/../fixtures/parse/missing.php';
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $arrayFile = ArrayFile::open($file, true);
+    }
+
     public function testSetArray()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'w' => [
@@ -420,7 +429,7 @@ PHP;
     public function testSetNumericArray()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'winter' => [
@@ -455,7 +464,7 @@ PHP;
     public function testWriteConstCall()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'curl_port' => $arrayFile->constant('CURLOPT_PORT')
@@ -481,7 +490,7 @@ PHP;
     public function testWriteArrayFunctionsAndConstCall()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'path.to.config' => [
@@ -526,7 +535,7 @@ PHP;
     public function testWriteFunctionCall()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'key' => $arrayFile->function('env', ['KEY_A', true])
@@ -552,7 +561,7 @@ PHP;
     public function testWriteFunctionCallOverwrite()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'key' => $arrayFile->function('env', ['KEY_A', true])
@@ -577,7 +586,7 @@ PHP;
     public function testInsertNull()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'key' => $arrayFile->function('env', ['KEY_A', null]),
@@ -600,7 +609,7 @@ PHP;
     public function testSortAsc()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'b.b' => 'b',
@@ -640,7 +649,7 @@ PHP;
     public function testSortDesc()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'b.a' => 'a',
@@ -679,7 +688,7 @@ PHP;
     public function testSortUsort()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';
-        $arrayFile = ArrayFile::open($file, true);
+        $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
             'a' => 'a',
