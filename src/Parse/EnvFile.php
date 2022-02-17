@@ -1,5 +1,6 @@
 <?php namespace  Winter\Storm\Parse;
 
+use Winter\Storm\Support\Str;
 use Winter\Storm\Parse\Contracts\DataFileInterface;
 
 /**
@@ -160,7 +161,7 @@ class EnvFile implements DataFileInterface
                 return $value;
             default:
                 // addslashes() wont work as it'll escape single quotes and they will be read literally
-                return '"' . str_replace('"', '\"', $value) . '"';
+                return '"' . Str::replace('"', '\"', $value) . '"';
         }
     }
 
@@ -180,7 +181,7 @@ class EnvFile implements DataFileInterface
             $type = !($line = trim($line))
                 ? 'nl'
                 : (
-                    str_starts_with($line, '#')
+                    Str::startsWith($line, '#')
                         ? 'comment'
                         : 'var'
                 );
