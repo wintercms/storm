@@ -8,24 +8,22 @@ use Winter\Storm\Parse\Contracts\DataFileInterface;
 class EnvFile implements DataFileInterface
 {
     /**
-     * @var array contains the env during modification
+     * @var array Lines of env data
      */
     protected $env = [];
 
     /**
-     * @var array contains the env lookup map
+     * @var array Map of variable names to line indexes
      */
     protected $map = [];
 
     /**
-     * @var string|null contains the filepath used to read / write
+     * @var string|null Filepath currently being worked on
      */
     protected $filePath = null;
 
     /**
-     * EnvFile constructor.
-     * @param array $env
-     * @param string $filePath
+     * EnvFile constructor
      */
     public function __construct(string $filePath)
     {
@@ -59,7 +57,6 @@ class EnvFile implements DataFileInterface
      * ```
      * @param array|string $key
      * @param mixed|null $value
-     * @return $this
      */
     public function set($key, $value = null): EnvFile
     {
@@ -89,10 +86,8 @@ class EnvFile implements DataFileInterface
 
     /**
      * Push a newline onto the end of the env file
-     *
-     * @return $this
      */
-    public function addNewLine(): EnvFile
+    public function addEmptyLine(): EnvFile
     {
         $this->env[] = [
             'type' => 'nl'
@@ -102,9 +97,7 @@ class EnvFile implements DataFileInterface
     }
 
     /**
-     * Write the current env to a file
-     *
-     * @param string|null $filePath
+     * Write the current env lines to a fileh
      */
     public function write(string $filePath = null): void
     {
@@ -116,9 +109,7 @@ class EnvFile implements DataFileInterface
     }
 
     /**
-     * Get the env as a string
-     *
-     * @return string
+     * Get the env lines data as a string
      */
     public function render(): string
     {
@@ -142,8 +133,7 @@ class EnvFile implements DataFileInterface
     /**
      * Wrap a value in quotes if needed
      *
-     * @param $value
-     * @return string
+     * @param mixed $value
      */
     protected function escapeValue($value): string
     {
@@ -175,10 +165,7 @@ class EnvFile implements DataFileInterface
     }
 
     /**
-     * Parse a .env file, returns an array of the env file data and a key => pos map
-     *
-     * @param string $filePath
-     * @return array
+     * Parse a .env file, returns an array of the env file data and a key => position map
      */
     protected function parse(string $filePath): array
     {
@@ -232,11 +219,9 @@ class EnvFile implements DataFileInterface
     }
 
     /**
-     * Get the current env array
-     *
-     * @return array
+     * Get the variables from the current env lines data as an associative array
      */
-    public function getEnv(): array
+    public function getVariables(): array
     {
         $env = [];
 

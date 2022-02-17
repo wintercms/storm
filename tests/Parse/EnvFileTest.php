@@ -12,7 +12,7 @@ class EnvFileTest extends TestCase
 
         $this->assertInstanceOf(EnvFile::class, $env);
 
-        $arr = $env->getEnv();
+        $arr = $env->getVariables();
 
         $this->assertArrayHasKey('APP_URL', $arr);
         $this->assertArrayHasKey('APP_KEY', $arr);
