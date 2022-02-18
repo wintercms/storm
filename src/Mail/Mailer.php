@@ -510,10 +510,10 @@ class Mailer extends MailerBase
     public function pretend($value = true)
     {
         if ($value) {
-            $this->pretendingOriginal = Config::get('mail.driver');
-            Config::set('mail.driver', 'log');
+            $this->pretendingOriginal = Config::get('mail.default', 'smtp');
+            Config::set('mail.default', 'log');
         } else {
-            Config::set('mail.driver', $this->pretendingOriginal);
+            Config::set('mail.default', $this->pretendingOriginal);
         }
     }
 }
