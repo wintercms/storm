@@ -99,6 +99,46 @@ class EnvFileTest extends TestCase
         unlink($tmpFile);
     }
 
+    public function testValueFormats()
+    {
+        $envFile = new EnvFile('');
+        $cases = [
+            'APP_DEBUG=true' => [
+                'variable' => 'APP_DEBUG',
+                'value'    => true,
+            ],
+            'APP_URL="https://localhost"' => [
+                'variable' => 'APP_URL',
+                'value'    => "https://localhost",
+            ],
+            'DB_CONNECTION="mysql"' => [
+                'variable' => 'DB_CONNECTION',
+                'value'    => "mysql",
+            ],
+            'DB_DATABASE="data#base"' => [
+                'variable' => 'DB_DATABASE',
+                'value'    => "data#base",
+            ],
+            'DB_USERNAME="teal\\\'c"' => [
+                'variable' => 'DB_USERNAME',
+                'value'    => "teal\'c",
+            ],
+            'DB_PASSWORD="test\\"quotes\\\'test"' => [
+                'variable' => 'DB_PASSWORD',
+                'value'    => "test\"quotes\'test",
+            ],
+            'DB_PORT=3306' => [
+                'variable' => 'DB_PORT',
+                'value'    => 3306,
+            ],
+        ];
+
+        foreach ($cases as $output => $config) {
+            $envFile->set($config['variable'], $config['value']);
+            $this->assertStringContainsString($output, $envFile->render());
+        }
+    }
+
     public function testCasting()
     {
         $filePath = __DIR__ . '/../fixtures/parse/test.env';
