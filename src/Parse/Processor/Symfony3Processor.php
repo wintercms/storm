@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Parse\Processor;
 
+use Str;
+
 /**
  * Symfony/Yaml 3 processor.
  *
@@ -24,6 +26,12 @@ class Symfony3Processor extends YamlProcessor
             }, rtrim($line));
 
             // Ensure that !!! lines are quoted
+            // @TODO: This is a brittle workaround, identify the possible cases where this can be a problem
+            //        i.e. quotes inside the message, message part of multi-message update, etc; and resolve them
+            if (Str::contains($line, ': !!!')) {
+                $line = Str::replace(': !!!', ': "!!!', $line);
+                $line .= '"';
+            }
         }
 
         return implode("\n", $lines);
