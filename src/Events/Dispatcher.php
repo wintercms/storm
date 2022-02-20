@@ -135,9 +135,6 @@ class Dispatcher extends BaseDispatcher
         }
 
         foreach ($this->getListeners($event) as $listener) {
-            if ($listener instanceof SerializableClosure) {
-                $listener = $listener->getClosure();
-            }
             $response = $listener($event, $payload);
 
             // If a response is returned from the listener and event halting is enabled
