@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Parse\Processor;
 
-use Str;
+use Winter\Storm\Support\Str;
 
 /**
  * Symfony/Yaml 3 processor.
