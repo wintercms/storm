@@ -61,7 +61,7 @@ class Dispatcher extends BaseDispatcher
         }
     }
 
-    // Serialize the new listener
+    // Serialize the listener created by laravel
     public function makeListener($listener, $wildcard = false)
     {
         $listener = parent::makeListener($listener, $wildcard);
