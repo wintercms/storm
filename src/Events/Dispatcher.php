@@ -48,10 +48,10 @@ class Dispatcher extends BaseDispatcher
         } elseif ($listener instanceof QueuedClosure) {
             $listener = $listener->resolve();
         }
-        $listener = Serialization::wrapClosure($listener);
 
         foreach ((array) $events as $event) {
             if (Str::contains($event, '*')) {
+                $listener = Serialization::wrapClosure($listener);
                 $this->setupWildcardListen($event, $listener);
             } else {
                 $this->listeners[$event][$priority][] = $this->makeListener($listener);
@@ -59,6 +59,14 @@ class Dispatcher extends BaseDispatcher
                 unset($this->sorted[$event]);
             }
         }
+    }
+
+    // Serialize the new listener
+    public function makeListener($listener, $wildcard = false)
+    {
+        $listener = parent::makeListener($listener, $wildcard);
+
+        return Serialization::wrapClosure($listener);
     }
 
     /**
