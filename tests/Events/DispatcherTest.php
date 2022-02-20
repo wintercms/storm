@@ -53,6 +53,19 @@ class DispatcherTest extends TestCase
         $this->assertTrue($magic_value);
     }
 
+    public function testClosureWithValueArgument()
+    {
+        $original = false;
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->listen('test', function ($value) {
+            $value = true;
+        });
+        $dispatcher->dispatch('test', [$original]);
+
+        $this->assertFalse($original);
+    }
+
     public function testClosureWithReferenceArgument()
     {
         $original = false;
