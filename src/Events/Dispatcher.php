@@ -51,8 +51,7 @@ class Dispatcher extends BaseDispatcher
 
         foreach ((array) $events as $event) {
             if (Str::contains($event, '*')) {
-                $listener = Serialization::wrapClosure($listener);
-                $this->setupWildcardListen($event, $listener);
+                $this->setupWildcardListen($event, Serialization::wrapClosure($listener));
             } else {
                 $this->listeners[$event][$priority][] = $this->makeListener($listener);
 
