@@ -1,12 +1,11 @@
-<?php namespace Winter\Storm\Assetic\Filter;
+<?php namespace Winter\Storm\Parse\Assetic\Filter;
 
 use Event;
-use Winter\Storm\Assetic\Asset\AssetInterface;
-use Winter\Storm\Assetic\Factory\AssetFactory;
-use Winter\Storm\Assetic\Filter\ScssphpFilter;
-use Winter\Storm\Assetic\Filter\HashableInterface;
-use Winter\Storm\Assetic\Filter\DependencyExtractorInterface;
-use Winter\Storm\Assetic\Filter\FilterInterface;
+use Assetic\Filter\ScssphpFilter;
+use Assetic\Factory\AssetFactory;
+use Assetic\Contracts\Asset\AssetInterface;
+use Assetic\Contracts\Filter\HashableInterface;
+use Assetic\Contracts\Filter\DependencyExtractorInterface;
 
 /**
  * Less.php Compiler Filter

@@ -1,9 +1,9 @@
-<?php namespace Winter\Storm\Assetic\Filter;
+<?php namespace Winter\Storm\Parse\Assetic\Filter;
 
 use File;
-use Winter\Storm\Assetic\Asset\AssetInterface;
-use Winter\Storm\Assetic\Filter\FilterInterface;
 use RuntimeException;
+use Assetic\Filter\BaseFilter;
+use Assetic\Asset\AssetInterface;
 
 /**
  * Importer JS Filter
@@ -18,9 +18,8 @@ use RuntimeException;
  *
  * @author Alexey Bobkov, Samuel Georges
  */
-class JavascriptImporter implements FilterInterface
+class JavascriptImporter extends BaseFilter
 {
-
     /**
      * @var string Location of where the processed JS script resides.
      */
@@ -40,10 +39,6 @@ class JavascriptImporter implements FilterInterface
      * @var array Variables defined by this script.
      */
     protected $definedVars = [];
-
-    public function filterLoad(AssetInterface $asset)
-    {
-    }
 
     public function filterDump(AssetInterface $asset)
     {

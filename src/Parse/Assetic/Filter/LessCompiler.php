@@ -1,21 +1,22 @@
-<?php namespace Winter\Storm\Assetic\Filter;
+<?php namespace Winter\Storm\Parse\Assetic\Filter;
 
-use Event;
 use Less_Parser;
-use Winter\Storm\Assetic\Asset\AssetInterface;
-use Winter\Storm\Assetic\Factory\AssetFactory;
-use Winter\Storm\Assetic\Filter\LessphpFilter;
-use Winter\Storm\Assetic\Filter\HashableInterface;
-use Winter\Storm\Assetic\Filter\DependencyExtractorInterface;
-use Winter\Storm\Assetic\Filter\FilterInterface;
+use Assetic\Filter\BaseFilter;
+use Assetic\Filter\LessphpFilter;
+use Assetic\Factory\AssetFactory;
+use Assetic\Contracts\Asset\AssetInterface;
+use Assetic\Contracts\Filter\HashableInterface;
+use Assetic\Contracts\Filter\DependencyExtractorInterface;
 
 /**
  * Less.php Compiler Filter
- * Class used to compiled stylesheet less files, not using leafo!
+ * Class used to compiled stylesheet less files
+ *
+ * @link https://github.com/wikimedia/less.php
  *
  * @author Alexey Bobkov, Samuel Georges
  */
-class LessCompiler implements FilterInterface, HashableInterface, DependencyExtractorInterface
+class LessCompiler extends BaseFilter implements HashableInterface, DependencyExtractorInterface
 {
     protected $presets = [];
 
@@ -39,10 +40,6 @@ class LessCompiler implements FilterInterface, HashableInterface, DependencyExtr
         $parser->ModifyVars($this->presets);
 
         $asset->setContent($parser->getCss());
-    }
-
-    public function filterDump(AssetInterface $asset)
-    {
     }
 
     public function hashAsset($asset, $localPath)
