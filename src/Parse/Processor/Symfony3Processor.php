@@ -24,14 +24,6 @@ class Symfony3Processor extends YamlProcessor
             $line = preg_replace_callback('/^( *)([\'"]{0}[^\'"\n\r:#]+[\'"]{0})\s*:/m', function ($matches) {
                 return $matches[1] . "'" . trim($matches[2]) . "':";
             }, rtrim($line));
-
-            // Ensure that !!! lines are quoted
-            // @TODO: This is a brittle workaround, identify the possible cases where this can be a problem
-            //        i.e. quotes inside the message, message part of multi-message update, etc; and resolve them
-            if (Str::contains($line, ': !!!')) {
-                $line = Str::replace(': !!!', ': "!!!', $line);
-                $line .= '"';
-            }
         }
 
         return implode("\n", $lines);

@@ -217,45 +217,44 @@ class YamlTest extends TestCase
         $yaml = $parser->parse(file_get_contents(dirname(__DIR__) . '/fixtures/yaml/symfony3.yaml'));
 
         $this->assertEquals([
+            // Form config file
             'form' => [
-                'fields' => [
-                    'testField' => [
-                        'type' => 'text',
-                        'label' => 'Test field',
-                    ],
-                    'testSelect' => [
-                        'type' => 'select',
-                        'label' => 'Do you rock the casbah?',
-                        'options' => [
-                            '0' => 'Nope',
-                            '1' => 'ROCK THE CASBAH!',
-                            '2' => 2,
-                        ],
-                    ],
-                    'testSelectTwo' => [
-                        'type' => 'select',
-                        'label' => 'Which decade of songs did you like?',
-                        'options' => [
-                            '1960s',
-                            '1970s',
-                            '1980s',
-                            '1990s',
-                            '2000s',
-                            '2010s',
-                            '2020s',
-                        ],
-                    ],
-                    'testBoolean' => [
-                        'type' => 'select',
-                        'label' => 'Is the sky blue?',
-                        'options' => [
-                            'true' => true,
-                            'false' => false,
-                        ],
-                    ],
+                // field options array, unquoted keys & values
+                'options' => [
+                    '0.1' => '0.1',
+                    '0.2' => '0.2',
+                ],
+
+                // field options array, unquoted keys
+                'options2' => [
+                    '0.1' => '0.1',
+                    '0.2' => '0.2',
+                ],
+
+                // Aligned colons
+                'options3' => [
+                    '0.1' => '0.1',
+                    '0.2' => '0.2',
                 ],
             ],
-        ], $yaml);
+
+            // version.yaml file
+            'updates' => [
+                '1.0.1' => 'First version of Plugin',
+                '1.0.2' => [
+                    'Create plugin tables',
+                    'create_plugin_table.php',
+                ],
+                '1.1' => [
+                    'Add new component',
+                    'create_component_table.php',
+                ],
+                '1.1.1' => [
+                    'Update column property',
+                    'update_column_property.php',
+                ],
+            ],
+        ], $yaml['numeric_keys_not_supported']);
     }
 }
 

@@ -2,43 +2,48 @@
 ## Numeric keys are not supported:
 ##
 numeric_keys_not_supported:
-    # field options array, unquoted keys & values
-    options:
-        0.1: 0.1
-        0.2: 0.2
+    # Form config file
+    form:
+        # field options array, unquoted keys & values
+        options:
+            0.1: 0.1
+            0.2: 0.2
 
-    # field options array, unquoted keys
-    options2:
-        0.1: '0.1'
-        0.2: '0.2'
+        # field options array, unquoted keys
+        options2:
+            0.1: '0.1'
+            0.2: '0.2'
+
+        # Aligned colons
+        options3 :
+            0.1  : 0.1
+            0.2  : 0.2
 
     # version.yaml file
-    1.0.1: First version of Plugin
-    1.0.2:
-        - 'Create plugin tables'
-        - create_plugin_table.php
-    1.1:
-        - 'Add new component'
-        - create_component_table.php
-    1.1.1:
-        - 'Update column property'
-        - update_column_property.php
+    updates:
+        1.0.1: First version of Plugin
+        1.0.2:
+            - 'Create plugin tables'
+            - create_plugin_table.php
+        1.1:
+            - 'Add new component'
+            - create_component_table.php
+        1.1.1:
+            - 'Update column property'
+            - update_column_property.php
 
-    # Aligned colons
-    options3 :
-        0.1  : 0.1
-        0.2  : 0.2
+
 
 ##
-## Could not be parsed as it uses an unsupported built-in tag
+## Could not be parsed as it uses an unsupported built-in tag - FIXED IN VERSIONYAMLPARSER
 ##
-unsupported_build_tag:
-    ## Version.yaml unquoted !!! usage
-    1.0.0: First version of Plugin
-    2.0.0: !!! Updated for Winter v1.2+
-    3.0.0:
-        - Multiple lines of changes
-        - !!! Surprise! Some of them are important
+# unsupported_build_tag:
+#     ## Version.yaml unquoted !!! usage
+#     1.0.0: First version of Plugin
+#     2.0.0: !!! Updated for Winter v1.2+
+#     3.0.0:
+#         - Multiple lines of changes
+#         - !!! Surprise! Some of them are important
 
 
 
