@@ -697,7 +697,7 @@ class Model extends EloquentModel implements ModelInterface
      * @param  mixed  $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         if ($result = parent::offsetExists($offset)) {
             return $result;

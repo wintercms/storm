@@ -248,7 +248,7 @@ class ExtendableTest extends TestCase
         $this->assertNotContains('missingFunction', $methods);
     }
 
-    public function testClosureSerialisation()
+    public function testClosureSerialization()
     {
         $test_string = 'hello world';
         BasicExtendable::extend(function (BasicExtendable $class) use ($test_string) {

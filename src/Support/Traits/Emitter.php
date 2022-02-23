@@ -4,7 +4,7 @@ use Closure;
 use Illuminate\Events\QueuedClosure;
 use Illuminate\Support\Traits\ReflectsClosures;
 use Winter\Storm\Support\Arr;
-use Winter\Storm\Support\Serialisation;
+use Winter\Storm\Support\Serialization;
 
 /**
  * Adds event related features to any class.
@@ -14,6 +14,7 @@ use Winter\Storm\Support\Serialisation;
 trait Emitter
 {
     use ReflectsClosures;
+
     /**
      * @var array Collection of registered events to be fired once only.
      */
@@ -39,9 +40,9 @@ trait Emitter
      */
     public function bindEvent($event, $callback = null, $priority = 0)
     {
-        if ($event instanceof Closure || $event instanceof  QueuedClosure) {
+        if ($event instanceof Closure || $event instanceof QueuedClosure) {
             if ($priority === 0 && (is_int($callback) || filter_var($callback, FILTER_VALIDATE_INT))) {
-                $priority = (int)$callback;
+                $priority = (int) $callback;
             }
         }
         if ($event instanceof Closure) {
@@ -51,7 +52,7 @@ trait Emitter
         } elseif ($callback instanceof QueuedClosure) {
             $callback = $callback->resolve();
         }
-        $this->emitterEventCollection[$event][$priority][] = Serialisation::wrapClosure($callback);
+        $this->emitterEventCollection[$event][$priority][] = Serialization::wrapClosure($callback);
         unset($this->emitterEventSorted[$event]);
         return $this;
     }
@@ -72,7 +73,7 @@ trait Emitter
         } elseif ($callback instanceof QueuedClosure) {
             $callback = $callback->resolve();
         }
-        $this->emitterSingleEventCollection[$event][] = Serialisation::wrapClosure($callback);
+        $this->emitterSingleEventCollection[$event][] = Serialization::wrapClosure($callback);
         return $this;
     }
 
@@ -156,7 +157,7 @@ trait Emitter
          */
         if (isset($this->emitterSingleEventCollection[$event])) {
             foreach ($this->emitterSingleEventCollection[$event] as $callback) {
-                $response = call_user_func_array(Serialisation::unwrapClosure($callback), $params);
+                $response = call_user_func_array(Serialization::unwrapClosure($callback), $params);
                 if (is_null($response)) {
                     continue;
                 }
@@ -178,7 +179,7 @@ trait Emitter
             }
 
             foreach ($this->emitterEventSorted[$event] as $callback) {
-                $response = call_user_func_array(Serialisation::unwrapClosure($callback), $params);
+                $response = call_user_func_array(Serialization::unwrapClosure($callback), $params);
                 if (is_null($response)) {
                     continue;
                 }

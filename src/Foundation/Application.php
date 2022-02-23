@@ -70,9 +70,9 @@ class Application extends ApplicationBase
      *
      * @return string
      */
-    public function langPath()
+    public function langPath($path = '')
     {
-        return PathResolver::join($this->basePath, '/lang');
+        return PathResolver::join($this->basePath, '/lang' . (!empty($path) ? "/$path" : ''));
     }
 
     /**
@@ -543,5 +543,21 @@ class Application extends ApplicationBase
     public function getCachedClassesPath()
     {
         return PathResolver::join($this->storagePath(), '/framework/classes.php');
+    }
+
+    /**
+     * Get the application namespace.
+     *
+     * @return string
+     */
+    public function getNamespace()
+    {
+        /**
+         * @TODO: Review calls to $app->getNamespace() that assume a single application namespace
+         * (Usually \App) instead of a collection of modules & plugins that all form the namespace.
+         * This is typically used for autoloading files and cleaning up output to remove extra
+         * unnecessary paths but those tasks should be handled completely differently in Winter CMS.
+         */
+        return '';
     }
 }

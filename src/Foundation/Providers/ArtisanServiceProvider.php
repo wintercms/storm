@@ -12,6 +12,8 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
      * @var array
      */
     protected $commands = [
+        // Currently included in Winter
+        // @TODO: Assess for retention
         'CacheClear'            => \Illuminate\Cache\Console\ClearCommand::class,
         'CacheForget'           => \Illuminate\Cache\Console\ForgetCommand::class,
         'ClearCompiled'         => \Winter\Storm\Foundation\Console\ClearCompiledCommand::class,
@@ -42,6 +44,25 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'StorageLink'           => \Illuminate\Foundation\Console\StorageLinkCommand::class,
         'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
         'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
+
+
+        // Currently unsupported in Winter
+        // @TODO: Assess for inclusion
+        // 'ClearResets' => ClearResetsCommand::class,
+        // 'Db' => DbCommand::class,
+        // 'DbPrune' => PruneCommand::class,
+        // 'DbWipe' => WipeCommand::class,
+        // 'EventCache' => EventCacheCommand::class,
+        // 'EventClear' => EventClearCommand::class,
+        // 'EventList' => EventListCommand::class,
+        // 'OptimizeClear' => OptimizeClearCommand::class,
+        // 'QueueClear' => QueueClearCommand::class,
+        // 'SchemaDump' => DumpCommand::class,
+        // 'ScheduleList' => ScheduleListCommand::class,
+        // 'ScheduleClearCache' => ScheduleClearCacheCommand::class,
+        // 'ScheduleTest' => ScheduleTestCommand::class,
+        // 'ScheduleWork' => ScheduleWorkCommand::class,
+        // 'ViewCache' => ViewCacheCommand::class,
     ];
 
     /**
@@ -52,6 +73,40 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
     protected $devCommands = [
         'Serve'             => \Illuminate\Foundation\Console\ServeCommand::class,
         'VendorPublish'     => \Illuminate\Foundation\Console\VendorPublishCommand::class,
+
+        // Currently unsupported in Winter
+        // @TODO: Assess for inclusion
+        // 'CacheTable' => CacheTableCommand::class,
+        // 'CastMake' => CastMakeCommand::class,
+        // 'ChannelMake' => ChannelMakeCommand::class,
+        // 'ComponentMake' => ComponentMakeCommand::class,
+        // 'ConsoleMake' => ConsoleMakeCommand::class,
+        // 'ControllerMake' => ControllerMakeCommand::class,
+        // 'EventGenerate' => EventGenerateCommand::class,
+        // 'EventMake' => EventMakeCommand::class,
+        // 'ExceptionMake' => ExceptionMakeCommand::class,
+        // 'FactoryMake' => FactoryMakeCommand::class,
+        // 'JobMake' => JobMakeCommand::class,
+        // 'ListenerMake' => ListenerMakeCommand::class,
+        // 'MailMake' => MailMakeCommand::class,
+        // 'MiddlewareMake' => MiddlewareMakeCommand::class,
+        // 'ModelMake' => ModelMakeCommand::class,
+        // 'NotificationMake' => NotificationMakeCommand::class,
+        // 'NotificationTable' => NotificationTableCommand::class,
+        // 'ObserverMake' => ObserverMakeCommand::class,
+        // 'PolicyMake' => PolicyMakeCommand::class,
+        // 'ProviderMake' => ProviderMakeCommand::class,
+        // 'QueueFailedTable' => FailedTableCommand::class,
+        // 'QueueTable' => TableCommand::class,
+        // 'QueueBatchesTable' => BatchesTableCommand::class,
+        // 'RequestMake' => RequestMakeCommand::class,
+        // 'ResourceMake' => ResourceMakeCommand::class,
+        // 'RuleMake' => RuleMakeCommand::class,
+        // 'ScopeMake' => ScopeMakeCommand::class,
+        // 'SeederMake' => SeederMakeCommand::class,
+        // 'SessionTable' => SessionTableCommand::class,
+        // 'StubPublish' => StubPublishCommand::class,
+        // 'TestMake' => TestMakeCommand::class,
     ];
 
     /**

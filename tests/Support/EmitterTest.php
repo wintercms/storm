@@ -208,7 +208,7 @@ class EmitterTest extends TestCase
         $this->assertTrue($magic_value);
     }
 
-    public function testClosureSerialisation()
+    public function testClosureSerialization()
     {
         $emitter = new EmitterClass();
         $test = 'foobar';
@@ -227,7 +227,7 @@ class EmitterTest extends TestCase
         $this->assertEquals($test.$test, EmitterClass::$output);
     }
 
-    public function testNestedClosureSerialisation()
+    public function testNestedClosureSerialization()
     {
         $emitter = new EmitterClass();
         $test = 'foobar';

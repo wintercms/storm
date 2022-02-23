@@ -15,10 +15,13 @@ class Kernel extends ConsoleKernel
         \Winter\Storm\Foundation\Bootstrap\LoadEnvironmentVariables::class,
         \Winter\Storm\Foundation\Bootstrap\LoadConfiguration::class,
         \Winter\Storm\Foundation\Bootstrap\LoadTranslation::class,
+
         \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
         \Illuminate\Foundation\Bootstrap\RegisterFacades::class,
         \Illuminate\Foundation\Bootstrap\SetRequestForConsole::class,
+
         \Winter\Storm\Foundation\Bootstrap\RegisterWinter::class,
+
         \Illuminate\Foundation\Bootstrap\RegisterProviders::class,
         \Illuminate\Foundation\Bootstrap\BootProviders::class,
     ];

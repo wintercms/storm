@@ -602,10 +602,8 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
 
     /**
      * Convert the object into something JSON serializable.
-     *
-     * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -1633,7 +1631,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      * @param  mixed  $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->$offset);
     }
@@ -1644,7 +1642,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      * @param  mixed  $offset
      * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->$offset;
     }
@@ -1656,7 +1654,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      * @param  mixed  $value
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->$offset = $value;
     }
@@ -1667,7 +1665,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      * @param  mixed  $offset
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->$offset);
     }

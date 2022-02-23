@@ -91,9 +91,8 @@ class DataFeed
 
     /**
      * Count the number of results from the generic union query
-     * @return int
      */
-    public function count()
+    public function count(): int
     {
         $query = $this->processCollection();
         $bindings = $query->bindings;

@@ -3,8 +3,7 @@
 use Closure;
 use Laravel\SerializableClosure\SerializableClosure;
 use ReflectionClass;
-use Winter\Storm\Support\Arr;
-use Winter\Storm\Support\Serialisation;
+use Winter\Storm\Support\Serialization;
 use Winter\Storm\Support\Str;
 use Illuminate\Events\Dispatcher as BaseDispatcher;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -37,9 +36,9 @@ class Dispatcher extends BaseDispatcher
      */
     public function listen($events, $listener = null, $priority = 0)
     {
-        if ($events instanceof Closure || $events instanceof  QueuedClosure) {
+        if ($events instanceof Closure || $events instanceof QueuedClosure) {
             if ($priority === 0 && (is_int($listener) || filter_var($listener, FILTER_VALIDATE_INT))) {
-                $priority = (int)$listener;
+                $priority = (int) $listener;
             }
         }
         if ($events instanceof Closure) {
@@ -52,17 +51,29 @@ class Dispatcher extends BaseDispatcher
             $listener = $listener->resolve();
         }
 
-        $listener = Serialisation::wrapClosure($listener);
-
         foreach ((array) $events as $event) {
             if (Str::contains($event, '*')) {
-                $this->setupWildcardListen($event, $listener);
+                $this->setupWildcardListen($event, Serialization::wrapClosure($listener));
             } else {
                 $this->listeners[$event][$priority][] = $this->makeListener($listener);
 
                 unset($this->sorted[$event]);
             }
         }
+    }
+
+    /**
+     * Register an event listener with the dispatcher.
+     *
+     * @param  \Closure|string|array  $listener
+     * @param  bool  $wildcard
+     * @return \Closure
+     */
+    public function makeListener($listener, $wildcard = false)
+    {
+        $listener = parent::makeListener($listener, $wildcard);
+
+        return Serialization::wrapClosure($listener);
     }
 
     /**
@@ -131,9 +142,6 @@ class Dispatcher extends BaseDispatcher
         }
 
         foreach ($this->getListeners($event) as $listener) {
-            if ($listener instanceof SerializableClosure) {
-                $listener = $listener->getClosure();
-            }
             $response = $listener($event, $payload);
 
             // If a response is returned from the listener and event halting is enabled
