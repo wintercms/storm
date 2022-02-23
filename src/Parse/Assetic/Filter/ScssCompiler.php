@@ -8,8 +8,8 @@ use Assetic\Contracts\Filter\HashableInterface;
 use Assetic\Contracts\Filter\DependencyExtractorInterface;
 
 /**
- * Less.php Compiler Filter
- * Class used to compiled stylesheet less files, not using leafo!
+ * SCSS Compiler Filter
+ * Class used to compile SCSS files into CSS
  *
  * @author Alexey Bobkov, Samuel Georges
  */

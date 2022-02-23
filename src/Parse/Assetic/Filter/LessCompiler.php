@@ -10,7 +10,7 @@ use Assetic\Contracts\Filter\DependencyExtractorInterface;
 
 /**
  * Less.php Compiler Filter
- * Class used to compiled stylesheet less files
+ * Class used to compile LESS stylesheet files into CSS
  *
  * @link https://github.com/wikimedia/less.php
  *
