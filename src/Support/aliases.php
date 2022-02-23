@@ -340,7 +340,6 @@ class_alias(\Winter\Storm\Scaffold\Console\CreatePlugin::class, \October\Rain\Sc
 class_alias(\Winter\Storm\Scaffold\Console\CreateReportWidget::class, \October\Rain\Scaffold\Console\CreateReportWidget::class);
 class_alias(\Winter\Storm\Scaffold\Console\CreateTheme::class, \October\Rain\Scaffold\Console\CreateTheme::class);
 class_alias(\Winter\Storm\Scaffold\GeneratorCommand::class, \October\Rain\Scaffold\GeneratorCommand::class);
-class_alias(\Winter\Storm\Scaffold\ScaffoldServiceProvider::class, \October\Rain\Scaffold\ScaffoldServiceProvider::class);
 
 /**
  * Alias October\Rain\Support
