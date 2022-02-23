@@ -1,11 +1,11 @@
 <?php namespace Winter\Storm\Scaffold;
 
-use Twig;
 use Exception;
 use ReflectionClass;
 use Illuminate\Console\Command;
-use Winter\Storm\Support\Str;
 use Winter\Storm\Filesystem\Filesystem;
+use Winter\Storm\Support\Facades\Twig;
+use Winter\Storm\Support\Str;
 
 abstract class GeneratorCommand extends Command
 {
@@ -66,7 +66,7 @@ abstract class GeneratorCommand extends Command
     /**
      * Prepare variables for stubs.
      *
-     * return @array
+     * @return array
      */
     abstract protected function prepareVars();
 
@@ -123,11 +123,11 @@ abstract class GeneratorCommand extends Command
      * Build the directory for the class if necessary.
      *
      * @param  string  $path
-     * @return string
+     * @return void
      */
     protected function makeDirectory($path)
     {
-        if (! $this->files->isDirectory(dirname($path))) {
+        if (!$this->files->isDirectory(dirname($path))) {
             $this->files->makeDirectory(dirname($path), 0777, true, true);
         }
     }

@@ -16,6 +16,6 @@ class ClearCompiledCommand extends ClearCompiledCommandBase
             @unlink($classesPath);
         }
 
-        return parent::handle();
+        parent::handle();
     }
 }
