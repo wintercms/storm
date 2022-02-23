@@ -1,13 +1,11 @@
 <?php namespace Winter\Storm\Scaffold;
 
-use ReflectionClass;
-use Winter\Storm\Support\Str;
-use Illuminate\Console\Command;
-use Winter\Storm\Filesystem\Filesystem;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Exception;
 use Twig;
+use Exception;
+use ReflectionClass;
+use Illuminate\Console\Command;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Filesystem\Filesystem;
 
 abstract class GeneratorCommand extends Command
 {

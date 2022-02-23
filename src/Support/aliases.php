@@ -331,16 +331,7 @@ class_alias(\Winter\Storm\Router\UrlGenerator::class, \October\Rain\Router\UrlGe
 /**
  * Alias October\Rain\Scaffold
  */
-class_alias(\Winter\Storm\Scaffold\Console\CreateCommand::class, \October\Rain\Scaffold\Console\CreateCommand::class);
-class_alias(\Winter\Storm\Scaffold\Console\CreateComponent::class, \October\Rain\Scaffold\Console\CreateComponent::class);
-class_alias(\Winter\Storm\Scaffold\Console\CreateController::class, \October\Rain\Scaffold\Console\CreateController::class);
-class_alias(\Winter\Storm\Scaffold\Console\CreateFormWidget::class, \October\Rain\Scaffold\Console\CreateFormWidget::class);
-class_alias(\Winter\Storm\Scaffold\Console\CreateModel::class, \October\Rain\Scaffold\Console\CreateModel::class);
-class_alias(\Winter\Storm\Scaffold\Console\CreatePlugin::class, \October\Rain\Scaffold\Console\CreatePlugin::class);
-class_alias(\Winter\Storm\Scaffold\Console\CreateReportWidget::class, \October\Rain\Scaffold\Console\CreateReportWidget::class);
-class_alias(\Winter\Storm\Scaffold\Console\CreateTheme::class, \October\Rain\Scaffold\Console\CreateTheme::class);
 class_alias(\Winter\Storm\Scaffold\GeneratorCommand::class, \October\Rain\Scaffold\GeneratorCommand::class);
-class_alias(\Winter\Storm\Scaffold\ScaffoldServiceProvider::class, \October\Rain\Scaffold\ScaffoldServiceProvider::class);
 
 /**
  * Alias October\Rain\Support
