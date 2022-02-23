@@ -214,3 +214,24 @@ if (!function_exists('traceSql')) {
         trace_sql();
     }
 }
+
+if (!function_exists('traceSegfaults')) {
+    /**
+     * Initializes the SegfaultLogger
+     */
+    function traceSegfault(string $output = 'php://stdout'): void
+    {
+        $path = __DIR__ . '/Testing/Segfault/';
+        $files = [
+            'Logger.php',
+            'StreamWrapper.php',
+            'StreamFilter.php',
+        ];
+
+        foreach ($files as $file) {
+            require_once($path . $file);
+        }
+
+        \Winter\Storm\Support\Testing\Segfault\Logger::register($output);
+    }
+}
