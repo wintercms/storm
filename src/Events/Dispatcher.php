@@ -60,7 +60,13 @@ class Dispatcher extends BaseDispatcher
         }
     }
 
-    // Serialize the listener created by laravel
+    /**
+     * Register an event listener with the dispatcher.
+     *
+     * @param  \Closure|string|array  $listener
+     * @param  bool  $wildcard
+     * @return \Closure
+     */
     public function makeListener($listener, $wildcard = false)
     {
         $listener = parent::makeListener($listener, $wildcard);
