@@ -116,7 +116,7 @@ if (!function_exists('input')) {
     function input($name = null, $default = null)
     {
         if ($name === null) {
-            return Input::all();
+            return \Winter\Storm\Support\Facades\Input::all();
         }
 
         /*
@@ -126,21 +126,18 @@ if (!function_exists('input')) {
             $name = implode('.', Winter\Storm\Html\Helper::nameToArray($name));
         }
 
-        return Input::get($name, $default);
+        return \Winter\Storm\Support\Facades\Input::get($name, $default);
     }
 }
 
 if (!function_exists('trace_log')) {
     /**
      * Writes a trace message to a log file.
-     * @param mixed $message Specifies a message to log. The message can be an object, array or string.
-     * @param string $level Specifies a level to use. If this parameter is omitted, the default listener will be used (info).
+     * @param Exception|array|object|string... $messages
      * @return void
      */
-    function trace_log()
+    function trace_log(...$messages)
     {
-        $messages = func_get_args();
-
         foreach ($messages as $message) {
             $level = 'info';
 
@@ -159,11 +156,12 @@ if (!function_exists('trace_log')) {
 if (!function_exists('traceLog')) {
     /**
      * Alias for trace_log()
+     * @param Exception|array|object|string... $messages
      * @return void
      */
-    function traceLog()
+    function traceLog(...$messages)
     {
-        call_user_func_array('trace_log', func_get_args());
+        call_user_func_array('trace_log', $messages);
     }
 }
 

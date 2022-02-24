@@ -21,7 +21,7 @@ if (!function_exists('is_countable')) {
     /**
      * Polyfill for `is_countable` method provided in PHP >= 7.3
      *
-     * @param  mixed  $var
+     * @param  mixed  $value
      * @return boolean
      */
     function is_countable($value)

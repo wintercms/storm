@@ -7,10 +7,12 @@ parameters:
     level: 5
     excludePaths:
         - src/Auth/Manager.php
-        - src/Assetic/*
     databaseMigrationsPath:
         - src/Auth/Migrations
         - src/Database/Migrations
     ignoreErrors:
         - message: '#calls parent::__#'
           path: src/Extension/ExtendableTrait.php
+        # Ignore incorrect docs from Laravel's Validation Factory
+        - message: '#\$resolver is not covariant#'
+          path: src/Validation/Factory.php

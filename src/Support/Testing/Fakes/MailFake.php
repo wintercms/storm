@@ -35,7 +35,7 @@ class MailFake extends \Illuminate\Support\Testing\Fakes\MailFake
     /**
      * Send a new message using a view.
      *
-     * @param  string|array  $view
+     * @param  Mailable|string|array  $view
      * @param  array  $data
      * @param  \Closure|string  $callback
      * @return void
@@ -52,19 +52,19 @@ class MailFake extends \Illuminate\Support\Testing\Fakes\MailFake
     /**
      * Queue a new e-mail message for sending.
      *
-     * @param  string|array  $view
+     * @param  Mailable|string|array  $view
+     * @param  string|null  $queue
      * @param  array  $data
      * @param  \Closure|string  $callback
-     * @param  string|null  $queue
      * @return mixed
      */
-    public function queue($view, $data = null, $callback = null, $queue = null)
+    public function queue($view, $queue = null, $data = null, $callback = null)
     {
         if (!$view instanceof Mailable) {
             $view = $this->buildMailable($view, $data, $callback, true);
         }
 
-        return parent::queue($view, $data = null, $callback = null, $queue = null);
+        return parent::queue($view, $queue = null);
     }
 
     /**

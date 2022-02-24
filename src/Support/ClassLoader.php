@@ -1,8 +1,8 @@
 <?php namespace Winter\Storm\Support;
 
-use Winter\Storm\Filesystem\Filesystem;
 use Throwable;
 use Exception;
+use Winter\Storm\Filesystem\Filesystem;
 
 /**
  * Class loader
@@ -36,9 +36,9 @@ class ClassLoader
     /**
      * The loaded manifest array.
      *
-     * @var array
+     * @var array|null
      */
-    public $manifest;
+    public $manifest = null;
 
     /**
      * Determine if the manifest needs to be written.
@@ -208,7 +208,12 @@ class ClassLoader
 
         $this->ensureManifestIsLoaded();
 
-        $this->registered = spl_autoload_register([$this, 'load']);
+        $callback = [$this, 'load'];
+        if (is_callable($callback)) {
+            $this->registered = spl_autoload_register();
+        }
+
+        throw new Exception('The "load" method is missing from the class loader');
     }
 
     /**
@@ -222,8 +227,13 @@ class ClassLoader
             return;
         }
 
-        spl_autoload_unregister([$this, 'load']);
-        $this->registered = false;
+        $callback = [$this, 'load'];
+        if (is_callable($callback)) {
+            spl_autoload_unregister([$this, 'load']);
+            $this->registered = false;
+        }
+
+        throw new Exception('The "load" method is missing from the class loader');
     }
 
     /**
@@ -309,7 +319,7 @@ class ClassLoader
      * Aliases are first-come, first-served. If a real class already exists with the same name as an alias, the real
      * class is used over the alias.
      *
-     * @param array $aliases
+     * @param array $namespaceAliases
      * @return void
      */
     public function addNamespaceAliases(array $namespaceAliases)
@@ -409,7 +419,7 @@ class ClassLoader
      * Get the possible paths for a class.
      *
      * @param  string  $class
-     * @return string
+     * @return array
      */
     protected static function getPathsForClass($class)
     {

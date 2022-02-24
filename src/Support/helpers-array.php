@@ -152,7 +152,7 @@ if (!function_exists('array_flatten')) {
      * Flatten a multi-dimensional array into a single level.
      *
      * @param  array  $array
-     * @param  int  $depth
+     * @param  float|int  $depth
      * @return array
      */
     function array_flatten($array, $depth = INF)
