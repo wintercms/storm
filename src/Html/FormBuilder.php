@@ -30,7 +30,7 @@ class FormBuilder
     /**
      * The session store implementation.
      */
-    protected \Illuminate\Session\Store $session;
+    protected ?\Illuminate\Session\Store $session;
 
     /**
      * The current model instance for the form.
@@ -258,30 +258,40 @@ class FormBuilder
 
     /**
      * Create a form input field.
+     *
+     * @param string $type
+     * @param string|null $name
+     * @param string|null $value
+     * @param array $options
+     * @return string
      */
-    public function input(string $type, string $name, ?string $value = null, array $options = []): string
+    public function input(string $type, ?string $name = null, ?string $value = null, array $options = []): string
     {
         if (!isset($options['name'])) {
             $options['name'] = $name;
         }
 
-        // We will get the appropriate value for the given field. We will look for the
-        // value in the session for the value in the old input data then we'll look
-        // in the model instance if one is set. Otherwise we will just use empty.
-        $id = $this->getIdAttribute($name, $options);
+        if (!empty($name)) {
+            // We will get the appropriate value for the given field. We will look for the
+            // value in the session for the value in the old input data then we'll look
+            // in the model instance if one is set. Otherwise we will just use empty.
+            $id = $this->getIdAttribute($name, $options);
 
-        if (!in_array($type, $this->skipValueTypes)) {
-            $value = $this->getValueAttribute($name, $value);
+            if (!in_array($type, $this->skipValueTypes)) {
+                $value = $this->getValueAttribute($name, $value);
+            }
+
+            // Once we have the type, value, and ID we can merge them into the rest of the
+            // attributes array so we can convert them into their HTML attribute format
+            // when creating the HTML element. Then, we will return the entire input.
+            $merge = compact('type', 'value', 'id');
+
+            $options = array_filter(array_merge($options, $merge), function ($item) {
+                return !is_null($item);
+            });
         }
 
-        // Once we have the type, value, and ID we can merge them into the rest of the
-        // attributes array so we can convert them into their HTML attribute format
-        // when creating the HTML element. Then, we will return the entire input.
-        $merge = compact('type', 'value', 'id');
-
-        $options = array_merge($options, $merge);
-
-        return '<input'.$this->html->attributes($options).'>';
+        return '<input' . $this->html->attributes($options) . '>';
     }
 
     /**
@@ -818,7 +828,7 @@ class FormBuilder
      *
      * @param  string  $name
      * @param  array   $attributes
-     * @return string
+     * @return string|null
      */
     public function getIdAttribute($name, $attributes)
     {
@@ -829,18 +839,20 @@ class FormBuilder
         if (in_array($name, $this->labels)) {
             return $name;
         }
+
+        return '';
     }
 
     /**
      * Get the value that should be assigned to the field.
      *
      * @param  string  $name
-     * @param  string  $value
-     * @return string
+     * @param  string|array  $value
+     * @return string|array|null
      */
     public function getValueAttribute($name, $value = null)
     {
-        if (is_null($name)) {
+        if (empty($name)) {
             return $value;
         }
 
@@ -861,7 +873,7 @@ class FormBuilder
      * Get the model value that should be assigned to the field.
      *
      * @param  string  $name
-     * @return string
+     * @return string|array|null
      */
     protected function getModelValueAttribute($name)
     {
@@ -877,13 +889,15 @@ class FormBuilder
      * Get a value from the session's old input.
      *
      * @param  string  $name
-     * @return string
+     * @return string|array|null
      */
     public function old($name)
     {
         if (isset($this->session)) {
             return $this->session->getOldInput($this->transformKey($name));
         }
+
+        return null;
     }
 
     /**
@@ -939,7 +953,7 @@ class FormBuilder
      */
     public function value($name, $value = null)
     {
-        if (is_null($name)) {
+        if (empty($name)) {
             return $value;
         }
 
