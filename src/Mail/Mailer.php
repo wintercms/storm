@@ -1,9 +1,10 @@
 <?php namespace Winter\Storm\Mail;
 
-use Event;
-use Config;
+use Winter\Storm\Support\Facades\Config;
+use Winter\Storm\Support\Facades\Event;
 use Illuminate\Mail\Mailer as MailerBase;
 use Illuminate\Contracts\Mail\Mailable as MailableContract;
+use Illuminate\Mail\SentMessage;
 use Illuminate\Support\Collection;
 
 /**
@@ -23,7 +24,7 @@ class Mailer extends MailerBase
     /**
      * Send a new message when only a raw text part.
      *
-     * @param  string  $text
+     * @param  string|array  $view
      * @param  mixed  $callback
      * @return \Illuminate\Mail\SentMessage|null
      */
@@ -77,7 +78,7 @@ class Mailer extends MailerBase
             ($this->fireEvent('mailer.beforeSend', [$view, $data, $callback], true) === false) ||
             (Event::fire('mailer.beforeSend', [$view, $data, $callback], true) === false)
         ) {
-            return;
+            return null;
         }
 
         if ($view instanceof MailableContract) {
@@ -141,7 +142,7 @@ class Mailer extends MailerBase
             ($this->fireEvent('mailer.prepareSend', [$view, $message, $data], true) === false) ||
             (Event::fire('mailer.prepareSend', [$this, $view, $message, $data], true) === false)
         ) {
-            return;
+            return null;
         }
 
         // Next we will determine if the message should be sent. We give the developer
@@ -153,9 +154,9 @@ class Mailer extends MailerBase
         if ($this->shouldSendMessage($symfonyMessage, $data)) {
             $sentMessage = $this->sendSymfonyMessage($symfonyMessage);
 
-            $this->dispatchSentEvent($message, $data);
-
             $sentMessage = new SentMessage($sentMessage);
+
+            $this->dispatchSentEvent($sentMessage, $data);
 
             /**
              * @event mailer.send
@@ -163,19 +164,19 @@ class Mailer extends MailerBase
              *
              * Example usage (logs the message):
              *
-             *     Event::listen('mailer.send', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
+             *     Event::listen('mailer.send', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\SentMessage) $message, (array) $data) {
              *         \Log::info("Message was rendered with $view and sent");
              *     });
              *
              * Or
              *
-             *     $mailerInstance->bindEvent('mailer.send', function ((string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
+             *     $mailerInstance->bindEvent('mailer.send', function ((string) $view, (\Illuminate\Mail\SentMessage) $message, (array) $data) {
              *         \Log::info("Message was rendered with $view and sent");
              *     });
              *
              */
-            $this->fireEvent('mailer.send', [$view, $message, $data]);
-            Event::fire('mailer.send', [$this, $view, $message, $data]);
+            $this->fireEvent('mailer.send', [$view, $sentMessage, $data]);
+            Event::fire('mailer.send', [$this, $view, $sentMessage, $data]);
         }
 
         return $sentMessage;
@@ -190,13 +191,13 @@ class Mailer extends MailerBase
      * - Support for the Winter MailParser
      *
      * @param  \Illuminate\Mail\Message $message
-     * @param  string $view
-     * @param  string $plain
-     * @param  string $raw
-     * @param  array $data
+     * @param  string|null $view
+     * @param  string|null $plain
+     * @param  string|null $raw
+     * @param  array|null $data
      * @return void
      */
-    protected function addContent($message, $view, $plain, $raw, $data)
+    protected function addContent($message, $view = null, $plain = null, $raw = null, $data = null)
     {
         /**
          * @event mailer.beforeAddContent
@@ -281,11 +282,11 @@ class Mailer extends MailerBase
      * Add the raw content to the provided message.
      *
      * @param  \Illuminate\Mail\Message  $message
-     * @param  string  $html
-     * @param  string  $text
+     * @param  string|null  $html
+     * @param  string|null  $text
      * @return void
      */
-    protected function addContentRaw($message, $html, $text)
+    protected function addContentRaw($message, $html = null, $text = null)
     {
         if (isset($html)) {
             $message->html($html);
