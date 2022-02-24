@@ -52,11 +52,22 @@ abstract class Command extends BaseCommand
                         method_exists($this, $suggestionValuesMethod)
                         && $input->{$inputRoutingMethod}($name)
                     ) {
-                        $values = $this->$suggestionValuesMethod($value);
+                        $values = $this->$suggestionValuesMethod($value, $inputs);
                         $suggestions->{$suggestionsMethod}($values);
                     }
                 }
             }
         }
     }
+
+    /**
+     * Example implementation of a suggestion method
+     */
+    // public function suggestMyArgumentValues(string $value = null, array $allInput): array
+    // {
+    //     if ($allInput['arguments']['dependent'] === 'matches') {
+    //         return ['some', 'suggested', 'values'];
+    //     }
+    //     return ['all', 'values'];
+    // }
 }

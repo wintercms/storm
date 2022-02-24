@@ -3,7 +3,7 @@
 use Twig;
 use Exception;
 use ReflectionClass;
-use Illuminate\Console\Command;
+use Winter\Storm\Console\Command;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Filesystem\Filesystem;
 
@@ -201,7 +201,7 @@ abstract class GeneratorCommand extends Command
      */
     protected function getDestinationPath()
     {
-        $plugin = $this->getPluginInput();
+        $plugin = $this->getPluginIdentifier();
 
         $parts = explode('.', $plugin);
         $name = array_pop($parts);
@@ -228,7 +228,7 @@ abstract class GeneratorCommand extends Command
      *
      * @return string
      */
-    protected function getPluginInput()
+    protected function getPluginIdentifier()
     {
         return $this->argument('plugin');
     }
