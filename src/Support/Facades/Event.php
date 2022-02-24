@@ -20,9 +20,12 @@ use Winter\Storm\Support\Testing\Fakes\EventFake;
  * @method static void flush(string $event)
  * @method static void forget(string $event)
  * @method static void forgetPushed()
- * @method static void listen(\Closure|string|array $events, \Closure|string|array $listener = null)
+ * @method static void listen(\Illuminate\Events\QueuedClosure|\Closure|string|array $events, \Illuminate\Events\QueuedClosure,\Closure|string|array $listener = null)
  * @method static void push(string $event, array $payload = [])
  * @method static void subscribe(object|string $subscriber)
+ * @method static string firing()
+ * @method static array|mixed|null fire(string|object $event, mixed $payload = [], bool $halt = false)
+ * @method static void sortListeners(string $eventName))
  *
  * @see \Winter\Storm\Events\Dispatcher
  */

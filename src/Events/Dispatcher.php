@@ -1,7 +1,6 @@
 <?php namespace Winter\Storm\Events;
 
 use Closure;
-use Laravel\SerializableClosure\SerializableClosure;
 use ReflectionClass;
 use Winter\Storm\Support\Serialization;
 use Winter\Storm\Support\Str;
@@ -104,7 +103,7 @@ class Dispatcher extends BaseDispatcher
      * @param  string|object  $event
      * @param  mixed  $payload
      * @param  bool  $halt
-     * @return array|null
+     * @return array|mixed|null
      */
     public function fire($event, $payload = [], $halt = false)
     {
