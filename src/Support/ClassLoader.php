@@ -210,7 +210,8 @@ class ClassLoader
 
         $callback = [$this, 'load'];
         if (is_callable($callback)) {
-            $this->registered = spl_autoload_register();
+            $this->registered = spl_autoload_register($callback);
+            return;
         }
 
         throw new Exception('The "load" method is missing from the class loader');
@@ -229,8 +230,9 @@ class ClassLoader
 
         $callback = [$this, 'load'];
         if (is_callable($callback)) {
-            spl_autoload_unregister([$this, 'load']);
+            spl_autoload_unregister($callback);
             $this->registered = false;
+            return;
         }
 
         throw new Exception('The "load" method is missing from the class loader');

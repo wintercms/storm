@@ -48,7 +48,7 @@ class Parser
         $this->fieldParser = new FieldParser($template, $options);
 
         $textFilters = [
-            'md' => ['Markdown', 'parse'],
+            'md' => ['Winter\Storm\Parse\Markdown', 'parse'],
             'media' => ['System\Classes\MediaLibrary', 'url']
         ];
 
