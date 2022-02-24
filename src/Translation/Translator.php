@@ -18,7 +18,7 @@ class Translator extends TranslatorBase
     /**
      * The event dispatcher instance.
      *
-     * @var \Illuminate\Contracts\Events\Dispatcher|\Winter\Storm\Events\Dispatcher
+     * @var \Illuminate\Contracts\Events\Dispatcher|\Winter\Storm\Events\Dispatcher|null
      */
     protected $events;
 
@@ -142,7 +142,7 @@ class Translator extends TranslatorBase
      * @param  string  $key
      * @param  array   $replace
      * @param  string  $locale
-     * @return string
+     * @return string|null
      */
     protected function getValidationSpecific($key, $replace, $locale)
     {
@@ -181,7 +181,7 @@ class Translator extends TranslatorBase
         // If the given "number" is actually an array or countable we will simply count the
         // number of elements in an instance. This allows developers to pass an array of
         // items without having to count it on their end first which gives bad syntax.
-        if (is_array($number) || $number instanceof Countable) {
+        if (is_array($number) || $number instanceof \Countable) {
             $number = count($number);
         }
 
