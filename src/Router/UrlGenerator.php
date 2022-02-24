@@ -265,9 +265,10 @@ class UrlGenerator extends UrlGeneratorBase
 
         // Populate the query section
         if (isset($url['query']) && $url['query'] !== '') {
+            $queryParams = [];
+
             if (is_string($url['query'])) {
-                $queryParams = [];
-                $pairs = explode(ini_get('arg_separator.output') ?? '&', $url['query']);
+                $pairs = explode(ini_get('arg_separator.output') ?: '&', $url['query']);
                 foreach ($pairs as $pair) {
                     $key = Str::before($pair, '=');
                     $value = Str::after($pair, '=');
@@ -318,7 +319,7 @@ class UrlGenerator extends UrlGeneratorBase
     public static function buildStr(array $query, string $prefix = '', $argSeparator = null): string
     {
         if (is_null($argSeparator)) {
-            $argSeparator = ini_get('arg_separator.output') ?? '&';
+            $argSeparator = ini_get('arg_separator.output') ?: '&';
         }
 
         $result = [];
