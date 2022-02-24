@@ -7,6 +7,12 @@ use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Support\Facades\Twig;
 use Winter\Storm\Support\Str;
 
+/**
+ * Generator command.
+ *
+ * This class is used as a base for scaffolding commands, modifying stub files and copying them over to a specific
+ * location.
+ */
 abstract class GeneratorCommand extends Command
 {
     /**
