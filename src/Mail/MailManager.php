@@ -20,6 +20,7 @@ class MailManager extends BaseMailManager
      */
     protected function resolve($name)
     {
+        /** @var array|null */
         $config = $this->getConfig($name);
 
         if (is_null($config)) {
