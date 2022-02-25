@@ -152,13 +152,15 @@ trait HasRelationships
     /**
      * Returns relationship details from a supplied name.
      * @param string $name Relation name
-     * @return array
+     * @return array|null
      */
     public function getRelationDefinition($name)
     {
         if (($type = $this->getRelationType($name)) !== null) {
             return (array) $this->getRelationTypeDefinition($type, $name) + $this->getRelationDefaults($type);
         }
+
+        return null;
     }
 
     /**
@@ -179,7 +181,7 @@ trait HasRelationships
      * Returns the given relation definition.
      * @param string $type Relation type
      * @param string $name Relation name
-     * @return array
+     * @return string|null
      */
     public function getRelationTypeDefinition($type, $name)
     {
@@ -188,6 +190,8 @@ trait HasRelationships
         if (isset($definitions[$name])) {
             return $definitions[$name];
         }
+
+        return null;
     }
 
     /**
@@ -217,7 +221,7 @@ trait HasRelationships
     /**
      * Returns a relationship type based on a supplied name.
      * @param string $name Relation name
-     * @return string
+     * @return string|null
      */
     public function getRelationType($name)
     {
@@ -226,12 +230,14 @@ trait HasRelationships
                 return $type;
             }
         }
+
+        return null;
     }
 
     /**
      * Returns a relation class object
      * @param string $name Relation name
-     * @return string
+     * @return \Winter\Storm\Database\Relations\Relation|null
      */
     public function makeRelation($name)
     {

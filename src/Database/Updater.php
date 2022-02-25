@@ -29,10 +29,10 @@ class Updater
 
         Eloquent::unguard();
 
-        if ($object instanceof Updates\Migration) {
+        if ($object instanceof Updates\Migration && method_exists($object, 'up')) {
             $object->up();
         }
-        elseif ($object instanceof Updates\Seeder) {
+        elseif ($object instanceof Updates\Seeder && method_exists($object, 'run')) {
             $object->run();
         }
 
@@ -56,7 +56,7 @@ class Updater
 
         Eloquent::unguard();
 
-        if ($object instanceof Updates\Migration) {
+        if ($object instanceof Updates\Migration && method_exists($object, 'down')) {
             $object->down();
         }
 
@@ -68,12 +68,12 @@ class Updater
     /**
      * Resolve a migration instance from a file.
      * @param  string  $file
-     * @return object
+     * @return object|null
      */
     public function resolve($file)
     {
         if (!File::isFile($file)) {
-            return;
+            return null;
         }
 
         $instance = require_once $file;
@@ -107,7 +107,7 @@ class Updater
     /**
      * Extracts the namespace and class name from a file.
      * @param string $file
-     * @return string
+     * @return string|false
      */
     public function getClassFromFile($file)
     {

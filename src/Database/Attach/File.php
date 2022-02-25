@@ -1,19 +1,24 @@
 <?php namespace Winter\Storm\Database\Attach;
 
-use Log;
-use Cache;
-use Storage;
-use File as FileHelper;
+use Exception;
 use Winter\Storm\Network\Http;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Support\Facades\File as FileHelper;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File as FileObj;
-use Exception;
 
 /**
  * File attachment model
  *
  * @author Alexey Bobkov, Samuel Georges
+ *
+ * @property string $file_name The name of the file
+ * @property int $file_size The size of the file
+ * @property string $content_type The MIME type of the file
+ * @property string $disk_name The generated disk name of the file
  */
 class File extends Model
 {
@@ -25,14 +30,14 @@ class File extends Model
     protected $table = 'files';
 
     /**
-     * Relations
+     * @var array Relations
      */
     public $morphTo = [
         'attachment' => [],
     ];
 
     /**
-     * @var array The attributes that are mass assignable.
+     * @var string[] The attributes that are mass assignable.
      */
     protected $fillable = [
         'file_name',
@@ -47,12 +52,12 @@ class File extends Model
     ];
 
     /**
-     * @var array The attributes that aren't mass assignable.
+     * @var string[] The attributes that aren't mass assignable.
      */
     protected $guarded = [];
 
     /**
-     * @var array Known image extensions.
+     * @var string[] Known image extensions.
      */
     public static $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
@@ -93,14 +98,10 @@ class File extends Model
 
     /**
      * Creates a file object from a file an uploaded file.
-     * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
      */
     public function fromPost($uploadedFile)
     {
-        if ($uploadedFile === null) {
-            return;
-        }
-
         $this->file_name = $uploadedFile->getClientOriginalName();
         $this->file_size = $uploadedFile->getSize();
         $this->content_type = $uploadedFile->getMimeType();
@@ -141,17 +142,13 @@ class File extends Model
     /**
      * Creates a file object from raw data.
      *
-     * @param $data string Raw data
-     * @param $filename string Filename
+     * @param string $data Raw data
+     * @param string $filename Filename
      *
      * @return $this
      */
     public function fromData($data, $filename)
     {
-        if ($data === null) {
-            return;
-        }
-
         $tempPath = temp_path($filename);
         FileHelper::put($tempPath, $data);
 
@@ -163,8 +160,9 @@ class File extends Model
 
     /**
      * Creates a file object from url
-     * @param $url string URL
-     * @param $filename string Filename
+     *
+     * @param string $url URL to the file
+     * @param string|null $filename The filename
      * @return $this
      */
     public function fromUrl($url, $filename = null)
@@ -230,7 +228,10 @@ class File extends Model
 
     /**
      * Helper attribute for get image width.
-     * @return string
+     *
+     * Returns `null` if this file is not an image.
+     *
+     * @return string|null
      */
     public function getWidthAttribute()
     {
@@ -239,11 +240,16 @@ class File extends Model
 
             return $dimensions[0];
         }
+
+        return null;
     }
 
     /**
      * Helper attribute for get image height.
-     * @return string
+     *
+     * Returns `null` if this file is not an image.
+     *
+     * @return string|null
      */
     public function getHeightAttribute()
     {
@@ -252,6 +258,8 @@ class File extends Model
 
             return $dimensions[1];
         }
+
+        return null;
     }
 
     /**
@@ -272,7 +280,7 @@ class File extends Model
      *
      * @param string $disposition The Content-Disposition to set, defaults to inline
      * @param bool $returnResponse Defaults to false, returns a Response object instead of directly outputting to the browser
-     * @return Response | void
+     * @return \Illuminate\Http\Response|void
      */
     public function output($disposition = 'inline', $returnResponse = false)
     {
@@ -286,10 +294,10 @@ class File extends Model
 
         if ($returnResponse) {
             return $response;
-        } else {
-            $response->sendHeaders();
-            $response->sendContent();
         }
+
+        $response->sendHeaders();
+        $response->sendContent();
     }
 
     /**
@@ -307,7 +315,7 @@ class File extends Model
      *                  'disposition' => 'inline',
      *              ]
      * @param bool $returnResponse Defaults to false, returns a Response object instead of directly outputting to the browser
-     * @return Response | void
+     * @return \Illuminate\Http\Response|void
      */
     public function outputThumb($width, $height, $options = [], $returnResponse = false)
     {
@@ -327,10 +335,10 @@ class File extends Model
 
         if ($returnResponse) {
             return $response;
-        } else {
-            $response->sendHeaders();
-            $response->sendContent();
         }
+
+        $response->sendHeaders();
+        $response->sendContent();
     }
 
     //
@@ -739,7 +747,7 @@ class File extends Model
             $ext = $this->data->guessExtension();
         }
 
-        $name = str_replace('.', '', uniqid(null, true));
+        $name = str_replace('.', '', uniqid('', true));
 
         return $this->disk_name = !empty($ext) ? $name.'.'.$ext : $name;
     }
@@ -786,10 +794,9 @@ class File extends Model
          */
         if (
             !FileHelper::isDirectory($destinationPath) &&
-            !FileHelper::makeDirectory($destinationPath, 0777, true, true) &&
-            !FileHelper::isDirectory($destinationPath)
+            !FileHelper::makeDirectory($destinationPath, 0777, true, true)
         ) {
-            trigger_error(error_get_last(), E_USER_WARNING);
+            trigger_error(error_get_last()['message'], E_USER_WARNING);
         }
 
         return FileHelper::copy($sourcePath, $destinationPath . $destinationFileName);
@@ -818,7 +825,7 @@ class File extends Model
 
     /**
      * Check file exists on storage device.
-     * @return void
+     * @return bool
      */
     protected function hasFile($fileName = null)
     {
@@ -866,14 +873,13 @@ class File extends Model
 
     /**
      * Returns true if a directory contains no files.
-     * @return void
+     *
+     * @param string $dir The path to the directory.
+     *
+     * @return bool|null
      */
     protected function isDirectoryEmpty($dir)
     {
-        if (!$dir) {
-            return null;
-        }
-
         return count($this->storageCmd('allFiles', $dir)) === 0;
     }
 
@@ -933,7 +939,8 @@ class File extends Model
 
     /**
      * Returns the maximum size of an uploaded file as configured in php.ini
-     * @return int The maximum size of an uploaded file in kilobytes
+     *
+     * @return float The maximum size of an uploaded file in kilobytes (rounded)
      */
     public static function getMaxFilesize()
     {
@@ -980,7 +987,8 @@ class File extends Model
 
     /**
      * Returns the storage disk the file is stored on
-     * @return FilesystemAdapter
+     *
+     * @return \Illuminate\Filesystem\FilesystemAdapter
      */
     public function getDisk()
     {
@@ -999,9 +1007,8 @@ class File extends Model
     /**
     * Generates a partition for the file.
     * return /ABC/DE1/234 for an name of ABCDE1234.
-    * @param Attachment $attachment
-    * @param string $styleName
-    * @return mixed
+    *
+    * @return string
     */
     protected function getPartitionDirectory()
     {

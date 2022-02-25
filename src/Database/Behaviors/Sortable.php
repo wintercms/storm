@@ -23,6 +23,7 @@ use Winter\Storm\Extension\ExtensionBase;
  *
  *   const SORT_ORDER = 'my_sort_order';
  *
+ * @deprecated 1.2.0. We recommend using the \Winter\Storm\Database\Traits\Sortable trait instead.
  */
 class Sortable extends ExtensionBase
 {

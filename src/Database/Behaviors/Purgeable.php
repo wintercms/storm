@@ -1,16 +1,15 @@
 <?php namespace Winter\Storm\Database\Behaviors;
 
+/**
+ * @deprecated 1.2.0. We recommend using the \Winter\Storm\Database\Traits\Purgeable trait instead.
+ */
 class Purgeable extends \Winter\Storm\Extension\ExtensionBase
 {
-    /**
-     * @var array List of attribute names which should not be saved to the database.
-     */
-    public $purgeable = [];
-
     /**
      * Model to purge.
      *
      * @var \Winter\Storm\Database\Model
+     * @property array $purgeable
      */
     protected $model;
 
@@ -51,7 +50,7 @@ class Purgeable extends \Winter\Storm\Extension\ExtensionBase
     /**
      * Adds an attribute to the purgeable attributes list
      * @param  array|string|null  $attributes
-     * @return $this
+     * @return \Winter\Storm\Database\Model
      */
     public function addPurgeable($attributes = null)
     {
@@ -64,7 +63,7 @@ class Purgeable extends \Winter\Storm\Extension\ExtensionBase
 
     /**
      * Removes purged attributes from the dataset, used before saving.
-     * @param $attributes mixed Attribute(s) to purge, if unspecified, $purgable property is used
+     * @param string|array|null $attributesToPurge Attribute(s) to purge. If unspecified, $purgable property is used
      * @return array Current attribute set
      */
     public function purgeAttributes($attributesToPurge = null)
@@ -80,12 +79,7 @@ class Purgeable extends \Winter\Storm\Extension\ExtensionBase
         $cleanAttributes = array_diff_key($attributes, array_flip($purgeable));
         $originalAttributes = array_diff_key($attributes, $cleanAttributes);
 
-        if (is_array($this->originalPurgeableValues)) {
-            $this->originalPurgeableValues = array_merge($this->originalPurgeableValues, $originalAttributes);
-        }
-        else {
-            $this->originalPurgeableValues = $originalAttributes;
-        }
+        $this->originalPurgeableValues = array_merge($this->originalPurgeableValues, $originalAttributes);
 
         return $this->model->attributes = $cleanAttributes;
     }
@@ -116,6 +110,8 @@ class Purgeable extends \Winter\Storm\Extension\ExtensionBase
 
     /**
      * Restores the original values of any purged attributes.
+     *
+     * @return \Winter\Storm\Database\Model
      */
     public function restorePurgedValues()
     {
