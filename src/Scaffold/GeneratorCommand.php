@@ -16,30 +16,22 @@ use Winter\Storm\Support\Str;
 abstract class GeneratorCommand extends Command
 {
     /**
-     * The filesystem instance.
-     *
-     * @var \Winter\Storm\Filesystem\Filesystem
+     * @var \Winter\Storm\Filesystem\Filesystem The filesystem instance.
      */
     protected $files;
 
     /**
-     * The type of class being generated.
-     *
-     * @var string
+     * @var string The type of class being generated.
      */
     protected $type;
 
     /**
-     * A mapping of stub to generated file.
-     *
-     * @var array
+     * @var array A mapping of stub to generated file.
      */
     protected $stubs = [];
 
     /**
-     * An array of variables to use in stubs.
-     *
-     * @var array
+     * @var array An array of variables to use in stubs.
      */
     protected $vars = [];
 
