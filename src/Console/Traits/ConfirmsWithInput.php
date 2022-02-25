@@ -1,7 +1,5 @@
 <?php namespace Winter\Storm\Console\Traits;
 
-use App;
-
 /**
  * Console Command Trait that provides confirmation step that requires set
  * input to be provided in order to act as confirmation for an action
@@ -13,7 +11,7 @@ trait ConfirmsWithInput
 {
     public function confirmWithInput(string $message, string $requiredInput): bool
     {
-        if (App::isProduction() && !$this->option('force')) {
+        if ($this->laravel->isProduction() && !$this->option('force')) {
             $this->error("THE APPLICATION IS IN PRODUCTION");
         }
 
