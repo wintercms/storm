@@ -76,7 +76,7 @@ abstract class Command extends BaseCommand
                     $dataType = 'Argument';
                     $suggestionType = 'Values';
                     break;
-                case 'options':
+                default:
                     $dataType = 'Option';
                     $suggestionType = 'Options';
                     break;
