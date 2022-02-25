@@ -193,8 +193,10 @@ trait ExtendableTrait
 
     /**
      * Programmatically adds a property to the extendable class
-     * @param string   $dynamicName
-     * @param string   $value
+     *
+     * @param string $dynamicName The name of the property to add
+     * @param mixed $value The value of the property
+     * @return void
      */
     public function addDynamicProperty($dynamicName, $value = null)
     {
