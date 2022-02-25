@@ -56,6 +56,16 @@ class Application extends ApplicationBase
     protected $mediaPath;
 
     /**
+     * Get the version number of the application.
+     *
+     * @return string
+     */
+    public function version()
+    {
+        return static::VERSION . ' - Winter CMS';
+    }
+
+    /**
      * Get the path to the public / web directory.
      *
      * @return string
