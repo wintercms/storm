@@ -53,12 +53,12 @@ class MailFake extends \Illuminate\Support\Testing\Fakes\MailFake
      * Queue a new e-mail message for sending.
      *
      * @param  Mailable|string|array  $view
-     * @param  string|null  $queue
      * @param  array  $data
      * @param  \Closure|string  $callback
+     * @param  string|null  $queue
      * @return mixed
      */
-    public function queue($view, $queue = null, $data = null, $callback = null)
+    public function queue($view, $data = null, $callback = null, $queue = null)
     {
         if (!$view instanceof Mailable) {
             $view = $this->buildMailable($view, $data, $callback, true);

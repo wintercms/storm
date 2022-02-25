@@ -300,7 +300,7 @@ class Mailer extends MailerBase
     /**
      * Queue a new e-mail message for sending.
      *
-     * @param  string|array  $view
+     * @param  MailableContract|string|array  $view
      * @param  array  $data
      * @param  \Closure|string  $callback
      * @param  string|null  $queue
@@ -337,7 +337,7 @@ class Mailer extends MailerBase
      * Queue a new e-mail message for sending after (n) seconds.
      *
      * @param  int  $delay
-     * @param  string|array  $view
+     * @param  MailableContract|string|array  $view
      * @param  array  $data
      * @param  \Closure|string  $callback
      * @param  string|null  $queue
@@ -397,7 +397,7 @@ class Mailer extends MailerBase
     /**
      * Helper for raw() method, send a new message when only a raw text part.
      * @param  array $recipients
-     * @param  string  $view
+     * @param  array|string  $view
      * @param  mixed   $callback
      * @param  array   $options
      * @return \Illuminate\Mail\SentMessage|null
@@ -434,10 +434,8 @@ class Mailer extends MailerBase
             $queue = $options;
             $bcc = false;
         } else {
-            extract(array_merge([
-                'queue' => false,
-                'bcc'   => false
-            ], $options));
+            $queue = (bool) ($options['queue'] ?? false);
+            $bcc = (bool) ($options['bcc'] ?? false);
         }
 
         $method = $queue === true ? 'queue' : 'send';

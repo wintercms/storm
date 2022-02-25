@@ -16,3 +16,6 @@ parameters:
         # Ignore incorrect docs from Laravel's Validation Factory
         - message: '#\$resolver is not covariant#'
           path: src/Validation/Factory.php
+        # Ignore incompatible signature for Mailer methods
+        - message: '#(queue|queueOn|later|laterOn)\(\) should be compatible#'
+          path: src/Mail/Mailer.php
