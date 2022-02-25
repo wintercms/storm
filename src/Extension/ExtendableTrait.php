@@ -219,7 +219,7 @@ trait ExtendableTrait
      */
     public function extendClassWith($extensionName)
     {
-        if (!strlen($extensionName)) {
+        if (empty($extensionName)) {
             throw new Exception(sprintf(
                 'You must provide an extension name to extend class %s with.',
                 get_class($this)

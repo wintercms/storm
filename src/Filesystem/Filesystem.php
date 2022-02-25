@@ -145,9 +145,6 @@ class Filesystem extends FilesystemBase
 
     /**
      * Determines if the given disk is using the "local" driver.
-     *
-     * @param \Illuminate\Filesystem\FilesystemAdapter $disk
-     * @return boolean
      */
     public function isLocalDisk(\Illuminate\Filesystem\FilesystemAdapter $disk): bool
     {

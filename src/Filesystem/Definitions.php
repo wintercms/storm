@@ -44,7 +44,7 @@ class Definitions
     /**
      * Determines if a path should be ignored based on the ignoreFiles and ignorePatterns definitions.
      *
-     * Returns `true` if the path is visible, `false` otherwise.
+     * Returns `true` if the path is ignored, `false` otherwise.
      *
      * @todo Efficiency of this method can be improved.
      */
