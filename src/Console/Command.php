@@ -76,12 +76,12 @@ abstract class Command extends BaseCommand
                     $dataType = 'Argument';
                     $suggestionType = 'Values';
                     break;
-                default:
+                case 'options':
                     $dataType = 'Option';
                     $suggestionType = 'Options';
                     break;
             }
-            if (!empty($data)) {
+            if (!empty($data) && isset($dataType) && isset($suggestionType)) {
                 foreach ($data as $name => $value) {
                     // Skip the command argument since that's handled by Artisan directly
                     if (
