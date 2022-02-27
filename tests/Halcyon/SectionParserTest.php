@@ -56,8 +56,21 @@ class SectionParserTest extends TestCase
         $this->assertEquals("value", $result["settings"]["section"]["index"]);
 
         // Test > 3 sections
-        $result = SectionParser::parse("title = \"test\"\nurl = \"/test\"\n==\n<?php\nfunction onStart()\n{\n}\n==\n\nStart of markup content\n==\nrandom separator detected");
-        $this->assertSame($result['markup'], "Start of markup content\n==\nrandom separator detected");
+        // Test > 3 sections
+        $result = SectionParser::parse(
+            'title = "test"' . PHP_EOL .
+            'url = "/test"' . PHP_EOL .
+            '==' . PHP_EOL .
+            '<?php' . PHP_EOL .
+            'function onStart()' . PHP_EOL .
+            '{' . PHP_EOL .
+            '}' . PHP_EOL .
+            '==' . PHP_EOL .
+            'Start of markup content' . PHP_EOL .
+            '==' . PHP_EOL .
+            'random separator detected'
+        );
+        $this->assertSame($result['markup'], 'Start of markup content' . PHP_EOL . '==' . PHP_EOL . 'random separator detected');
 
         // Test zero sections
         $result = SectionParser::parse("");
