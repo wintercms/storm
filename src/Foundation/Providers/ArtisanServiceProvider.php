@@ -13,7 +13,6 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
      */
     protected $commands = [
         // Currently included in Winter
-        // @TODO: Assess for retention
         'CacheClear'            => \Illuminate\Cache\Console\ClearCommand::class,
         'CacheForget'           => \Illuminate\Cache\Console\ForgetCommand::class,
         'ClearCompiled'         => \Winter\Storm\Foundation\Console\ClearCompiledCommand::class,
@@ -40,13 +39,10 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'RouteList'             => \Illuminate\Foundation\Console\RouteListCommand::class,
         'ScheduleFinish'        => \Illuminate\Console\Scheduling\ScheduleFinishCommand::class,
         'ScheduleRun'           => \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
-        'Seed'                  => \Illuminate\Database\Console\Seeds\SeedCommand::class,
-        'StorageLink'           => \Illuminate\Foundation\Console\StorageLinkCommand::class,
         'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
         'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
 
-
-        // Currently unsupported in Winter
+        // Currently unsupported in Winter:
         // @TODO: Assess for inclusion
         // 'ClearResets' => ClearResetsCommand::class,
         // 'Db' => DbCommand::class,
@@ -63,6 +59,10 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'ScheduleTest' => ScheduleTestCommand::class,
         // 'ScheduleWork' => ScheduleWorkCommand::class,
         // 'ViewCache' => ViewCacheCommand::class,
+
+        // Explicitly unsupported in Winter:
+        // 'Seed' => \Illuminate\Database\Console\Seeds\SeedCommand::class, // Use `winter:up` instead
+        // 'StorageLink' => \Illuminate\Foundation\Console\StorageLinkCommand::class, // Use `winter:mirror` instead.
     ];
 
     /**
