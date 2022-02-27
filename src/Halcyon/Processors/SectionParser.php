@@ -149,8 +149,7 @@ class SectionParser
             throw new InvalidArgumentException("The code section cannot be rendered because it contains a section separator");
         }
 
-        switch ($sections)
-        {
+        switch ($sections) {
             case 1:
                 $content[] = $markup;
                 break;
