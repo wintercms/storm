@@ -55,6 +55,10 @@ class SectionParserTest extends TestCase
         $this->assertArrayHasKey("index", $result["settings"]["section"]);
         $this->assertEquals("value", $result["settings"]["section"]["index"]);
 
+        // Test > 3 sections
+        $result = SectionParser::parse("title = \"test\"\nurl = \"/test\"\n==\n<?php\nfunction onStart()\n{\n}\n==\n\nStart of markup content\n==\nrandom separator detected");
+        $this->assertSame($result['markup'], "Start of markup content\n==\nrandom separator detected");
+
         // Test zero sections
         $result = SectionParser::parse("");
         $this->assertCount(3, $result);
@@ -108,7 +112,6 @@ class SectionParserTest extends TestCase
 
     public function testParseOffset()
     {
-
         // Test three sections
         $content = <<<ESC
 setting = "test"
