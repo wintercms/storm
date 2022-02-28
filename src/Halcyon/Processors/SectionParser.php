@@ -224,7 +224,7 @@ class SectionParser
 
             $result['markup'] = $sections[2];
         } elseif ($count == 2) {
-            $result['settings'] = @$iniParser->parse($sections[0], true)
+            $result['settings'] = @$iniParser->parse($sections[0])
                 ?: [self::ERROR_INI => $sections[0]];
 
             $result['markup'] = $sections[1];
@@ -274,7 +274,7 @@ class SectionParser
      * @param int $instance Which instance to look for
      * @return int|null The line number the instance was found.
      */
-    private static function calculateLinePosition(string $content, int $instance = 1): int
+    private static function calculateLinePosition(string $content, int $instance = 1): ?int
     {
         $count = 0;
         $lines = explode(PHP_EOL, $content);
@@ -284,7 +284,7 @@ class SectionParser
             }
 
             if ($count === $instance) {
-                return static::adjustLinePosition($content, $number);
+                return self::adjustLinePosition($content, $number);
             }
         }
 

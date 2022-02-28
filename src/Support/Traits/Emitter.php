@@ -60,7 +60,7 @@ trait Emitter
     /**
      * Create a new event binding that fires once only
      * @param string|Closure|QueuedClosure  $event
-     * @param Closure|null  $callback When a Closure or QueuedClosure is provided as the first parameter
+     * @param QueuedClosure|Closure|null  $callback When a Closure or QueuedClosure is provided as the first parameter
      * this parameter can be omitted
      * @return self
      */
@@ -81,7 +81,7 @@ trait Emitter
      * Sort the listeners for a given event by priority.
      *
      * @param  string  $eventName
-     * @return array
+     * @return void
      */
     protected function emitterEventSortEvents($eventName)
     {
@@ -96,7 +96,7 @@ trait Emitter
 
     /**
      * Destroys an event binding.
-     * @param string $event Event to destroy
+     * @param string|array|object $event Event to destroy
      * @return self
      */
     public function unbindEvent($event = null)
@@ -108,7 +108,7 @@ trait Emitter
             foreach ($event as $_event) {
                 $this->unbindEvent($_event);
             }
-            return;
+            return $this;
         }
 
         if (is_object($event)) {

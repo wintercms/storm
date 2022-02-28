@@ -8,6 +8,14 @@ use Exception;
 /**
  * Deferred Binding Model
  *
+ * @property string $master_type The class name of the master record.
+ * @property string $master_field The field name of the master record.
+ * @property string $slave_type The class name of the slave record.
+ * @property int $slave_id The ID of the slave record.
+ * @property array $pivot_data The pivot data recorded in the deferred binding data.
+ * @property string $session_key The session key that this deferred binding record belongs to.
+ * @property bool $is_bind If this record belonds to a bound record.
+ *
  * @author Alexey Bobkov, Samuel Georges
  */
 class DeferredBinding extends Model

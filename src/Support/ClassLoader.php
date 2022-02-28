@@ -55,11 +55,11 @@ class ClassLoader
     protected $directories = [];
 
     /**
-     * Indicates if a ClassLoader has been registered.
+     * The registered callback for loading plugins.
      *
-     * @var bool
+     * @var callable|null
      */
-    protected $registered = false;
+    protected $registered = null;
 
     /**
      * Class alias array.
@@ -202,19 +202,16 @@ class ClassLoader
      */
     public function register()
     {
-        if ($this->registered) {
+        if (!is_null($this->registered)) {
             return;
         }
 
         $this->ensureManifestIsLoaded();
 
-        $callback = [$this, 'load'];
-        if (is_callable($callback)) {
-            $this->registered = spl_autoload_register($callback);
-            return;
-        }
-
-        throw new Exception('The "load" method is missing from the class loader');
+        $this->registered = function ($class) {
+            $this->load($class);
+        };
+        spl_autoload_register($this->registered);
     }
 
     /**
@@ -224,18 +221,12 @@ class ClassLoader
      */
     public function unregister()
     {
-        if (!$this->registered) {
+        if (is_null($this->registered)) {
             return;
         }
 
-        $callback = [$this, 'load'];
-        if (is_callable($callback)) {
-            spl_autoload_unregister($callback);
-            $this->registered = false;
-            return;
-        }
-
-        throw new Exception('The "load" method is missing from the class loader');
+        spl_autoload_unregister($this->registered);
+        $this->registered = null;
     }
 
     /**

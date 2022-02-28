@@ -20,7 +20,7 @@ use Winter\Storm\Support\Testing\Fakes\EventFake;
  * @method static void flush(string $event)
  * @method static void forget(string $event)
  * @method static void forgetPushed()
- * @method static void listen(\Illuminate\Events\QueuedClosure|\Closure|string|array $events, \Illuminate\Events\QueuedClosure,\Closure|string|array $listener = null)
+ * @method static void listen(\Illuminate\Events\QueuedClosure|\Closure|string|array $events, \Illuminate\Events\QueuedClosure|\Closure|string|array $listener = null)
  * @method static void push(string $event, array $payload = [])
  * @method static void subscribe(object|string $subscriber)
  * @method static string firing()
