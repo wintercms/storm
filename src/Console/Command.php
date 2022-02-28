@@ -80,8 +80,10 @@ abstract class Command extends BaseCommand
                     $dataType = 'Option';
                     $suggestionType = 'Options';
                     break;
+                default:
+                    throw new \Exception('Invalid input type being parsed during completion');
             }
-            if (!empty($data) && isset($dataType) && isset($suggestionType)) {
+            if (!empty($data)) {
                 foreach ($data as $name => $value) {
                     // Skip the command argument since that's handled by Artisan directly
                     if (
