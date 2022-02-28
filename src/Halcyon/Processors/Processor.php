@@ -58,7 +58,7 @@ class Processor
             'isCompoundObject' => $query->getModel()->isCompoundObject()
         ];
 
-        $content = array_get($result, 'content');
+        $content = array_get($result, 'content', '');
 
         $processed = SectionParser::parse($content, $options);
 
