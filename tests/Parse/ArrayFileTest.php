@@ -226,6 +226,68 @@ class ArrayFileTest extends TestCase
         $this->assertEquals(69, $result['aNumber']);
     }
 
+    public function testConfigInvalid()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('ArrayFiles must start with a return statement');
+
+        $arrayFile = ArrayFile::open(__DIR__ . '/../fixtures/parse/invalid.php');
+    }
+
+    public function testConfigImports()
+    {
+        $arrayFile = ArrayFile::open(__DIR__ . '/../fixtures/parse/import.php');
+
+        $expected = <<<PHP
+<?php
+
+use Symfony\Component\HttpFoundation\Response;
+return [
+    'foo' => Response::HTTP_OK,
+    'bar' => Response::HTTP_I_AM_A_TEAPOT,
+];
+
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
+    }
+
+    public function testConfigImportsUpdating()
+    {
+        $arrayFile = ArrayFile::open(__DIR__ . '/../fixtures/parse/import.php');
+        $arrayFile->set('foo', $arrayFile->constant('Response::HTTP_CONFLICT'));
+
+        $expected = <<<PHP
+<?php
+
+use Symfony\Component\HttpFoundation\Response;
+return [
+    'foo' => Response::HTTP_CONFLICT,
+    'bar' => Response::HTTP_I_AM_A_TEAPOT,
+];
+
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
+    }
+
+    public function testConfigExpression()
+    {
+        $arrayFile = ArrayFile::open(__DIR__ . '/../fixtures/parse/expression.php');
+
+        $expected = <<<PHP
+<?php
+
+\$bar = nl2br("Hello\\nWorld");
+return [
+    'foo' => \$bar,
+];
+
+PHP;
+
+        $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
+    }
+
     public function testReadCreateFile()
     {
         $file = __DIR__ . '/../fixtures/parse/empty.php';

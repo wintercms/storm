@@ -36,11 +36,18 @@ class ArrayFile implements DataFileInterface
     protected $printer = null;
 
     /**
+     * @var int|null Index of ast containing return stmt
+     */
+    protected $astReturnIndex = null;
+
+    /**
      * ArrayFile constructor.
      */
     public function __construct(array $ast, string $filePath = null, PrettyPrinterAbstract $printer = null)
     {
-        if (!($ast[0] instanceof Stmt\Return_)) {
+        $this->astReturnIndex = $this->getAstReturnIndex($ast);
+
+        if (is_null($this->astReturnIndex)) {
             throw new \InvalidArgumentException('ArrayFiles must start with a return statement');
         }
 
@@ -104,7 +111,7 @@ class ArrayFile implements DataFileInterface
         }
 
         // try to find a reference to ast object
-        list($target, $remaining) = $this->seek(explode('.', $key), $this->ast[0]->expr);
+        list($target, $remaining) = $this->seek(explode('.', $key), $this->ast[$this->astReturnIndex]->expr);
 
         $valueType = $this->getType($value);
 
@@ -116,7 +123,7 @@ class ArrayFile implements DataFileInterface
 
         // path to not found
         if (is_null($target)) {
-            $this->ast[0]->expr->items[] = $this->makeArrayItem($key, $valueType, $value);
+            $this->ast[$this->astReturnIndex]->expr->items[] = $this->makeArrayItem($key, $valueType, $value);
             return $this;
         }
 
@@ -265,6 +272,29 @@ class ArrayFile implements DataFileInterface
         }
 
         return $arrayItem;
+    }
+
+    /**
+     * Find the return position within the ast, returns null on encountering an unsupported ast stmt.
+     *
+     * @param array $ast
+     * @return int|null
+     */
+    protected function getAstReturnIndex(array $ast): ?int
+    {
+        foreach ($ast as $index => $item) {
+            switch (get_class($item)) {
+                case Stmt\Use_::class:
+                case Stmt\Expression::class:
+                    break;
+                case Stmt\Return_::class:
+                    return $index;
+                default:
+                    return null;
+            }
+        }
+
+        return null;
     }
 
     /**
