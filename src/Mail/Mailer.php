@@ -5,6 +5,7 @@ use Config;
 use Illuminate\Mail\Mailer as MailerBase;
 use Illuminate\Contracts\Mail\Mailable as MailableContract;
 use Illuminate\Support\Collection;
+use Illuminate\Mail\SentMessage;
 
 /**
  * Mailer class for sending mail.
@@ -144,6 +145,8 @@ class Mailer extends MailerBase
             return;
         }
 
+
+
         // Next we will determine if the message should be sent. We give the developer
         // one final chance to stop this message and then we will send it to all of
         // its recipients. We will then fire the sent event for the sent message.
@@ -151,34 +154,36 @@ class Mailer extends MailerBase
 
         $sentMessage = null;
         if ($this->shouldSendMessage($symfonyMessage, $data)) {
-            $sentMessage = $this->sendSymfonyMessage($symfonyMessage);
+            $symfonySentMessage = $this->sendSymfonyMessage($symfonyMessage);
 
-            $this->dispatchSentEvent($message, $data);
+            if ($symfonySentMessage) {
+                $sentMessage = new SentMessage($symfonySentMessage);
 
-            $sentMessage = new SentMessage($sentMessage);
+                $this->dispatchSentEvent($sentMessage, $data);
 
-            /**
-             * @event mailer.send
-             * Fires after the message has been sent
-             *
-             * Example usage (logs the message):
-             *
-             *     Event::listen('mailer.send', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
-             *         \Log::info("Message was rendered with $view and sent");
-             *     });
-             *
-             * Or
-             *
-             *     $mailerInstance->bindEvent('mailer.send', function ((string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
-             *         \Log::info("Message was rendered with $view and sent");
-             *     });
-             *
-             */
-            $this->fireEvent('mailer.send', [$view, $message, $data]);
-            Event::fire('mailer.send', [$this, $view, $message, $data]);
+                /**
+                 * @event mailer.send
+                 * Fires after the message has been sent
+                 *
+                 * Example usage (logs the message):
+                 *
+                 *     Event::listen('mailer.send', function ((\Winter\Storm\Mail\Mailer) $mailerInstance, (string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
+                 *         \Log::info("Message was rendered with $view and sent");
+                 *     });
+                 *
+                 * Or
+                 *
+                 *     $mailerInstance->bindEvent('mailer.send', function ((string) $view, (\Illuminate\Mail\Message) $message, (array) $data) {
+                 *         \Log::info("Message was rendered with $view and sent");
+                 *     });
+                 *
+                 */
+                $this->fireEvent('mailer.send', [$view, $message, $data]);
+                Event::fire('mailer.send', [$this, $view, $message, $data]);
+
+                return $sentMessage;
+            }
         }
-
-        return $sentMessage;
     }
 
     /**
