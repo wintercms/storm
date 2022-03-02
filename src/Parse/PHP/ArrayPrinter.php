@@ -58,51 +58,6 @@ class ArrayPrinter extends Standard
             Expr\Include_::TYPE_REQUIRE_ONCE => 'require_once',
         ];
 
-        $includeInConfigArray = false;
-
-        if ($map[$node->type] === 'include') {
-            foreach (debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 50) as $backtrace) {
-                if (
-                    $backtrace['function'] !== 'pStmts'
-                    || !isset($backtrace['args'][0])
-                    || !is_array($backtrace['args'][0])
-                ) {
-                    continue;
-                }
-
-                foreach ($backtrace['args'][0] as $arg) {
-                    if (!($arg instanceof Stmt\Return_)) {
-                        continue;
-                    }
-
-                    $includeInConfigArray = ($iterator = function ($arg) use (&$iterator, $node) {
-                        if ($arg instanceof Expr\Array_) {
-                            foreach ($arg->items as $item) {
-                                if ($iterator($item)) {
-                                    return true;
-                                }
-                            }
-                        }
-                        if ($arg instanceof Expr\ArrayItem) {
-                            if ($arg->value instanceof Expr\FuncCall) {
-                                foreach ($arg->value->args as $funcArg) {
-                                    if ($iterator($funcArg->value)) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                        if ($arg instanceof Expr\Include_ && $node === $arg) {
-                            return true;
-                        }
-                        return false;
-                    })($arg->expr);
-                }
-            }
-        }
-
-        return $includeInConfigArray
-            ? $map[$node->type] . '(' . $this->p($node->expr) . ')'
-            : $map[$node->type] . ' ' . $this->p($node->expr);
+        return $map[$node->type] . '(' . $this->p($node->expr) . ')';
     }
 }
