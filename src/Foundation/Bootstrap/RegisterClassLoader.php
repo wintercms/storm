@@ -24,11 +24,6 @@ class RegisterClassLoader
 
         $loader->register();
 
-        $loader->addDirectories([
-            'modules',
-            'plugins'
-        ]);
-
         $app->after(function () use ($loader) {
             $loader->build();
         });

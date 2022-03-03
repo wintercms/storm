@@ -13,79 +13,57 @@ use Exception;
 class ClassLoader
 {
     /**
-     * The filesystem instance.
-     *
-     * @var \Winter\Storm\Filesystem\Filesystem
+     * @var \Winter\Storm\Filesystem\Filesystem The filesystem instance.
      */
     public $files;
 
     /**
-     * The base path.
-     *
-     * @var string
+     * @var string The base path.
      */
     public $basePath;
 
     /**
-     * The manifest path.
-     *
-     * @var string|null
+     * @var string|null The manifest path.
      */
     public $manifestPath;
 
     /**
-     * The loaded manifest array.
-     *
-     * @var array
+     * @var array The loaded manifest array.
      */
     public $manifest;
 
     /**
-     * Determine if the manifest needs to be written.
-     *
-     * @var bool
+     * @var bool Determine if the manifest needs to be written.
      */
     protected $manifestDirty = false;
 
     /**
-     * The registered directories.
-     *
-     * @var array
+     * @var array The registered packages to autoload for
      */
-    protected $directories = [];
+    protected $autoloadedPackages = [];
 
     /**
-     * Indicates if a ClassLoader has been registered.
-     *
-     * @var bool
+     * @var bool Indicates if a ClassLoader has been registered.
      */
     protected $registered = false;
 
     /**
-     * Class alias array.
-     *
-     * @var array
+     * @var array Class alias array.
      */
     protected $aliases = [];
 
     /**
-     * Namespace alias array.
-     *
-     * @var array
+     * @var array Namespace alias array.
      */
     protected $namespaceAliases = [];
 
     /**
-     * Aliases that have been explicitly loaded.
-     *
-     * @var array
+     * @var array Aliases that have been explicitly loaded.
      */
     protected $loadedAliases = [];
 
     /**
-     * Reversed classes to ignore for alias checks.
-     *
-     * @var array
+     * @var array Reversed classes to ignore for alias checks.
      */
     protected $reversedClasses = [];
 
@@ -119,6 +97,7 @@ class ClassLoader
             return true;
         }
 
+        // Check the class manifest for the class' location
         if (
             isset($this->manifest[$class]) &&
             $this->isRealFilePath($path = $this->manifest[$class])
@@ -135,28 +114,35 @@ class ClassLoader
             return true;
         }
 
-        list($lowerClass, $upperClass, $lowerClassStudlyFile, $upperClassStudlyFile) = static::getPathsForClass($class);
+        // Check our registered autoload packages for a match
+        foreach ($this->autoloadedPackages as $prefix => $path) {
+            if (Str::startsWith($class, $prefix)) {
+                $parts = explode('\\', Str::after($class, $prefix));
+                $file = array_pop($parts) . '.php';
+                $namespace = implode('\\', $parts);
+                $directory = str_replace(['\\', '_'], DIRECTORY_SEPARATOR, $namespace);
 
-        foreach ($this->directories as $directory) {
-            $paths = [
-                $directory . DIRECTORY_SEPARATOR . $lowerClass,
-                $directory . DIRECTORY_SEPARATOR . $upperClass,
-                $directory . DIRECTORY_SEPARATOR . $lowerClassStudlyFile,
-                $directory . DIRECTORY_SEPARATOR . $upperClassStudlyFile,
-            ];
+                $pathsToTry = [
+                    // Lowercase directory structure - default structure of plugins and modules
+                    $path . strtolower($directory) . DIRECTORY_SEPARATOR . $file,
 
-            foreach ($paths as $path) {
-                if ($this->isRealFilePath($path)) {
-                    $this->includeClass($class, $path);
+                    // Fallback to the unmodified path
+                    $path . $directory . DIRECTORY_SEPARATOR . $file,
+                ];
 
-                    if (!is_null($reverse = $this->getReverseAlias($class))) {
-                        if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
-                            class_alias($class, $reverse);
-                            $this->reversedClasses[] = $reverse;
+                foreach ($pathsToTry as $classPath) {
+                    if ($this->isRealFilePath($classPath)) {
+                        $this->includeClass($class, $classPath);
+
+                        if (!is_null($reverse = $this->getReverseAlias($class))) {
+                            if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
+                                class_alias($class, $reverse);
+                                $this->reversedClasses[] = $reverse;
+                            }
                         }
-                    }
 
-                    return true;
+                        return true;
+                    }
                 }
             }
         }
@@ -169,14 +155,18 @@ class ClassLoader
     }
 
     /**
-     * Determine if a relative path to a file exists and is real
+     * Determine if the provided path to a file exists and is real
      *
      * @param  string  $path
      * @return bool
      */
     protected function isRealFilePath($path)
     {
-        return is_file(realpath($this->basePath.DIRECTORY_SEPARATOR.$path));
+        if (!Str::startsWith($path, ['/', '\\'])) {
+            $path = $this->basePath . DIRECTORY_SEPARATOR . $path;
+        }
+
+        return is_file(realpath($path));
     }
 
     /**
@@ -188,7 +178,11 @@ class ClassLoader
      */
     protected function includeClass($class, $path)
     {
-        require_once $this->basePath.DIRECTORY_SEPARATOR.$path;
+        if (!Str::startsWith($path, ['/', '\\'])) {
+            $path = $this->basePath . DIRECTORY_SEPARATOR . $path;
+        }
+
+        require_once $path;
 
         $this->manifest[$class] = $path;
 
@@ -241,46 +235,11 @@ class ClassLoader
     }
 
     /**
-     * Add directories to the class loader.
-     *
-     * @param  string|array  $directories
-     * @return void
+     * Add a namespace prefix to the autoloader
      */
-    public function addDirectories($directories)
+    public function autoloadPackage(string $namespacePrefix, string $relativePath): void
     {
-        $this->directories = array_merge($this->directories, (array) $directories);
-
-        $this->directories = array_unique($this->directories);
-    }
-
-    /**
-     * Remove directories from the class loader.
-     *
-     * @param  string|array  $directories
-     * @return void
-     */
-    public function removeDirectories($directories = null)
-    {
-        if (is_null($directories)) {
-            $this->directories = [];
-        }
-        else {
-            $directories = (array) $directories;
-
-            $this->directories = array_filter($this->directories, function ($directory) use ($directories) {
-                return !in_array($directory, $directories);
-            });
-        }
-    }
-
-    /**
-     * Gets all the directories registered with the loader.
-     *
-     * @return array
-     */
-    public function getDirectories()
-    {
-        return $this->directories;
+        $this->autoloadedPackages[$namespacePrefix] = $relativePath;
     }
 
     /**

@@ -19,10 +19,6 @@ class ClassLoaderTest extends TestCase
         );
 
         $this->classLoader->register();
-
-        $this->classLoader->addDirectories([
-            'plugins'
-        ]);
     }
 
     public function tearDown(): void
