@@ -102,7 +102,7 @@ class ClassLoader
             isset($this->manifest[$class]) &&
             $this->isRealFilePath($path = $this->manifest[$class])
         ) {
-            require_once $this->basePath.DIRECTORY_SEPARATOR.$path;
+            require_once $this->resolvePath($path);
 
             if (!is_null($reverse = $this->getReverseAlias($class))) {
                 if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
@@ -155,6 +155,17 @@ class ClassLoader
     }
 
     /**
+     * Resolve the provided path, relative or absolute
+     */
+    protected function resolvePath(string $path): string
+    {
+        if (!Str::startsWith($path, ['/', '\\'])) {
+            $path = $this->basePath . DIRECTORY_SEPARATOR . $path;
+        }
+        return $path;
+    }
+
+    /**
      * Determine if the provided path to a file exists and is real
      *
      * @param  string  $path
@@ -162,11 +173,7 @@ class ClassLoader
      */
     protected function isRealFilePath($path)
     {
-        if (!Str::startsWith($path, ['/', '\\'])) {
-            $path = $this->basePath . DIRECTORY_SEPARATOR . $path;
-        }
-
-        return is_file(realpath($path));
+        return is_file(realpath($this->resolvePath($path)));
     }
 
     /**
@@ -178,11 +185,7 @@ class ClassLoader
      */
     protected function includeClass($class, $path)
     {
-        if (!Str::startsWith($path, ['/', '\\'])) {
-            $path = $this->basePath . DIRECTORY_SEPARATOR . $path;
-        }
-
-        require_once $path;
+        require_once $this->resolvePath($path);
 
         $this->manifest[$class] = $path;
 
