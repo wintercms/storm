@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Extension;
 
+use Winter\Storm\Support\Serialization;
+
 /**
  * Extension trait
  *
@@ -34,7 +36,7 @@ trait ExtensionTrait
         foreach ($classes as $class) {
             if (isset(self::$extensionCallbacks[$class]) && is_array(self::$extensionCallbacks[$class])) {
                 foreach (self::$extensionCallbacks[$class] as $callback) {
-                    call_user_func($callback, $this);
+                    call_user_func(Serialization::unwrapClosure($callback), $this);
                 }
             }
         }
@@ -54,8 +56,7 @@ trait ExtensionTrait
         ) {
             self::$extensionCallbacks[$class] = [];
         }
-
-        self::$extensionCallbacks[$class][] = $callback;
+        self::$extensionCallbacks[$class][] = Serialization::wrapClosure($callback);
     }
 
     protected function extensionHideField($name)

@@ -2,6 +2,7 @@
 
 use Cache;
 use Config;
+use Symfony\Component\Yaml\Yaml as YamlComponent;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
@@ -66,17 +67,12 @@ class Yaml
     /**
      * Renders a PHP array to YAML format.
      *
-     * @param array $vars
-     * @param array $options
-     *
      * Supported options:
      * - inline: The level where you switch to inline YAML.
      * - exceptionOnInvalidType: if an exception must be thrown on invalid types.
      * - objectSupport: if object support is enabled.
-     *
-     * @return string
      */
-    public function render($vars = [], $options = [])
+    public function render(array $vars = [], array $options = []): string
     {
         extract(array_merge([
             'inline' => 20,
@@ -84,8 +80,29 @@ class Yaml
             'objectSupport' => true,
         ], $options));
 
+        $flags = null;
+
+        if ($exceptionOnInvalidType) {
+            $flags |= YamlComponent::DUMP_EXCEPTION_ON_INVALID_TYPE;
+        }
+
+        if ($objectSupport) {
+            $flags |= YamlComponent::DUMP_OBJECT;
+        }
+
         $yaml = new Dumper;
-        return $yaml->dump($vars, $inline, 0, $exceptionOnInvalidType, $objectSupport);
+
+        if (!is_null($this->processor) && method_exists($this->processor, 'prerender')) {
+            $vars = $this->processor->prerender($vars);
+        }
+
+        $yamlContent = $yaml->dump($vars, $inline, 0, $flags);
+
+        if (!is_null($this->processor) && method_exists($this->processor, 'render')) {
+            $yamlContent = $this->processor->render($yamlContent);
+        }
+
+        return $yamlContent;
     }
 
     /**

@@ -1,41 +1,31 @@
 <?php namespace Winter\Storm\Scaffold;
 
-use ReflectionClass;
-use Winter\Storm\Support\Str;
-use Illuminate\Console\Command;
-use Winter\Storm\Filesystem\Filesystem;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Exception;
 use Twig;
+use Exception;
+use ReflectionClass;
+use Winter\Storm\Console\Command;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Filesystem\Filesystem;
 
 abstract class GeneratorCommand extends Command
 {
     /**
-     * The filesystem instance.
-     *
-     * @var \Winter\Storm\Filesystem\Filesystem
+     * @var \Winter\Storm\Filesystem\Filesystem The filesystem instance.
      */
     protected $files;
 
     /**
-     * The type of class being generated.
-     *
-     * @var string
+     * @var string The type of class being generated.
      */
     protected $type;
 
     /**
-     * A mapping of stub to generated file.
-     *
-     * @var array
+     * @var array A mapping of stub to generated file.
      */
     protected $stubs = [];
 
     /**
-     * An array of variables to use in stubs.
-     *
-     * @var array
+     * @var array An array of variables to use in stubs.
      */
     protected $vars = [];
 
@@ -68,7 +58,7 @@ abstract class GeneratorCommand extends Command
     /**
      * Prepare variables for stubs.
      *
-     * return @array
+     * @return array
      */
     abstract protected function prepareVars();
 
@@ -203,7 +193,7 @@ abstract class GeneratorCommand extends Command
      */
     protected function getDestinationPath()
     {
-        $plugin = $this->getPluginInput();
+        $plugin = $this->getPluginIdentifier();
 
         $parts = explode('.', $plugin);
         $name = array_pop($parts);
@@ -230,32 +220,8 @@ abstract class GeneratorCommand extends Command
      *
      * @return string
      */
-    protected function getPluginInput()
+    protected function getPluginIdentifier()
     {
         return $this->argument('plugin');
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['plugin', InputArgument::REQUIRED, 'The name of the plugin to create. Eg: Winter.Blog'],
-        ];
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['force', null, InputOption::VALUE_NONE, 'Overwrite existing files with generated ones.'],
-        ];
     }
 }

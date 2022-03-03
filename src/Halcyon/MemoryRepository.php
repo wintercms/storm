@@ -21,9 +21,8 @@ class MemoryRepository extends Repository
      *
      * @param  string|array $key
      * @param  mixed        $default
-     * @return mixed
      */
-    public function get($key, $default = null)
+    public function get($key, $default = null): mixed
     {
         if (is_array($key)) {
             return $this->many($key);

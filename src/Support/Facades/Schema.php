@@ -21,6 +21,13 @@ use Winter\Storm\Support\Facade;
 class Schema extends Facade
 {
     /**
+     * Indicates if the resolved facade should be cached.
+     *
+     * @var bool
+     */
+    protected static $cached = false;
+
+    /**
      * Get a schema builder instance for a connection.
      *
      * @param  string  $name
@@ -42,10 +49,6 @@ class Schema extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        $builder = static::$app['db']->connection()->getSchemaBuilder();
-
-        static::$app['events']->fire('db.schema.getBuilder', [$builder]);
-
-        return $builder;
+        return 'db.schema';
     }
 }

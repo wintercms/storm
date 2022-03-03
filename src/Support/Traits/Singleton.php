@@ -14,6 +14,8 @@ trait Singleton
 
     /**
      * Create a new instance of this singleton.
+     *
+     * @return static
      */
     final public static function instance()
     {

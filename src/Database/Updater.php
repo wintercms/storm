@@ -25,7 +25,7 @@ class Updater
             return false;
         }
 
-        $this->isValidScript($object);
+        $this->isValidScript($object, $file);
 
         Eloquent::unguard();
 
@@ -52,7 +52,7 @@ class Updater
             return false;
         }
 
-        $this->isValidScript($object);
+        $this->isValidScript($object, $file);
 
         Eloquent::unguard();
 
@@ -76,8 +76,11 @@ class Updater
             return;
         }
 
-        require_once $file;
+        $instance = require_once $file;
 
+        if (is_object($instance)) {
+            return $instance;
+        }
         if ($class = $this->getClassFromFile($file)) {
             return new $class;
         }
@@ -86,7 +89,7 @@ class Updater
     /**
      * Checks if the object is a valid update script.
      */
-    protected function isValidScript($object)
+    protected function isValidScript($object, $file)
     {
         if ($object instanceof Updates\Migration) {
             return true;
@@ -96,8 +99,8 @@ class Updater
         }
 
         throw new Exception(sprintf(
-            'Database script [%s] must inherit Winter\Storm\Database\Updates\Migration or Winter\Storm\Database\Updates\Seeder classes',
-            get_class($object)
+            'Database script [%s] must define a class that inherits the "Winter\Storm\Database\Updates\Migration" or "Winter\Storm\Database\Updates\Seeder" classes',
+            $file
         ));
     }
 

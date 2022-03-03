@@ -6,20 +6,6 @@ use Illuminate\Foundation\Console\KeyGenerateCommand as KeyGenerateCommandBase;
 class KeyGenerateCommand extends KeyGenerateCommandBase
 {
     /**
-     * The console command name.
-     *
-     * @var string
-     */
-    protected $name = 'key:generate';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = "Set the application key";
-
-    /**
      * Create a new key generator command.
      *
      * @param  \Illuminate\Filesystem\Filesystem  $files
