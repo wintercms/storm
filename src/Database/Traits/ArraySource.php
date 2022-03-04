@@ -36,7 +36,7 @@ trait ArraySource
         $instance = new static;
 
         static::setArrayDbConnection(
-            (!$instance->canStoreArrayDb()) ? null : $instance->getArrayDbPath()
+            (!$instance->canStoreArrayDb()) ? ':memory:' : $instance->getArrayDbPath()
         );
 
         if ($instance->arrayDbNeedsUpdate()) {
@@ -78,7 +78,7 @@ trait ArraySource
      *
      * By default, this will create an in-memory database.
      */
-    protected static function setArrayDbConnection(string $database = ':memory:'): void
+    protected static function setArrayDbConnection(string $database): void
     {
         $config = [
             'driver' => 'sqlite',
