@@ -98,6 +98,8 @@ trait ArraySource
         if (File::exists($this->getArrayDbPath())) {
             File::delete($this->getArrayDbPath());
         }
+        // Create SQLite file
+        File::put($this->getArrayDbPath(), '');
 
         $records = $this->getArrayRecords();
 
@@ -133,7 +135,7 @@ trait ArraySource
                 if (
                     $this->incrementing
                     && !array_key_exists($this->primaryKey, $schema)
-                    && !array_key_exists($this->primaryKey, array_keys($firstRecord))
+                    && !array_key_exists($this->primaryKey, $firstRecord)
                 ) {
                     $table->increments($this->primaryKey);
                 }
@@ -188,6 +190,33 @@ trait ArraySource
 
             throw $e;
         }
+    }
+
+    /**
+     * Determines the best column schema type from a given value
+     *
+     * @param mixed $value
+     * @return string
+     */
+    protected function resolveArrayDatatype($value): string
+    {
+        if (is_int($value)) {
+            return 'integer';
+        }
+
+        if (is_numeric($value)) {
+            return 'float';
+        }
+
+        if (is_string($value)) {
+            return 'string';
+        }
+
+        if (is_object($value) && $value instanceof \DateTimeInterface) {
+            return 'dateTime';
+        }
+
+        return 'string';
     }
 
     /**

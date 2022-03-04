@@ -31,6 +31,16 @@ class DbTestCase extends TestCase
     }
 
     /**
+     * Returns an instance of the schema builder for the test database.
+     *
+     * @return \Illuminate\Database\Schema\Builder
+     */
+    protected function getBuilder()
+    {
+        return DB::connection()->getSchemaBuilder();
+    }
+
+    /**
      * The models in Winter use a static property to store their events, these
      * will need to be targeted and reset ready for a new test cycle.
      * Pivot models are an exception since they are internally managed.

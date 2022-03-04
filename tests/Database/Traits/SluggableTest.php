@@ -140,7 +140,7 @@ class SluggableTest extends DbTestCase
 
     protected function createTables()
     {
-        $this->db->schema()->create('testSoftDelete', function ($table) {
+        $this->getBuilder()->create('testSoftDelete', function ($table) {
             $table->increments('id');
             $table->string('name');
             $table->string('slug')->unique();
@@ -148,7 +148,7 @@ class SluggableTest extends DbTestCase
             $table->timestamps();
         });
 
-        $this->db->schema()->create('testSoftDeleteNoUnique', function ($table) {
+        $this->getBuilder()->create('testSoftDeleteNoUnique', function ($table) {
             $table->increments('id');
             $table->string('name');
             $table->string('slug');
@@ -156,7 +156,7 @@ class SluggableTest extends DbTestCase
             $table->timestamps();
         });
 
-        $this->db->schema()->create('testSoftDeleteAllow', function ($table) {
+        $this->getBuilder()->create('testSoftDeleteAllow', function ($table) {
             $table->increments('id');
             $table->string('name');
             $table->string('slug')->unique();
@@ -164,7 +164,7 @@ class SluggableTest extends DbTestCase
             $table->timestamps();
         });
 
-        $this->db->schema()->create('test', function ($table) {
+        $this->getBuilder()->create('test', function ($table) {
             $table->increments('id');
             $table->string('name');
             $table->string('slug')->unique();

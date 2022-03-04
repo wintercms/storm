@@ -1,5 +1,7 @@
 <?php
 
+use Winter\Storm\Support\Facades\Input;
+
 class ValidationTest extends TestCase
 {
     use \Winter\Storm\Database\Traits\Validation;
@@ -20,13 +22,18 @@ class ValidationTest extends TestCase
         return 'mysql';
     }
 
-    protected function getTable($table)
+    protected function getTable($table = null)
     {
         return 'users';
     }
 
     public function testUnique()
     {
+        // Mock a missing session so no flash messages are sent
+        Input::shouldReceive('hasSession')
+            ->withNoArgs()
+            ->andReturnFalse();
+
         /**
          * The current model should be excluded when it exists, otherwise all models are evaluated
          *
