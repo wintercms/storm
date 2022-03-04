@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Winter\Storm\Database\Model;
 
 class ModelTest extends DbTestCase
@@ -80,7 +81,9 @@ class ModelTest extends DbTestCase
 
     protected function createTable()
     {
-        $this->db->schema()->create('test_model', function ($table) {
+        $schema = DB::connection()->getSchemaBuilder();
+
+        $schema->create('test_model', function ($table) {
             $table->increments('id');
             $table->string('name')->nullable();
             $table->text('data')->nullable();

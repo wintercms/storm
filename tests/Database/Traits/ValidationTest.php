@@ -20,7 +20,7 @@ class ValidationTest extends TestCase
         return 'mysql';
     }
 
-    protected function getTable()
+    protected function getTable($table)
     {
         return 'users';
     }
