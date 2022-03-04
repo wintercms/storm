@@ -413,12 +413,7 @@ class ArrayFile implements DataFileInterface
      */
     public function render(): string
     {
-        // Make sure lines with only indentation are trimmed
-        return preg_replace(
-            '/^\s+$/m',
-            '',
-            $this->printer->prettyPrintFile($this->ast) . "\n"
-        );
+        return $this->printer->prettyPrintFile($this->ast) . "\n";
     }
 
     /**

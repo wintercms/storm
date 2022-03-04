@@ -799,4 +799,25 @@ return [
 PHP;
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
+
+    public function testEmptyNewLines()
+    {
+        $file = __DIR__ . '/../fixtures/parse/arrayfile/sample-array-file.php';
+        $arrayFile = ArrayFile::open($file);
+
+        preg_match('/^\s+$/m', $arrayFile->render(), $matches);
+
+        $this->assertEmpty($matches);
+    }
+
+    public function testNestedComments()
+    {
+        $file = __DIR__ . '/../fixtures/parse/arrayfile/nested-comments.php';
+        $arrayFile = ArrayFile::open($file);
+
+        $code = $arrayFile->render();
+
+        $this->assertStringContainsString(str_repeat(' ', 8) . '|', $code);
+        $this->assertStringNotContainsString(str_repeat(' ', 12) . '|', $code);
+    }
 }

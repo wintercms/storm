@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Parse\PHP;
 
+use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt;
 use PhpParser\PrettyPrinter\Standard;
@@ -30,6 +31,41 @@ class ArrayPrinter extends Standard
     }
 
     /**
+     * Pretty prints a comma-separated list of nodes in multiline style, including comments.
+     *
+     * The result includes a leading newline and one level of indentation (same as pStmts).
+     *
+     * @param Node[] $nodes         Array of Nodes to be printed
+     * @param bool   $trailingComma Whether to use a trailing comma
+     *
+     * @return string Comma separated pretty printed nodes in multiline style
+     */
+    protected function pCommaSeparatedMultiline(array $nodes, bool $trailingComma) : string {
+        $this->indent();
+
+        $result = '';
+        $lastIdx = count($nodes) - 1;
+        foreach ($nodes as $idx => $node) {
+            if ($node !== null) {
+                $comments = $node->getComments();
+                if ($comments) {
+                    $result .= $this->pComments($comments);
+                }
+
+                $result .= $this->nl . $this->p($node);
+            } else {
+                $result = trim($result) . "\n";
+            }
+            if ($trailingComma || $idx !== $lastIdx) {
+                $result .= ',';
+            }
+        }
+
+        $this->outdent();
+        return $result;
+    }
+
+    /**
      * Prints reformatted text of the passed comments.
      *
      * @param Comment[] $comments List of comments
@@ -46,7 +82,7 @@ class ArrayPrinter extends Standard
 
         $padding = $comments[0]->getStartLine() !== $comments[count($comments) - 1]->getEndLine() ? $this->nl : '';
 
-        return $padding . implode($this->nl, $formattedComments) . $padding;
+        return "\n" . $this->nl . trim($padding . implode($this->nl, $formattedComments)) . "\n";
     }
 
     protected function pExpr_Include(Expr\Include_ $node)
