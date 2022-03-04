@@ -451,7 +451,7 @@ class Resizer
         }
 
         // Determine the image type from the destination file
-        $extension = pathinfo($savePath, PATHINFO_EXTENSION) ?: $this->extension;
+        $extension = $this->getExtension($savePath);
 
         // Create and save an image based on it's extension
         switch (strtolower($extension)) {
@@ -686,5 +686,15 @@ class Resizer
         $optimalHeight = round($this->height * $effectiveRatio);
 
         return [$optimalWidth, $optimalHeight];
+    }
+
+    /**
+     * Return the filename extension for the provided filename
+     * @param string $path The filename path
+     * @return string
+     */
+    protected function getExtension($path)
+    {
+        return $this->getOption('extension') ?: (pathinfo($path, PATHINFO_EXTENSION) ?: $this->extension);
     }
 }
