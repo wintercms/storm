@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Winter\Storm\Support\Facades\Input;
 
 class ValidationTest extends TestCase
@@ -29,10 +30,8 @@ class ValidationTest extends TestCase
 
     public function testUnique()
     {
-        // Mock a missing session so no flash messages are sent
-        Input::shouldReceive('hasSession')
-            ->withNoArgs()
-            ->andReturnFalse();
+        // Fake a request so flash messages are not sent
+        Input::swap(new Request());
 
         /**
          * The current model should be excluded when it exists, otherwise all models are evaluated

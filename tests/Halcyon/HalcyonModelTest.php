@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Winter\Storm\Halcyon\Model;
 use Winter\Storm\Halcyon\Datasource\Resolver;
 use Winter\Storm\Halcyon\Datasource\FileDatasource;
@@ -18,9 +19,8 @@ class HalcyonModelTest extends TestCase
 
         $this->setDatasourceResolver();
 
-        Input::shouldReceive('hasSession')
-            ->withNoArgs()
-            ->andReturnFalse();
+        // Fake a request so flash messages are not sent
+        Input::swap(new Request());
 
         $this->setValidatorOnModel();
     }
