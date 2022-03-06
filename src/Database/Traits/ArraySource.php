@@ -35,12 +35,12 @@ trait ArraySource
     {
         $instance = new static;
 
-        static::setArrayDbConnection(
-            (!$instance->canStoreArrayDb()) ? ':memory:' : $instance->getArrayDbPath()
+        static::arraySourceSetDbConnection(
+            (!$instance->arraySourceCanStoreDb()) ? ':memory:' : $instance->arraySourceGetDbPath()
         );
 
-        if ($instance->arrayDbNeedsUpdate()) {
-            $instance->createArrayDb();
+        if ($instance->arraySourceDbNeedsUpdate()) {
+            $instance->arraySoureCreateDb();
         }
     }
 
@@ -50,7 +50,7 @@ trait ArraySource
      * This method may be overwritten to specify a custom data provider. It should always return an associative array
      * with column names for keys and a singular value for each column.
      */
-    public function getArrayRecords(): array
+    public function arraySourceGetRecords(): array
     {
         if ($this->propertyExists('records')) {
             if (!is_array($this->records)) {
@@ -78,7 +78,7 @@ trait ArraySource
      *
      * By default, this will create an in-memory database.
      */
-    protected static function setArrayDbConnection(string $database): void
+    protected static function arraySourceSetDbConnection(string $database): void
     {
         $config = [
             'driver' => 'sqlite',
@@ -93,19 +93,19 @@ trait ArraySource
      *
      * This will create the temporary SQLite table and populate it with the given records.
      */
-    protected function createArrayDb(): void
+    protected function arraySoureCreateDb(): void
     {
-        if (File::exists($this->getArrayDbPath())) {
-            File::delete($this->getArrayDbPath());
+        if (File::exists($this->arraySourceGetDbPath())) {
+            File::delete($this->arraySourceGetDbPath());
         }
         // Create SQLite file
-        File::put($this->getArrayDbPath(), '');
+        File::put($this->arraySourceGetDbPath(), '');
 
-        $records = $this->getArrayRecords();
+        $records = $this->arraySourceGetRecords();
 
-        $this->createArrayDbTable();
+        $this->arraySourceCreateTable();
 
-        foreach (array_chunk($records, $this->getArrayChunkSize()) as $inserts) {
+        foreach (array_chunk($records, $this->arraySourceGetChunkSize()) as $inserts) {
             static::insert($inserts);
         }
     }
@@ -113,7 +113,7 @@ trait ArraySource
     /**
      * Creates the temporary SQLite table.
      */
-    protected function createArrayDbTable(): void
+    protected function arraySourceCreateTable(): void
     {
         $builder = static::resolveConnection()->getSchemaBuilder();
 
@@ -123,7 +123,7 @@ trait ArraySource
                 $schema = ($this->propertyExists('recordSchema'))
                     ? $this->recordSchema
                     : [];
-                $firstRecord = $this->getArrayRecords()[0] ?? [];
+                $firstRecord = $this->arraySourceGetRecords()[0] ?? [];
 
                 if (empty($schema) && empty($firstRecord)) {
                     throw new ApplicationException(
@@ -142,7 +142,7 @@ trait ArraySource
 
                 if (!empty($firstRecord)) {
                     foreach ($firstRecord as $column => $value) {
-                        $type = $this->resolveArrayDatatype($value);
+                        $type = $this->arraySourceResolveDatatype($value);
 
                         // Ensure the primary key is correctly created as an autoincremeting integer
                         if ($column === $this->primaryKey && $type === 'integer') {
@@ -193,12 +193,11 @@ trait ArraySource
     }
 
     /**
-     * Determines the best column schema type from a given value
+     * Determines the best column schema type for a given value
      *
      * @param mixed $value
-     * @return string
      */
-    protected function resolveArrayDatatype($value): string
+    protected function arraySourceResolveDatatype($value): string
     {
         if (is_int($value)) {
             return 'integer';
@@ -222,14 +221,14 @@ trait ArraySource
     /**
      * Determines if the temporary SQLite database for this model's array records will be stored.
      */
-    protected function canStoreArrayDb(): bool
+    protected function arraySourceCanStoreDb(): bool
     {
         // A model may add a $cacheArray property which defines if this model will be cached or not
         if ($this->propertyExists('cacheArray') && ((bool) $this->cacheArray) === false) {
             return false;
         }
 
-        $sourceCacheDir = $this->getArrayDbDir();
+        $sourceCacheDir = $this->arraySourceGetDbDir();
 
         if ($sourceCacheDir === false) {
             return false;
@@ -247,7 +246,7 @@ trait ArraySource
     /**
      * Gets the directory where the array databases will be stored.
      */
-    protected function getArrayDbDir(): string|false
+    protected function arraySourceGetDbDir(): string|false
     {
         $sourcePath = Config::get('cms.arraySourcePath', storage_path('framework/cache/array-source/'));
 
@@ -260,32 +259,28 @@ trait ArraySource
 
     /**
      * Gets the path where the array database will be stored.
-     *
-     * @return string
      */
-    protected function getArrayDbPath(): string
+    protected function arraySourceGetDbPath(): string
     {
-        return $this->getArrayDbDir() . '/' . Str::kebab(static::class) . '.sqlite';
+        return $this->arraySourceGetDbDir() . '/' . Str::kebab(static::class) . '.sqlite';
     }
 
     /**
      * Determines if the stored array DB should be updated.
-     *
-     * @return boolean
      */
-    protected function arrayDbNeedsUpdate(): bool
+    protected function arraySourceDbNeedsUpdate(): bool
     {
-        if (!$this->canStoreArrayDb()) {
+        if (!$this->arraySourceCanStoreDb()) {
             return true;
         }
 
-        if (!File::exists($this->getArrayDbPath())) {
+        if (!File::exists($this->arraySourceGetDbPath())) {
             return true;
         }
 
         $modelFile = (new ReflectionClass(static::class))->getFileName();
 
-        if (File::lastModified($this->getArrayDbPath()) < File::lastModified($modelFile)) {
+        if (File::lastModified($this->arraySourceGetDbPath()) < File::lastModified($modelFile)) {
             return true;
         }
 
@@ -297,10 +292,8 @@ trait ArraySource
      *
      * Sometimes, SQLite will complain if given too many records to insert at once, so we will split the records up
      * into reasonable chunks and insert them in groups.
-     *
-     * @return int
      */
-    protected function getArrayChunkSize()
+    protected function arraySourceGetChunkSize(): int
     {
         return 50;
     }

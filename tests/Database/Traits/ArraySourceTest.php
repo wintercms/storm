@@ -129,7 +129,7 @@ class ArrayModel extends \Winter\Storm\Database\Model
         'start_year' => 'integer',
     ];
 
-    protected function getArrayDbDir(): string|false
+    protected function arraySourceGetDbDir(): string|false
     {
         return dirname(dirname(__DIR__)) . '/tmp';
     }
@@ -154,7 +154,7 @@ class Country extends \Winter\Storm\Database\Model
         'states' => State::class,
     ];
 
-    protected function getArrayDbDir(): string|false
+    protected function arraySourceGetDbDir(): string|false
     {
         return dirname(dirname(__DIR__)) . '/tmp';
     }
@@ -243,7 +243,7 @@ class State extends \Winter\Storm\Database\Model
         'country' => Country::class,
     ];
 
-    protected function getArrayDbDir(): string|false
+    protected function arraySourceGetDbDir(): string|false
     {
         return dirname(dirname(__DIR__)) . '/tmp';
     }
