@@ -33,6 +33,10 @@ trait ArraySource
      */
     public static function bootArraySource(): void
     {
+        if (!in_array('sqlite', \PDO::getAvailableDrivers())) {
+            throw new ApplicationException('You must enable the SQLite PDO driver to use the ArraySource trait');
+        }
+
         $instance = new static;
 
         static::arraySourceSetDbConnection(
