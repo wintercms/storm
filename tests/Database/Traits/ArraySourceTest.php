@@ -13,7 +13,7 @@ class ArraySourceTest extends DbTestCase
 
         // Create temp directory for SQLite DBs
         $this->file->deleteDirectory($this->tmpDbPath);
-        $this->file->makeDirectory($this->tmpDbPath, 0755, true);
+        $this->file->makeDirectory($this->tmpDbPath, 0777, true, true);
     }
 
     public function tearDown(): void
