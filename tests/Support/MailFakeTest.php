@@ -10,7 +10,7 @@ class MailFakeTest extends TestCase
     {
         parent::setUp();
 
-        App::shouldReceive('getLocale')->andreturn('en/US');
+        App::shouldReceive('getLocale')->andReturn('en/US');
         Mail::swap(new MailFake());
 
         $this->recipient = 'fake@localhost';
