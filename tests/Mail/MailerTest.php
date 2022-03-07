@@ -45,6 +45,20 @@ class MailerTest extends TestCase
         $this->assertEquals('Adam Person', $result['user@domain.tld']);
 
         /*
+         * Array of email addresses without names
+         */
+        $recipients = [
+            'admin@domain.tld',
+            'single@address.com',
+            'charles@barrington.com',
+        ];
+        $result = self::callProtectedMethod($mailer, 'processRecipients', [$recipients]);
+        $this->assertCount(3, $result);
+        $this->assertEquals('admin@domain.tld', $result[0]);
+        $this->assertEquals('single@address.com', $result[1]);
+        $this->assertEquals('charles@barrington.com', $result[2]);
+
+        /*
          * Array
          */
         $recipients = [
