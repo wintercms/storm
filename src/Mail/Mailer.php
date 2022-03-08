@@ -462,7 +462,8 @@ class Mailer extends MailerBase
 
     /**
      * Process a recipients object, which can look like the following:
-     *  - (string) admin@domain.tld
+     *  - (string) 'admin@domain.tld'
+     *  - (array) ['admin@domain.tld', 'other@domain.tld']
      *  - (object) ['email' => 'admin@domain.tld', 'name' => 'Adam Person']
      *  - (array) ['admin@domain.tld' => 'Adam Person', ...]
      *  - (array) [ (object|array) ['email' => 'admin@domain.tld', 'name' => 'Adam Person'], [...] ]
@@ -477,7 +478,10 @@ class Mailer extends MailerBase
             $result[$recipients] = null;
         } elseif (is_array($recipients) || $recipients instanceof Collection) {
             foreach ($recipients as $address => $person) {
-                if (is_string($person)) {
+                if (is_int($address) && is_string($person)) {
+                    // no name provided, only email address
+                    $result[$person] = null;
+                } elseif (is_string($person)) {
                     $result[$address] = $person;
                 } elseif (is_object($person)) {
                     if (empty($person->email) && empty($person->address)) {
