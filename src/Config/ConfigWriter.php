@@ -2,7 +2,10 @@
 
 use Exception;
 
+use PhpParser\Error;
+use PhpParser\Lexer\Emulative;
 use PhpParser\ParserFactory;
+use Winter\Storm\Exception\SystemException;
 use Winter\Storm\Parse\PHP\ArrayFile;
 
 /**
@@ -25,14 +28,22 @@ class ConfigWriter
 
     public function toContent(string $contents, $newValues): string
     {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer = new Emulative([
+            'usedAttributes' => [
+                'comments',
+                'startTokenPos',
+                'startLine',
+                'endTokenPos',
+                'endLine'
+            ]
+        ]));
 
         try {
             $ast = $parser->parse($contents);
         } catch (Error $e) {
-            throw new Exception($e);
+            throw new SystemException($e);
         }
 
-        return (new ArrayFile($ast, null))->set($newValues)->render();
+        return (new ArrayFile($ast, $lexer, null))->set($newValues)->render();
     }
 }
