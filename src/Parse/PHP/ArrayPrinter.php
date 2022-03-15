@@ -86,7 +86,8 @@ class ArrayPrinter extends Standard
      *
      * @return string Comma separated pretty printed nodes in multiline style
      */
-    protected function pCommaSeparatedMultiline(array $nodes, bool $trailingComma) : string {
+    protected function pCommaSeparatedMultiline(array $nodes, bool $trailingComma): string
+    {
         $this->indent();
 
         $result = '';
