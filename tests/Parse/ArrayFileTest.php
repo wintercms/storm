@@ -825,6 +825,9 @@ PHP;
     {
         $file = __DIR__ . '/../fixtures/parse/arrayfile/single-line-comments.php';
         $arrayFile = ArrayFile::open($file);
-        $this->assertEquals(str_replace("\r", '', file_get_contents($file)), $arrayFile->render());
+        $this->assertEquals(
+            str_replace("\r", '', file_get_contents($file)),
+            str_replace("\r", '', $arrayFile->render())
+        );
     }
 }
