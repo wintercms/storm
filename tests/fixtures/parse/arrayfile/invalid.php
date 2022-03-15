@@ -1,6 +1,7 @@
 <?php
 
-function winterTest(string $str) {
+function winterTest(string $str)
+{
     return $str . ' Winter';
 }
 
