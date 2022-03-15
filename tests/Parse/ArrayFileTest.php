@@ -820,4 +820,11 @@ PHP;
         $this->assertStringContainsString(str_repeat(' ', 8) . '|', $code);
         $this->assertStringNotContainsString(str_repeat(' ', 12) . '|', $code);
     }
+
+    public function testSingleLineComment()
+    {
+        $file = __DIR__ . '/../fixtures/parse/arrayfile/single-line-comments.php';
+        $arrayFile = ArrayFile::open($file);
+        $this->assertEquals(str_replace("\r", '', file_get_contents($file)), $arrayFile->render());
+    }
 }
