@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Parse\PHP;
 
 use PhpParser\Error;
+use PhpParser\Lexer;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Arg;
@@ -26,6 +27,11 @@ class ArrayFile implements DataFileInterface
     protected $ast = null;
 
     /**
+     * @var Lexer|null Lexer for use by `PhpParser`
+     */
+    protected $lexer = null;
+
+    /**
      * @var string|null Path to the file
      */
     protected $filePath = null;
@@ -43,7 +49,7 @@ class ArrayFile implements DataFileInterface
     /**
      * ArrayFile constructor.
      */
-    public function __construct(array $ast, string $filePath = null, PrettyPrinterAbstract $printer = null)
+    public function __construct(array $ast, Lexer $lexer, string $filePath = null, PrettyPrinterAbstract $printer = null)
     {
         $this->astReturnIndex = $this->getAstReturnIndex($ast);
 
@@ -52,6 +58,7 @@ class ArrayFile implements DataFileInterface
         }
 
         $this->ast = $ast;
+        $this->lexer = $lexer;
         $this->filePath = $filePath;
         $this->printer = $printer ?? new ArrayPrinter();
     }
@@ -70,7 +77,15 @@ class ArrayFile implements DataFileInterface
             throw new \InvalidArgumentException('file not found');
         }
 
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer = new Lexer\Emulative([
+            'usedAttributes' => [
+                'comments',
+                'startTokenPos',
+                'startLine',
+                'endTokenPos',
+                'endLine'
+            ]
+        ]));
 
         try {
             $ast = $parser->parse(
@@ -82,7 +97,7 @@ class ArrayFile implements DataFileInterface
             throw new SystemException($e);
         }
 
-        return new static($ast, $filePath);
+        return new static($ast, $lexer, $filePath);
     }
 
     /**
@@ -413,7 +428,7 @@ class ArrayFile implements DataFileInterface
      */
     public function render(): string
     {
-        return $this->printer->prettyPrintFile($this->ast) . "\n";
+        return $this->printer->render($this->ast, $this->lexer) . "\n";
     }
 
     /**
