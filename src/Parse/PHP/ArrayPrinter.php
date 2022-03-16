@@ -258,7 +258,11 @@ class ArrayPrinter extends Standard
         $content = [];
 
         while (++$pos < $end) {
-            if (!isset($tokens[$pos]) || !is_array($tokens[$pos]) || $tokens[$pos][0] === T_WHITESPACE) {
+            if (!isset($tokens[$pos]) || !is_array($tokens[$pos])) {
+                break;
+            }
+
+            if ($tokens[$pos][0] === T_WHITESPACE) {
                 continue;
             }
 
@@ -271,7 +275,7 @@ class ArrayPrinter extends Standard
             if ($type === T_COMMENT || $type === T_DOC_COMMENT) {
                 $content[] = $string;
             } elseif ($content) {
-                return $content;
+                break;
             }
         }
 
