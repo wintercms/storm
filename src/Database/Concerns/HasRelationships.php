@@ -794,7 +794,8 @@ trait HasRelationships
     {
         if (!in_array($type, static::$relationTypes)) {
             throw new InvalidArgumentException(
-                sprintf('Cannot add the "%s" relation to %s, %s is not a valid relationship type.',
+                sprintf(
+                    'Cannot add the "%s" relation to %s, %s is not a valid relationship type.',
                     $name,
                     get_class($this),
                     $type
@@ -804,7 +805,8 @@ trait HasRelationships
 
         if ($this->hasRelation($name) || isset($this->{$name})) {
             throw new InvalidArgumentException(
-                sprintf('Cannot add the "%s" relation to %s, it conflicts with an existing relation, attribute, or property.',
+                sprintf(
+                    'Cannot add the "%s" relation to %s, it conflicts with an existing relation, attribute, or property.',
                     $name,
                     get_class($this),
                     $name
