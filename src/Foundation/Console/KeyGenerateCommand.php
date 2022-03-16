@@ -2,7 +2,6 @@
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\KeyGenerateCommand as KeyGenerateCommandBase;
-
 use Winter\Storm\Parse\EnvFile;
 
 class KeyGenerateCommand extends KeyGenerateCommandBase
