@@ -24,32 +24,32 @@ class ArrayFile implements DataFileInterface
     /**
      * @var Stmt[]|null Abstract syntax tree produced by `PhpParser`
      */
-    protected $ast = null;
+    protected ?array $ast = null;
 
     /**
-     * @var Lexer|null Lexer for use by `PhpParser`
+     * Lexer for use by `PhpParser`
      */
-    protected $lexer = null;
+    protected ?Lexer $lexer = null;
 
     /**
-     * @var string|null Path to the file
+     * Path to the file
      */
-    protected $filePath = null;
+    protected ?string $filePath = null;
 
     /**
-     * @var PrettyPrinterAbstract|ArrayPrinter|null Printer used to define output syntax
+     * Printer used to define output syntax
      */
-    protected $printer = null;
+    protected PrettyPrinterAbstract|ArrayPrinter|null $printer = null;
 
     /**
-     * @var int|null Index of ast containing return stmt
+     * Index of ast containing return stmt
      */
-    protected $astReturnIndex = null;
+    protected ?int $astReturnIndex = null;
 
     /**
      * ArrayFile constructor.
      */
-    public function __construct(array $ast, Lexer $lexer, string $filePath = null, PrettyPrinterAbstract $printer = null)
+    final public function __construct(array $ast, Lexer $lexer, string $filePath = null, PrettyPrinterAbstract $printer = null)
     {
         $this->astReturnIndex = $this->getAstReturnIndex($ast);
 
@@ -69,7 +69,7 @@ class ArrayFile implements DataFileInterface
      * @throws \InvalidArgumentException if the provided path doesn't exist and $throwIfMissing is true
      * @throws SystemException if the provided path is unable to be parsed
      */
-    public static function open(string $filePath, bool $throwIfMissing = false): ?ArrayFile
+    public static function open(string $filePath, bool $throwIfMissing = false): static
     {
         $exists = file_exists($filePath);
 
@@ -77,7 +77,7 @@ class ArrayFile implements DataFileInterface
             throw new \InvalidArgumentException('file not found');
         }
 
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer = new Lexer\Emulative([
+        $lexer = new Lexer\Emulative([
             'usedAttributes' => [
                 'comments',
                 'startTokenPos',
@@ -85,7 +85,8 @@ class ArrayFile implements DataFileInterface
                 'endTokenPos',
                 'endLine'
             ]
-        ]));
+        ]);
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
 
         try {
             $ast = $parser->parse(
@@ -111,11 +112,8 @@ class ArrayFile implements DataFileInterface
      *     'property.key2.value' => 'example'
      * ]);
      * ```
-     *
-     * @param string|array $key
-     * @param mixed|null $value
      */
-    public function set($key, $value = null): ArrayFile
+    public function set(string|array $key, $value = null): static
     {
         if (is_array($key)) {
             foreach ($key as $name => $value) {
@@ -166,10 +164,6 @@ class ArrayFile implements DataFileInterface
 
     /**
      * Creates either a simple array item or a recursive array of items
-     *
-     * @param string $key
-     * @param string $valueType
-     * @param mixed $value
      */
     protected function makeArrayItem(string $key, string $valueType, $value): ArrayItem
     {
@@ -184,8 +178,6 @@ class ArrayFile implements DataFileInterface
     /**
      * Generate an AST node, using `PhpParser` classes, for a value
      *
-     * @param string $type
-     * @param mixed $value
      * @throws \RuntimeException If $type is not one of 'string', 'boolean', 'integer', 'function', 'const', 'null', or 'array'
      * @return ConstFetch|LNumber|String_|Array_|FuncCall
      */

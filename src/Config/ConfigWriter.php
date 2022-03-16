@@ -28,7 +28,7 @@ class ConfigWriter
 
     public function toContent(string $contents, $newValues): string
     {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer = new Emulative([
+        $lexer = new Emulative([
             'usedAttributes' => [
                 'comments',
                 'startTokenPos',
@@ -36,7 +36,8 @@ class ConfigWriter
                 'endTokenPos',
                 'endLine'
             ]
-        ]));
+        ]);
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
 
         try {
             $ast = $parser->parse($contents);

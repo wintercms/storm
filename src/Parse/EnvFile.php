@@ -9,24 +9,24 @@ use Winter\Storm\Parse\Contracts\DataFileInterface;
 class EnvFile implements DataFileInterface
 {
     /**
-     * @var array Lines of env data
+     * Lines of env data
      */
-    protected $env = [];
+    protected array $env = [];
 
     /**
-     * @var array Map of variable names to line indexes
+     * Map of variable names to line indexes
      */
-    protected $map = [];
+    protected array $map = [];
 
     /**
-     * @var string|null Filepath currently being worked on
+     * Filepath currently being worked on
      */
-    protected $filePath = null;
+    protected ?string $filePath = null;
 
     /**
      * EnvFile constructor
      */
-    public function __construct(string $filePath)
+    final public function __construct(string $filePath)
     {
         $this->filePath = $filePath;
 
@@ -36,7 +36,7 @@ class EnvFile implements DataFileInterface
     /**
      * Return a new instance of `EnvFile` ready for modification of the file.
      */
-    public static function open(?string $filePath = null): ?EnvFile
+    public static function open(?string $filePath = null): static
     {
         if (!$filePath) {
             $filePath = base_path('.env');
@@ -56,10 +56,8 @@ class EnvFile implements DataFileInterface
      *     'DIF_PROPERTY' => 'example'
      * ]);
      * ```
-     * @param array|string $key
-     * @param mixed|null $value
      */
-    public function set($key, $value = null): EnvFile
+    public function set(array|string $key, $value = null): static
     {
         if (is_array($key)) {
             foreach ($key as $item => $value) {

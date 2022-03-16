@@ -1,8 +1,6 @@
 <?php namespace Winter\Storm\Foundation\Console;
 
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\KeyGenerateCommand as KeyGenerateCommandBase;
-
 use Winter\Storm\Parse\EnvFile;
 
 class KeyGenerateCommand extends KeyGenerateCommandBase
@@ -15,8 +13,6 @@ class KeyGenerateCommand extends KeyGenerateCommandBase
      */
     protected function writeNewEnvironmentFileWith($key)
     {
-        $currentKey = $this->laravel['config']['app.key'];
-
         $env = EnvFile::open($this->laravel->environmentFilePath());
         $env->set('APP_KEY', $key);
         $env->write();
