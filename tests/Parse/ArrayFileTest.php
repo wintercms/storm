@@ -825,6 +825,18 @@ PHP;
     {
         $file = __DIR__ . '/../fixtures/parse/arrayfile/single-line-comments.php';
         $arrayFile = ArrayFile::open($file);
+
+        $this->assertEquals(
+            str_replace("\r", '', file_get_contents($file)),
+            str_replace("\r", '', $arrayFile->render())
+        );
+    }
+
+    public function testSingleLineCommentSubItem()
+    {
+        $file = __DIR__ . '/../fixtures/parse/arrayfile/single-line-comments-subitem.php';
+        $arrayFile = ArrayFile::open($file);
+
         $this->assertEquals(
             str_replace("\r", '', file_get_contents($file)),
             str_replace("\r", '', $arrayFile->render())
