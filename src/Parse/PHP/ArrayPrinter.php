@@ -258,11 +258,11 @@ class ArrayPrinter extends Standard
         $content = [];
 
         while (++$pos < $end) {
-            if (!isset($tokens[$pos]) || !is_array($tokens[$pos])) {
+            if (!isset($tokens[$pos]) || (!is_array($tokens[$pos]) && $tokens[$pos] !== ',')) {
                 break;
             }
 
-            if ($tokens[$pos][0] === T_WHITESPACE) {
+            if ($tokens[$pos][0] === T_WHITESPACE || $tokens[$pos] === ',') {
                 continue;
             }
 
