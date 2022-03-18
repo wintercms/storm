@@ -414,8 +414,7 @@ class Resizer
         int $newHeight,
         int $srcWidth = null,
         int $srcHeight = null
-    ): static
-    {
+    ): static {
         $image = $this->image;
 
         if ($srcWidth === null) {
