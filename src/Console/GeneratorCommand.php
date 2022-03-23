@@ -288,6 +288,14 @@ abstract class GeneratorCommand extends Command
     }
 
     /**
+     * Get the base path to output generated stubs to
+     */
+    protected function getDestinationPath(): string
+    {
+        return base_path();
+    }
+
+    /**
      * Get the base path to source stub files from
      */
     protected function getSourcePath(): string
@@ -296,14 +304,6 @@ abstract class GeneratorCommand extends Command
         $class = new ReflectionClass($className);
 
         return dirname($class->getFileName());
-    }
-
-    /**
-     * Get the base path to output generated stubs to
-     */
-    protected function getDestinationPath(): string
-    {
-        return base_path();
     }
 
     /**
