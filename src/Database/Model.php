@@ -143,6 +143,13 @@ class Model extends EloquentModel
     {
         $class = get_called_class();
 
+        // If the $dispatcher hasn't been set yet don't bother trying
+        // to register the nicer model events yet since it will silently fail
+        if (!isset(static::$dispatcher)) {
+            return;
+        }
+
+        // Events have already been booted, continue
         if (isset(static::$eventsBooted[$class])) {
             return;
         }
