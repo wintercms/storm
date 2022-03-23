@@ -331,7 +331,8 @@ class_alias(\Winter\Storm\Router\UrlGenerator::class, \October\Rain\Router\UrlGe
 /**
  * Alias October\Rain\Scaffold
  */
-class_alias(\Winter\Storm\Scaffold\GeneratorCommand::class, \October\Rain\Scaffold\GeneratorCommand::class);
+class_alias(\Winter\Storm\Console\GeneratorCommand::class, \October\Rain\Scaffold\GeneratorCommand::class);
+class_alias(\Winter\Storm\Console\GeneratorCommand::class, \Winter\Storm\Scaffold\GeneratorCommand::class);
 
 /**
  * Alias October\Rain\Support

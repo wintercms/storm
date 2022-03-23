@@ -1,9 +1,8 @@
-<?php namespace Winter\Storm\Scaffold;
+<?php namespace Winter\Storm\Console;
 
 use Twig;
 use Exception;
 use ReflectionClass;
-use Winter\Storm\Console\Command;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Filesystem\Filesystem;
 
@@ -147,17 +146,13 @@ abstract class GeneratorCommand extends Command
 
     /**
      * Prepare variables for stubs.
-     *
-     * @return array
      */
-    abstract protected function prepareVars();
+    abstract protected function prepareVars(): array;
 
     /**
      * Make all stubs.
-     *
-     * @return void
      */
-    public function makeStubs()
+    public function makeStubs(): void
     {
         $stubs = array_keys($this->stubs);
 
@@ -228,11 +223,8 @@ abstract class GeneratorCommand extends Command
     /**
      * Converts all variables to available modifier and case formats.
      * Syntax is CASE_MODIFIER_KEY, eg: lower_plural_xxx
-     *
-     * @param array $vars The collection of original variables
-     * @return array A collection of variables with modifiers added
      */
-    protected function processVars($vars)
+    protected function processVars(array $vars): array
     {
         $cases = ['upper', 'lower', 'snake', 'studly', 'camel', 'title'];
         $modifiers = ['plural', 'singular', 'title'];
