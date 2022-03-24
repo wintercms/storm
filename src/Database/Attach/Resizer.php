@@ -689,9 +689,7 @@ class Resizer
     }
 
     /**
-     * Return the filename extension for the provided filename
-     * @param string $path The filename path
-     * @return string
+     * Get the extension for the provided filename
      */
     protected function getExtension(string $path): string
     {

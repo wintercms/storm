@@ -75,7 +75,6 @@ class ResizerTest extends TestCase
     /**
      * Given a Resizer with any image
      * Test to see if the getExtension() method properly returns the filename extension for the provided filename
-     * @throws Exception
      */
     public function testGetExtension()
     {
