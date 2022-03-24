@@ -693,7 +693,7 @@ class Resizer
      * @param string $path The filename path
      * @return string
      */
-    protected function getExtension($path)
+    protected function getExtension(string $path): string
     {
         return $this->getOption('extension') ?: (pathinfo($path, PATHINFO_EXTENSION) ?: $this->extension);
     }
