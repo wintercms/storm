@@ -1,7 +1,7 @@
-<?php namespace October\Rain\Database\Traits;
+<?php namespace Winter\Storm\Database\Traits;
 
 use Exception;
-use October\Rain\Database\SortableScope;
+use Winter\Storm\Database\SortableScope;
 
 /**
  * SortableRelation model trait
@@ -10,7 +10,7 @@ use October\Rain\Database\SortableScope;
  *
  * In the model class definition add:
  *
- *   use \October\Rain\Database\Traits\SortableRelation;
+ *   use \Winter\Storm\Database\Traits\SortableRelation;
  *
  *   public $sortableRelations = ['relation_name' => 'sort_order_column'];
  *
