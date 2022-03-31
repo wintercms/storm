@@ -98,7 +98,7 @@ trait SortableRelation
 
     public function updateRelationOrder($relation, $id, $column, $order)
     {
-        if (method_exists($relation , 'updateExistingPivot')) {
+        if (method_exists($relation, 'updateExistingPivot')) {
             $relation->updateExistingPivot($id, [ $column => (int)$order ]);
         } else {
             $record = $relation->find($id);
