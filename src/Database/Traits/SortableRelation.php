@@ -37,27 +37,30 @@ trait SortableRelation
         $this->bindEvent('model.relation.afterAttach', function ($relationName, $attached, $data) {
             if (array_key_exists($relationName, $this->getSortableRelations())) {
                 $column = $this->getRelationSortOrderColumn($relationName);
-
-                $order = $this->$relationName()->max($column);
+                $relation = $this->$relationName();
+                $order = $relation->max($column);
 
                 foreach ($attached as $id) {
                     $order++;
-                    $this->$relationName()->updateExistingPivot($id, [$column => $order]);
+                    $this->updateRelationOrder($relation, $id, $column, $order);
                 }
             }
         });
 
         // Make sure all defined sortable relations load the sort_order column as pivot data.
         foreach ($this->getSortableRelations() as $relationName => $column) {
-            $definition = $this->getRelationDefinition($relationName);
-            $pivot = array_wrap(array_get($definition, 'pivot', []));
+            $relation = $this->$relationName();
+            if (method_exists($relation, 'updateExistingPivot')) {
+                $definition = $this->getRelationDefinition($relationName);
+                $pivot = array_wrap(array_get($definition, 'pivot', []));
 
-            if (!in_array($column, $pivot)) {
-                $pivot[] = $column;
-                $definition['pivot'] = $pivot;
+                if (!in_array($column, $pivot)) {
+                    $pivot[] = $column;
+                    $definition['pivot'] = $pivot;
 
-                $relationType = $this->getRelationType($relationName);
-                $this->$relationType[$relationName] = $definition;
+                    $relationType = $this->getRelationType($relationName);
+                    $this->$relationType[$relationName] = $definition;
+                }
             }
         }
     }
@@ -84,12 +87,23 @@ trait SortableRelation
             throw new Exception('Invalid setRelationOrder call - count of itemIds do not match count of itemOrders');
         }
 
-        foreach ($itemIds as $index => $id) {
-            $order = $itemOrders[$index];
+        $column = $this->getRelationSortOrderColumn($relationName);
 
-            $this->$relationName()->updateExistingPivot($id, [
-                $this->getRelationSortOrderColumn($relationName) => (int)$order
-            ]);
+        foreach ($itemIds as $index => $id) {
+            $relation = $this->$relationName();
+            $order = $itemOrders[$index];
+            $this->updateRelationOrder($relation, $id, $column, $order);
+        }
+    }
+
+    public function updateRelationOrder($relation, $id, $column, $order)
+    {
+        if (method_exists($relation , 'updateExistingPivot')) {
+            $relation->updateExistingPivot($id, [ $column => (int)$order ]);
+        } else {
+            $record = $relation->find($id);
+            $record->sort_order = $order;
+            $record->save();
         }
     }
 
