@@ -61,8 +61,8 @@ trait SortableRelation
                 }
             } else {
                 // For NON pivot-based relations
-                $relatedModel = $relation->getRelated();
-                $relatedModel::extend(function ($model) use ($relationName, $column) {
+                $relatedClass = get_class($relation->getRelated());
+                $relatedClass::extend(function ($model) use ($relationName, $column) {
                     $model->bindEvent('model.beforeCreate', function () use ($model, $relationName, $column) {
                         // initialize sort_order as max + 1
                         $relation = $this->$relationName();
