@@ -1,7 +1,6 @@
 <?php namespace Winter\Storm\Database\Traits;
 
 use Exception;
-use Winter\Storm\Database\SortableScope;
 
 /**
  * SortableRelation model trait
@@ -30,19 +29,16 @@ trait SortableRelation
     /**
      * Boot the SortableRelation trait for this model.
      * Make sure to add the sort_order value if a related model has been attached.
-     * @return void
      */
-    public function initializeSortableRelation()
+    public function initializeSortableRelation() : void
     {
         $this->bindEvent('model.relation.afterAttach', function ($relationName, $attached, $data) {
+            // won't work for HasMany relations as this event is only fired for pivot based relations
             if (array_key_exists($relationName, $this->getSortableRelations())) {
                 $column = $this->getRelationSortOrderColumn($relationName);
-                $relation = $this->$relationName();
-                $order = $relation->max($column);
 
                 foreach ($attached as $id) {
-                    $order++;
-                    $this->updateRelationOrder($relation, $id, $column, $order);
+                    $this->updateRelationOrder($relationName, $id, $column);
                 }
             }
         });
@@ -50,6 +46,7 @@ trait SortableRelation
         // Make sure all defined sortable relations load the sort_order column as pivot data.
         foreach ($this->getSortableRelations() as $relationName => $column) {
             $relation = $this->$relationName();
+            // only for pivot based relations
             if (method_exists($relation, 'updateExistingPivot')) {
                 $definition = $this->getRelationDefinition($relationName);
                 $pivot = array_wrap(array_get($definition, 'pivot', []));
@@ -66,20 +63,16 @@ trait SortableRelation
     }
 
     /**
-     * Sets the sort order of records to the specified orders. If the orders is
+     * Set the sort order of records to the specified orders. If the orders is
      * undefined, the record identifier is used.
-     * @param  string $relation
-     * @param  mixed  $itemIds
-     * @param  array  $itemOrders
-     * @return void
      */
-    public function setRelationOrder($relationName, $itemIds, $itemOrders = null)
+    public function setRelationOrder(string $relationName, string|int|array $itemIds, array $itemOrders = []) : void
     {
         if (!is_array($itemIds)) {
             $itemIds = [$itemIds];
         }
 
-        if ($itemOrders === null) {
+        if (empty($itemOrders)) {
             $itemOrders = $itemIds;
         }
 
@@ -90,38 +83,42 @@ trait SortableRelation
         $column = $this->getRelationSortOrderColumn($relationName);
 
         foreach ($itemIds as $index => $id) {
-            $relation = $this->$relationName();
-            $order = $itemOrders[$index];
-            $this->updateRelationOrder($relation, $id, $column, $order);
+            $order = (int)$itemOrders[$index];
+            $this->updateRelationOrder($relationName, $id, $column, $order);
         }
     }
 
-    public function updateRelationOrder($relation, $id, $column, $order)
+    /**
+     * Update relation record sort_order.
+     */
+    protected function updateRelationOrder(string $relationName, int $id, string $column, int $order = 0) : void
     {
+        $relation = $this->$relationName();
+
+        if (!$order) {
+            $order = $relation->max($column) + 1;
+        }
         if (method_exists($relation, 'updateExistingPivot')) {
             $relation->updateExistingPivot($id, [ $column => (int)$order ]);
         } else {
             $record = $relation->find($id);
-            $record->sort_order = $order;
+            $record->sort_order = (int)$order;
             $record->save();
         }
     }
 
     /**
      * Get the name of the "sort_order" column.
-     * @param string $relation
-     * @return string
      */
-    public function getRelationSortOrderColumn($relation)
+    public function getRelationSortOrderColumn(string $relationName) : string
     {
-        return $this->getSortableRelations()[$relation] ?? 'sort_order';
+        return $this->getSortableRelations()[$relationName] ?? 'sort_order';
     }
 
     /**
-     * Returns all configured sortable relations.
-     * @return array
+     * Return all configured sortable relations.
      */
-    protected function getSortableRelations()
+    protected function getSortableRelations() : array
     {
         if (property_exists($this, 'sortableRelations')) {
             return $this->sortableRelations;
