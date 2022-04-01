@@ -32,9 +32,11 @@ trait SortableRelation
      */
     public function initializeSortableRelation() : void
     {
+        $sortableRelations = $this->getSortableRelations();
+
         $this->bindEvent('model.relation.afterAttach', function ($relationName, $attached, $data) {
-            // won't work for HasMany relations as this event is only fired for pivot based relations
-            if (array_key_exists($relationName, $this->getSortableRelations())) {
+            // Only for pivot-based relations
+            if (array_key_exists($relationName, $sortableRelations)) {
                 $column = $this->getRelationSortOrderColumn($relationName);
 
                 foreach ($attached as $id) {
@@ -43,11 +45,10 @@ trait SortableRelation
             }
         });
 
-        // Make sure all defined sortable relations load the sort_order column as pivot data.
-        foreach ($this->getSortableRelations() as $relationName => $column) {
+        foreach ($sortableRelations as $relationName => $column) {
             $relation = $this->$relationName();
-            // only for pivot based relations
             if (method_exists($relation, 'updateExistingPivot')) {
+                // Make sure all pivot-based defined sortable relations load the sort_order column as pivot data.
                 $definition = $this->getRelationDefinition($relationName);
                 $pivot = array_wrap(array_get($definition, 'pivot', []));
 
@@ -58,6 +59,17 @@ trait SortableRelation
                     $relationType = $this->getRelationType($relationName);
                     $this->$relationType[$relationName] = $definition;
                 }
+            } else {
+                // For NON pivot-based relations
+                $model = $relation->getModel();
+                $model::extend(function ($model) use ($relationName, $column) {
+                    $model->bindEvent('model.beforeSave', function () use ($model, $relationName, $column) {
+                        // initialize sort_order as max + 1
+                        $relation = $this->$relationName();
+                        $order = $relation->max($column) + 1;
+                        $model->$column = $order;
+                    });
+                });
             }
         }
     }
