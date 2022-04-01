@@ -3,13 +3,13 @@
 use Exception;
 
 /**
- * SortableRelation model trait
+ * HasSortableRelations trait
  *
  * Usage:
  *
  * In the model class definition add:
  *
- *   use \Winter\Storm\Database\Traits\SortableRelation;
+ *   use \Winter\Storm\Database\Traits\HasSortableRelations;
  *
  *   public $sortableRelations = ['relation_name' => 'sort_order_column'];
  *
@@ -18,7 +18,7 @@ use Exception;
  *   $model->setSortableRelationOrder($relationName, $recordIds, $recordOrders);
  *
  */
-trait SortableRelation
+trait HasSortableRelations
 {
     /**
      * @var array The array of all sortable relations with their sort_order pivot column.
@@ -27,10 +27,10 @@ trait SortableRelation
      */
 
     /**
-     * Boot the SortableRelation trait for this model.
-     * Make sure to add the sort_order value if a related model has been attached.
+     * Initialize the HasSortableRelations trait for this model.
+     * Sets the sort_order value if a related model has been attached.
      */
-    public function initializeSortableRelation() : void
+    public function initializeHasSortableRelations() : void
     {
         $sortableRelations = $this->getSortableRelations();
 
