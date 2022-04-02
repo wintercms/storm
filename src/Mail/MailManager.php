@@ -10,6 +10,22 @@ use Illuminate\Mail\MailManager as BaseMailManager;
  */
 class MailManager extends BaseMailManager
 {
+    /*
+     * Get a mailer instance by name.
+     *
+     * @param  string|null  $name
+     * @return \Illuminate\Contracts\Mail\Mailer
+     */
+    public function mailer($name = null)
+    {
+        /*
+         * Extensibility
+         */
+        $this->app['events']->fire('mailer.beforeRegister', [$this]);
+
+        return parent::mailer($name);
+    }
+
     /**
      * Resolve the given mailer.
      *
@@ -25,11 +41,6 @@ class MailManager extends BaseMailManager
         if (is_null($config)) {
             throw new InvalidArgumentException("Mailer [{$name}] is not defined.");
         }
-
-        /*
-         * Extensibility
-         */
-        $this->app['events']->fire('mailer.beforeRegister', [$this]);
 
         // Once we have created the mailer instance we will set a container instance
         // on the mailer. This allows us to resolve mailer classes via containers
