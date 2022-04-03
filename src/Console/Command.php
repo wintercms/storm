@@ -14,6 +14,23 @@ use Symfony\Component\Console\Completion\CompletionSuggestions;
 abstract class Command extends BaseCommand
 {
     /**
+     * @var array List of commands that this command replaces (aliases)
+     */
+    protected $replaces = [];
+
+    /**
+     * Create a new command instance.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        if (!empty($this->replaces)) {
+            $this->setAliases($this->replaces);
+        }
+    }
+
+    /**
      * Write a string in an alert box.
      *
      * @param  string  $string
