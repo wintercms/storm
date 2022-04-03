@@ -1,8 +1,9 @@
-<?php namespace Winter\Storm\Console;
+<?php namespace Winter\Storm\Scaffold;
 
 use Twig;
 use Exception;
 use ReflectionClass;
+use Winter\Storm\Console\Command;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Filesystem\Filesystem;
 

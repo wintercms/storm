@@ -1,6 +1,6 @@
 <?php
 
-use Winter\Storm\Console\GeneratorCommand;
+use Winter\Storm\Scaffold\GeneratorCommand;
 
 class ScaffoldBaseTestCommand extends GeneratorCommand
 {
