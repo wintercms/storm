@@ -8,7 +8,7 @@ class ScaffoldBaseTestCommand extends GeneratorCommand
     {
     }
 
-    protected function prepareVars()
+    protected function prepareVars(): array
     {
         return [];
     }
