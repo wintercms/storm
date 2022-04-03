@@ -162,7 +162,7 @@ abstract class GeneratorCommand extends Command
             foreach ($stubs as $stub) {
                 $destinationFile = $this->getDestinationForStub($stub);
                 if ($this->files->exists($destinationFile)) {
-                    throw new Exception("Cannot create the {$this->type}, $destinationFile already exists. Pass --force to overwrite existing files.");
+                    throw new Exception("Cannot create the {$this->type}:\r\n$destinationFile already exists.\r\nPass --force to overwrite existing files.");
                 }
             }
         }
@@ -177,7 +177,10 @@ abstract class GeneratorCommand extends Command
      */
     protected function getDestinationForStub(string $stubName): string
     {
-        return $this->getDestinationPath() . '/' . $this->stubs[$stubName];
+        return Twig::parse(
+            $this->getDestinationPath() . '/' . $this->stubs[$stubName],
+            $this->vars
+        );
     }
 
     /**
@@ -196,10 +199,9 @@ abstract class GeneratorCommand extends Command
         $destinationContent = $this->files->get($sourceFile);
 
         /*
-         * Parse each variable in to the destination content and path
+         * Parse each variable in to the destination content
          */
         $destinationContent = Twig::parse($destinationContent, $this->vars);
-        $destinationFile = Twig::parse($destinationFile, $this->vars);
 
         $this->makeDirectory($destinationFile);
 
