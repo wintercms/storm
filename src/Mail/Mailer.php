@@ -159,7 +159,7 @@ class Mailer extends MailerBase
             if ($symfonySentMessage) {
                 $sentMessage = new SentMessage($symfonySentMessage);
 
-                $this->dispatchSentEvent($sentMessage, $data);
+                $this->dispatchSentEvent($message, $data);
 
                 /**
                  * @event mailer.send
