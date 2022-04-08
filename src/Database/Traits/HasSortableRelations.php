@@ -34,7 +34,7 @@ trait HasSortableRelations
     {
         $sortableRelations = $this->getSortableRelations();
 
-        $this->bindEvent('model.relation.afterAttach', function ($relationName, $attached, $data) {
+        $this->bindEvent('model.relation.afterAttach', function ($relationName, $attached, $data) use ($sortableRelations) {
             // Only for pivot-based relations
             if (array_key_exists($relationName, $sortableRelations)) {
                 $column = $this->getRelationSortOrderColumn($relationName);
