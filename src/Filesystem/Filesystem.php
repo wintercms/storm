@@ -213,7 +213,7 @@ class Filesystem extends FilesystemBase
             return $default === false ? $path : $default;
         }
 
-        $_path = substr($path, 1);
+        $_path = substr($path ?? '', 1);
         return $this->pathSymbols[$firstChar] . $_path;
     }
 
@@ -224,7 +224,7 @@ class Filesystem extends FilesystemBase
      */
     public function isPathSymbol($path)
     {
-        $firstChar = substr($path, 0, 1);
+        $firstChar = substr($path ?? '', 0, 1);
         if (isset($this->pathSymbols[$firstChar])) {
             return $firstChar;
         }
