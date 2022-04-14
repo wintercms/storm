@@ -134,7 +134,6 @@ trait HasRelationships
         'hasManyThrough'
     ];
 
-
     //
     // Relations
     //
@@ -790,5 +789,167 @@ trait HasRelationships
     protected function setRelationValue($relationName, $value)
     {
         $this->$relationName()->setSimpleValue($value);
+    }
+
+     /**
+     * Dynamically add the provided relationship configuration to the local properties
+     *
+     * @throws InvalidArgumentException if the $type is invalid or if the $name is already in use
+     */
+    protected function addRelation(string $type, string $name, array $config): void
+    {
+        if (!in_array($type, static::$relationTypes)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Cannot add the "%s" relation to %s, %s is not a valid relationship type.',
+                    $name,
+                    get_class($this),
+                    $type
+                )
+            );
+        }
+
+        if ($this->hasRelation($name) || isset($this->{$name})) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Cannot add the "%s" relation to %s, it conflicts with an existing relation, attribute, or property.',
+                    $name,
+                    get_class($this),
+                    $name
+                )
+            );
+        }
+
+        $this->{$type} = array_merge($this->{$type}, [$name => $config]);
+    }
+
+    /**
+     * Dynamically add a HasOne relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addHasOneRelation(string $name, array $config): void
+    {
+        $this->addRelation('hasOne', $name, $config);
+    }
+
+    /**
+     * Dynamically add a HasMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addHasManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('hasMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a BelongsTo relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addBelongsToRelation(string $name, array $config): void
+    {
+        $this->addRelation('belongsTo', $name, $config);
+    }
+
+    /**
+     * Dynamically add a BelongsToMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addBelongsToManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('belongsToMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphTo relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphToRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphTo', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphOne relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphOneRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphOne', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphToMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphToManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphToMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphedByMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphedByManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphedByMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add an AttachOne relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addAttachOneRelation(string $name, array $config): void
+    {
+        $this->addRelation('attachOne', $name, $config);
+    }
+
+    /**
+     * Dynamically add an AttachMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addAttachManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('attachMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a(n) HasOneThrough relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addHasOneThroughRelation(string $name, array $config): void
+    {
+        $this->addRelation('HasOneThrough', $name, $config);
+    }
+
+    /**
+     * Dynamically add a(n) HasManyThrough relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addHasManyThroughRelation(string $name, array $config): void
+    {
+        $this->addRelation('HasManyThrough', $name, $config);
     }
 }

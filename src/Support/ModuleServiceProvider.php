@@ -6,6 +6,11 @@ use Illuminate\Support\ServiceProvider as ServiceProviderBase;
 abstract class ModuleServiceProvider extends ServiceProviderBase
 {
     /**
+     * @var \Winter\Storm\Foundation\Application The application instance.
+     */
+    protected $app;
+    
+    /**
      * Bootstrap the application events.
      * @return void
      */

@@ -80,7 +80,9 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'CastMake' => CastMakeCommand::class,
         // 'ChannelMake' => ChannelMakeCommand::class,
         // 'ComponentMake' => ComponentMakeCommand::class,
-        // 'ConsoleMake' => ConsoleMakeCommand::class,
+
+
+
         // 'ControllerMake' => ControllerMakeCommand::class,
         // 'EventGenerate' => EventGenerateCommand::class,
         // 'EventMake' => EventMakeCommand::class,
@@ -90,7 +92,20 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'ListenerMake' => ListenerMakeCommand::class,
         // 'MailMake' => MailMakeCommand::class,
         // 'MiddlewareMake' => MiddlewareMakeCommand::class,
+
         // 'ModelMake' => ModelMakeCommand::class,
+
+        // MigrationServiceProvider
+        // 'Migrate' => MigrateCommand::class,
+        // 'MigrateFresh' => FreshCommand::class,
+        // 'MigrateInstall' => InstallCommand::class,
+        // 'MigrateRefresh' => RefreshCommand::class,
+        // 'MigrateReset' => ResetCommand::class,
+        // 'MigrateRollback' => RollbackCommand::class,
+        // 'MigrateStatus' => StatusCommand::class,
+        // 'MigrateMake' => MigrateMakeCommand::class,
+
+
         // 'NotificationMake' => NotificationMakeCommand::class,
         // 'NotificationTable' => NotificationTableCommand::class,
         // 'ObserverMake' => ObserverMakeCommand::class,

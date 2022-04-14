@@ -2,7 +2,6 @@
 
 use Winter\Storm\Support\Collection;
 
-require_once("polyfills.php");
 require_once("helpers-array.php");
 require_once("helpers-paths.php");
 require_once("helpers-str.php");
