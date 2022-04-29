@@ -2,11 +2,10 @@
 
 use Winter\Storm\Support\Facades\Config;
 use Winter\Storm\Support\Facades\Event;
-use Illuminate\Mail\Mailer as MailerBase;
 use Illuminate\Contracts\Mail\Mailable as MailableContract;
+use Illuminate\Mail\Mailer as MailerBase;
 use Illuminate\Mail\SentMessage;
 use Illuminate\Support\Collection;
-use Illuminate\Mail\SentMessage;
 
 /**
  * Mailer class for sending mail.

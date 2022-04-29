@@ -210,11 +210,13 @@ class QueryBuilderTest extends TestCase
                 'rollBack',
                 'transactionLevel',
                 'pretend',
-                'getDatabaseName'
+                'getDatabaseName',
+                'getConfig',
             ])
             ->getMock();
 
         $connection->method('getDatabaseName')->willReturn('database');
+        $connection->method('getConfig')->with('use_upsert_alias')->willReturn(false);
 
         return $connection;
     }
