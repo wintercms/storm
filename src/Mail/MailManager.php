@@ -42,6 +42,12 @@ class MailManager extends BaseMailManager
             throw new InvalidArgumentException("Mailer [{$name}] is not defined.");
         }
 
+        $transport = $config['transport'] ?? $this->app['config']['mail.driver'];
+
+        if ($transport === 'smtp' && !array_key_exists('local_domain', $config)) {
+            $config['local_domain'] = gethostbyaddr(gethostbyname(gethostname()));
+        }
+
         // Once we have created the mailer instance we will set a container instance
         // on the mailer. This allows us to resolve mailer classes via containers
         // for maximum testability on said classes instead of passing Closures.
