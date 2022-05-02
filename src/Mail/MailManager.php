@@ -45,6 +45,9 @@ class MailManager extends BaseMailManager
         $transport = $config['transport'] ?? $this->app['config']['mail.driver'];
 
         if ($transport === 'smtp' && !array_key_exists('local_domain', $config)) {
+            // if local_domain is not set in config, symfony smtp transport will use its
+            // default value ([127.0.0.1]) when sending HELO smtp command to remote smtp server.
+            // ref. symfony/mailer/Transport/Smtp/SmtpTransport.php
             $config['local_domain'] = gethostbyaddr(gethostbyname(gethostname()));
         }
 
