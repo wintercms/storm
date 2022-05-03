@@ -118,7 +118,7 @@ trait AttachOneOrMany
             $this->delete();
         }
 
-        if (!array_key_exists('is_public', $model->attributes)) {
+        if (!array_key_exists('is_public', $model->getAttributes())) {
             $model->setAttribute('is_public', $this->isPublic());
         }
 
@@ -162,8 +162,8 @@ trait AttachOneOrMany
      */
     public function add(Model $model, $sessionKey = null)
     {
-        if (!array_key_exists('is_public', $model->attributes)) {
-            $model->is_public = $this->isPublic();
+        if (!array_key_exists('is_public', $model->getAttributes())) {
+            $model->setAttribute('is_public', $this->isPublic());
         }
 
         if ($sessionKey === null) {

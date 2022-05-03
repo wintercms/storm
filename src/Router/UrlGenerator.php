@@ -82,7 +82,7 @@ class UrlGenerator extends UrlGeneratorBase
                 if (
                     !in_array($key, $urlSegments)
                     || !isset($value)
-                    || empty($value)
+                    || (is_array($value) && !count($value))
                 ) {
                     unset($url[$key]);
                     continue;
@@ -160,10 +160,13 @@ class UrlGenerator extends UrlGeneratorBase
                 $rQuery = str_replace(array('[', '%5B'), '{{{', $rQuery);
                 $rQuery = str_replace(array(']', '%5D'), '}}}', $rQuery);
 
-                parse_str($uQuery, $uQuery);
-                parse_str($rQuery, $rQuery);
+                $parsedUQuery = [];
+                $parsedRQuery = [];
 
-                $query = static::buildStr(array_merge($uQuery, $rQuery));
+                parse_str($uQuery, $parsedUQuery);
+                parse_str($rQuery, $parsedRQuery);
+
+                $query = static::buildStr(array_merge($parsedUQuery, $parsedRQuery));
                 $query = str_replace(array('{{{', '%7B%7B%7B'), '%5B', $query);
                 $query = str_replace(array('}}}', '%7D%7D%7D'), '%5D', $query);
 

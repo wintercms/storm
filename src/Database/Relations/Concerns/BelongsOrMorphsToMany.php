@@ -1,6 +1,5 @@
 <?php namespace Winter\Storm\Database\Relations\Concerns;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,8 +18,8 @@ trait BelongsOrMorphsToMany
     /**
      * Create a new belongs to many relationship instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  \Winter\Storm\Database\Builder  $query
+     * @param  \Winter\Storm\Database\Model  $parent
      * @param  string  $table
      * @param  string  $foreignPivotKey
      * @param  string  $relatedPivotKey
@@ -28,8 +27,8 @@ trait BelongsOrMorphsToMany
      * @return void
      */
     public function __construct(
-        Builder $query,
-        Model $parent,
+        \Winter\Storm\Database\Builder $query,
+        \Winter\Storm\Database\Model $parent,
         $table,
         $foreignPivotKey,
         $relatedPivotKey,
@@ -55,7 +54,7 @@ trait BelongsOrMorphsToMany
      * Get the select columns for the relation query.
      *
      * @param  array  $columns
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return array|string
      */
     protected function shouldSelect(array $columns = ['*'])
     {
@@ -167,7 +166,7 @@ trait BelongsOrMorphsToMany
     /**
      * Override detach() method of BelongToMany relation.
      * This is necessary in order to fire 'model.relation.beforeDetach', 'model.relation.afterDetach' events
-     * @param CollectionBase|Model|array|null $ids
+     * @param Collection|Model|array|null $ids
      * @param bool $touch
      * @return int|void
      */
@@ -308,7 +307,7 @@ trait BelongsOrMorphsToMany
             $this->parent->setRelation($this->relationName, $relationModel->newCollection());
 
             // Perform sync when the model is saved
-            $this->parent->bindEventOnce('model.afterSave', function () use ($value) {
+            $this->parent->bindEventOnce('model.afterSave', function () {
                 $this->detach();
             });
             return;

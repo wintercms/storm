@@ -1,11 +1,11 @@
 <?php namespace Winter\Storm\Database\Connections;
 
 use PDO;
+use Illuminate\Database\PDO\MySqlDriver;
 use Illuminate\Database\Schema\MySqlBuilder;
 use Illuminate\Database\Query\Processors\MySqlProcessor;
-use Doctrine\DBAL\Driver\PDOMySql\Driver as DoctrineDriver;
-use Winter\Storm\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
+use Winter\Storm\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
 
 class MySqlConnection extends Connection
 {
@@ -56,11 +56,11 @@ class MySqlConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Doctrine\DBAL\Driver\PDOMySql\Driver
+     * @return \Illuminate\Database\PDO\MySqlDriver
      */
     protected function getDoctrineDriver()
     {
-        return new DoctrineDriver;
+        return new MySqlDriver;
     }
 
     /**

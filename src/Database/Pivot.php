@@ -28,7 +28,7 @@ class Pivot extends Model
     /**
      * The attributes that aren't mass assignable.
      *
-     * @var array
+     * @var string[]|bool
      */
     protected $guarded = [];
 
@@ -48,7 +48,7 @@ class Pivot extends Model
      * @param  bool  $exists
      * @return static
      */
-    public static function fromAttributes(Model $parent, $attributes, $table, $exists = false)
+    public static function fromAttributes(ModelBase $parent, $attributes, $table, $exists = false)
     {
         $instance = new static;
 
@@ -57,7 +57,7 @@ class Pivot extends Model
         // from the developer's point of view. We can use the parents to get these.
         $instance->parent = $parent;
 
-        $instance->timestamps = $instance->hasTimestampAttributes($attributes);
+        $instance->timestamps = $instance->hasTimestampAttributes();
 
         // The pivot model is a "dynamic" model since we will set the tables dynamically
         // for the instance. This allows it work for any intermediate tables for the
@@ -81,11 +81,11 @@ class Pivot extends Model
      * @param  bool  $exists
      * @return static
      */
-    public static function fromRawAttributes(Model $parent, $attributes, $table, $exists = false)
+    public static function fromRawAttributes(ModelBase $parent, $attributes, $table, $exists = false)
     {
         $instance = static::fromAttributes($parent, [], $table, $exists);
 
-        $instance->timestamps = $instance->hasTimestampAttributes($attributes);
+        $instance->timestamps = $instance->hasTimestampAttributes();
 
         $instance->setRawAttributes($attributes, $exists);
 
@@ -108,7 +108,7 @@ class Pivot extends Model
     /**
      * Delete the pivot model record from the database.
      *
-     * @return int
+     * @return mixed
      */
     public function delete()
     {

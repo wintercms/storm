@@ -476,7 +476,7 @@ class Model extends EloquentModel implements ModelInterface
     /**
      * Checks if an attribute is jsonable or not.
      *
-     * @return array
+     * @return bool
      */
     public function isJsonable($key)
     {
@@ -529,7 +529,7 @@ class Model extends EloquentModel implements ModelInterface
     /**
      * Get a fresh timestamp for the model.
      *
-     * @return \Winter\Storm\Argon\Argon
+     * @return \Illuminate\Support\Carbon
      */
     public function freshTimestamp()
     {
@@ -604,10 +604,10 @@ class Model extends EloquentModel implements ModelInterface
     /**
      * Convert a DateTime to a storable string.
      *
-     * @param  \DateTime|int  $value
-     * @return string
+     * @param  \DateTime|int|null  $value
+     * @return string|null
      */
-    public function fromDateTime($value)
+    public function fromDateTime($value = null)
     {
         if (is_null($value)) {
             return $value;
@@ -669,7 +669,7 @@ class Model extends EloquentModel implements ModelInterface
 
     public function __set($name, $value)
     {
-        return $this->extendableSet($name, $value);
+        $this->extendableSet($name, $value);
     }
 
     public function __call($name, $params)

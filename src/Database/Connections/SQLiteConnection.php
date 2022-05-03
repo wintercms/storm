@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Database\Query\Processors\SQLiteProcessor;
-use Doctrine\DBAL\Driver\PDOSqlite\Driver as DoctrineDriver;
+use Illuminate\Database\PDO\SQLiteDriver;
 use Winter\Storm\Database\Query\Grammars\SQLiteGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
 
@@ -55,10 +55,10 @@ class SQLiteConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Doctrine\DBAL\Driver\PDOSqlite\Driver
+     * @return \Illuminate\Database\PDO\SQLiteDriver
      */
     protected function getDoctrineDriver()
     {
-        return new DoctrineDriver;
+        return new SQLiteDriver;
     }
 }

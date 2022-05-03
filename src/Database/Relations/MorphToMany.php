@@ -18,29 +18,6 @@ class MorphToMany extends BaseMorphToMany
     use Concerns\DefinedConstraints;
 
     /**
-     * The type of the polymorphic relation.
-     *
-     * @var string
-     */
-    protected $morphType;
-
-    /**
-     * The class name of the morph type constraint.
-     *
-     * @var string
-     */
-    protected $morphClass;
-
-    /**
-     * Indicates if we are connecting the inverse of the relation.
-     *
-     * This primarily affects the morphClass constraint.
-     *
-     * @var bool
-     */
-    protected $inverse;
-
-    /**
      * Create a new morph to many relationship instance.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query

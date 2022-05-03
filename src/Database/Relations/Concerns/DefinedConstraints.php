@@ -25,7 +25,7 @@ trait DefinedConstraints
     /**
      * Add relation based constraints.
      *
-     * @param Illuminate\Database\Eloquent\Relations\Relation $relation
+     * @param \Illuminate\Database\Eloquent\Relations\Relation $relation
      * @param array $args
      */
     public function addDefinedConstraintsToRelation($relation, $args = null)
@@ -76,7 +76,7 @@ trait DefinedConstraints
     /**
      * Add query based constraints.
      *
-     * @param Winter\Storm\Database\QueryBuilder $query
+     * @param \Winter\Storm\Database\QueryBuilder $query
      * @param array $args
      */
     public function addDefinedConstraintsToQuery($query, $args = null)
