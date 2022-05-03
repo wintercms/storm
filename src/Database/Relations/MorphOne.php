@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 
 class MorphOne extends MorphOneBase
 {
-    use MorphOneOrMany;
-    use DefinedConstraints;
+    use Concerns\MorphOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * Create a new has many relationship instance.

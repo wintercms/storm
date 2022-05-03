@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany as MorphManyBase;
 
 class MorphMany extends MorphManyBase
 {
-    use MorphOneOrMany;
-    use DefinedConstraints;
+    use Concerns\MorphOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * Create a new has many relationship instance.

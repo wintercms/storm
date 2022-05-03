@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 
 class BelongsTo extends BelongsToBase
 {
-    use DeferOneOrMany;
-    use DefinedConstraints;
+    use Concerns\DeferOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * @var string The "name" of the relationship.

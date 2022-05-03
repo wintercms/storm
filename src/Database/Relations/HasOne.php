@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 
 class HasOne extends HasOneBase
 {
-    use HasOneOrMany;
-    use DefinedConstraints;
+    use Concerns\HasOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * Create a new "hasOne" relationship.

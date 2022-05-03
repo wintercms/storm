@@ -1,19 +1,21 @@
 <?php namespace Winter\Storm\Database\Relations;
 
-use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
+use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
 
 /**
- * Morph to many
+ * Morph To Many relation.
  *
- * This class is a carbon copy of Illuminate\Database\Eloquent\Relations\MorphToMany
- * so the base Winter\Storm\Database\Relations\BelongsToMany class can be inherited
+ * As of 1.2.0, this relation has been refactored to extend the Eloquent `MorphToMany` relation,
+ * to maintain covariance with Laravel. We instead use the `Concerns\BelongsOrMorphsToMany` trait
+ * to provide base `BaseToMany` functionality that includes Winter overrides.
  */
-class MorphToMany extends BelongsToMany
+class MorphToMany extends BaseMorphToMany
 {
-    use DefinedConstraints;
+    use Concerns\BelongsOrMorphsToMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * The type of the polymorphic relation.
@@ -84,65 +86,6 @@ class MorphToMany extends BelongsToMany
     }
 
     /**
-     * Set the where clause for the relation query.
-     *
-     * @return $this
-     */
-    protected function addWhereConstraints()
-    {
-        parent::addWhereConstraints();
-
-        $this->query->where($this->table.'.'.$this->morphType, $this->morphClass);
-
-        return $this;
-    }
-
-    /**
-     * Set the constraints for an eager load of the relation.
-     *
-     * @param  array  $models
-     * @return void
-     */
-    public function addEagerConstraints(array $models)
-    {
-        parent::addEagerConstraints($models);
-
-        $this->query->where($this->table.'.'.$this->morphType, $this->morphClass);
-    }
-
-    /**
-     * Create a new pivot attachment record.
-     *
-     * @param  int   $id
-     * @param  bool  $timed
-     * @return array
-     */
-    protected function baseAttachRecord($id, $timed)
-    {
-        return Arr::add(
-            parent::baseAttachRecord($id, $timed),
-            $this->morphType,
-            $this->morphClass
-        );
-    }
-
-    /**
-     * Add the constraints for a relationship count query.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Builder  $parentQuery
-     * @param  array|mixed  $columns
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])
-    {
-        return parent::getRelationExistenceQuery($query, $parentQuery, $columns)->where(
-            $this->table.'.'.$this->morphType,
-            $this->morphClass
-        );
-    }
-
-    /**
      * Create a new query builder for the pivot table.
      *
      * @return \Illuminate\Database\Query\Builder
@@ -171,25 +114,5 @@ class MorphToMany extends BelongsToMany
               ->setMorphClass($this->morphClass);
 
         return $pivot;
-    }
-
-    /**
-     * Get the foreign key "type" name.
-     *
-     * @return string
-     */
-    public function getMorphType()
-    {
-        return $this->morphType;
-    }
-
-    /**
-     * Get the class name of the parent model.
-     *
-     * @return string
-     */
-    public function getMorphClass()
-    {
-        return $this->morphClass;
     }
 }

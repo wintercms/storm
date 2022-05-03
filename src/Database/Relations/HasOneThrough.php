@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough as HasOneThroughBase;
 
 class HasOneThrough extends HasOneThroughBase
 {
-    use DefinedConstraints;
+    use Concerns\DefinedConstraints;
 
     /**
      * @var string The "name" of the relationship.

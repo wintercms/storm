@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThroughBase;
 
 class HasManyThrough extends HasManyThroughBase
 {
-    use DefinedConstraints;
+    use Concerns\DefinedConstraints;
 
     /**
      * @var string The "name" of the relationship.

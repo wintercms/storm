@@ -7,8 +7,8 @@ use Winter\Storm\Database\Attach\File as FileModel;
 
 class AttachMany extends MorphManyBase
 {
-    use AttachOneOrMany;
-    use DefinedConstraints;
+    use Concerns\AttachOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * Create a new has many relationship instance.

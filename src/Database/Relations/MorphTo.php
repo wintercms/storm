@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
 
 class MorphTo extends MorphToBase
 {
-    use DefinedConstraints;
+    use Concerns\DefinedConstraints;
 
     /**
      * @var string The "name" of the relationship.
