@@ -62,7 +62,7 @@ class File extends Model
     public static $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
     /**
-     * @var array Hidden fields from array/json access
+     * @var array<int, string> Hidden fields from array/json access
      */
     protected $hidden = ['attachment_type', 'attachment_id', 'is_public'];
 

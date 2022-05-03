@@ -54,7 +54,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     protected $dates = ['activated_at', 'last_login'];
 
     /**
-     * @var array The attributes that should be hidden for arrays.
+     * @var array<int, string> The attributes that should be hidden for arrays.
      */
     protected $hidden = ['password', 'reset_password_code', 'activation_code', 'persist_code'];
 
