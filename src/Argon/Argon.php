@@ -1,11 +1,12 @@
 <?php namespace Winter\Storm\Argon;
 
 use Carbon\Carbon as DateBase;
+use Illuminate\Support\Carbon;
 
 /**
  * Umbrella class.
  */
-class Argon extends DateBase
+class Argon extends Carbon
 {
     /**
      * Function to call instead of format.
