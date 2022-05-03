@@ -80,14 +80,15 @@ class UrlGenerator extends UrlGeneratorBase
             foreach ($url as $key => &$value) {
                 // Remove invalid segments
                 if (
-                    (!in_array($key, $urlSegments) || !isset($value)) ||
-                    (is_array($value) && empty($value))
+                    !in_array($key, $urlSegments)
+                    || !isset($value)
+                    || empty($value)
                 ) {
                     unset($url[$key]);
                     continue;
                 }
 
-                // Trim strings and remove empty strings
+                // Trim strings
                 if (!is_array($value)) {
                     $value = trim((string) $value);
                 }
