@@ -1,8 +1,8 @@
 <?php namespace Winter\Storm\Database;
 
-use App;
 use Winter\Storm\Support\Arr;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Database\Query\Builder as QueryBuilderBase;
 use Illuminate\Database\Query\Expression;
 
@@ -456,7 +456,7 @@ class QueryBuilder extends QueryBuilderBase
         if ($this->groups || $this->havings) {
             $clone = $this->cloneForPaginationCount();
 
-            if (is_null($clone->columns) && !empty($this->joins)) {
+            if (empty($clone->columns) && !empty($this->joins)) {
                 $clone->select($this->from . '.*');
             }
 

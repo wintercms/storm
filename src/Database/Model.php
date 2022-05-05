@@ -740,7 +740,7 @@ class Model extends EloquentModel implements ModelInterface
      * @param  array   $attributes
      * @param  string  $table
      * @param  bool    $exists
-     * @return \Winter\Storm\Database\Pivot
+     * @return \Winter\Storm\Database\Pivot|null
      */
     public function newRelationPivot($relationName, $parent, $attributes, $table, $exists)
     {
@@ -821,8 +821,8 @@ class Model extends EloquentModel implements ModelInterface
 
     /**
      * Save the model to the database.
-     * @param array $options
-     * @param null $sessionKey
+     * @param array|null $options
+     * @param string|null $sessionKey
      * @return bool
      */
     public function save(array $options = null, $sessionKey = null)
@@ -1200,7 +1200,7 @@ class Model extends EloquentModel implements ModelInterface
      * Set a given attribute on the model.
      * @param string $key
      * @param mixed $value
-     * @return void
+     * @return mixed|null
      */
     public function setAttribute($key, $value)
     {
@@ -1215,7 +1215,8 @@ class Model extends EloquentModel implements ModelInterface
          * Handle direct relation setting
          */
         if ($this->hasRelation($key) && !$this->hasSetMutator($key)) {
-            return $this->setRelationValue($key, $value);
+            $this->setRelationValue($key, $value);
+            return;
         }
 
         /**

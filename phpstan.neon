@@ -6,23 +6,9 @@ parameters:
         - src
     level: 5
     excludePaths:
-        - src/Auth/Manager.php
-        - src/Database/Behaviors/Purgeable.php
         # Exclude PHP Parser files
         - src/Parse/PHP/ArrayFile.php
         - src/Parse/PHP/ArrayPrinter.php
     databaseMigrationsPath:
         - src/Auth/Migrations
         - src/Database/Migrations
-    ignoreErrors:
-        - "#Access to undefined constant#"
-        - "#Access to an undefined property#"
-        - "#Call to an undefined method#"
-        - message: '#calls parent::__#'
-          path: src/Extension/ExtendableTrait.php
-        # Ignore incorrect docs from Laravel's Validation Factory
-        - message: '#\$resolver is not covariant#'
-          path: src/Validation/Factory.php
-        # Ignore incompatible signature for Mailer methods
-        - message: '#(queue|queueOn|later|laterOn)\(\) should be compatible#'
-          path: src/Mail/Mailer.php

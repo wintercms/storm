@@ -1,12 +1,12 @@
 <?php namespace Winter\Storm\Extension;
 
-use App;
 use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
 use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Serialization;
+use Illuminate\Support\Facades\App;
 
 /**
  * This extension trait is used when access to the underlying base class
