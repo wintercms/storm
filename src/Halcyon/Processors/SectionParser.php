@@ -274,7 +274,7 @@ class SectionParser
      * @param int $instance Which instance to look for
      * @return int|null The line number the instance was found.
      */
-    private static function calculateLinePosition(string $content, int $instance = 1): ?int
+    protected static function calculateLinePosition(string $content, int $instance = 1): ?int
     {
         $count = 0;
         $lines = explode(PHP_EOL, $content);
@@ -284,7 +284,7 @@ class SectionParser
             }
 
             if ($count === $instance) {
-                return self::adjustLinePosition($content, $number);
+                return static::adjustLinePosition($content, $number);
             }
         }
 
@@ -296,7 +296,7 @@ class SectionParser
      * after the separator (==). There can be an opening tag or white space in between
      * where the section really begins.
      */
-    private static function adjustLinePosition(string $content, int $startLine = -1): int
+    protected static function adjustLinePosition(string $content, int $startLine = -1): int
     {
         // Account for the separator itself.
         $startLine++;
