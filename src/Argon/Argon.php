@@ -1,6 +1,5 @@
 <?php namespace Winter\Storm\Argon;
 
-use Carbon\Carbon as DateBase;
 use Illuminate\Support\Carbon;
 
 /**
@@ -39,7 +38,7 @@ class Argon extends Carbon
     public static function parseWithCurrentLocale(
         string|\DateTimeInterface|null $time = null,
         string|\DateTimeZone|null $timezone = null
-    ): DateBase {
+    ): static {
         if (is_string($time)) {
             $time = static::translateTimeString($time, static::getLocale(), 'en');
         }
@@ -58,7 +57,7 @@ class Argon extends Carbon
         string $format,
         string $time = null,
         \DateTimeZone|string|false|null $timezone = null
-    ) {
+    ): static|false {
         if (is_string($time)) {
             $time = static::translateTimeString($time, static::getLocale(), 'en');
         }
@@ -68,9 +67,6 @@ class Argon extends Carbon
 
     /**
      * Get the language portion of the locale.
-     *
-     * @param string $locale
-     * @return string
      */
     public static function getLanguageFromLocale(string $locale): string
     {
