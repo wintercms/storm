@@ -1,8 +1,8 @@
 <?php namespace Winter\Storm\Database\Relations;
 
+use Winter\Storm\Database\MorphPivot;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
 
 /**
