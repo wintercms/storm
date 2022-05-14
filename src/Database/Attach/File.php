@@ -876,7 +876,7 @@ class File extends Model
      *
      * @param string $dir The path to the directory.
      *
-     * @return bool|null
+     * @return bool
      */
     protected function isDirectoryEmpty($dir)
     {
