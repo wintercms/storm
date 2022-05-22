@@ -1,8 +1,5 @@
 <?php namespace Winter\Storm\Database\Behaviors;
 
-/**
- * @deprecated 1.2.0. We recommend using the \Winter\Storm\Database\Traits\Purgeable trait instead.
- */
 class Purgeable extends \Winter\Storm\Extension\ExtensionBase
 {
     /**
