@@ -1,5 +1,10 @@
 <?php namespace Winter\Storm\Database;
 
+/**
+ * Reimplementation of \Illuminate\Database\Eloquent\Relations\MorphPivot
+ * but extends Winter's Pivot base class instead of Laravel's to get access to
+ * Winter magic.
+ */
 class MorphPivot extends Pivot
 {
     /**
