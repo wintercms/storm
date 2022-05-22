@@ -59,12 +59,8 @@ class Connection extends ConnectionBase
 
     /**
      * Fire the given event if possible.
-     *
-     * @param string $event
-     * @param array|object $attributes
-     * @return void
      */
-    protected function fireEvent($event, $attributes = [])
+    protected function fireEvent(string $event, array|object $attributes = []): void
     {
         /** @var \Winter\Storm\Events\Dispatcher|null */
         $eventManager = $this->events;
