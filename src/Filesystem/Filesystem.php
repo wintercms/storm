@@ -404,7 +404,7 @@ class Filesystem extends FilesystemBase
     }
 
     /**
-     * Finds symlinks within the base path and provides a source => target array of symlinks.
+     * Finds symlinks within the base path and populates the local symlinks property with an array of source => target symlinks.
      */
     protected function findSymlinks(): void
     {
