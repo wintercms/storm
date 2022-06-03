@@ -16,7 +16,6 @@ use Winter\Storm\Foundation\ProviderRepository;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
 use Winter\Storm\Foundation\Providers\MakerServiceProvider;
 use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 
 class Application extends ApplicationBase
@@ -406,7 +405,7 @@ class Application extends ApplicationBase
         }
 
         $filesystem = new Filesystem;
-        $repository = $this->getProviderRepository($this, $filesystem, $this->getCachedServicesPath());
+        $repository = new ProviderRepository($this, $filesystem, $this->getCachedServicesPath());
 
         try {
             $repository->load($providers->collapse()->toArray());
@@ -419,19 +418,6 @@ class Application extends ApplicationBase
             $this->clearPackageCache();
             $this->registerConfiguredProviders(true);
         }
-    }
-
-    /**
-     * Gets a new instance of the provider repository.
-     *
-     * @param ApplicationContract $app
-     * @param Filesystem $files
-     * @param string $manifestPath
-     * @return ProviderRepository
-     */
-    public function getProviderRepository(ApplicationContract $app, Filesystem $files, string $manifestPath): ProviderRepository
-    {
-        return new ProviderRepository($app, $files, $manifestPath);
     }
 
     /**
