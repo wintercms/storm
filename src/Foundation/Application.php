@@ -8,14 +8,15 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
-use Illuminate\Foundation\ProviderRepository;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
 use Winter\Storm\Router\RoutingServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
+use Winter\Storm\Foundation\ProviderRepository;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
 use Winter\Storm\Foundation\Providers\MakerServiceProvider;
 use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
+use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 
 class Application extends ApplicationBase
@@ -405,7 +406,7 @@ class Application extends ApplicationBase
         }
 
         $filesystem = new Filesystem;
-        $repository = new ProviderRepository($this, $filesystem, $this->getCachedServicesPath());
+        $repository = $this->getProviderRepository($this, $filesystem, $this->getCachedServicesPath());
 
         try {
             $repository->load($providers->collapse()->toArray());
@@ -418,6 +419,19 @@ class Application extends ApplicationBase
             $this->clearPackageCache();
             $this->registerConfiguredProviders(true);
         }
+    }
+
+    /**
+     * Gets a new instance of the provider repository.
+     *
+     * @param ApplicationContract $app
+     * @param Filesystem $files
+     * @param string $manifestPath
+     * @return ProviderRepository
+     */
+    public function getProviderRepository(ApplicationContract $app, Filesystem $files, string $manifestPath): ProviderRepository
+    {
+        return new ProviderRepository($app, $files, $manifestPath);
     }
 
     /**
