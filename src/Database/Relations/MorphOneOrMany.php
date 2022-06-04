@@ -47,7 +47,7 @@ trait MorphOneOrMany
         if ($sessionKey === null) {
             /**
              * @event model.relation.beforeAdd
-             * Called before adding a relation to the model (MorphOneOrMany relations)
+             * Called before adding a relation to the model (for AttachOneOrMany, HasOneOrMany & MorphOneOrMany relations)
              *
              * Example usage:
              *
@@ -76,7 +76,7 @@ trait MorphOneOrMany
 
             /**
              * @event model.relation.afterAdd
-             * Called after adding a relation to the model (MorphOneOrMany relations)
+             * Called after adding a relation to the model (for AttachOneOrMany, HasOneOrMany & MorphOneOrMany relations)
              *
              * Example usage:
              *
@@ -100,6 +100,21 @@ trait MorphOneOrMany
     public function remove(Model $model, $sessionKey = null)
     {
         if ($sessionKey === null) {
+            /**
+             * @event model.relation.beforeRemove
+             * Called before removing a relation to the model (for AttachOneOrMany, HasOneOrMany & MorphOneOrMany relations)
+             *
+             * Example usage:
+             *
+             *     $model->bindEvent('model.relation.beforeRemove', function (string $relationName, \October\Rain\Database\Model $relatedModel) use (\October\Rain\Database\Model $model) {
+             *         if ($relationName === 'permanentRelation') {
+             *             throw new \Exception("Cannot dissociate a permanent relation!");
+             *         }
+             *     });
+             *
+             */
+            $this->parent->fireEvent('model.relation.beforeRemove', [$this->relationName, $model]);
+
             $options = $this->parent->getRelationDefinition($this->relationName);
 
             if (array_get($options, 'delete', false)) {
@@ -123,6 +138,21 @@ trait MorphOneOrMany
             else {
                 $this->parent->reloadRelations($this->relationName);
             }
+
+            /**
+             * @event model.relation.afterRemove
+             * Called after removing a relation to the model (for AttachOneOrMany, HasOneOrMany & MorphOneOrMany relations)
+             *
+             * Example usage:
+             *
+             *     $model->bindEvent('model.relation.afterRemove', function (string $relationName, \October\Rain\Database\Model $relatedModel) use (\October\Rain\Database\Model $model) {
+             *         $relatedClass = get_class($relatedModel);
+             *         $modelClass = get_class($model);
+             *         traceLog("{$relatedClass} was removed from {$modelClass}.");
+             *     });
+             *
+             */
+            $this->parent->fireEvent('model.relation.afterRemove', [$this->relationName, $model]);
         }
         else {
             $this->parent->unbindDeferred($this->relationName, $model, $sessionKey);

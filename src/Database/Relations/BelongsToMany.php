@@ -118,9 +118,11 @@ class BelongsToMany extends BelongsToManyBase
     /**
      * Override attach() method of BelongToMany relation.
      * This is necessary in order to fire 'model.relation.beforeAttach', 'model.relation.afterAttach' events
+     *
      * @param mixed $id
      * @param array $attributes
      * @param bool  $touch
+     * @return void
      */
     public function attach($id, array $attributes = [], $touch = true)
     {
@@ -136,23 +138,16 @@ class BelongsToMany extends BelongsToManyBase
          *     $model->bindEvent('model.relation.beforeAttach', function (string $relationName, array $attachedIdList, array $insertData) use (\Winter\Storm\Database\Model $model) {
          *         if (!$model->isRelationValid($attachedIdList)) {
          *             throw new \Exception("Invalid relation!");
-         *             return false;
          *         }
          *     });
          *
          */
-        if ($this->parent->fireEvent('model.relation.beforeAttach', [$this->relationName, $attachedIdList, $insertData], true) === false) {
-            return;
-        }
+        $this->parent->fireEvent('model.relation.beforeAttach', [$this->relationName, $attachedIdList, $insertData]);
 
-        // Here we will insert the attachment records into the pivot table. Once we have
-        // inserted the records, we will touch the relationships if necessary and the
-        // function will return. We can parse the IDs before inserting the records.
-        $this->newPivotStatement()->insert($insertData);
-
-        if ($touch) {
-            $this->touchIfTouching();
-        }
+        /**
+         * @see \Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithPivotTable
+         */
+        parent::attach($id, $attributes, $touch);
 
         /**
          * @event model.relation.afterAttach
@@ -171,9 +166,10 @@ class BelongsToMany extends BelongsToManyBase
     /**
      * Override detach() method of BelongToMany relation.
      * This is necessary in order to fire 'model.relation.beforeDetach', 'model.relation.afterDetach' events
+     *
      * @param null $ids
      * @param bool $touch
-     * @return int|void
+     * @return int
      */
     public function detach($ids = null, $touch = true)
     {
@@ -196,14 +192,13 @@ class BelongsToMany extends BelongsToManyBase
          *     });
          *
          */
-        if ($this->parent->fireEvent('model.relation.beforeDetach', [$this->relationName, $attachedIdList], true) === false) {
-            return;
-        }
+        $this->parent->fireEvent('model.relation.beforeDetach', [$this->relationName, $attachedIdList]);
 
         /**
          * @see Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithPivotTable
          */
-        parent::detach($attachedIdList, $touch);
+
+        $result = parent::detach($ids, $touch);
 
         /**
          * @event model.relation.afterDetach
@@ -211,12 +206,14 @@ class BelongsToMany extends BelongsToManyBase
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.afterDetach', function (string $relationName, array $attachedIdList) use (\Winter\Storm\Database\Model $model) {
-         *         traceLog("Relation {$relationName} was removed", $attachedIdList);
+         *     $model->bindEvent('model.relation.afterDetach', function (string $relationName, array $attachedIdList, int $result) use (\Winter\Storm\Database\Model $model) {
+         *         traceLog("{$result} entries were detached for Relation {$relationName}");
          *     });
          *
          */
-        $this->parent->fireEvent('model.relation.afterDetach', [$this->relationName, $attachedIdList]);
+        $this->parent->fireEvent('model.relation.afterDetach', [$this->relationName, $attachedIdList, $result]);
+
+        return $result;
     }
 
     /**
