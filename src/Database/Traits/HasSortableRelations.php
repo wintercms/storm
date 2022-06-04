@@ -45,6 +45,15 @@ trait HasSortableRelations
             }
         });
 
+        $this->bindEvent('model.relation.afterAdd', function ($relationName, $relatedModel) use ($sortableRelations) {
+            // Only for non pivot-based relations
+            if (array_key_exists($relationName, $sortableRelations)) {
+                $column = $this->getRelationSortOrderColumn($relationName);
+
+                $this->updateRelationOrder($relationName, $relatedModel->id, $column);
+            }
+        });
+
         foreach ($sortableRelations as $relationName => $column) {
             $relation = $this->$relationName();
             if (method_exists($relation, 'updateExistingPivot')) {
@@ -59,17 +68,6 @@ trait HasSortableRelations
                     $relationType = $this->getRelationType($relationName);
                     $this->$relationType[$relationName] = $definition;
                 }
-            } else {
-                // For NON pivot-based relations
-                $relatedClass = get_class($relation->getRelated());
-                $relatedClass::extend(function ($model) use ($relationName, $column) {
-                    $model->bindEvent('model.beforeCreate', function () use ($model, $relationName, $column) {
-                        // initialize sort_order as max + 1
-                        $relation = $this->$relationName();
-                        $order = $relation->max($column) + 1;
-                        $model->$column = $order;
-                    });
-                });
             }
         }
     }
@@ -105,16 +103,16 @@ trait HasSortableRelations
      */
     protected function updateRelationOrder(string $relationName, int $id, string $column, int $order = 0) : void
     {
-        $relation = $this->$relationName();
+        $relation = $this->{$relationName}();
 
         if (!$order) {
-            $order = $relation->max($column) + 1;
+            $order = $relation->count();
         }
         if (method_exists($relation, 'updateExistingPivot')) {
             $relation->updateExistingPivot($id, [ $column => (int)$order ]);
         } else {
             $record = $relation->find($id);
-            $record->sort_order = (int)$order;
+            $record->{$column} = (int)$order;
             $record->save();
         }
     }
