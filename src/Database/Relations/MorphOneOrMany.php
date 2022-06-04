@@ -45,6 +45,21 @@ trait MorphOneOrMany
     public function add(Model $model, $sessionKey = null)
     {
         if ($sessionKey === null) {
+            /**
+             * @event model.relation.beforeAdd
+             * Called before adding a relation to the model (MorphOneOrMany relations)
+             *
+             * Example usage:
+             *
+             *     $model->bindEvent('model.relation.beforeAdd', function (string $relationName, \October\Rain\Database\Model $relatedModel) use (\October\Rain\Database\Model $model) {
+             *         if ($relationName === 'dummyRelation') {
+             *             throw new \Exception("Invalid relation!");
+             *         }
+             *     });
+             *
+             */
+            $this->parent->fireEvent('model.relation.beforeAdd', [$this->relationName, $model]);
+
             $model->setAttribute($this->getForeignKeyName(), $this->getParentKey());
             $model->setAttribute($this->getMorphType(), $this->morphClass);
             $model->save();
@@ -58,6 +73,22 @@ trait MorphOneOrMany
             else {
                 $this->parent->reloadRelations($this->relationName);
             }
+
+            /**
+             * @event model.relation.afterAdd
+             * Called after adding a relation to the model (MorphOneOrMany relations)
+             *
+             * Example usage:
+             *
+             *     $model->bindEvent('model.relation.afterAdd', function (string $relationName, \October\Rain\Database\Model $relatedModel) use (\October\Rain\Database\Model $model) {
+             *         $relatedClass = get_class($relatedModel);
+             *         $modelClass = get_class($model);
+             *         traceLog("{$relatedClass} was added as {$relationName} to {$modelClass}.");
+             *     });
+             *
+             */
+            $this->parent->fireEvent('model.relation.afterAdd', [$this->relationName, $model]);
+
         }
         else {
             $this->parent->bindDeferred($this->relationName, $model, $sessionKey);
