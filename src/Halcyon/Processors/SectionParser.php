@@ -211,7 +211,7 @@ class SectionParser
         }
 
         if ($count >= 3) {
-            $result['settings'] = @$iniParser->parse($sections[0], true)
+            $result['settings'] = @$iniParser->parse($sections[0])
                 ?: [self::ERROR_INI => $sections[0]];
 
             $result['code'] = $sections[1];

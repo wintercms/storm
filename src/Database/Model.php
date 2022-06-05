@@ -143,6 +143,13 @@ class Model extends EloquentModel
     {
         $class = get_called_class();
 
+        // If the $dispatcher hasn't been set yet don't bother trying
+        // to register the nicer model events yet since it will silently fail
+        if (!isset(static::$dispatcher)) {
+            return;
+        }
+
+        // Events have already been booted, continue
         if (isset(static::$eventsBooted[$class])) {
             return;
         }
@@ -723,7 +730,7 @@ class Model extends EloquentModel
     {
         return $using
             ? $using::fromRawAttributes($parent, $attributes, $table, $exists)
-            : new Pivot($parent, $attributes, $table, $exists);
+            : Pivot::fromAttributes($parent, $attributes, $table, $exists);
     }
 
     /**
@@ -741,7 +748,7 @@ class Model extends EloquentModel
 
         if (!is_null($definition) && array_key_exists('pivotModel', $definition)) {
             $pivotModel = $definition['pivotModel'];
-            return new $pivotModel($parent, $attributes, $table, $exists);
+            return $pivotModel::fromAttributes($parent, $attributes, $table, $exists);
         }
     }
 

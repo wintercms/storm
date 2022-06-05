@@ -161,7 +161,7 @@ class Role extends Model
 
     /**
      * Validate the permissions when set.
-     * @param  array  $permissions
+     * @param  string  $permissions
      * @return void
      */
     public function setPermissionsAttribute($permissions)
