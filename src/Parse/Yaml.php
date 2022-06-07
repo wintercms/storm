@@ -29,11 +29,16 @@ class Yaml
     {
         $yaml = new Parser;
 
-        if (!is_null($this->processor)) {
+        // Only run the preprocessor if parsing fails
+        try {
+            $parsed = $yaml->parse($contents);
+        } catch (\Throwable $throwable) {
+            if (!$this->processor) {
+                throw $throwable;
+            }
             $contents = $this->processor->preprocess($contents);
+            $parsed = $yaml->parse($contents);
         }
-
-        $parsed = $yaml->parse($contents);
 
         if (!is_null($this->processor)) {
             $parsed = $this->processor->process($parsed);
