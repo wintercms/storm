@@ -1,23 +1,24 @@
 <?php
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Winter\Storm\Database\Connectors\ConnectionFactory;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Pivot;
-use Winter\Storm\Database\Capsule\Manager as CapsuleManager;
 use Winter\Storm\Events\Dispatcher;
 
 class DbTestCase extends TestCase
 {
     public function setUp(): void
     {
-        $this->db = new CapsuleManager;
-        $this->db->addConnection([
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => ''
-        ]);
+        parent::setUp();
 
-        $this->db->setAsGlobal();
-        $this->db->bootEloquent();
+        $config = [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+        ];
+        App::make(ConnectionFactory::class)->make($config, 'testing');
+        DB::setDefaultConnection('testing');
 
         Model::setEventDispatcher(new Dispatcher());
     }
@@ -25,8 +26,18 @@ class DbTestCase extends TestCase
     public function tearDown(): void
     {
         $this->flushModelEventListeners();
+
         parent::tearDown();
-        unset($this->db);
+    }
+
+    /**
+     * Returns an instance of the schema builder for the test database.
+     *
+     * @return \Illuminate\Database\Schema\Builder
+     */
+    protected function getBuilder()
+    {
+        return DB::connection()->getSchemaBuilder();
     }
 
     /**
