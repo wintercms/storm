@@ -26,7 +26,7 @@ trait ArraySource
     /**
      * Connection. to the SQLite datasource.
      */
-    protected static \Illuminate\Database\Connection $arraySourceConn;
+    protected static \Illuminate\Database\Connection $arraySourceConnection;
 
     /**
      * Boots the ArraySource trait.
@@ -44,17 +44,17 @@ trait ArraySource
         );
 
         if ($instance->arraySourceDbNeedsUpdate()) {
-            $instance->arraySoureCreateDb();
+            $instance->arraySourceCreateDb();
         }
     }
 
     /**
      * Gets the records stored with this model.
      *
-     * This method may be overwritten to specify a custom data provider. It should always return an associative array
-     * with column names for keys and a singular value for each column.
+     * This method may be overwritten to specify a custom data provider. It should always return an array of
+     * associative arrays, with column names for keys and a singular value for each column.
      */
-    public function arraySourceGetRecords(): array
+    public function getRecords(): array
     {
         if ($this->propertyExists('records')) {
             if (!is_array($this->records)) {
@@ -74,7 +74,7 @@ trait ArraySource
      */
     public static function resolveConnection($connection = null)
     {
-        return static::$arraySourceConn;
+        return static::$arraySourceConnection;
     }
 
     /**
@@ -89,7 +89,7 @@ trait ArraySource
             'database' => $database,
         ];
 
-        static::$arraySourceConn = App::get(ConnectionFactory::class)->make($config);
+        static::$arraySourceConnection = App::get(ConnectionFactory::class)->make($config);
     }
 
     /**
@@ -97,7 +97,7 @@ trait ArraySource
      *
      * This will create the temporary SQLite table and populate it with the given records.
      */
-    protected function arraySoureCreateDb(): void
+    protected function arraySourceCreateDb(): void
     {
         if (File::exists($this->arraySourceGetDbPath())) {
             File::delete($this->arraySourceGetDbPath());
@@ -105,7 +105,7 @@ trait ArraySource
         // Create SQLite file
         File::put($this->arraySourceGetDbPath(), '');
 
-        $records = $this->arraySourceGetRecords();
+        $records = $this->getRecords();
 
         $this->arraySourceCreateTable();
 
@@ -127,7 +127,7 @@ trait ArraySource
                 $schema = ($this->propertyExists('recordSchema'))
                     ? $this->recordSchema
                     : [];
-                $firstRecord = $this->arraySourceGetRecords()[0] ?? [];
+                $firstRecord = $this->getRecords()[0] ?? [];
 
                 if (empty($schema) && empty($firstRecord)) {
                     throw new ApplicationException(
@@ -252,7 +252,7 @@ trait ArraySource
      */
     protected function arraySourceGetDbDir(): string|false
     {
-        $sourcePath = Config::get('cms.arraySourcePath', storage_path('framework/cache/array-source/'));
+        $sourcePath = Config::get('database.arraySourcePath', storage_path('framework/cache/array-source/'));
 
         if ($sourcePath === false) {
             return false;
@@ -266,7 +266,8 @@ trait ArraySource
      */
     protected function arraySourceGetDbPath(): string
     {
-        return $this->arraySourceGetDbDir() . '/' . Str::kebab(static::class) . '.sqlite';
+        $class = str_replace('\\', '', static::class);
+        return $this->arraySourceGetDbDir() . '/' . Str::kebab($class) . '.sqlite';
     }
 
     /**
@@ -299,6 +300,6 @@ trait ArraySource
      */
     protected function arraySourceGetChunkSize(): int
     {
-        return 50;
+        return 100;
     }
 }
