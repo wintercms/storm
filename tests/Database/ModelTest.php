@@ -80,7 +80,7 @@ class ModelTest extends DbTestCase
 
     protected function createTable()
     {
-        $this->db->schema()->create('test_model', function ($table) {
+        $this->getBuilder()->create('test_model', function ($table) {
             $table->increments('id');
             $table->string('name')->nullable();
             $table->text('data')->nullable();

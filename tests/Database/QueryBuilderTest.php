@@ -94,10 +94,10 @@ class QueryBuilderTest extends TestCase
         );
     }
 
-    protected function getConnection($connection = null)
+    protected function getConnection($connection = null, $table = null)
     {
         if ($connection) {
-            return parent::getConnection($connection);
+            return parent::getConnection($connection, $table);
         }
 
         $connection = $this->getMockBuilder(ConnectionInterface::class)
