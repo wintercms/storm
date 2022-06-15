@@ -510,4 +510,13 @@ class UrlGeneratorTest extends TestCase
             http_build_url($segments, [], HTTP_URL_STRIP_PORT | HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT)
         );
     }
+
+    public function testQueryArgsArray()
+    {
+        $url = 'https://www.example.com/path?array[]=v1&array[]=v2';
+        $generator = new \Winter\Storm\Router\UrlGenerator(new RouteCollection, Request::create($url));
+        $baseGenerator = new \Illuminate\Routing\UrlGenerator(new RouteCollection, Request::create($url));
+
+        $this->assertEquals($generator->to($url), $baseGenerator->to($url));
+    }
 }
