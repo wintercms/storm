@@ -37,7 +37,7 @@ class RegisterWinter
             $app->setThemesPath($themesPath);
         }
 
-        if ($tempPath = $app['config']->get('filesystems.localTempPath')) {
+        if ($tempPath = $app['config']->get('app.tempPath')) {
             $app->setTempPath($tempPath);
         }
     }
