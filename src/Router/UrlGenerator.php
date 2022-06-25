@@ -65,10 +65,10 @@ class UrlGenerator extends UrlGeneratorBase
 
         // Parse input
         if (is_string($url)) {
-            $url = parse_url($url);
+            $url = parse_url(urldecode($url));
         }
         if (is_string($replace)) {
-            $replace = parse_url($replace);
+            $replace = parse_url(urldecode($replace));
         }
 
         // Prepare input data
@@ -285,9 +285,6 @@ class UrlGenerator extends UrlGeneratorBase
                 $queryParams = $url['query'];
             }
 
-            if (is_array($url['query'])) {
-                $url['query'] = static::buildStr($url['query']);
-            }
             $urlString .= '?' . static::buildStr($queryParams);
         }
 
