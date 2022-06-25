@@ -1,12 +1,10 @@
-<?php
+<?php namespace Winter\Storm\Redis;
 
-namespace Winter\Storm\Redis;
-
-use Winter\Storm\Support\ServiceProvider;
 use Illuminate\Redis\RedisManager;
+use Illuminate\Redis\RedisServiceProvider as BaseRedisServiceProvider;
 use Illuminate\Support\Arr;
 
-class RedisServiceProvider extends ServiceProvider
+class RedisServiceProvider extends BaseRedisServiceProvider
 {
     /**
      * Register the service provider.
@@ -24,15 +22,5 @@ class RedisServiceProvider extends ServiceProvider
         $this->app->bind('redis.connection', function ($app) {
             return $app['redis']->connection();
         });
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['redis', 'redis.connection'];
     }
 }
