@@ -516,9 +516,13 @@ class UrlGeneratorTest extends TestCase
         $checkUrlsOnBoth = [
             // Non url-encoded
             'https://www.example.com/path?array[]=v1&array[]=v2',
+            'https://www.example.com/path?array[0]=v1&array[1]=v2',
+            'https://www.example.com/path?array[k1]=v1&array[k2]=v2',
 
             // Already url-encoded
             'https://www.example.com/path?array%5B%5D=v1&array%5B%5D=v2',
+            'https://www.example.com/path?array%5B0%5D=v1&array%5B1%5D=v2',
+            'https://www.example.com/path?array%5Bk1%5D=v1&array%5Bk2%5D=v2',
         ];
 
         foreach ($checkUrlsOnBoth as $url) {
