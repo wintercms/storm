@@ -11,13 +11,6 @@ use Illuminate\Validation\Factory as BaseFactory;
 class Factory extends BaseFactory implements FactoryContract
 {
     /**
-     * The Validator resolver instance.
-     *
-     * @var \Closure|null
-     */
-    protected $resolver;
-
-    /**
      * Resolve a new Validator instance.
      *
      * @param  array  $data
