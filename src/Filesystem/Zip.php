@@ -63,6 +63,11 @@ class Zip extends ZipArchive
 
     /**
      * Extracts an existing ZIP file.
+     *
+     * @param string $source Path to the ZIP file.
+     * @param string $destination Path to the destination directory.
+     * @param array $options Optional. An array of options. Only one option is currently supported:
+     *  `mask`, which defines the permission mask to use when creating the destination folder.
      */
     public static function extract(string $source, string $destination, array $options = []): bool
     {
@@ -83,7 +88,12 @@ class Zip extends ZipArchive
     /**
      * Creates a new empty Zip file, optionally populating it with given source files.
      *
-     * Source can be a single path, an array of paths or a callback which allows you to manipulate the Zip file.
+     * Source can be a single path, an array of paths or a callback which allows you to manipulate
+     * the Zip file.
+     *
+     * @param string $destination Path to the destination ZIP file.
+     * @param string|callable|array|null $source Optional. Path to the source file(s) or a callback.
+     * @param array $options Optional. An array of options. Uses the same options as `Zip::add()`.
      */
     public static function make(string $destination, string|callable|array|null $source = null, array $options = []): static
     {
@@ -106,6 +116,15 @@ class Zip extends ZipArchive
 
     /**
      * Adds a source file or directory to a Zip file.
+     *
+     * @param string $source Path to the source file or directory.
+     * @param array $options Optional. An array of options. Supports the following options:
+     *  - `recursive`, which determines whether to add subdirectories and files recursively.
+     *      Defaults to `true`.
+     *  - `includeHidden`, which determines whether to add hidden files and directories.
+     *      Defaults to `false`.
+     *  - `baseDir`, which determines the base directory to use when adding files.
+     *  - `baseglob`, which defines a glob pattern to match files and directories to add.
      */
     public function add(string $source, array $options = []): self
     {
@@ -125,8 +144,8 @@ class Zip extends ZipArchive
             $source = implode('/', [dirname($source), basename($source), $wildcard]);
         }
 
-        $basedir = dirname($source);
-        $baseglob = basename($source);
+        $basedir = $options['basedir'] ?? dirname($source);
+        $baseglob = $options['baseglob'] ?? basename($source);
 
         if (is_file($source)) {
             $files = [$source];
