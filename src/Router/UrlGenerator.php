@@ -93,10 +93,13 @@ class UrlGenerator extends UrlGeneratorBase
                 }
 
                 // Sanitize values for the port segment
+                // Invalid ports are treated as if no port is set.
                 if ($key === 'port') {
                     $value = (int) $value;
-                    if ($value < 0 || $value > 65535) {
-                        unset($url['key']);
+                    // Valid ports range from 0-65535 but 0 is a reserved port
+                    // and will not actually work in a real world URL
+                    if ($value < 1 || $value > 65535) {
+                        $url['port'] = false;
                     }
                 }
             }
@@ -225,7 +228,9 @@ class UrlGenerator extends UrlGeneratorBase
         }
 
         // Populate the port section
-        if (isset($url['port']) && $url['port'] !== '') {
+        // 0 is technically a valid port number but it is also reserved
+        // so no real world URL will be able to use it.
+        if (!empty($url['port'])) {
             // Ignore the port if it is the default port for the current scheme
             if ((int) getservbyname($url['scheme'], 'tcp') !== $url['port']) {
                 $urlString .= ':' . $url['port'];
