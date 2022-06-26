@@ -92,7 +92,7 @@ class SectionParser
         $settings = $iniParser->render($settings);
 
         // Prepare code section for saving
-        $code = trim(array_get($data, 'code', ''));
+        $code = trim(array_get($data, 'code', '') ?? '');
         if ($code) {
             if (isset($wrapCodeInPhpTags) && $wrapCodeInPhpTags === true) {
                 $code = preg_replace('/^\<\?php/', '', $code);

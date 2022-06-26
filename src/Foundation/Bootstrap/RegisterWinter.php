@@ -36,5 +36,9 @@ class RegisterWinter
         if ($themesPath = $app['config']->get('cms.themesPathLocal')) {
             $app->setThemesPath($themesPath);
         }
+
+        if ($tempPath = $app['config']->get('app.tempPath')) {
+            $app->setTempPath($tempPath);
+        }
     }
 }

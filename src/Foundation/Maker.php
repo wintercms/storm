@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Foundation;
 
 use Closure;
-use Illuminate\Contracts\Container\Container;
+use Winter\Storm\Foundation\Application;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use ReflectionClass;
 use ReflectionParameter;
@@ -16,18 +16,19 @@ class Maker
     protected $bindings = [];
 
     /**
-     * @var Container
+     * @var Application
      */
-    protected $container;
+    protected $app;
 
     /**
      * Maker constructor.
      *
-     * @param Container $container
+     * @param Application $app
+     * @return void
      */
-    public function __construct(Container $container)
+    public function __construct(Application $app)
     {
-        $this->container = $container;
+        $this->app = $app;
     }
 
     public function make($abstract, array $parameters = [])
@@ -46,7 +47,7 @@ class Maker
     protected function build($concrete, $parameters)
     {
         if ($concrete instanceof Closure) {
-            return $concrete($this->container, $parameters);
+            return $concrete($this->app, $parameters);
         }
 
         $reflector = new ReflectionClass($concrete);
@@ -190,6 +191,6 @@ class Maker
      */
     protected function getFromContainer($abstract)
     {
-        return $this->container->make($abstract);
+        return $this->app->make($abstract);
     }
 }

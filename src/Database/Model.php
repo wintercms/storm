@@ -20,6 +20,7 @@ class Model extends EloquentModel implements ModelInterface
 {
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
+    use Concerns\HidesAttributes;
     use \Winter\Storm\Support\Traits\Emitter;
     use \Winter\Storm\Extension\ExtendableTrait;
     use \Winter\Storm\Database\Traits\DeferredBinding;

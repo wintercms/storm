@@ -51,7 +51,7 @@ class EncryptableTest extends DbTestCase
 
     protected function createTable()
     {
-        $this->db->schema()->create('secrets', function ($table) {
+        $this->getBuilder()->create('secrets', function ($table) {
             $table->increments('id');
             $table->string('secret');
             $table->timestamps();
