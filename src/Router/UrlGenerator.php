@@ -331,7 +331,7 @@ class UrlGenerator extends UrlGeneratorBase
             if ($i === $k) {
                 if ($prefix) {
                     // Make sure the key is setup for array values
-                    if (Str::endsWith($prefix, '[]')) {
+                    if (Str::endsWith($prefix, ']')) {
                         $key = $prefix;
                     } else {
                         $key = "{$prefix}[]";
