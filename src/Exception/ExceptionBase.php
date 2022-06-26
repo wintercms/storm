@@ -1,8 +1,8 @@
 <?php namespace Winter\Storm\Exception;
 
-use File;
 use Exception;
 use Throwable;
+use Winter\Storm\Support\Facades\File;
 
 /**
  * The base exception class.

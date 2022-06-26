@@ -1,9 +1,8 @@
 <?php namespace Winter\Storm\Database\Models;
 
-use Db;
+use Exception;
 use Carbon\Carbon;
 use Winter\Storm\Database\Model;
-use Exception;
 
 /**
  * Deferred Binding Model

@@ -1,10 +1,10 @@
 <?php namespace Winter\Storm\Auth\Models;
 
-use Str;
-use Hash;
-use Winter\Storm\Database\Model;
-use InvalidArgumentException;
 use Exception;
+use InvalidArgumentException;
+use Illuminate\Support\Facades\Hash;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Database\Model;
 
 /**
  * User model

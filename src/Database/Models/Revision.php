@@ -1,6 +1,5 @@
 <?php namespace Winter\Storm\Database\Models;
 
-use Db;
 use Winter\Storm\Database\Model;
 
 /**

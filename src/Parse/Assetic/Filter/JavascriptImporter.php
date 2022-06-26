@@ -1,9 +1,9 @@
 <?php namespace Winter\Storm\Parse\Assetic\Filter;
 
-use File;
 use RuntimeException;
 use Assetic\Filter\BaseFilter;
 use Assetic\Contracts\Asset\AssetInterface;
+use Winter\Storm\Support\Facades\File;
 
 /**
  * Importer JS Filter

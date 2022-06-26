@@ -1,8 +1,8 @@
 <?php namespace Winter\Storm\Cookie\Middleware;
 
-use Config;
 use Illuminate\Contracts\Encryption\Encrypter as EncrypterContract;
 use Illuminate\Cookie\Middleware\EncryptCookies as EncryptCookiesBase;
+use Winter\Storm\Support\Facades\Config;
 
 class EncryptCookies extends EncryptCookiesBase
 {

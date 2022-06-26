@@ -1,14 +1,14 @@
 <?php namespace Winter\Storm\Foundation\Exception;
 
-use Log;
 use Closure;
-use Response;
 use Throwable;
 use ReflectionClass;
 use ReflectionFunction;
-use Winter\Storm\Exception\AjaxException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Winter\Storm\Exception\AjaxException;
 
 class Handler extends ExceptionHandler
 {
@@ -221,7 +221,7 @@ class Handler extends ExceptionHandler
             } catch (\Throwable $t) {
                 return false;
             }
-        } else if ($expected->getType() instanceof \ReflectionUnionType) {
+        } elseif ($expected->getType() instanceof \ReflectionUnionType) {
             foreach ($expected->getType()->getTypes() as $type) {
                 try {
                     return (new ReflectionClass($type->getName()))

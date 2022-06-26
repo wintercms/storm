@@ -1,8 +1,8 @@
 <?php namespace Winter\Storm\Database\Traits;
 
-use App;
 use Exception;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Contracts\Validation\Rule;
 use Winter\Storm\Support\Str;

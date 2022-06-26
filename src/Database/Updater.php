@@ -1,9 +1,8 @@
 <?php namespace Winter\Storm\Database;
 
-use Db;
-use File;
-use Eloquent;
 use Exception;
+use Winter\Storm\Support\Facades\File;
+use Winter\Storm\Database\Model;
 
 /**
  * Database updater
@@ -27,7 +26,7 @@ class Updater
 
         $this->isValidScript($object, $file);
 
-        Eloquent::unguard();
+        Model::unguard();
 
         if ($object instanceof Updates\Migration && method_exists($object, 'up')) {
             $object->up();
@@ -36,7 +35,7 @@ class Updater
             $object->run();
         }
 
-        Eloquent::reguard();
+        Model::reguard();
 
         return true;
     }

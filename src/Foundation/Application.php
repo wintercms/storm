@@ -1,22 +1,22 @@
 <?php namespace Winter\Storm\Foundation;
 
-use Str;
-use Config;
 use Closure;
 use Throwable;
+use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Collection;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
+use Illuminate\Support\Collection;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
-use Winter\Storm\Router\RoutingServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
 use Winter\Storm\Foundation\ProviderRepository;
+use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
 use Winter\Storm\Foundation\Providers\MakerServiceProvider;
-use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
-use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
+use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Support\Facades\Config;
 
 class Application extends ApplicationBase
 {
