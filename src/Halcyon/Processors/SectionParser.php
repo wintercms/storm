@@ -72,7 +72,7 @@ class SectionParser
         extract($sectionOptions);
 
         if (!isset($isCompoundObject) || $isCompoundObject === false) {
-            return array_get($data, 'content');
+            return array_get($data, 'content', '');
         }
 
         // Prepare settings section for saving
