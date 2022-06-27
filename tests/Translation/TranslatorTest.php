@@ -50,15 +50,25 @@ class TranslatorTest extends TestCase
      */
     public function testChoiceSublocale()
     {
-        $this->translator->setLocale('en-au');
-
         $this->assertEquals(
-            'Page',
-            $this->translator->choice('lang.test.choice', 1)
+            'mom',
+            $this->translator->choice('lang.test.mother', 1)
         );
         $this->assertEquals(
-            'Pages',
-            $this->translator->choice('lang.test.choice', 2)
+            'moms',
+            $this->translator->choice('lang.test.mother', 2)
+        );
+
+        $this->translator->setLocale('en-gb');
+
+        $this->assertEquals(
+            'mum',
+            $this->translator->choice('lang.test.mother', 1)
+        );
+
+        $this->assertEquals(
+            'mums',
+            $this->translator->choice('lang.test.mother', 2)
         );
     }
 
