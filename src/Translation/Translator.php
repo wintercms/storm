@@ -11,8 +11,6 @@ use Illuminate\Translation\Translator as TranslatorBase;
  */
 class Translator extends TranslatorBase
 {
-    use \Winter\Storm\Support\Traits\KeyParser;
-
     const CORE_LOCALE = 'en';
 
     /**
@@ -71,55 +69,29 @@ class Translator extends TranslatorBase
             return $line;
         }
 
-        $locale = $locale ?: $this->locale;
-
-        // For JSON translations, there is only one file per locale, so we will simply load
-        // that file and then we will be ready to check the array for the key. These are
-        // only one level deep so we do not need to do any fancy searching through it.
-        $this->load('*', '*', $locale);
-
-        $line = $this->loaded['*']['*'][$locale][$key] ?? null;
-
-        // If we can't find a translation for the JSON key, we will attempt to translate it
-        // using the typical translation file. This way developers can always just use a
-        // helper such as __ instead of having to pick between trans or __ with views.
-        if (!isset($line)) {
-            if ($line = $this->getValidationSpecific($key, $replace, $locale)) {
-                return $line;
-            }
-
-            list($namespace, $group, $item) = $this->parseKey($key);
-
-            if (is_null($namespace)) {
-                $namespace = '*';
-            }
-
-            // Here we will get the locale that should be used for the language line. If one
-            // was not passed, we will use the default locales which was given to us when
-            // the translator was instantiated. Then, we can load the lines and return.
-            foreach ($this->parseLocale($locale, $fallback) as $locale) {
-                $line = $this->getLine(
-                    $namespace,
-                    $group,
-                    $locale,
-                    $item,
-                    $replace
-                );
-
-                if (!is_null($line)) {
-                    break;
-                }
-            }
+        if ($line = $this->getValidationSpecific($key, $replace, $locale)) {
+            return $line;
         }
 
-        // If the line doesn't exist, we will return back the key which was requested as
-        // that will be quick to spot in the UI if language keys are wrong or missing
-        // from the application's language files. Otherwise we can return the line.
-        if (!isset($line)) {
-            return $this->makeReplacements($key, $replace);
-        }
+        return parent::get($key, $replace, $locale, $fallback);
+    }
 
-        return $line;
+    /**
+     * Set the language string value for a given key in a given locale.
+     *
+     * If no locale is provided, the language string will be set for the default locale.
+     */
+    public function set(array|string $key, array|string|null $value = null, ?string $locale = null): void
+    {
+        if (is_array($key)) {
+            foreach ($key as $itemKey => $itemValue) {
+                $this->set($itemKey, $itemValue, $locale);
+            }
+        } else {
+            $locale = $locale ?: $this->locale;
+
+            $this->loaded['*']['*'][$locale][$key] = $value;
+        }
     }
 
     /**
@@ -162,54 +134,18 @@ class Translator extends TranslatorBase
     }
 
     /**
-     * Get a translation according to an integer value.
-     *
-     * @param  string  $key
-     * @param  int|array|\Countable  $number
-     * @param  array   $replace
-     * @param  string  $locale
-     * @return string
+     * @inheritDoc
      */
-    public function choice($key, $number, array $replace = [], $locale = null)
+    protected function localeForChoice($locale)
     {
-        $line = $this->get(
-            $key,
-            $replace,
-            $locale = $this->localeForChoice($locale)
-        );
+        $locale = parent::localeForChoice($locale);
 
-        // If the given "number" is actually an array or countable we will simply count the
-        // number of elements in an instance. This allows developers to pass an array of
-        // items without having to count it on their end first which gives bad syntax.
-        if (is_array($number) || $number instanceof Countable) {
-            $number = count($number);
-        }
-
-        // Format locale for MessageSelector
-        if (strpos($locale, '-') !== false) {
+        if (!is_null($locale) && str_contains($locale, '-')) {
             $localeParts = explode('-', $locale, 2);
             $locale = $localeParts[0] . '_' . strtoupper($localeParts[1]);
         }
 
-        $replace['count'] = $number;
-
-        return $this->makeReplacements($this->getSelector()->choose($line, $number, $locale), $replace);
-    }
-
-    /**
-     * Get the array of locales to be checked.
-     *
-     * @param  string|null  $locale
-     * @param  bool         $fallback
-     * @return array
-     */
-    protected function parseLocale($locale, $fallback)
-    {
-        $locales = $fallback ? $this->localeArray($locale) : [$locale ?: $this->locale];
-
-        $locales[] = static::CORE_LOCALE;
-
-        return $locales;
+        return $locale;
     }
 
     /**
@@ -232,7 +168,20 @@ class Translator extends TranslatorBase
     }
 
     /**
-     * Register a namespace alias
+     * Get the array of locales to be checked.
+     *
+     * @param  string|null  $locale
+     * @return array
+     */
+    protected function localeArray($locale)
+    {
+        $locales = array_filter([$locale ?: $this->locale, $this->fallback, static::CORE_LOCALE]);
+
+        return call_user_func($this->determineLocalesUsing ?: fn () => $locales, $locales);
+    }
+
+    /**
+     * Register a namespace alias.
      *
      * @param string $namespace The namespace to register an alias for. Example: winter.blog
      * @param string $alias The alias to register. Example: rainlab.blog
