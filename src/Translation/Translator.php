@@ -90,6 +90,8 @@ class Translator extends TranslatorBase
         } else {
             $locale = $locale ?: $this->locale;
 
+            $this->load('*', '*', $locale);
+
             $this->loaded['*']['*'][$locale][$key] = $value;
         }
     }
@@ -175,7 +177,7 @@ class Translator extends TranslatorBase
      */
     protected function localeArray($locale)
     {
-        $locales = array_filter([$locale ?: $this->locale, $this->fallback, static::CORE_LOCALE]);
+        $locales = array_values(array_filter([$locale ?: $this->locale, $this->fallback, static::CORE_LOCALE]));
 
         return call_user_func($this->determineLocalesUsing ?: fn () => $locales, $locales);
     }
