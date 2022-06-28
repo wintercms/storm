@@ -346,19 +346,6 @@ class TranslatorTest extends TestCase
         );
     }
 
-    public function testOverrideWithBeforeResolveEvent()
-    {
-        $eventsDispatcher = $this->createMock(Dispatcher::class);
-        $eventsDispatcher
-            ->expects($this->exactly(2))
-            ->method('fire')
-            ->will($this->onConsecutiveCalls('Hello Override!', null));
-        $this->translator->setEventDispatcher($eventsDispatcher);
-
-        $this->assertEquals('Hello Override!', $this->translator->get('lang.test.hello_override'));
-        $this->assertEquals('Hello Winter!', $this->translator->get('lang.test.hello_winter'));
-    }
-
     public function testNamespaceAliasing()
     {
         $this->translator->registerNamespaceAlias('winter.test', 'winter.alias');
