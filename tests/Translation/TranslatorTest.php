@@ -207,6 +207,17 @@ class TranslatorTest extends TestCase
         // Shouldn't be changed
         $this->assertEquals('Speed', $this->translator->get('winter.test::lang.test.winter.speed'));
         $this->assertEquals('Security', $this->translator->get('winter.test::lang.test.winter.security'));
+
+        $this->translator->setLocale('en');
+
+        $this->assertEquals('Hello Winter!', $this->translator->get('winter.test::lang.test.hello_winter'));
+        $this->assertEquals('Welcome to Winter!', $this->translator->get('winter.test::lang.test.welcome_to_winter'));
+        $this->assertEquals('Simplicity', $this->translator->get('winter.test::lang.test.winter.simplicity'));
+        $this->assertEquals('Stability', $this->translator->get('winter.test::lang.test.winter.stability'));
+
+        // Shouldn't be changed
+        $this->assertEquals('Speed', $this->translator->get('winter.test::lang.test.winter.speed'));
+        $this->assertEquals('Security', $this->translator->get('winter.test::lang.test.winter.security'));
     }
 
     public function testChoiceMethodProperlyLoadsAndRetrievesItem()
