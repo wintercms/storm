@@ -49,26 +49,6 @@ class Translator extends TranslatorBase
      */
     public function get($key, array $replace = [], $locale = null, $fallback = true)
     {
-        /**
-         * @event translator.beforeResolve
-         * Fires before the translator resolves the requested language key
-         *
-         * >**NOTE:** It is highly recommended to use [project level localization overrides](https://wintercms.com/docs/plugin/localization#overriding) before reaching for this event.
-         *
-         * Example usage (overrides the value returned for a specific language key):
-         *
-         *     Event::listen('translator.beforeResolve', function ((string) $key, (array) $replace, (string|null) $locale) {
-         *         if ($key === 'my.custom.key') {
-         *             return 'My overriding value';
-         *         }
-         *     });
-         *
-         */
-        if (isset($this->events) &&
-            ($line = $this->events->fire('translator.beforeResolve', [$key, $replace, $locale], true))) {
-            return $line;
-        }
-
         if ($line = $this->getValidationSpecific($key, $replace, $locale)) {
             return $line;
         }
