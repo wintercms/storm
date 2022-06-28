@@ -184,6 +184,31 @@ class TranslatorTest extends TestCase
         $this->assertEquals('Welcome to Winter!', $translator->get('winter.test::lang.test.welcome_to_winter'));
     }
 
+    public function testSetMethodCanOverwriteAnEntireGroupForALocale()
+    {
+        $this->translator->set('winter.test::lang', [
+            'test' => [
+                'hello_winter' => 'Sup Winter?',
+                'welcome_to_winter' => 'It\'s time for Winter!',
+                'winter' => [
+                    'simplicity' => 'Fully simple',
+                    'stability' => 'Fully stable',
+                ],
+            ],
+        ], 'en_BT');
+
+        $this->translator->setLocale('en_BT');
+
+        $this->assertEquals('Sup Winter?', $this->translator->get('winter.test::lang.test.hello_winter'));
+        $this->assertEquals('It\'s time for Winter!', $this->translator->get('winter.test::lang.test.welcome_to_winter'));
+        $this->assertEquals('Fully simple', $this->translator->get('winter.test::lang.test.winter.simplicity'));
+        $this->assertEquals('Fully stable', $this->translator->get('winter.test::lang.test.winter.stability'));
+
+        // Shouldn't be changed
+        $this->assertEquals('Speed', $this->translator->get('winter.test::lang.test.winter.speed'));
+        $this->assertEquals('Security', $this->translator->get('winter.test::lang.test.winter.security'));
+    }
+
     public function testChoiceMethodProperlyLoadsAndRetrievesItem()
     {
         $t = $this->getMockBuilder(Translator::class)->onlyMethods(['get'])->setConstructorArgs([$this->getLoader(), 'en'])->getMock();

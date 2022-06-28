@@ -72,7 +72,17 @@ class Translator extends TranslatorBase
 
             $this->load('*', '*', $locale);
 
-            $this->loaded['*']['*'][$locale][$key] = $value;
+            if (is_array($value)) {
+                foreach ($value as $langKey => $langValue) {
+                    if (is_array($langValue)) {
+                        $this->set($key . '.' . $langKey, $langValue, $locale);
+                    } else {
+                        $this->loaded['*']['*'][$locale][$key . '.' . $langKey] = $langValue;
+                    }
+                }
+            } else {
+                $this->loaded['*']['*'][$locale][$key] = $value;
+            }
         }
     }
 
