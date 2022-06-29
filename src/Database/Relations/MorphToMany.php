@@ -51,6 +51,7 @@ class MorphToMany extends BaseMorphToMany
         parent::__construct(
             $query,
             $parent,
+            $name,
             $table,
             $foreignKey,
             $otherKey,
