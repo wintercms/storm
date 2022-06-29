@@ -828,7 +828,7 @@ class FormBuilder
      *
      * @param  string  $name
      * @param  array   $attributes
-     * @return string|null
+     * @return string
      */
     public function getIdAttribute($name, $attributes)
     {
