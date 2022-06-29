@@ -45,8 +45,10 @@ class MorphToMany extends BelongsToMany
      * @param  \Illuminate\Database\Eloquent\Model  $parent
      * @param  string  $name
      * @param  string  $table
-     * @param  string  $foreignKey
-     * @param  string  $otherKey
+     * @param  string  $foreignPivotKey
+     * @param  string  $relatedPivotKey
+     * @param  string  $parentKey
+     * @param  string  $relatedKey
      * @param  string  $relationName
      * @param  bool  $inverse
      * @return void
@@ -56,8 +58,8 @@ class MorphToMany extends BelongsToMany
         Model $parent,
         $name,
         $table,
-        $foreignKey,
-        $otherKey,
+        $foreignPivotKey,
+        $relatedPivotKey,
         $parentKey,
         $relatedKey,
         $relationName = null,
@@ -73,8 +75,8 @@ class MorphToMany extends BelongsToMany
             $query,
             $parent,
             $table,
-            $foreignKey,
-            $otherKey,
+            $foreignPivotKey,
+            $relatedPivotKey,
             $parentKey,
             $relatedKey,
             $relationName

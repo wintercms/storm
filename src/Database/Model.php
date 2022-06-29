@@ -723,7 +723,7 @@ class Model extends EloquentModel
     {
         return $using
             ? $using::fromRawAttributes($parent, $attributes, $table, $exists)
-            : new Pivot($parent, $attributes, $table, $exists);
+            : Pivot::fromAttributes($parent, $attributes, $table, $exists);
     }
 
     /**
@@ -741,7 +741,7 @@ class Model extends EloquentModel
 
         if (!is_null($definition) && array_key_exists('pivotModel', $definition)) {
             $pivotModel = $definition['pivotModel'];
-            return new $pivotModel($parent, $attributes, $table, $exists);
+            return $pivotModel::fromAttributes($parent, $attributes, $table, $exists);
         }
     }
 
