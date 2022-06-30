@@ -161,6 +161,7 @@ class Application extends ApplicationBase
         $this->instance('path.temp', $this->tempPath());
         $this->instance('path.uploads', $this->uploadsPath());
         $this->instance('path.media', $this->mediaPath());
+        $this->instance('path.lang', $this->langPath());
     }
 
     /**
