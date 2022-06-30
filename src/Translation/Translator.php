@@ -132,7 +132,7 @@ class Translator extends TranslatorBase
     {
         $locale = parent::localeForChoice($locale);
 
-        if (!is_null($locale) && str_contains($locale, '-')) {
+        if (str_contains($locale, '-')) {
             $localeParts = explode('-', $locale, 2);
             $locale = $localeParts[0] . '_' . strtoupper($localeParts[1]);
         }
@@ -167,9 +167,13 @@ class Translator extends TranslatorBase
      */
     protected function localeArray($locale)
     {
-        $locales = array_values(array_filter([$locale ?: $this->locale, $this->fallback, static::CORE_LOCALE]));
+        $locales = array_values(parent::localeArray($locale));
 
-        return call_user_func($this->determineLocalesUsing ?: fn () => $locales, $locales);
+        if (!in_array(static::CORE_LOCALE, $locales)) {
+            $locales[] = static::CORE_LOCALE;
+        }
+
+        return $locales;
     }
 
     /**
