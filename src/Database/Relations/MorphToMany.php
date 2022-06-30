@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
  * As of 1.2.0, this relation has been refactored to extend the Eloquent `MorphToMany` relation,
  * to maintain covariance with Laravel. We instead use the `Concerns\BelongsOrMorphsToMany` trait
  * to provide base `BaseToMany` functionality that includes Winter overrides.
+ *
+ * @phpstan-property \Winter\Storm\Database\Model $parent
  */
 class MorphToMany extends BaseMorphToMany
 {

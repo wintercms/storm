@@ -6,6 +6,9 @@ use Illuminate\Database\PDO\SQLiteDriver;
 use Winter\Storm\Database\Query\Grammars\SQLiteGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
 
+/**
+ * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
+ */
 class SQLiteConnection extends Connection
 {
     /**

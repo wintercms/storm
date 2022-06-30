@@ -1,10 +1,13 @@
 <?php namespace Winter\Storm\Database\Relations;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany as MorphManyBase;
 use Winter\Storm\Database\Attach\File as FileModel;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class AttachMany extends MorphManyBase
 {
     use Concerns\AttachOneOrMany;

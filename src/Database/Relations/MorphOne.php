@@ -4,6 +4,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class MorphOne extends MorphOneBase
 {
     use Concerns\MorphOneOrMany;

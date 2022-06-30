@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
 use Illuminate\Database\Eloquent\Relations\HasMany as HasManyBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class HasMany extends HasManyBase
 {
     use Concerns\HasOneOrMany;

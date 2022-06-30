@@ -4,6 +4,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $child
+ */
 class BelongsTo extends BelongsToBase
 {
     use Concerns\DeferOneOrMany;

@@ -4,6 +4,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class HasOne extends HasOneBase
 {
     use Concerns\HasOneOrMany;

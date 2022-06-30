@@ -9,6 +9,9 @@ use Illuminate\Database\Query\Processors\SqlServerProcessor;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
 use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 
+/**
+ * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
+ */
 class SqlServerConnection extends Connection
 {
     /**

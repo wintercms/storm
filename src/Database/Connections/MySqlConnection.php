@@ -7,6 +7,9 @@ use Illuminate\Database\Query\Processors\MySqlProcessor;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
 
+/**
+ * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
+ */
 class MySqlConnection extends Connection
 {
     /**

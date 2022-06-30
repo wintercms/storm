@@ -6,7 +6,6 @@ class Purgeable extends \Winter\Storm\Extension\ExtensionBase
      * Model to purge.
      *
      * @var \Winter\Storm\Database\Model
-     * @property array $purgeable
      */
     protected $model;
 

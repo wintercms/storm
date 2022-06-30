@@ -5,6 +5,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 use Winter\Storm\Database\Attach\File as FileModel;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class AttachOne extends MorphOneBase
 {
     use Concerns\AttachOneOrMany;

@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Collection as CollectionBase;
  * Extends Eloquent with added extendability and deferred bindings.
  *
  * @author Alexey Bobkov, Samuel Georges
+ *
+ * @phpstan-property \Illuminate\Contracts\Events\Dispatcher|null $dispatcher
  */
 class Model extends EloquentModel implements ModelInterface
 {
