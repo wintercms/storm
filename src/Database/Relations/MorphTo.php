@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
  */
 class MorphTo extends MorphToBase
 {
+    use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
 
     /**

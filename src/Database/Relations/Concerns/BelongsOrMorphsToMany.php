@@ -378,7 +378,7 @@ trait BelongsOrMorphsToMany
      * Get all of the IDs for the related models, with deferred binding support
      *
      * @param string $sessionKey
-     * @return \Winter\Storm\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function allRelatedIds($sessionKey = null)
     {

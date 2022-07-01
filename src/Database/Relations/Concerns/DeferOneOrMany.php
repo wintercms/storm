@@ -1,14 +1,14 @@
 <?php namespace Winter\Storm\Database\Relations\Concerns;
 
 use Winter\Storm\Support\Facades\DbDongle;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
+use Winter\Storm\Database\Relations\BelongsToMany;
 use Winter\Storm\Database\Relations\MorphToMany;
 
 trait DeferOneOrMany
 {
     /**
      * Returns the model query with deferred bindings added
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function withDeferred($sessionKey)
     {
@@ -21,7 +21,7 @@ trait DeferOneOrMany
         /*
          * No join table will be used, strip the selected "pivot_" columns
          */
-        if ($this instanceof BelongsToManyBase) {
+        if ($this instanceof BelongsToMany || $this instanceof MorphToMany) {
             $this->orphanMode = true;
         }
 
@@ -42,10 +42,9 @@ trait DeferOneOrMany
                             ->where($this->getForeignKey(), $this->parent->getKey())
                             ->where($this->getMorphType(), $this->getMorphClass());
                     });
-                }
-                elseif ($this instanceof BelongsToManyBase) {
+                } elseif ($this instanceof BelongsToMany) {
                     /*
-                     * Custom query for BelongsToManyBase since a "join" cannot be used
+                     * Custom query for BelongsToMany since a "join" cannot be used
                      */
                     $query->whereExists(function ($query) {
                         $query
@@ -56,8 +55,7 @@ trait DeferOneOrMany
                             ))
                             ->where($this->getForeignKey(), $this->parent->getKey());
                     });
-                }
-                else {
+                } else {
                     /*
                      * Trick the relation to add constraints to this nested query
                      */

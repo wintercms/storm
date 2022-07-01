@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
 class MorphToMany extends BaseMorphToMany
 {
     use Concerns\BelongsOrMorphsToMany;
+    use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
 
     /**
