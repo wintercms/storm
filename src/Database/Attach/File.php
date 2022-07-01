@@ -548,8 +548,7 @@ class File extends Model
         try {
             $this->deleteThumbs();
             $this->deleteFile();
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
         }
     }
 
