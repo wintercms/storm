@@ -25,7 +25,7 @@ class FormBuilder
     /**
      * The CSRF token used by the form builder.
      */
-    protected string $csrfToken;
+    protected ?string $csrfToken = null;
 
     /**
      * The session store implementation.
@@ -93,14 +93,13 @@ class FormBuilder
 
     /**
      * The session key used by the form builder.
-     * @var string
      */
-    protected string $sessionKey;
+    protected ?string $sessionKey = null;
 
     /**
      * Create a new form builder instance.
      */
-    public function __construct(HtmlBuilder $html, UrlGeneratorBase $url, string $csrfToken, string $sessionKey)
+    public function __construct(HtmlBuilder $html, UrlGeneratorBase $url, ?string $csrfToken = null, ?string $sessionKey = null)
     {
         $this->url = $url;
         $this->html = $html;
