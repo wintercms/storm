@@ -999,7 +999,7 @@ class FormBuilder
 
     /**
      * Returns the active session key, used fr deferred bindings.
-     * @return string
+     * @return string|null
      */
     public function getSessionKey()
     {
