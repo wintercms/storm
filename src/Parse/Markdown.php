@@ -31,9 +31,9 @@ class Markdown
     use \Winter\Storm\Support\Traits\Emitter;
 
     /**
-     * @var \Winter\Storm\Parse\Parsedown\Parsedown Parsedown instance
+     * @var string Parsedown class
      */
-    protected $parserClass;
+    protected $parserClass = \Winter\Storm\Parse\Parsedown\Parsedown::class;
 
     /**
      * Gets an instance of the parser.
@@ -50,12 +50,16 @@ class Markdown
     /**
      * Sets the Markdown parser.
      *
-     * @param Parsedown $parser
+     * @param string|object $parserClass
      * @return void
      */
-    public function setParser(Parsedown $parser)
+    public function setParser(string|object $parserClass)
     {
-        $this->parserClass = $parser;
+        if (is_object($parserClass)) {
+            $this->parserClass = get_class($parserClass);
+        } else {
+            $this->parserClass = $parserClass;
+        }
     }
 
     /**
