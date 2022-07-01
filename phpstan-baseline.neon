@@ -211,16 +211,6 @@ parameters:
 			path: src/Database/Relations/AttachMany.php
 
 		-
-			message: "#^Method Winter\\\\Storm\\\\Database\\\\Relations\\\\AttachMany\\:\\:withDeferred\\(\\) should return Illuminate\\\\Database\\\\Query\\\\Builder but returns Illuminate\\\\Database\\\\Eloquent\\\\Builder\\.$#"
-			count: 1
-			path: src/Database/Relations/AttachMany.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\AttachMany\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\AttachMany\\) given\\.$#"
-			count: 2
-			path: src/Database/Relations/AttachMany.php
-
-		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/AttachOne.php
@@ -261,16 +251,6 @@ parameters:
 			path: src/Database/Relations/AttachOne.php
 
 		-
-			message: "#^Method Winter\\\\Storm\\\\Database\\\\Relations\\\\AttachOne\\:\\:withDeferred\\(\\) should return Illuminate\\\\Database\\\\Query\\\\Builder but returns Illuminate\\\\Database\\\\Eloquent\\\\Builder\\.$#"
-			count: 1
-			path: src/Database/Relations/AttachOne.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\AttachOne\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\AttachOne\\) given\\.$#"
-			count: 2
-			path: src/Database/Relations/AttachOne.php
-
-		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/BelongsTo.php
@@ -308,16 +288,6 @@ parameters:
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:withTimestamps\\(\\)\\.$#"
 			count: 1
-			path: src/Database/Relations/BelongsTo.php
-
-		-
-			message: "#^Method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsTo\\:\\:withDeferred\\(\\) should return Illuminate\\\\Database\\\\Query\\\\Builder but returns Illuminate\\\\Database\\\\Eloquent\\\\Builder\\.$#"
-			count: 1
-			path: src/Database/Relations/BelongsTo.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsTo\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsTo\\) given\\.$#"
-			count: 2
 			path: src/Database/Relations/BelongsTo.php
 
 		-
@@ -401,21 +371,6 @@ parameters:
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:allRelatedIds\\(\\) should return Winter\\\\Storm\\\\Support\\\\Collection but returns Illuminate\\\\Support\\\\Collection\\.$#"
-			count: 1
-			path: src/Database/Relations/BelongsToMany.php
-
-		-
-			message: "#^Method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:withDeferred\\(\\) should return Illuminate\\\\Database\\\\Query\\\\Builder but returns Illuminate\\\\Database\\\\Eloquent\\\\Builder\\.$#"
-			count: 1
-			path: src/Database/Relations/BelongsToMany.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\) given\\.$#"
-			count: 2
-			path: src/Database/Relations/BelongsToMany.php
-
-		-
 			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects array, int\\|null given\\.$#"
 			count: 1
 			path: src/Database/Relations/BelongsToMany.php
@@ -486,16 +441,6 @@ parameters:
 			path: src/Database/Relations/HasMany.php
 
 		-
-			message: "#^Method Winter\\\\Storm\\\\Database\\\\Relations\\\\HasMany\\:\\:withDeferred\\(\\) should return Illuminate\\\\Database\\\\Query\\\\Builder but returns Illuminate\\\\Database\\\\Eloquent\\\\Builder\\.$#"
-			count: 1
-			path: src/Database/Relations/HasMany.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\HasMany\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\HasMany\\) given\\.$#"
-			count: 2
-			path: src/Database/Relations/HasMany.php
-
-		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/HasManyThrough.php
@@ -522,11 +467,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:withTimestamps\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasManyThrough.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\HasManyThrough\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\HasManyThrough\\) given\\.$#"
 			count: 1
 			path: src/Database/Relations/HasManyThrough.php
 
@@ -566,16 +506,6 @@ parameters:
 			path: src/Database/Relations/HasOne.php
 
 		-
-			message: "#^Method Winter\\\\Storm\\\\Database\\\\Relations\\\\HasOne\\:\\:withDeferred\\(\\) should return Illuminate\\\\Database\\\\Query\\\\Builder but returns Illuminate\\\\Database\\\\Eloquent\\\\Builder\\.$#"
-			count: 1
-			path: src/Database/Relations/HasOne.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\HasOne\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\HasOne\\) given\\.$#"
-			count: 2
-			path: src/Database/Relations/HasOne.php
-
-		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/HasOneThrough.php
@@ -602,11 +532,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:withTimestamps\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasOneThrough.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\HasOneThrough\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\HasOneThrough\\) given\\.$#"
 			count: 1
 			path: src/Database/Relations/HasOneThrough.php
 
@@ -656,16 +581,6 @@ parameters:
 			path: src/Database/Relations/MorphMany.php
 
 		-
-			message: "#^Method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphMany\\:\\:withDeferred\\(\\) should return Illuminate\\\\Database\\\\Query\\\\Builder but returns Illuminate\\\\Database\\\\Eloquent\\\\Builder\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphMany.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphMany\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphMany\\) given\\.$#"
-			count: 2
-			path: src/Database/Relations/MorphMany.php
-
-		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/MorphOne.php
@@ -701,16 +616,6 @@ parameters:
 			path: src/Database/Relations/MorphOne.php
 
 		-
-			message: "#^Method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphOne\\:\\:withDeferred\\(\\) should return Illuminate\\\\Database\\\\Query\\\\Builder but returns Illuminate\\\\Database\\\\Eloquent\\\\Builder\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphOne.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphOne\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphOne\\) given\\.$#"
-			count: 2
-			path: src/Database/Relations/MorphOne.php
-
-		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/MorphTo.php
@@ -742,11 +647,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:withTimestamps\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphTo.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphTo\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphTo\\) given\\.$#"
 			count: 1
 			path: src/Database/Relations/MorphTo.php
 
@@ -791,16 +691,6 @@ parameters:
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:withDeferred\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphToMany.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:addDefinedConstraintsToQuery\\(\\) expects Winter\\\\Storm\\\\Database\\\\QueryBuilder, \\$this\\(Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\) given\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphToMany.php
-
-		-
 			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects array, int\\|null given\\.$#"
 			count: 1
 			path: src/Database/Relations/MorphToMany.php
@@ -839,16 +729,6 @@ parameters:
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:getParentId\\(\\)\\.$#"
 			count: 1
 			path: src/Database/TreeCollection.php
-
-		-
-			message: "#^Call to static method reguard\\(\\) on an unknown class Winter\\\\Storm\\\\Database\\\\Eloquent\\.$#"
-			count: 1
-			path: src/Database/Updater.php
-
-		-
-			message: "#^Call to static method unguard\\(\\) on an unknown class Winter\\\\Storm\\\\Database\\\\Eloquent\\.$#"
-			count: 1
-			path: src/Database/Updater.php
 
 		-
 			message: "#^Winter\\\\Storm\\\\Extension\\\\Extendable\\:\\:extendableCall\\(\\) calls parent\\:\\:__call\\(\\) but Winter\\\\Storm\\\\Extension\\\\Extendable does not extend any class\\.$#"
