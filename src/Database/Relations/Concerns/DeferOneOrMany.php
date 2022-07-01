@@ -21,6 +21,7 @@ trait DeferOneOrMany
         /*
          * No join table will be used, strip the selected "pivot_" columns
          */
+        /** @phpstan-ignore-next-line */
         if ($this instanceof BelongsToMany || $this instanceof MorphToMany) {
             $this->orphanMode = true;
         }
@@ -28,6 +29,7 @@ trait DeferOneOrMany
         $newQuery->where(function ($query) use ($sessionKey) {
 
             if ($this->parent->exists) {
+                /** @phpstan-ignore-next-line */
                 if ($this instanceof MorphToMany) {
                     /*
                      * Custom query for MorphToMany since a "join" cannot be used
@@ -42,6 +44,7 @@ trait DeferOneOrMany
                             ->where($this->getForeignKey(), $this->parent->getKey())
                             ->where($this->getMorphType(), $this->getMorphClass());
                     });
+                /** @phpstan-ignore-next-line */
                 } elseif ($this instanceof BelongsToMany) {
                     /*
                      * Custom query for BelongsToMany since a "join" cannot be used
