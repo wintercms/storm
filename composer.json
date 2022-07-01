@@ -77,15 +77,17 @@
             "src/Html/helpers.php"
         ],
         "psr-4": {
-            "Winter\\Storm\\": "src/",
-            "Winter\\Storm\\Tests\\": "tests/"
+            "Winter\\Storm\\": "src/"
         }
     },
     "autoload-dev": {
         "classmap": [
             "tests/TestCase.php",
             "tests/DbTestCase.php"
-        ]
+        ],
+        "psr-4": {
+            "Winter\\Storm\\Tests\\": "tests/"
+        }
     },
     "scripts": {
         "test": [
