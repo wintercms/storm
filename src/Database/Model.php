@@ -91,7 +91,7 @@ class Model extends EloquentModel implements ModelInterface
     {
         $model = new static($attributes);
 
-        $model->save(null, $sessionKey);
+        $model->save([], $sessionKey);
 
         return $model;
     }
@@ -764,7 +764,7 @@ class Model extends EloquentModel implements ModelInterface
      * @param array $options
      * @return bool
      */
-    protected function saveInternal($options = [])
+    protected function saveInternal(array $options = [])
     {
         /**
          * @event model.saveInternal
@@ -805,15 +805,6 @@ class Model extends EloquentModel implements ModelInterface
             return $result;
         }
 
-        /*
-         * If there is nothing to update, Eloquent will not fire afterSave(),
-         * events should still fire for consistency.
-         */
-        if ($result === null) {
-            $this->fireModelEvent('updated', false);
-            $this->fireModelEvent('saved', false);
-        }
-
         // Apply post deferred bindings
         if ($this->sessionKey !== null) {
             $this->commitDeferredAfter($this->sessionKey);
@@ -824,11 +815,11 @@ class Model extends EloquentModel implements ModelInterface
 
     /**
      * Save the model to the database.
-     * @param array|null $options
+     * @param array $options
      * @param string|null $sessionKey
      * @return bool
      */
-    public function save(array $options = null, $sessionKey = null)
+    public function save(?array $options = [], $sessionKey = null)
     {
         $this->sessionKey = $sessionKey;
         return $this->saveInternal(['force' => false] + (array) $options);
@@ -836,15 +827,16 @@ class Model extends EloquentModel implements ModelInterface
 
     /**
      * Save the model and all of its relationships.
+     *
      * @param array $options
-     * @param null $sessionKey
+     * @param string|null $sessionKey
      * @return bool
      */
-    public function push($options = null, $sessionKey = null)
+    public function push(?array $options = [], $sessionKey = null)
     {
         $always = Arr::get($options, 'always', false);
 
-        if (!$this->save(null, $sessionKey) && !$always) {
+        if (!$this->save([], $sessionKey) && !$always) {
             return false;
         }
 
@@ -876,11 +868,12 @@ class Model extends EloquentModel implements ModelInterface
     /**
      * Pushes the first level of relations even if the parent
      * model has no changes.
+     *
      * @param array $options
-     * @param string $sessionKey
+     * @param string|null $sessionKey
      * @return bool
      */
-    public function alwaysPush($options, $sessionKey)
+    public function alwaysPush(?array $options = [], $sessionKey = null)
     {
         return $this->push(['always' => true] + (array) $options, $sessionKey);
     }

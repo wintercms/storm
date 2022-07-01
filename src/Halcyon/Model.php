@@ -1214,7 +1214,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      * @param  array  $options
      * @return bool
      */
-    public function save(array $options = null)
+    public function save(?array $options = [])
     {
         return $this->saveInternal(['force' => false] + (array) $options);
     }
@@ -1244,14 +1244,14 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
         }
 
         if ($this->exists) {
-            $saved = $this->performUpdate($query, $options);
+            $saved = $this->performUpdate($query);
         }
         else {
-            $saved = $this->performInsert($query, $options);
+            $saved = $this->performInsert($query);
         }
 
         if ($saved) {
-            $this->finishSave($options);
+            $this->finishSave();
         }
 
         return $saved;
@@ -1260,10 +1260,9 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
     /**
      * Finish processing on a successful save operation.
      *
-     * @param  array  $options
      * @return void
      */
-    protected function finishSave(array $options)
+    protected function finishSave()
     {
         $this->fireModelEvent('saved', false);
 
@@ -1276,10 +1275,9 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      * Perform a model update operation.
      *
      * @param  \Winter\Storm\Halcyon\Builder  $query
-     * @param  array  $options
      * @return bool
      */
-    protected function performUpdate(Builder $query, array $options = [])
+    protected function performUpdate(Builder $query)
     {
         $dirty = $this->getDirty();
 
@@ -1309,10 +1307,9 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      * Perform a model insert operation.
      *
      * @param  \Winter\Storm\Halcyon\Builder  $query
-     * @param  array  $options
      * @return bool
      */
-    protected function performInsert(Builder $query, array $options = [])
+    protected function performInsert(Builder $query)
     {
         if ($this->fireModelEvent('creating') === false) {
             return false;
