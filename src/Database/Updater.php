@@ -53,13 +53,13 @@ class Updater
 
         $this->isValidScript($object, $file);
 
-        Eloquent::unguard();
+        Model::unguard();
 
         if ($object instanceof Updates\Migration && method_exists($object, 'down')) {
             $object->down();
         }
 
-        Eloquent::reguard();
+        Model::reguard();
 
         return true;
     }
