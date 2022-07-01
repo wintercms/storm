@@ -39,7 +39,7 @@ trait DeferOneOrMany
                             ->select($this->parent->getConnection()->raw(1))
                             ->from($this->table)
                             ->where($this->getOtherKey(), DbDongle::raw(
-                                DbDongle::getTablePrefix().$this->related->getQualifiedKeyName()
+                                DbDongle::getTablePrefix() . $this->related->getQualifiedKeyName()
                             ))
                             ->where($this->getForeignKey(), $this->parent->getKey())
                             ->where($this->getMorphType(), $this->getMorphClass());
