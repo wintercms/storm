@@ -77,7 +77,8 @@
             "src/Html/helpers.php"
         ],
         "psr-4": {
-            "Winter\\Storm\\": "src/"
+            "Winter\\Storm\\": "src/",
+            "Winter\\Storm\\Tests\\": "tests/"
         }
     },
     "autoload-dev": {

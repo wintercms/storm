@@ -4,6 +4,7 @@ namespace Winter\Storm\Tests\Database;
 
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\MorphPivot;
+use Winter\Storm\Tests\Database\Fixtures\CustomMorphPivot;
 
 class MorphPivotTest extends \DbTestCase
 {
@@ -119,7 +120,7 @@ class CustomPost extends Post
             'table' => 'taggings',
             'name' => 'taggable',
             'pivot' => ['hidden'],
-            'pivotModel' => CustomPivot::class,
+            'pivotModel' => CustomMorphPivot::class,
         ],
     ];
 }
@@ -140,8 +141,4 @@ class Tag extends Model
     public $fillable = [
         'name',
     ];
-}
-
-class CustomMorphPivot extends MorphPivot
-{
 }
