@@ -632,7 +632,7 @@ class File extends Model
      *              ]
      * @return string The filename of the thumbnail
      */
-    public function getThumbFilename($width, $height, $options = []): string
+    public function getThumbFilename($width, $height, $options = [])
     {
         $options = $this->getDefaultThumbOptions($options);
         return implode('_', [
