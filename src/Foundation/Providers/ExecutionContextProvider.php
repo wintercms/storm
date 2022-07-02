@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Foundation\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Winter\Storm\Support\Str;
 
 class ExecutionContextProvider extends ServiceProvider
 {
@@ -37,6 +38,6 @@ class ExecutionContextProvider extends ServiceProvider
             return '/';
         }
 
-        return (substr($url, 0, 1) !== '/') ? '/' . $url : $url;
+        return (!Str::startsWith($url, '/')) ? '/' . $url : $url;
     }
 }
