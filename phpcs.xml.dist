@@ -9,12 +9,13 @@
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace" />
         <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace" />
+
+        <!--  We're not enforcing a line length limit -->
+        <exclude name="Generic.Files.LineLength" />
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
-        <!--
-        Migrations and tests do not need a namespace defined
-        -->
+        <!-- Migrations and tests do not need a namespace defined -->
         <exclude-pattern>*/src/Auth/Migrations/*\.php</exclude-pattern>
         <exclude-pattern>*/src/Database/Migrations/*\.php</exclude-pattern>
         <exclude-pattern>*/tests/*</exclude-pattern>
@@ -27,6 +28,9 @@
         -->
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
+
+    <arg name="extensions" value="php" />
+    <arg name="colors" />
 
     <file>src/</file>
     <file>tests/</file>

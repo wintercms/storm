@@ -1,10 +1,9 @@
 <?php namespace Winter\Storm\Database;
 
-use Db;
-use Str;
 use Closure;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Exception;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Winter\Storm\Support\Facades\DB;
 
 /**
  * Model Data Feed class.
@@ -36,12 +35,12 @@ class DataFeed
     public $sortDirection = 'desc';
 
     /**
-     * @var string Limits the number of results.
+     * @var int Limits the number of results.
      */
     public $limitCount = null;
 
     /**
-     * @var string Set the limit offset.
+     * @var int Set the limit offset.
      */
     public $limitOffset = null;
 
@@ -51,9 +50,9 @@ class DataFeed
     protected $collection = [];
 
     /**
-     * @var Builder Cache containing the generic collection union query.
+     * @var Builder|null Cache containing the generic collection union query.
      */
-    protected $queryCache;
+    protected ?Builder $queryCache;
 
     /**
      * @var bool
@@ -97,7 +96,7 @@ class DataFeed
         $query = $this->processCollection();
         $bindings = $query->bindings;
         $records = sprintf("(%s) as records", $query->toSql());
-        $result = Db::table(Db::raw($records))->selectRaw("COUNT(*) as total");
+        $result = DB::table(DB::raw($records))->selectRaw("COUNT(*) as total");
 
         // Set the bindings, if present
         foreach ($bindings as $type => $params) {
@@ -134,8 +133,8 @@ class DataFeed
          */
         $mixedArray = [];
         foreach ($records as $record) {
-            $tagName = $record->{$this->tagVar};
-            $mixedArray[$tagName][] = $record->id;
+            $tagName = $record->getAttribute($this->tagVar);
+            $mixedArray[$tagName][] = $record->getKey();
         }
 
         /*
@@ -155,8 +154,8 @@ class DataFeed
         foreach ($records as $record) {
             $tagName = $record->{$this->tagVar};
 
-            $obj = $collectionArray[$tagName]->find($record->id);
-            $obj->{$this->tagVar} = $tagName;
+            $obj = $collectionArray[$tagName]->find($record->getKey());
+            $obj->setAttribute($this->tagVar, $tagName);
 
             $dataArray[] = $obj;
         }

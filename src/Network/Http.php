@@ -94,7 +94,7 @@ class Http
     public $rawBody = '';
 
     /**
-     * @var array The last returned HTTP code.
+     * @var int The last returned HTTP code.
      */
     public $code;
 
@@ -331,6 +331,18 @@ class Http
                 stream_filter_append($stream, $this->streamFilter, STREAM_FILTER_WRITE);
             }
 
+            if ($headerStream === false) {
+                throw new ApplicationException('Unable to create a temporary header stream');
+            }
+            if ($stream === false) {
+                throw new ApplicationException(
+                    sprintf(
+                        'Unable to stream file contents from HTTP response to "%s". Please check your permissions.',
+                        $this->streamFile
+                    )
+                );
+            }
+
             curl_setopt($curl, CURLOPT_HEADER, false);
             curl_setopt($curl, CURLOPT_WRITEHEADER, $headerStream);
             curl_setopt($curl, CURLOPT_FILE, $stream);
@@ -356,7 +368,7 @@ class Http
          */
         curl_close($curl);
 
-        if ($this->streamFile) {
+        if ($this->streamFile && !empty($stream) && !empty($headerStream)) {
             rewind($headerStream);
             $this->headers = $this->headerToArray(stream_get_contents($headerStream));
             fclose($headerStream);
@@ -556,9 +568,13 @@ class Http
     }
 
     /**
-     * Add a single option to the request.
-     * @param string $option
-     * @param string $value
+     * Add single or multiple CURL options to this request.
+     *
+     * You must either provide a constant or string that represents a CURL_* constant as the $option,
+     * and a $value to set a single option, or you may provide an array of CURL_* constants and values instead.
+     *
+     * @param array|string|int $option
+     * @param mixed $value
      * @return self
      */
     public function setOption($option, $value = null)

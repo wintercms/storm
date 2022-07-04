@@ -45,7 +45,7 @@ class Schema extends Facade
     /**
      * Get a schema builder instance for the default connection.
      *
-     * @return \Illuminate\Database\Schema\Builder
+     * @return string
      */
     protected static function getFacadeAccessor()
     {

@@ -5,7 +5,6 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Translation\MessageSelector;
 use Mockery as m;
-use Winter\Storm\Events\Dispatcher;
 use Winter\Storm\Translation\FileLoader;
 use Winter\Storm\Translation\Translator;
 
@@ -323,7 +322,7 @@ class TranslatorTest extends TestCase
     {
         $t = new Translator($this->getLoader(), 'en');
         $t->determineLocalesUsing(function ($locales) {
-            $this->assertSame(['en', 'en'], $locales);
+            $this->assertSame(['en'], $locales);
 
             return ['en', 'lz'];
         });

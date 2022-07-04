@@ -80,14 +80,15 @@ class UrlGenerator extends UrlGeneratorBase
             foreach ($url as $key => &$value) {
                 // Remove invalid segments
                 if (
-                    (!in_array($key, $urlSegments) || !isset($value)) ||
-                    (is_array($value) && empty($value))
+                    !in_array($key, $urlSegments)
+                    || !isset($value)
+                    || (is_array($value) && !count($value))
                 ) {
                     unset($url[$key]);
                     continue;
                 }
 
-                // Trim strings and remove empty strings
+                // Trim strings
                 if (!is_array($value)) {
                     $value = trim((string) $value);
                 }
@@ -162,10 +163,13 @@ class UrlGenerator extends UrlGeneratorBase
                 $rQuery = str_replace(array('[', '%5B'), '{{{', $rQuery);
                 $rQuery = str_replace(array(']', '%5D'), '}}}', $rQuery);
 
-                parse_str($uQuery, $uQuery);
-                parse_str($rQuery, $rQuery);
+                $parsedUQuery = [];
+                $parsedRQuery = [];
 
-                $query = static::buildStr(array_merge($uQuery, $rQuery));
+                parse_str($uQuery, $parsedUQuery);
+                parse_str($rQuery, $parsedRQuery);
+
+                $query = static::buildStr(array_merge($parsedUQuery, $parsedRQuery));
                 $query = str_replace(array('{{{', '%7B%7B%7B'), '%5B', $query);
                 $query = str_replace(array('}}}', '%7D%7D%7D'), '%5D', $query);
 
@@ -270,9 +274,10 @@ class UrlGenerator extends UrlGeneratorBase
 
         // Populate the query section
         if (isset($url['query']) && $url['query'] !== '') {
+            $queryParams = [];
+
             if (is_string($url['query'])) {
-                $queryParams = [];
-                $pairs = explode(ini_get('arg_separator.output') ?? '&', $url['query']);
+                $pairs = explode(ini_get('arg_separator.output') ?: '&', $url['query']);
                 foreach ($pairs as $pair) {
                     $key = Str::before($pair, '=');
                     $value = Str::after($pair, '=');
@@ -320,7 +325,7 @@ class UrlGenerator extends UrlGeneratorBase
     public static function buildStr(array $query, string $prefix = '', $argSeparator = null): string
     {
         if (is_null($argSeparator)) {
-            $argSeparator = ini_get('arg_separator.output') ?? '&';
+            $argSeparator = ini_get('arg_separator.output') ?: '&';
         }
 
         $result = [];

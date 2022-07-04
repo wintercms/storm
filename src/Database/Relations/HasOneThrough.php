@@ -4,9 +4,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough as HasOneThroughBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $farParent
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class HasOneThrough extends HasOneThroughBase
 {
-    use DefinedConstraints;
+    use Concerns\DefinedConstraints;
 
     /**
      * @var string The "name" of the relationship.

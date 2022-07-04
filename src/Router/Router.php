@@ -20,7 +20,7 @@ class Router
     protected $routeMap = [];
 
     /**
-     * @var \Winter\Storm\Router\Rule A referred to the matched router rule
+     * @var \Winter\Storm\Router\Rule|null A referred to the matched router rule
      */
     protected $matchedRouteRule;
 
@@ -41,7 +41,7 @@ class Router
      * Match given URL string
      *
      * @param string $url Request URL to match for
-     * @return array $parameters A reference to a PHP array variable to return the parameter list fetched from URL.
+     * @return bool
      */
     public function match($url)
     {
@@ -73,9 +73,9 @@ class Router
         }
 
         // Success
-        if ($this->matchedRouteRule) {
+        if (!is_null($this->matchedRouteRule)) {
             // If this route has a match callback, run it
-            $matchCallback = $routeRule->afterMatch();
+            $matchCallback = $this->matchedRouteRule->afterMatch();
             if ($matchCallback !== null) {
                 $parameters = call_user_func($matchCallback, $parameters, $url);
             }
@@ -83,7 +83,7 @@ class Router
 
         $this->parameters = $parameters;
 
-        return $this->matchedRouteRule ? true : false;
+        return !is_null($this->matchedRouteRule);
     }
 
     /**
@@ -91,7 +91,7 @@ class Router
      *
      * @param string $name Name of the route previously defined.
      * @param array $parameters Parameter name => value items to fill in for given route.
-     * @return string Full matched URL as string with given values put in place of named parameters
+     * @return string|null Full matched URL as string with given values put in place of named parameters. Returns `null` if no route map is specified.
      */
     public function url($name, $parameters = [])
     {
@@ -224,7 +224,8 @@ class Router
 
     /**
      * Returns the matched route rule name.
-     * @return \Winter\Storm\Router\Rule The matched rule object.
+     *
+     * @return \Winter\Storm\Router\Rule|false The matched rule object. If no rule was matched, returns `false`.
      */
     public function matchedRoute()
     {

@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Parse;
 
-use App;
+use Illuminate\Support\Facades\App;
 
 /**
  * Twig helper class

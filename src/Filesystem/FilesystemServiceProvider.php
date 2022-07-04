@@ -26,9 +26,11 @@ class FilesystemServiceProvider extends FilesystemServiceProviderBase
     protected function extendFilesystemAdapter()
     {
         FilesystemAdapter::macro('getPathPrefix', function () {
+            /** @phpstan-ignore-next-line */
             return $this->prefixer->prefixPath('');
         });
         FilesystemAdapter::macro('setPathPrefix', function (string $prefix) {
+            /** @phpstan-ignore-next-line */
             $this->prefixer = new PathPrefixer($prefix, $this->config['directory_separator'] ?? DIRECTORY_SEPARATOR);
         });
     }

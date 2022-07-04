@@ -14,7 +14,7 @@ class FileExistsException extends RuntimeException
     /**
      * Set the affected directory path.
      *
-     * @param  string   $model
+     * @param  string   $path
      * @return $this
      */
     public function setInvalidPath($path)

@@ -1,6 +1,5 @@
 <?php namespace Winter\Storm\Filesystem;
 
-use League\Flysystem\FilesystemInterface;
 use Illuminate\Filesystem\FilesystemManager as BaseFilesystemManager;
 
 class FilesystemManager extends BaseFilesystemManager

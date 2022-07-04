@@ -1,12 +1,12 @@
 <?php namespace Winter\Storm\Extension;
 
-use App;
 use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
 use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Serialization;
+use Illuminate\Support\Facades\App;
 
 /**
  * This extension trait is used when access to the underlying base class
@@ -48,7 +48,7 @@ trait ExtendableTrait
     protected static $extendableGuardProperties = true;
 
     /**
-     * @var ClassLoader Class loader instance.
+     * @var ClassLoader|null Class loader instance.
      */
     protected static $extendableClassLoader = null;
 
@@ -193,8 +193,10 @@ trait ExtendableTrait
 
     /**
      * Programmatically adds a property to the extendable class
-     * @param string   $dynamicName
-     * @param string   $value
+     *
+     * @param string $dynamicName The name of the property to add
+     * @param mixed $value The value of the property
+     * @return void
      */
     public function addDynamicProperty($dynamicName, $value = null)
     {
@@ -214,13 +216,16 @@ trait ExtendableTrait
 
     /**
      * Dynamically extend a class with a specified behavior
-     * @param  string $extensionName
+     * @param string $extensionName
      * @return void
      */
     public function extendClassWith($extensionName)
     {
-        if (!strlen($extensionName)) {
-            return $this;
+        if (empty($extensionName)) {
+            throw new Exception(sprintf(
+                'You must provide an extension name to extend class %s with.',
+                get_class($this)
+            ));
         }
 
         $extensionName = $this->extensionNormalizeClassName($extensionName);
@@ -364,8 +369,8 @@ trait ExtendableTrait
 
     /**
      * Magic method for `__get()`
-     * @param  string $name
-     * @return string
+     * @param string $name
+     * @return mixed|null
      */
     public function extendableGet($name)
     {
@@ -382,13 +387,15 @@ trait ExtendableTrait
         if ($parent !== false && method_exists($parent, '__get')) {
             return parent::__get($name);
         }
+
+        return null;
     }
 
     /**
      * Magic method for `__set()`
      * @param  string $name
-     * @param  string $value
-     * @return string
+     * @param  mixed $value
+     * @return void
      */
     public function extendableSet($name, $value)
     {

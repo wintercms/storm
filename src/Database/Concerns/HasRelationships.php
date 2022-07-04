@@ -151,13 +151,15 @@ trait HasRelationships
     /**
      * Returns relationship details from a supplied name.
      * @param string $name Relation name
-     * @return array
+     * @return array|null
      */
     public function getRelationDefinition($name)
     {
         if (($type = $this->getRelationType($name)) !== null) {
             return (array) $this->getRelationTypeDefinition($type, $name) + $this->getRelationDefaults($type);
         }
+
+        return null;
     }
 
     /**
@@ -178,7 +180,7 @@ trait HasRelationships
      * Returns the given relation definition.
      * @param string $type Relation type
      * @param string $name Relation name
-     * @return array
+     * @return string|null
      */
     public function getRelationTypeDefinition($type, $name)
     {
@@ -187,6 +189,8 @@ trait HasRelationships
         if (isset($definitions[$name])) {
             return $definitions[$name];
         }
+
+        return null;
     }
 
     /**
@@ -216,7 +220,7 @@ trait HasRelationships
     /**
      * Returns a relationship type based on a supplied name.
      * @param string $name Relation name
-     * @return string
+     * @return string|null
      */
     public function getRelationType($name)
     {
@@ -225,12 +229,14 @@ trait HasRelationships
                 return $type;
             }
         }
+
+        return null;
     }
 
     /**
      * Returns a relation class object
      * @param string $name Relation name
-     * @return string
+     * @return \Winter\Storm\Database\Relations\Relation|null
      */
     public function makeRelation($name)
     {
@@ -336,6 +342,11 @@ trait HasRelationships
             case 'morphToMany':
                 $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
                 $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], false, $relationName);
+
+                if (isset($relation['pivotModel'])) {
+                    $relationObj->using($relation['pivotModel']);
+                }
+
                 break;
 
             case 'morphedByMany':
@@ -465,7 +476,7 @@ trait HasRelationships
     /**
      * Define an polymorphic, inverse one-to-one or many relationship.
      * Overridden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the relation.
-     * @return \Winter\Storm\Database\Relations\BelongsTo
+     * @return \Winter\Storm\Database\Relations\MorphTo
      */
     public function morphTo($name = null, $type = null, $id = null, $ownerKey = null)
     {
@@ -487,7 +498,7 @@ trait HasRelationships
      * @param  string  $type
      * @param  string  $id
      * @param  string  $ownerKey
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return \Winter\Storm\Database\Relations\MorphTo
      */
     protected function morphEagerTo($name, $type, $id, $ownerKey)
     {
@@ -508,10 +519,10 @@ trait HasRelationships
      * @param  string  $name
      * @param  string  $type
      * @param  string  $id
-     * @param  string  $ownerKey
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @param  string|null  $ownerKey
+     * @return \Winter\Storm\Database\Relations\MorphTo
      */
-    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey)
+    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey = null)
     {
         $instance = $this->newRelatedInstance(
             static::getActualClassNameForMorph($target)
@@ -718,7 +729,7 @@ trait HasRelationships
     /**
      * Define an attachment one-to-one relationship.
      * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphOne
+     * @return \Winter\Storm\Database\Relations\AttachOne
      */
     public function attachOne($related, $isPublic = true, $localKey = null, $relationName = null)
     {
@@ -740,7 +751,7 @@ trait HasRelationships
     /**
      * Define an attachment one-to-many relationship.
      * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphMany
+     * @return \Winter\Storm\Database\Relations\AttachMany
      */
     public function attachMany($related, $isPublic = null, $localKey = null, $relationName = null)
     {
@@ -764,7 +775,7 @@ trait HasRelationships
      */
     protected function getRelationCaller()
     {
-        $backtrace = debug_backtrace(false);
+        $backtrace = debug_backtrace(0);
         $caller = ($backtrace[2]['function'] == 'handleRelation') ? $backtrace[4] : $backtrace[2];
         return $caller['function'];
     }
@@ -808,8 +819,7 @@ trait HasRelationships
                 sprintf(
                     'Cannot add the "%s" relation to %s, it conflicts with an existing relation, attribute, or property.',
                     $name,
-                    get_class($this),
-                    $name
+                    get_class($this)
                 )
             );
         }
@@ -945,5 +955,18 @@ trait HasRelationships
     public function addHasManyThroughRelation(string $name, array $config): void
     {
         $this->addRelation('HasManyThrough', $name, $config);
+    }
+
+    /**
+     * Get the polymorphic relationship columns.
+     *
+     * @param  string  $name
+     * @param  string|null  $type
+     * @param  string|null  $id
+     * @return array
+     */
+    protected function getMorphs($name, $type = null, $id = null)
+    {
+        return [$type ?: $name.'_type', $id ?: $name.'_id'];
     }
 }

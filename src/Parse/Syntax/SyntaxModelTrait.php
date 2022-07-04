@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Parse\Syntax;
 
-use Request;
+use Illuminate\Support\Facades\Request;
 
 trait SyntaxModelTrait
 {

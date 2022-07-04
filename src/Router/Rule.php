@@ -20,12 +20,12 @@ class Rule
     protected $rulePattern;
 
     /**
-     * @var function Custom condition used when matching this rule.
+     * @var callable Custom condition used when matching this rule.
      */
     protected $conditionCallback;
 
     /**
-     * @var function Called when this rule is matched.
+     * @var callable Called when this rule is matched.
      */
     protected $afterMatchCallback;
 
@@ -197,7 +197,7 @@ class Rule
                 /*
                  * Determine if wildcard and add stored parameters as a suffix
                  */
-                if (Helper::segmentIsWildcard($patternSegment) && count($wildSegments)) {
+                if (Helper::segmentIsWildcard($patternSegment) && isset($wildSegments) && count($wildSegments)) {
                     $parameters[$paramName] .= Helper::rebuildUrl($wildSegments);
                 }
             }
@@ -248,8 +248,10 @@ class Rule
     /**
      * Unique route name
      *
+     * This is a getter and setter method.
+     *
      * @param string $name Unique name for the router object
-     * @return object Self
+     * @return object|string
      */
     public function name($name = null)
     {
@@ -265,8 +267,10 @@ class Rule
     /**
      * Route match pattern
      *
+     * This is a getter and setter method.
+     *
      * @param string $pattern Pattern used to match this rule
-     * @return object Self
+     * @return object|string
      */
     public function pattern($pattern = null)
     {
@@ -282,9 +286,9 @@ class Rule
     /**
      * Condition callback
      *
-     * @param callback $callback Callback function to be used when providing custom route match conditions
+     * @param callable $callback Callback function to be used when providing custom route match conditions
      * @throws InvalidArgumentException When supplied argument is not a valid callback
-     * @return callback
+     * @return callable
      */
     public function condition($callback = null)
     {
@@ -307,9 +311,9 @@ class Rule
     /**
      * After match callback
      *
-     * @param callback $callback Callback function to be used to modify params after a successful match
+     * @param callable $callback Callback function to be used to modify params after a successful match
      * @throws InvalidArgumentException When supplied argument is not a valid callback
-     * @return callback
+     * @return callable
      */
     public function afterMatch($callback = null)
     {

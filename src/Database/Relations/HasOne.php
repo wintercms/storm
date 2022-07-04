@@ -4,13 +4,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class HasOne extends HasOneBase
 {
-    use HasOneOrMany;
-    use DefinedConstraints;
+    use Concerns\HasOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
-     * Create a new has many relationship instance.
+     * Create a new "hasOne" relationship.
      * @return void
      */
     public function __construct(Builder $query, Model $parent, $foreignKey, $localKey, $relationName = null)
@@ -20,21 +23,6 @@ class HasOne extends HasOneBase
         parent::__construct($query, $parent, $foreignKey, $localKey);
 
         $this->addDefinedConstraints();
-    }
-
-    /**
-     * Get the results of the relationship.
-     * @return mixed
-     */
-    public function getResults()
-    {
-        // New models have no possibility of having a relationship here
-        // so prevent the first orphaned relation from being used.
-        if (!$this->parent->exists) {
-            return null;
-        }
-
-        return parent::getResults();
     }
 
     /**
