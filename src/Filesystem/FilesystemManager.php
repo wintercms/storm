@@ -22,4 +22,16 @@ class FilesystemManager extends BaseFilesystemManager
         }
         return $configName;
     }
+
+    protected function resolve($name, $config = null)
+    {
+        if (is_null($config)) {
+            $config = $this->getConfig($name);
+        }
+        if ($name === 'local') {
+            $config['visibility'] = 'public';
+        }
+
+        return parent::resolve($name, $config);
+    }
 }
