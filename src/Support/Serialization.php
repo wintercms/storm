@@ -12,11 +12,11 @@ class Serialization
      * Wraps a closure in a SerializableClosure, returns the provided object if it's not a closure.
      *
      * @param Closure|mixed $callable provided callable to be wrapped if it's a closure
-     * @return mixed|SerializableClosure
+     * @return SerializableClosure|mixed
      */
     public static function wrapClosure($callable)
     {
-        if ($callable instanceof Closure && !($callable instanceof SerializableClosure)) {
+        if ($callable instanceof Closure) {
             $callable = new SerializableClosure($callable);
         }
         return $callable;

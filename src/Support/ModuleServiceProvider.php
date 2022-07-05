@@ -51,8 +51,8 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
 
     /**
      * Registers a new console (artisan) command
-     * @param $key The command name
-     * @param $class The command class
+     * @param string $key The command name
+     * @param string $class The command class
      * @return void
      */
     public function registerConsoleCommand($key, $class)

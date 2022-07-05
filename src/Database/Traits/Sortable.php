@@ -75,6 +75,6 @@ trait Sortable
      */
     public function getSortOrderColumn()
     {
-        return defined('static::SORT_ORDER') ? static::SORT_ORDER : 'sort_order';
+        return defined('static::SORT_ORDER') ? constant('static::SORT_ORDER') : 'sort_order';
     }
 }

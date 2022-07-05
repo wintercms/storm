@@ -39,9 +39,7 @@ class Connection extends ConnectionBase
      */
     public function logQuery($query, $bindings, $time = null)
     {
-        if (isset($this->events)) {
-            $this->events->fire('illuminate.query', [$query, $bindings, $time, $this->getName()]);
-        }
+        $this->fireEvent('illuminate.query', [$query, $bindings, $time, $this->getName()]);
 
         parent::logQuery($query, $bindings, $time);
     }
@@ -50,14 +48,27 @@ class Connection extends ConnectionBase
      * Fire an event for this connection.
      *
      * @param  string  $event
-     * @return void
+     * @return array|null
      */
     protected function fireConnectionEvent($event)
     {
-        if (isset($this->events)) {
-            $this->events->fire('connection.'.$this->getName().'.'.$event, $this);
-        }
+        $this->fireEvent('connection.'.$this->getName().'.'.$event, $this);
 
         parent::fireConnectionEvent($event);
+    }
+
+    /**
+     * Fire the given event if possible.
+     */
+    protected function fireEvent(string $event, array|object $attributes = []): void
+    {
+        /** @var \Winter\Storm\Events\Dispatcher|null */
+        $eventManager = $this->events;
+
+        if (!isset($eventManager)) {
+            return;
+        }
+
+        $eventManager->fire($event, $attributes);
     }
 }

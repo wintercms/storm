@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Database\Traits;
 
-use App;
 use Exception;
+use Illuminate\Support\Facades\App;
 
 trait Encryptable
 {

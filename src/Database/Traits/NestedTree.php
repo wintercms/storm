@@ -1,11 +1,11 @@
 <?php namespace Winter\Storm\Database\Traits;
 
-use DbDongle;
+use Exception;
 use Winter\Storm\Database\Collection;
 use Winter\Storm\Database\TreeCollection;
 use Winter\Storm\Database\NestedTreeScope;
+use Winter\Storm\Support\Facades\DbDongle;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Exception;
 
 /**
  * Nested set model trait

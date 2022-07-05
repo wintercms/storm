@@ -1,12 +1,12 @@
 <?php namespace Winter\Storm\Halcyon\Datasource;
 
-use Db;
 use Exception;
 use Carbon\Carbon;
 use Winter\Storm\Halcyon\Processors\Processor;
 use Winter\Storm\Halcyon\Exception\CreateFileException;
 use Winter\Storm\Halcyon\Exception\DeleteFileException;
 use Winter\Storm\Halcyon\Exception\FileExistsException;
+use Winter\Storm\Support\Facades\DB;
 
 /**
  * Database based data source
@@ -20,49 +20,45 @@ use Winter\Storm\Halcyon\Exception\FileExistsException;
  *  - updated_at, datetime
  *  - deleted_at, datetime, nullable
  */
-class DbDatasource extends Datasource implements DatasourceInterface
+class DbDatasource extends Datasource
 {
     /**
-     * @var string The identifier for this datasource instance
+     * The identifier for this datasource instance
      */
-    protected $source;
+    protected string $source;
 
     /**
-     * @var string The table name of the datasource
+     * The table name of the datasource
      */
-    protected $table;
+    protected string $table;
 
     /**
-     * Create a new datasource instance.
+     * Create a new database datasource instance.
      *
      * @param string $source The source identifier for this datasource instance
      * @param string $table The table for this database datasource
-     * @return void
      */
     public function __construct(string $source, string $table)
     {
         $this->source = $source;
-
         $this->table = $table;
-
         $this->postProcessor = new Processor;
     }
 
     /**
-     * Get the base QueryBuilder object
+     * Get the base QueryBuilder object.
      */
-    public function getBaseQuery()
+    public function getBaseQuery(): \Winter\Storm\Database\QueryBuilder
     {
-        return Db::table($this->table)->enableDuplicateCache();
+        return DB::table($this->table)->enableDuplicateCache();
     }
 
     /**
-     * Get the QueryBuilder object
+     * Get the QueryBuilder object.
      *
-     * @param bool $ignoreDeleted Flag to ignore deleted records, defaults to true
-     * @return QueryBuilder
+     * @param bool $ignoreDeleted Ignore deleted records. Defaults to `true`.
      */
-    public function getQuery($ignoreDeleted = true)
+    public function getQuery(bool $ignoreDeleted = true): \Winter\Storm\Database\QueryBuilder
     {
         $query = $this->getBaseQuery();
 
@@ -90,27 +86,22 @@ class DbDatasource extends Datasource implements DatasourceInterface
     }
 
     /**
-     * Helper to make file path.
+     * Helper method to combine the provided directory, filename and extension into a single path.
      *
-     * @param string $dirName
-     * @param string $fileName
-     * @param string $extension
-     * @return string
+     * @param string $dirName The directory in which the model is stored.
+     * @param string $fileName The filename of the model.
+     * @param string $extension The file extension of the model.
+     * @return string The combined path.
      */
-    protected function makeFilePath(string $dirName, string $fileName, string $extension)
+    protected function makeFilePath(string $dirName, string $fileName, string $extension): string
     {
         return $dirName . '/' . $fileName . '.' . $extension;
     }
 
     /**
-     * Returns a single template.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return mixed
+     * @inheritDoc
      */
-    public function selectOne(string $dirName, string $fileName, string $extension)
+    public function selectOne(string $dirName, string $fileName, string $extension): ?array
     {
         $result = $this->getQuery()->where('path', $this->makeFilePath($dirName, $fileName, $extension))->first();
 
@@ -127,35 +118,28 @@ class DbDatasource extends Datasource implements DatasourceInterface
     }
 
     /**
-     * Returns all templates.
-     *
-     * @param  string  $dirName
-     * @param array $options Array of options, [
-     *                          'columns'    => ['fileName', 'mtime', 'content'], // Only return specific columns
-     *                          'extensions' => ['htm', 'md', 'twig'],            // Extensions to search for
-     *                          'fileMatch'  => '*gr[ae]y',                       // Shell matching pattern to match the filename against using the fnmatch function
-     *                          'orders'     => false                             // Not implemented
-     *                          'limit'      => false                             // Not implemented
-     *                          'offset'     => false                             // Not implemented
-     *                      ];
-     * @return array
+     * @inheritDoc
      */
-    public function select(string $dirName, array $options = [])
+    public function select(string $dirName, array $options = []): array
     {
         // Initialize result set
         $result = [];
 
         // Prepare query options
-        extract(array_merge([
+        $queryOptions = array_merge([
             'columns'     => null,  // Only return specific columns (fileName, mtime, content)
             'extensions'  => null,  // Match specified extensions
             'fileMatch'   => null,  // Match the file name using fnmatch()
             'orders'      => null,  // @todo
             'limit'       => null,  // @todo
             'offset'      => null   // @todo
-        ], $options));
+        ], $options);
+        extract($queryOptions);
 
-        if ($columns === ['*'] || !is_array($columns)) {
+        if (
+            isset($columns)
+            && ($columns === ['*'] || !is_array($columns))
+        ) {
             $columns = null;
         }
 
@@ -163,7 +147,7 @@ class DbDatasource extends Datasource implements DatasourceInterface
         $query = $this->getQuery()->where('path', 'like', $dirName . '%');
 
         // Apply the extensions filter
-        if (is_array($extensions) && !empty($extensions)) {
+        if (!empty($extensions) && is_array($extensions)) {
             $query->where(function ($query) use ($extensions) {
                 // Get the first extension to query for
                 $query->where('path', 'like', '%' . '.' . array_pop($extensions));
@@ -189,7 +173,7 @@ class DbDatasource extends Datasource implements DatasourceInterface
             }
 
             // Apply the columns filter on the data returned
-            if (is_null($columns)) {
+            if (!isset($columns)) {
                 $resultItem = [
                     'fileName' => $fileName,
                     'content'  => $item->content,
@@ -221,15 +205,9 @@ class DbDatasource extends Datasource implements DatasourceInterface
     }
 
     /**
-     * Creates a new template.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @param  string  $content
-     * @return bool
+     * @inheritDoc
      */
-    public function insert(string $dirName, string $fileName, string $extension, string $content)
+    public function insert(string $dirName, string $fileName, string $extension, string $content): int
     {
         $path = $this->makeFilePath($dirName, $fileName, $extension);
 
@@ -278,17 +256,9 @@ class DbDatasource extends Datasource implements DatasourceInterface
     }
 
     /**
-     * Updates an existing template.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @param  string  $content
-     * @param  string  $oldFileName Defaults to null
-     * @param  string  $oldExtension Defaults to null
-     * @return int
+     * @inheritDoc
      */
-    public function update(string $dirName, string $fileName, string $extension, string $content, $oldFileName = null, $oldExtension = null)
+    public function update(string $dirName, string $fileName, string $extension, string $content, ?string $oldFileName = null, ?string $oldExtension = null): int
     {
         $path = $this->makeFilePath($dirName, $fileName, $extension);
 
@@ -338,14 +308,9 @@ class DbDatasource extends Datasource implements DatasourceInterface
     }
 
     /**
-     * Run a delete statement against the datasource.
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return bool
+     * @inheritDoc
      */
-    public function delete(string $dirName, string $fileName, string $extension)
+    public function delete(string $dirName, string $fileName, string $extension): bool
     {
         try {
             // Get the existing record
@@ -372,52 +337,31 @@ class DbDatasource extends Datasource implements DatasourceInterface
     }
 
     /**
-     * Return the last modified date of an object
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return int
+     * @inheritDoc
      */
-    public function lastModified(string $dirName, string $fileName, string $extension)
+    public function lastModified(string $dirName, string $fileName, string $extension): ?int
     {
         try {
             return Carbon::parse($this->getQuery()
                     ->where('path', $this->makeFilePath($dirName, $fileName, $extension))
                     ->first()->updated_at)->timestamp;
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             return null;
         }
     }
 
     /**
-     * Generate a cache key unique to this datasource.
-     *
-     * @param  string  $name
-     * @return string
+     * @inheritDoc
      */
-    public function makeCacheKey($name = '')
-    {
-        return crc32($this->source . $name);
-    }
-
-    /**
-     * Generate a paths cache key unique to this datasource
-     *
-     * @return string
-     */
-    public function getPathsCacheKey()
+    public function getPathsCacheKey(): string
     {
         return 'halcyon-datastore-db-' . $this->table . '-' . $this->source;
     }
 
     /**
-     * Get all available paths within this datastore
-     *
-     * @return array $paths ['path/to/file1.md' => true (path can be handled and exists), 'path/to/file2.md' => false (path can be handled but doesn't exist)]
-     */
-    public function getAvailablePaths()
+     * @inheritDoc
+     **/
+    public function getAvailablePaths(): array
     {
         /**
          * @event halcyon.datasource.db.beforeGetAvailablePaths

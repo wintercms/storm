@@ -141,9 +141,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
      */
     protected function registerKeyGenerateCommand()
     {
-        $this->app->singleton(KeyGenerateCommand::class, function ($app) {
-            return new KeyGenerateCommand($app['files']);
-        });
+        $this->app->singleton(KeyGenerateCommand::class);
     }
 
     /**

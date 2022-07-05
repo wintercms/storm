@@ -4,9 +4,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class MorphTo extends MorphToBase
 {
-    use DefinedConstraints;
+    use Concerns\DeferOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * @var string The "name" of the relationship.

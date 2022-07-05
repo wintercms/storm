@@ -72,7 +72,7 @@ class Helper
     /**
      * Replaces :column_name with it's object value. Example: /some/link/:id/:name -> /some/link/1/Joe
      *
-     * @param stdObject $object Object containing the data
+     * @param object|array $object Object containing the data
      * @param array $columns Expected key names to parse
      * @param string $string URL template
      * @return string Built string
@@ -102,7 +102,7 @@ class Helper
     /**
      * Replaces :column_name with object value without requiring a list of names. Example: /some/link/:id/:name -> /some/link/1/Joe
      *
-     * @param stdObject $object Object containing the data
+     * @param object|array $object Object containing the data
      * @param string $string URL template
      * @return string Built string
      */
@@ -144,11 +144,7 @@ class Helper
             return true;
         }
 
-        if ($optMarkerPos !== false && $regexMarkerPos !== false) {
-            return $optMarkerPos < $regexMarkerPos;
-        }
-
-        return false;
+        return $optMarkerPos < $regexMarkerPos;
     }
 
     /**
@@ -194,7 +190,7 @@ class Helper
     /**
      * Extracts the regular expression from a URL pattern segment definition.
      * @param string $segment The segment definition.
-     * @return string Returns the regular expression string or false if the expression is not defined.
+     * @return string|false Returns the regular expression string or false if the expression is not defined.
      */
     public static function getSegmentRegExp($segment)
     {
@@ -213,7 +209,7 @@ class Helper
     /**
      * Extracts the default parameter value from a URL pattern segment definition.
      * @param string $segment The segment definition.
-     * @return string Returns the default value if it is provided. Returns false otherwise.
+     * @return string|false Returns the default value if it is provided. Returns false otherwise.
      */
     public static function getSegmentDefaultValue($segment)
     {

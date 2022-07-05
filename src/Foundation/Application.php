@@ -1,22 +1,22 @@
 <?php namespace Winter\Storm\Foundation;
 
-use Str;
-use Config;
 use Closure;
 use Throwable;
+use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Collection;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
+use Illuminate\Support\Collection;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
-use Winter\Storm\Router\RoutingServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
 use Winter\Storm\Foundation\ProviderRepository;
+use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
 use Winter\Storm\Foundation\Providers\MakerServiceProvider;
-use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
-use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
+use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Support\Facades\Config;
 
 class Application extends ApplicationBase
 {
@@ -161,6 +161,7 @@ class Application extends ApplicationBase
         $this->instance('path.temp', $this->tempPath());
         $this->instance('path.uploads', $this->uploadsPath());
         $this->instance('path.media', $this->mediaPath());
+        $this->instance('path.lang', $this->langPath());
     }
 
     /**
@@ -224,7 +225,7 @@ class Application extends ApplicationBase
     /**
      * Set the temp path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setTempPath($path)
     {
@@ -247,7 +248,7 @@ class Application extends ApplicationBase
     /**
      * Set the uploads path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setUploadsPath($path)
     {
@@ -270,7 +271,7 @@ class Application extends ApplicationBase
     /**
      * Set the media path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setMediaPath($path)
     {
@@ -311,7 +312,7 @@ class Application extends ApplicationBase
      */
     public function before($callback)
     {
-        return $this['router']->before($callback);
+        $this['router']->before($callback);
     }
 
     /**
@@ -322,7 +323,7 @@ class Application extends ApplicationBase
      */
     public function after($callback)
     {
-        return $this['router']->after($callback);
+        $this['router']->after($callback);
     }
 
     /**
@@ -390,12 +391,12 @@ class Application extends ApplicationBase
     /**
      * Register all of the configured providers.
      *
-     * @var bool $isRetry If true, this is a second attempt without the cached packages.
+     * @param bool $isRetry If true, this is a second attempt without the cached packages.
      * @return void
      */
     public function registerConfiguredProviders($isRetry = false)
     {
-        $providers = Collection::make($this->config['app.providers'])
+        $providers = Collection::make($this->get('config')['app.providers'])
                         ->partition(function ($provider) {
                             return Str::startsWith($provider, 'Illuminate\\');
                         });
@@ -569,5 +570,16 @@ class Application extends ApplicationBase
          * unnecessary paths but those tasks should be handled completely differently in Winter CMS.
          */
         return '';
+    }
+
+    /**
+     * This is a temporary fix for an issue with twig reflection.
+     * The full fix is here: https://github.com/twigphp/Twig/pull/3719
+     *
+     * @TODO: Remove this after Twig PR 3719 is merged.
+     */
+    public function __toString(): string
+    {
+        return get_called_class();
     }
 }

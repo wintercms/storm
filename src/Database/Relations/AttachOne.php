@@ -5,21 +5,23 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 use Winter\Storm\Database\Attach\File as FileModel;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class AttachOne extends MorphOneBase
 {
-    use AttachOneOrMany;
-    use DefinedConstraints;
+    use Concerns\AttachOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * Create a new has many relationship instance.
      * @param Builder $query
      * @param Model $parent
-     * @param $type
-     * @param $id
-     * @param $isPublic
-     * @param $localKey
+     * @param string $type
+     * @param string $id
+     * @param bool $isPublic
+     * @param string $localKey
      * @param null|string $relationName
-     * @param null|string $keyType
      */
     public function __construct(Builder $query, Model $parent, $type, $id, $isPublic, $localKey, $relationName = null)
     {

@@ -2,6 +2,9 @@
 
 use Winter\Storm\Support\Facade;
 
+/**
+ * @see \Illuminate\Http\Request
+ */
 class Input extends Facade
 {
     /**
@@ -16,6 +19,18 @@ class Input extends Facade
     public static function get($key = null, $default = null)
     {
         return static::$app['request']->input($key, $default);
+    }
+
+    /**
+     * Gets all input data items.
+     *
+     * This method is used for all request verbs (GET, POST, PUT, and DELETE)
+     *
+     * @return array|null
+     */
+    public static function all()
+    {
+        return static::$app['request']->input();
     }
 
     /**

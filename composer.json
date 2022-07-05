@@ -56,6 +56,7 @@
         "php-parallel-lint/php-parallel-lint": "^1.0",
         "meyfa/phpunit-assert-gd": "^2.0.0|^3.0.0",
         "dms/phpunit-arraysubset-asserts": "^0.1.0|^0.2.1",
+        "nunomaduro/larastan": "^2.0.1",
         "orchestra/testbench": "^7.1.0"
     },
     "suggest": {
@@ -83,7 +84,10 @@
         "classmap": [
             "tests/TestCase.php",
             "tests/DbTestCase.php"
-        ]
+        ],
+        "psr-4": {
+            "Winter\\Storm\\Tests\\": "tests/"
+        }
     },
     "scripts": {
         "test": [

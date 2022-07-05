@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Database\Traits;
 
-use Hash;
 use Exception;
+use Illuminate\Support\Facades\Hash;
 
 trait Hashable
 {

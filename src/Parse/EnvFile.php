@@ -168,7 +168,12 @@ class EnvFile implements DataFileInterface
      */
     protected function parse(string $filePath): array
     {
-        if (!file_exists($filePath) || !($contents = file($filePath)) || !count($contents)) {
+        if (!is_file($filePath)) {
+            return [[], []];
+        }
+
+        $contents = file($filePath);
+        if (empty($contents)) {
             return [[], []];
         }
 

@@ -1,8 +1,9 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
+use Winter\Storm\Database\Relations\MorphOne;
 
-trait HasOneOrMany
+trait MorphOneOrMany
 {
     use DeferOneOrMany;
 
@@ -22,18 +23,6 @@ trait HasOneOrMany
 
         $this->add($model, $sessionKey);
         return $model->save() ? $model : false;
-    }
-
-    /**
-     * Alias for the addMany() method.
-     * @param  array  $models
-     * @return array
-     */
-    public function saveMany($models, $sessionKey = null)
-    {
-        $this->addMany($models, $sessionKey);
-
-        return $models;
     }
 
     /**
@@ -72,15 +61,13 @@ trait HasOneOrMany
             $this->parent->fireEvent('model.relation.beforeAdd', [$this->relationName, $model]);
 
             $model->setAttribute($this->getForeignKeyName(), $this->getParentKey());
-
-            if (!$model->exists || $model->isDirty()) {
-                $model->save();
-            }
+            $model->setAttribute($this->getMorphType(), $this->morphClass);
+            $model->save();
 
             /*
              * Use the opportunity to set the relation in memory
              */
-            if ($this instanceof HasOne) {
+            if ($this instanceof MorphOne) {
                 $this->parent->setRelation($this->relationName, $model);
             }
             else {
@@ -108,18 +95,6 @@ trait HasOneOrMany
     }
 
     /**
-     * Attach an array of models to the parent instance with deferred binding support.
-     * @param  array  $models
-     * @return void
-     */
-    public function addMany($models, $sessionKey = null)
-    {
-        foreach ($models as $model) {
-            $this->add($model, $sessionKey);
-        }
-    }
-
-    /**
      * Removes a model from this relationship type.
      */
     public function remove(Model $model, $sessionKey = null)
@@ -140,18 +115,30 @@ trait HasOneOrMany
              */
             $this->parent->fireEvent('model.relation.beforeRemove', [$this->relationName, $model]);
 
-            $model->setAttribute($this->getForeignKeyName(), null);
-            $model->save();
+            $options = $this->parent->getRelationDefinition($this->relationName);
+
+            if (array_get($options, 'delete', false)) {
+                $model->delete();
+            }
+            else {
+                /*
+                 * Make this model an orphan ;~(
+                 */
+                $model->setAttribute($this->getForeignKeyName(), null);
+                $model->setAttribute($this->getMorphType(), null);
+                $model->save();
+            }
 
             /*
              * Use the opportunity to set the relation in memory
              */
-            if ($this instanceof HasOne) {
+            if ($this instanceof MorphOne) {
                 $this->parent->setRelation($this->relationName, null);
             }
             else {
                 $this->parent->reloadRelations($this->relationName);
             }
+
             /**
              * @event model.relation.afterRemove
              * Called after removing a relation to the model (for AttachOneOrMany, HasOneOrMany & MorphOneOrMany relations)
@@ -170,23 +157,5 @@ trait HasOneOrMany
         else {
             $this->parent->unbindDeferred($this->relationName, $model, $sessionKey);
         }
-    }
-
-    /**
-     * Get the foreign key for the relationship.
-     * @return string
-     */
-    public function getForeignKey()
-    {
-        return $this->foreignKey;
-    }
-
-    /**
-     * Get the associated "other" key of the relationship.
-     * @return string
-     */
-    public function getOtherKey()
-    {
-        return $this->localKey;
     }
 }

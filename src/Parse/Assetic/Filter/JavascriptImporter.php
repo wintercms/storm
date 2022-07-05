@@ -1,9 +1,9 @@
 <?php namespace Winter\Storm\Parse\Assetic\Filter;
 
-use File;
 use RuntimeException;
 use Assetic\Filter\BaseFilter;
-use Assetic\Asset\AssetInterface;
+use Assetic\Contracts\Asset\AssetInterface;
+use Winter\Storm\Support\Facades\File;
 
 /**
  * Importer JS Filter
@@ -40,6 +40,9 @@ class JavascriptImporter extends BaseFilter
      */
     protected $definedVars = [];
 
+    /**
+     * @inheritDoc
+     */
     public function filterDump(AssetInterface $asset)
     {
         $this->scriptPath = dirname($asset->getSourceRoot() . '/' . $asset->getSourcePath());
@@ -49,13 +52,13 @@ class JavascriptImporter extends BaseFilter
     }
 
     /**
-     * Process JS imports inside a string of javascript
-     * @param $content string JS code to process.
+     * Process JS imports inside a string of JavaScript
+     *
+     * @param string $content JS code to process.
      * @return string Processed JS.
      */
     protected function parse($content)
     {
-        $macros = [];
         $imported = '';
 
         // Look for: /* comments */
