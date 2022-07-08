@@ -31,7 +31,7 @@ class FilesystemManager extends BaseFilesystemManager
         if (is_null($config)) {
             $config = $this->getConfig($name);
         }
-        if ($config['driver'] === 'local' && empty($config['visibility']))
+        if ($config['driver'] === 'local' && empty($config['visibility'])) {
             $config['visibility'] = 'public';
         }
 
