@@ -23,6 +23,9 @@ class FilesystemManager extends BaseFilesystemManager
         return $configName;
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function resolve($name, $config = null)
     {
         if (is_null($config)) {
