@@ -33,7 +33,7 @@ class FilesystemManager extends BaseFilesystemManager
 
         // Default local drivers to public visibility for backwards compatibility
         // see https://github.com/wintercms/winter/issues/503
-        if ($config['driver'] === 'local' && empty($config['visibility'])) {
+        if ($name === 'local' && $config['driver'] === 'local' && empty($config['visibility'])) {
             $config['visibility'] = 'public';
         }
 
