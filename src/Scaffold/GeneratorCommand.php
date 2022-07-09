@@ -1,12 +1,18 @@
 <?php namespace Winter\Storm\Scaffold;
 
-use Twig;
 use Exception;
 use ReflectionClass;
 use Winter\Storm\Console\Command;
-use Winter\Storm\Support\Str;
 use Winter\Storm\Filesystem\Filesystem;
+use Winter\Storm\Support\Facades\Twig;
+use Winter\Storm\Support\Str;
 
+/**
+ * Generator command.
+ *
+ * This class is used as a base for scaffolding commands, modifying stub files and copying them over to a specific
+ * location.
+ */
 abstract class GeneratorCommand extends Command
 {
     /**
@@ -214,11 +220,11 @@ abstract class GeneratorCommand extends Command
      * Build the directory for the class if necessary.
      *
      * @param  string  $path
-     * @return string
+     * @return void
      */
     protected function makeDirectory($path)
     {
-        if (! $this->files->isDirectory(dirname($path))) {
+        if (!$this->files->isDirectory(dirname($path))) {
             $this->files->makeDirectory(dirname($path), 0777, true, true);
         }
     }

@@ -81,7 +81,7 @@ class ArrayPrinter extends Standard
      *
      * The result includes a leading newline and one level of indentation (same as pStmts).
      *
-     * @param Node[] $nodes         Array of Nodes to be printed
+     * @param array<int, Node|null> $nodes         Array of Nodes to be printed
      * @param bool   $trailingComma Whether to use a trailing comma
      *
      * @return string Comma separated pretty printed nodes in multiline style

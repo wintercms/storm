@@ -13,7 +13,7 @@ use Illuminate\Contracts\Validation\Validator as ValidatorContract;
  */
 class Validator extends BaseValidator implements ValidatorContract
 {
-    use \Winter\Storm\Validation\Concerns\ValidatesEmail;
+    use Concerns\ValidatesEmail;
     use Concerns\FormatsMessages;
 
     /**

@@ -1,10 +1,11 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Winter\Storm\Support\Facades\DbDongle;
 use Winter\Storm\Database\Attach\File as FileModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Winter\Storm\Database\Relations\AttachOne;
 
 trait AttachOneOrMany
 {
@@ -16,7 +17,7 @@ trait AttachOneOrMany
     protected $relationName;
 
     /**
-     * @var boolean Default value for file public or protected state.
+     * @var ?boolean Default value for file public or protected state.
      */
     protected $public;
 
@@ -25,7 +26,7 @@ trait AttachOneOrMany
      */
     public function isPublic()
     {
-        if (isset($this->public) && $this->public !== null) {
+        if (isset($this->public)) {
             return $this->public;
         }
 
@@ -117,7 +118,7 @@ trait AttachOneOrMany
             $this->delete();
         }
 
-        if (!array_key_exists('is_public', $model->attributes)) {
+        if (!array_key_exists('is_public', $model->getAttributes())) {
             $model->setAttribute('is_public', $this->isPublic());
         }
 
@@ -161,8 +162,8 @@ trait AttachOneOrMany
      */
     public function add(Model $model, $sessionKey = null)
     {
-        if (!array_key_exists('is_public', $model->attributes)) {
-            $model->is_public = $this->isPublic();
+        if (!array_key_exists('is_public', $model->getAttributes())) {
+            $model->setAttribute('is_public', $this->isPublic());
         }
 
         if ($sessionKey === null) {
@@ -270,7 +271,6 @@ trait AttachOneOrMany
                 $value->getLocalPath(),
                 $value->file_name,
                 $value->content_type,
-                $value->file_size,
                 null,
                 true
             );

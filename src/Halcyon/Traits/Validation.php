@@ -203,15 +203,8 @@ trait Validation
             else {
                 $this->validationErrors = $validator->messages();
 
-                /*
-                 * Flash input, if available
-                 */
-                if (
-                    ($input = Input::getFacadeRoot()) &&
-                    method_exists($input, 'hasSession') &&
-                    $input->hasSession()
-                ) {
-                    $input->flash();
+                if (Input::hasSession()) {
+                    Input::flash();
                 }
             }
         }

@@ -121,7 +121,7 @@ class BlockBuilderTest extends TestCase
             . '</div>',
             $this->Block->placeholder('test')
         );
-        $this->assertNull($this->Block->get('test'));
+        $this->assertEquals('', $this->Block->get('test'));
     }
 
     public function testResetBlocks()
@@ -137,7 +137,7 @@ class BlockBuilderTest extends TestCase
 
         $this->Block->reset();
 
-        $this->assertNull($this->Block->get('test'));
+        $this->assertEquals('', $this->Block->get('test'));
     }
 
     public function testNestedBlocks()

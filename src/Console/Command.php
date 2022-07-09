@@ -97,6 +97,9 @@ abstract class Command extends BaseCommand
                     $dataType = 'Option';
                     $suggestionType = 'Options';
                     break;
+                default:
+                    // This should not be possible to ever be triggered given the type is hardcoded above
+                    throw new \Exception('Invalid input type being parsed during completion');
             }
             if (!empty($data)) {
                 foreach ($data as $name => $value) {

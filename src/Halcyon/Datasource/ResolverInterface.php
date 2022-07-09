@@ -1,28 +1,48 @@
 <?php namespace Winter\Storm\Halcyon\Datasource;
 
+use \Winter\Storm\Halcyon\Datasource\DatasourceInterface;
+
+/**
+ * The resolver interface defines the methods required for resolving Halcyon datasources.
+ *
+ * @author Winter CMS
+ */
 interface ResolverInterface
 {
-
     /**
-     * Get a datasource instance.
+     * Get a datasource instance by name.
      *
-     * @param  string  $name
+     * @param string $name The name of the datasource to retrieve.
      * @return \Winter\Storm\Halcyon\Datasource\DatasourceInterface
+     * @throws \Winter\Storm\Halcyon\Exception\MissingDatasourceException If a datasource with the given name does not exist.
      */
-    public function datasource($name = null);
+    public function datasource(string $name = null): DatasourceInterface;
 
     /**
-     * Get the default datasource name.
+     * Adds a datasource to the resolver.
      *
-     * @return string
+     * @param string $name The name of the datasource.
+     * @param DatasourceInterface $datasource The datasource instance.
      */
-    public function getDefaultDatasource();
+    public function addDatasource(string $name, DatasourceInterface $datasource): void;
 
     /**
-     * Set the default datasource name.
+     * Returns if the given datasource name exists.
      *
-     * @param  string  $name
-     * @return void
+     * @param string $name
+     * @return bool
      */
-    public function setDefaultDatasource($name);
+    public function hasDatasource(string $name): bool;
+
+    /**
+     * Gets the default datasource name.
+     */
+    public function getDefaultDatasource(): ?string;
+
+    /**
+     * Sets the default datasource name.
+     *
+     * @param string $name The name of the datasource to make the default.
+     */
+    public function setDefaultDatasource(string $name): void;
 }

@@ -309,7 +309,7 @@ class ArrayFile implements DataFileInterface
      * If the path cannot be found completely, return the nearest parent and the remainder of the path
      *
      * @param array $path
-     * @param $pointer
+     * @param mixed $pointer
      * @param int $depth
      * @throws SystemException if trying to set a position that is already occupied by a value
      */

@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Foundation\Http\Middleware;
 
-use Config;
+use Winter\Storm\Support\Facades\Config;
 use Winter\Storm\Http\Middleware\TrustHosts as BaseMiddleware;
 
 class CheckForTrustedHost extends BaseMiddleware

@@ -1,4 +1,4 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations\Concerns;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
 
@@ -25,10 +25,10 @@ trait DefinedConstraints
     /**
      * Add relation based constraints.
      *
-     * @param Illuminate\Database\Eloquent\Relations\Relation $relation
-     * @param array $args
+     * @param \Illuminate\Database\Eloquent\Relations\Relation $relation
+     * @param array|null $args
      */
-    public function addDefinedConstraintsToRelation($relation, $args = null)
+    public function addDefinedConstraintsToRelation($relation, ?array $args = null)
     {
         if ($args === null) {
             $args = $this->parent->getRelationDefinition($this->relationName);
@@ -76,10 +76,10 @@ trait DefinedConstraints
     /**
      * Add query based constraints.
      *
-     * @param Winter\Storm\Database\QueryBuilder $query
-     * @param array $args
+     * @param \Illuminate\Database\Eloquent\Relations\Relation|\Winter\Storm\Database\QueryBuilder $query
+     * @param array|null $args
      */
-    public function addDefinedConstraintsToQuery($query, $args = null)
+    public function addDefinedConstraintsToQuery($query, ?array $args = null)
     {
         if ($args === null) {
             $args = $this->parent->getRelationDefinition($this->relationName);

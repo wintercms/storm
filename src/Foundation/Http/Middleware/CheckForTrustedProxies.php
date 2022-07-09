@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Foundation\Http\Middleware;
 
-use Config;
+use Winter\Storm\Support\Facades\Config;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Foundation\Application;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -59,7 +59,7 @@ class CheckForTrustedProxies
     /**
      * Get proxies defined in configuration.
      *
-     * @return array|string|null
+     * @return array|string|false|null
      */
     public function proxies()
     {
@@ -93,9 +93,10 @@ class CheckForTrustedProxies
 
         // If any proxy is allowed, set the current calling IP as allowed.
         if ($proxies === '*') {
-            return $this->allowProxies($request, [
+            $this->allowProxies($request, [
                 $request->server->get('REMOTE_ADDR')
             ]);
+            return;
         }
 
         // Support comma-separated strings as well as arrays
@@ -104,7 +105,7 @@ class CheckForTrustedProxies
             : $proxies;
 
         if (is_array($proxies)) {
-            return $this->allowProxies($request, $proxies);
+            $this->allowProxies($request, $proxies);
         }
     }
 
