@@ -537,18 +537,4 @@ class UrlGeneratorTest extends TestCase
             );
         }
     }
-
-    public function testDoublyEncodedUrlInPathMatchLaravel()
-    {
-        $urlInPath = 'https://testUrlInPath/path?k1=v1&k2';
-        $url = 'https://testdomain/' . rawurlencode(rawurlencode($urlInPath));
-
-        $generator = new \Winter\Storm\Router\UrlGenerator(new RouteCollection, Request::create($url));
-        $baseGenerator = new \Illuminate\Routing\UrlGenerator(new RouteCollection, Request::create($url));
-
-        $this->assertEquals(
-            urldecode($baseGenerator->to($url)),
-            urldecode($generator->to($url))
-        );
-    }
 }
