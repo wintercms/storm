@@ -5,6 +5,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\App;
 use Winter\Storm\Database\Connectors\ConnectionFactory;
 use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Filesystem\PathResolver;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Support\Facades\File;
 use Winter\Storm\Support\Facades\Config;
@@ -258,7 +259,7 @@ trait ArraySource
             return false;
         }
 
-        return realpath($sourcePath);
+        return PathResolver::resolve($sourcePath);
     }
 
     /**
