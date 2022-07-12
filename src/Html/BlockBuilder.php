@@ -103,7 +103,7 @@ class BlockBuilder
      *
      * If the block does not exist, then the `$default` content will be returned instead.
      */
-    public function placeholder(string $name, string $default = ''): string
+    public function placeholder(string $name, string $default = null): ?string
     {
         $result = $this->get($name, $default);
         unset($this->blocks[$name]);
@@ -120,7 +120,7 @@ class BlockBuilder
      *
      * If the block does not exist, then the `$default` content will be returned instead.
      */
-    public function get(string $name, string $default = ''): string
+    public function get(string $name, string $default = null): ?string
     {
         if (!isset($this->blocks[$name])) {
             return $default;
