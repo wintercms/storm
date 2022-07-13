@@ -12,8 +12,6 @@ interface ResolverInterface
     /**
      * Get a datasource instance by name.
      *
-     * @param string $name The name of the datasource to retrieve.
-     * @return \Winter\Storm\Halcyon\Datasource\DatasourceInterface
      * @throws \Winter\Storm\Halcyon\Exception\MissingDatasourceException If a datasource with the given name does not exist.
      */
     public function datasource(string $name = null): DatasourceInterface;
