@@ -65,10 +65,18 @@ class UrlGenerator extends UrlGeneratorBase
 
         // Parse input
         if (is_string($url)) {
-            $url = parse_url(urldecode($url));
+            if (str_contains($url, '?')) {
+                list($uri, $qs) = explode('?', $url);
+                $url = $uri . '?' . urldecode($qs);
+            }
+            $url = parse_url($url);
         }
         if (is_string($replace)) {
-            $replace = parse_url(urldecode($replace));
+            if (str_contains($replace, '?')) {
+                list($uri, $qs) = explode('?', $replace);
+                $replace = $uri . '?' . urldecode($qs);
+            }
+            $replace = parse_url($replace);
         }
 
         // Prepare input data
