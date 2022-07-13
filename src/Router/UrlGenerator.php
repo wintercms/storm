@@ -63,20 +63,21 @@ class UrlGenerator extends UrlGeneratorBase
                    | HTTP_URL_STRIP_PASS;
         }
 
+        // Decode query parameters before parsing the URL
+        $decodeQueryParams = function (string $url): string {
+            if (Str::contains($url, '?')) {
+                list($urlWithoutQuery, $queryArgs) = explode('?', $url, 2);
+                $url = $urlWithoutQuery . '?' . urldecode($queryArgs);
+            }
+            return $url;
+        };
+
         // Parse input
         if (is_string($url)) {
-            if (str_contains($url, '?')) {
-                list($uri, $qs) = explode('?', $url);
-                $url = $uri . '?' . urldecode($qs);
-            }
-            $url = parse_url($url);
+            $url = parse_url($decodeQueryParams($url));
         }
         if (is_string($replace)) {
-            if (str_contains($replace, '?')) {
-                list($uri, $qs) = explode('?', $replace);
-                $replace = $uri . '?' . urldecode($qs);
-            }
-            $replace = parse_url($replace);
+            $replace = parse_url($decodeQueryParams($replace));
         }
 
         // Prepare input data
