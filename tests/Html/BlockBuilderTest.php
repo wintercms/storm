@@ -229,4 +229,13 @@ class BlockBuilderTest extends TestCase
         );
         $this->assertEquals('In between', $content);
     }
+
+    public function testGetBlock()
+    {
+        $result = $this->Block->get('non-existent-block');
+        $this->assertNull($result);
+
+        $result = $this->Block->get('non-existent-block', 'default value');
+        $this->assertEquals('default value', $result);
+    }
 }
