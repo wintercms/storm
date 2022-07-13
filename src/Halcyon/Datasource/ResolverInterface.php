@@ -18,17 +18,11 @@ interface ResolverInterface
 
     /**
      * Adds a datasource to the resolver.
-     *
-     * @param string $name The name of the datasource.
-     * @param DatasourceInterface $datasource The datasource instance.
      */
     public function addDatasource(string $name, DatasourceInterface $datasource): void;
 
     /**
      * Returns if the given datasource name exists.
-     *
-     * @param string $name
-     * @return bool
      */
     public function hasDatasource(string $name): bool;
 
@@ -39,8 +33,6 @@ interface ResolverInterface
 
     /**
      * Sets the default datasource name.
-     *
-     * @param string $name The name of the datasource to make the default.
      */
     public function setDefaultDatasource(string $name): void;
 }
