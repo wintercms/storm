@@ -50,6 +50,11 @@ class Model extends EloquentModel
     public $duplicateCache = true;
 
     /**
+     * @var bool Indicates if all model attributes will be trimmed prior to saving.
+     */
+    public $trimAttributes = true;
+
+    /**
      * @var array The array of models booted events.
      */
     protected static $eventsBooted = [];
@@ -1239,7 +1244,7 @@ class Model extends EloquentModel
         /*
          * Trim strings
          */
-        if (is_string($value)) {
+        if ($this->trimAttributes && is_string($value)) {
             $value = trim($value);
         }
 
