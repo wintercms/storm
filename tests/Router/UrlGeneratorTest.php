@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-use \Winter\Storm\Router\UrlGenerator;
+use Winter\Storm\Router\UrlGenerator;
 use Illuminate\Routing\RouteCollection;
 
 class UrlGeneratorTest extends TestCase
@@ -509,5 +509,32 @@ class UrlGeneratorTest extends TestCase
             'https://user:pass@github.com/wintercms/winter',
             http_build_url($segments, [], HTTP_URL_STRIP_PORT | HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT)
         );
+    }
+
+    public function testQueryArgsArrayMatchLaravel()
+    {
+        $checkUrlsOnBoth = [
+            // Non url-encoded
+            'https://www.example.com/path?array[]=v1&array[]=v2',
+            'https://www.example.com/path?array[0]=v1&array[1]=v2',
+            'https://www.example.com/path?array[k1]=v1&array[k2]=v2',
+
+            // Already url-encoded
+            'https://www.example.com/path?array%5B%5D=v1&array%5B%5D=v2',
+            'https://www.example.com/path?array%5B0%5D=v1&array%5B1%5D=v2',
+            'https://www.example.com/path?array%5Bk1%5D=v1&array%5Bk2%5D=v2',
+        ];
+
+        foreach ($checkUrlsOnBoth as $url) {
+            $generator = new \Winter\Storm\Router\UrlGenerator(new RouteCollection, Request::create($url));
+            $baseGenerator = new \Illuminate\Routing\UrlGenerator(new RouteCollection, Request::create($url));
+
+            // @NOTE: Laravel does not guarantee that the URL generator always returns
+            // correctly URL encoded URLs - however Winter's does. Decode before comparing.
+            $this->assertEquals(
+                urldecode($baseGenerator->to($url)),
+                urldecode($generator->to($url))
+            );
+        }
     }
 }

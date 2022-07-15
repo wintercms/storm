@@ -558,7 +558,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     /**
      * Validate any set permissions.
-     * @param array $permissions
+     * @param string $permissions
      * @return void
      */
     public function setPermissionsAttribute($permissions)
