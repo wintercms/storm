@@ -1244,7 +1244,7 @@ class Model extends EloquentModel
         /*
          * Trim strings
          */
-        if ($this->trimAttributes && is_string($value)) {
+        if ($this->trimStringAttributes && is_string($value)) {
             $value = trim($value);
         }
 
