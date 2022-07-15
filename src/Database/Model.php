@@ -50,9 +50,9 @@ class Model extends EloquentModel
     public $duplicateCache = true;
 
     /**
-     * @var bool Indicates if all model attributes will be trimmed prior to saving.
+     * @var bool Indicates if all string model attributes will be trimmed prior to saving.
      */
-    public $trimAttributes = true;
+    public $trimStringAttributes = true;
 
     /**
      * @var array The array of models booted events.
