@@ -1,21 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\App;
+use Winter\Storm\Support\Facades\Mail;
 use Winter\Storm\Support\Testing\Fakes\MailFake;
 
 class MailFakeTest extends TestCase
 {
     public function setUp(): void
     {
-        // Mock App facade
-        if (!class_exists('App')) {
-            class_alias('\Illuminate\Support\Facades\App', 'App');
-        }
-        App::shouldReceive('getLocale')->andreturn('en/US');
+        parent::setUp();
 
-        // Mock Mail facade
-        if (!class_exists('Mail')) {
-            class_alias('\Winter\Storm\Support\Facades\Mail', 'Mail');
-        }
+        App::shouldReceive('getLocale')->andReturn('en/US');
         Mail::swap(new MailFake());
 
         $this->recipient = 'fake@localhost';

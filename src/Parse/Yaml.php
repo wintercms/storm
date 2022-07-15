@@ -1,11 +1,12 @@
 <?php namespace Winter\Storm\Parse;
 
-use Cache;
-use Config;
+use Illuminate\Support\Facades\Cache;
+use Symfony\Component\Yaml\Yaml as YamlComponent;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
+use Winter\Storm\Support\Facades\Config;
 
 /**
  * Yaml helper class
@@ -15,7 +16,7 @@ use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
  */
 class Yaml
 {
-    /** @var YamlProcessor active YAML processor instance */
+    /** @var YamlProcessor|null active YAML processor instance */
     protected $processor;
 
     /**
@@ -28,11 +29,16 @@ class Yaml
     {
         $yaml = new Parser;
 
-        if (!is_null($this->processor)) {
+        // Only run the preprocessor if parsing fails
+        try {
+            $parsed = $yaml->parse($contents);
+        } catch (\Throwable $throwable) {
+            if (!$this->processor) {
+                throw $throwable;
+            }
             $contents = $this->processor->preprocess($contents);
+            $parsed = $yaml->parse($contents);
         }
-
-        $parsed = $yaml->parse($contents);
 
         if (!is_null($this->processor)) {
             $parsed = $this->processor->process($parsed);
@@ -66,26 +72,40 @@ class Yaml
     /**
      * Renders a PHP array to YAML format.
      *
-     * @param array $vars
-     * @param array $options
-     *
      * Supported options:
      * - inline: The level where you switch to inline YAML.
      * - exceptionOnInvalidType: if an exception must be thrown on invalid types.
      * - objectSupport: if object support is enabled.
-     *
-     * @return string
      */
-    public function render($vars = [], $options = [])
+    public function render(array $vars = [], array $options = []): string
     {
-        extract(array_merge([
-            'inline' => 20,
-            'exceptionOnInvalidType' => false,
-            'objectSupport' => true,
-        ], $options));
+        $inline = (int) ($options['inline'] ?? 20);
+        $exceptionOnInvalidType = (bool) ($options['exceptionOnInvalidType'] ?? false);
+        $objectSupport = (bool) ($options['objectSupport'] ?? true);
+
+        $flags = null;
+
+        if ($exceptionOnInvalidType === true) {
+            $flags |= YamlComponent::DUMP_EXCEPTION_ON_INVALID_TYPE;
+        }
+
+        if ($objectSupport === true) {
+            $flags |= YamlComponent::DUMP_OBJECT;
+        }
 
         $yaml = new Dumper;
-        return $yaml->dump($vars, $inline, 0, $exceptionOnInvalidType, $objectSupport);
+
+        if (!is_null($this->processor) && method_exists($this->processor, 'prerender')) {
+            $vars = $this->processor->prerender($vars);
+        }
+
+        $yamlContent = $yaml->dump($vars, $inline, 0, $flags);
+
+        if (!is_null($this->processor) && method_exists($this->processor, 'render')) {
+            $yamlContent = $this->processor->render($yamlContent);
+        }
+
+        return $yamlContent;
     }
 
     /**

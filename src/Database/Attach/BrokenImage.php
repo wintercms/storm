@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Database\Attach;
 
-use File as FileHelper;
+use Winter\Storm\Support\Facades\File as FileHelper;
 
 class BrokenImage
 {

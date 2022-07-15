@@ -1,8 +1,8 @@
 <?php namespace Winter\Storm\Support;
 
-use Winter\Storm\Filesystem\Filesystem;
 use Throwable;
 use Exception;
+use Winter\Storm\Filesystem\Filesystem;
 
 /**
  * Class loader
@@ -36,9 +36,9 @@ class ClassLoader
     /**
      * The loaded manifest array.
      *
-     * @var array
+     * @var array|null
      */
-    public $manifest;
+    public $manifest = null;
 
     /**
      * Determine if the manifest needs to be written.
@@ -55,11 +55,11 @@ class ClassLoader
     protected $directories = [];
 
     /**
-     * Indicates if a ClassLoader has been registered.
+     * The registered callback for loading plugins.
      *
-     * @var bool
+     * @var callable|null
      */
-    protected $registered = false;
+    protected $registered = null;
 
     /**
      * Class alias array.
@@ -202,13 +202,16 @@ class ClassLoader
      */
     public function register()
     {
-        if ($this->registered) {
+        if (!is_null($this->registered)) {
             return;
         }
 
         $this->ensureManifestIsLoaded();
 
-        $this->registered = spl_autoload_register([$this, 'load']);
+        $this->registered = function ($class) {
+            $this->load($class);
+        };
+        spl_autoload_register($this->registered);
     }
 
     /**
@@ -218,12 +221,12 @@ class ClassLoader
      */
     public function unregister()
     {
-        if (!$this->registered) {
+        if (is_null($this->registered)) {
             return;
         }
 
-        spl_autoload_unregister([$this, 'load']);
-        $this->registered = false;
+        spl_autoload_unregister($this->registered);
+        $this->registered = null;
     }
 
     /**
@@ -309,7 +312,7 @@ class ClassLoader
      * Aliases are first-come, first-served. If a real class already exists with the same name as an alias, the real
      * class is used over the alias.
      *
-     * @param array $aliases
+     * @param array $namespaceAliases
      * @return void
      */
     public function addNamespaceAliases(array $namespaceAliases)
@@ -409,7 +412,7 @@ class ClassLoader
      * Get the possible paths for a class.
      *
      * @param  string  $class
-     * @return string
+     * @return array
      */
     protected static function getPathsForClass($class)
     {

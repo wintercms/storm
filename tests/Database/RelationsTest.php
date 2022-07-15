@@ -189,7 +189,7 @@ class RelationsTest extends DbTestCase
 
     protected function createTables()
     {
-        $this->db->schema()->create('posts', function ($table) {
+        $this->getBuilder()->create('posts', function ($table) {
             $table->increments('id');
             $table->string('title')->default('');
             $table->boolean('published')->nullable();
@@ -197,14 +197,14 @@ class RelationsTest extends DbTestCase
             $table->timestamps();
         });
 
-        $this->db->schema()->create('terms', function ($table) {
+        $this->getBuilder()->create('terms', function ($table) {
             $table->increments('id');
             $table->string('type')->index();
             $table->string('name');
             $table->timestamps();
         });
 
-        $this->db->schema()->create('posts_terms', function ($table) {
+        $this->getBuilder()->create('posts_terms', function ($table) {
             $table->primary(['post_id', 'term_id']);
             $table->unsignedInteger('post_id');
             $table->unsignedInteger('term_id');
@@ -212,13 +212,13 @@ class RelationsTest extends DbTestCase
             $table->timestamps();
         });
 
-        $this->db->schema()->create('categories', function ($table) {
+        $this->getBuilder()->create('categories', function ($table) {
             $table->increments('id');
             $table->string('name');
             $table->timestamps();
         });
 
-        $this->db->schema()->create('posts_categories', function ($table) {
+        $this->getBuilder()->create('posts_categories', function ($table) {
             $table->primary(['post_id', 'category_id']);
             $table->unsignedInteger('post_id');
             $table->unsignedInteger('category_id');
@@ -262,7 +262,7 @@ class RelationsTest extends DbTestCase
     }
 }
 
-class Category extends \October\Rain\Database\Model
+class Category extends \Winter\Storm\Database\Model
 {
     public $table = 'categories';
 

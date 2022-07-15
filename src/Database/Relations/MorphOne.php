@@ -4,10 +4,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class MorphOne extends MorphOneBase
 {
-    use MorphOneOrMany;
-    use DefinedConstraints;
+    use Concerns\MorphOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * Create a new has many relationship instance.

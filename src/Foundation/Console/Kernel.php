@@ -8,17 +8,20 @@ class Kernel extends ConsoleKernel
     /**
      * The bootstrap classes for the application.
      *
-     * @var array
+     * @var string[]
      */
     protected $bootstrappers = [
-        '\Winter\Storm\Foundation\Bootstrap\RegisterClassLoader',
-        '\Winter\Storm\Foundation\Bootstrap\LoadEnvironmentVariables',
-        '\Winter\Storm\Foundation\Bootstrap\LoadConfiguration',
-        '\Winter\Storm\Foundation\Bootstrap\LoadTranslation',
+        \Winter\Storm\Foundation\Bootstrap\RegisterClassLoader::class,
+        \Winter\Storm\Foundation\Bootstrap\LoadEnvironmentVariables::class,
+        \Winter\Storm\Foundation\Bootstrap\LoadConfiguration::class,
+        \Winter\Storm\Foundation\Bootstrap\LoadTranslation::class,
+
         \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
         \Illuminate\Foundation\Bootstrap\RegisterFacades::class,
         \Illuminate\Foundation\Bootstrap\SetRequestForConsole::class,
-        '\Winter\Storm\Foundation\Bootstrap\RegisterWinter',
+
+        \Winter\Storm\Foundation\Bootstrap\RegisterWinter::class,
+
         \Illuminate\Foundation\Bootstrap\RegisterProviders::class,
         \Illuminate\Foundation\Bootstrap\BootProviders::class,
     ];

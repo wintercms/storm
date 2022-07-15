@@ -1,17 +1,20 @@
 <?php namespace Winter\Storm\Database\Connections;
 
 use Illuminate\Database\Schema\PostgresBuilder;
-use Doctrine\DBAL\Driver\PDOPgSql\Driver as DoctrineDriver;
+use Illuminate\Database\PDO\PostgresDriver;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
 use Winter\Storm\Database\Query\Grammars\PostgresGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
 
+/**
+ * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
+ */
 class PostgresConnection extends Connection
 {
     /**
      * Get the default query grammar instance.
      *
-     * @return \Illuminate\Database\Query\Grammars\PostgresGrammar
+     * @return \Illuminate\Database\Grammar
      */
     protected function getDefaultQueryGrammar()
     {
@@ -25,7 +28,7 @@ class PostgresConnection extends Connection
      */
     public function getSchemaBuilder()
     {
-        if (is_null($this->schemaGrammar)) {
+        if (!isset($this->schemaGrammar)) {
             $this->useDefaultSchemaGrammar();
         }
 
@@ -35,7 +38,7 @@ class PostgresConnection extends Connection
     /**
      * Get the default schema grammar instance.
      *
-     * @return \Illuminate\Database\Schema\Grammars\PostgresGrammar
+     * @return \Illuminate\Database\Grammar
      */
     protected function getDefaultSchemaGrammar()
     {
@@ -55,10 +58,10 @@ class PostgresConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Doctrine\DBAL\Driver\PDOPgSql\Driver
+     * @return \Illuminate\Database\PDO\PostgresDriver
      */
     protected function getDoctrineDriver()
     {
-        return new DoctrineDriver;
+        return new PostgresDriver;
     }
 }

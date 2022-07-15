@@ -6,6 +6,15 @@ use Winter\Storm\Auth\Manager;
 
 /**
  * User Preferences model
+ *
+ * @property string|array|null $value Represents the value of the preference.
+ * @property string|null $namespace Represents the namespace of the preference.
+ * @property string|null $group Represents the group of the preference.
+ * @property string|null $item Represents the item name of the preference.
+ * @property int|null $user_id Represents the user ID that this preference belongs to.
+ *
+ * @method static \Winter\Storm\Database\QueryBuilder applyKeyAndUser($key, $user = null) Scope to find a setting record
+ *  for the specified module (or plugin) name, setting name and user.
  */
 class Preferences extends Model
 {
@@ -26,7 +35,7 @@ class Preferences extends Model
     protected $jsonable = ['value'];
 
     /**
-     * @var \Winter\Storm\Auth\Models\User A user who owns the preferences
+     * @var \Winter\Storm\Auth\Models\User|null A user who owns the preferences
      */
     public $userContext;
 
@@ -38,6 +47,7 @@ class Preferences extends Model
     public function resolveUser($user)
     {
         $user = Manager::instance()->getUser();
+
         if (!$user) {
             throw new AuthException('User is not logged in');
         }
@@ -63,7 +73,9 @@ class Preferences extends Model
      */
     public function get($key, $default = null)
     {
-        if (!($user = $this->userContext)) {
+        $user = $this->userContext;
+
+        if (!$user) {
             return $default;
         }
 
@@ -74,6 +86,7 @@ class Preferences extends Model
         }
 
         $record = static::findRecord($key, $user);
+
         if (!$record) {
             return static::$cache[$cacheKey] = $default;
         }
@@ -91,11 +104,14 @@ class Preferences extends Model
      */
     public function set($key, $value)
     {
-        if (!$user = $this->userContext) {
+        $user = $this->userContext;
+
+        if (!$user) {
             return false;
         }
 
         $record = static::findRecord($key, $user);
+
         if (!$record) {
             list($namespace, $group, $item) = $this->parseKey($key);
             $record = new static;
@@ -120,11 +136,14 @@ class Preferences extends Model
      */
     public function reset($key)
     {
-        if (!$user = $this->userContext) {
+        $user = $this->userContext;
+
+        if (!$user) {
             return false;
         }
 
         $record = static::findRecord($key, $user);
+
         if (!$record) {
             return false;
         }
@@ -139,7 +158,7 @@ class Preferences extends Model
 
     /**
      * Returns a record
-     * @return self
+     * @return self|null
      */
     public static function findRecord($key, $user = null)
     {
@@ -148,8 +167,8 @@ class Preferences extends Model
 
     /**
      * Scope to find a setting record for the specified module (or plugin) name, setting name and user.
+     * @param \Winter\Storm\Database\QueryBuilder $query
      * @param string $key Specifies the setting key value, for example 'backend:items.perpage'
-     * @param mixed $default The default value to return if the setting doesn't exist in the DB.
      * @param mixed $user An optional user object.
      * @return mixed Returns the found record or null.
      */

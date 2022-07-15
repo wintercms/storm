@@ -9,42 +9,44 @@ use Exception;
  */
 class BlockBuilder
 {
-    protected $blockStack = [];
-    protected $blocks = [];
+    /**
+     * The block stack.
+     */
+    protected array $blockStack = [];
 
     /**
-     * Helper for startBlock
-     *
-     * @param string $name Specifies the block name.
-     * @return void
+     * Registered block contents, keyed by block name.
      */
-    public function put($name)
+    protected array $blocks = [];
+
+    /**
+     * Helper method for the "startBlock" templating function.
+     */
+    public function put(string $name): void
     {
         $this->startBlock($name);
     }
 
     /**
-     * Begins the layout block.
+     * Begins the layout block for a given block name.
      *
      * This method enables output buffering, so all output will be captured as a part of this block.
-     *
-     * @param string $name Specifies the block name.
-     * @return void
      */
-    public function startBlock($name)
+    public function startBlock(string $name): void
     {
         array_push($this->blockStack, $name);
         ob_start();
     }
 
     /**
-     * Helper for endBlock and also clears the output buffer.
+     * Helper method for the "endBlock" templating function.
      *
-     * @param boolean $append Indicates that the new content should be appended to the existing block content.
-     * @return void
+     * If `$append` is `true`, the new content should be appended to an existing block, as opposed to overwriting any
+     * previous content.
+     *
      * @throws \Exception if there are no items in the block stack
      */
-    public function endPut($append = false)
+    public function endPut(bool $append = false): void
     {
         $this->endBlock($append);
     }
@@ -54,11 +56,9 @@ class BlockBuilder
      *
      * This captures all buffered output as the block's content, and ends output buffering.
      *
-     * @param boolean $append Indicates that the new content should be appended to the existing block content.
-     * @return void
      * @throws \Exception if there are no items in the block stack
      */
-    public function endBlock($append = false)
+    public function endBlock(bool $append = false): void
     {
         if (!count($this->blockStack)) {
             throw new Exception('Invalid block nesting');
@@ -75,30 +75,21 @@ class BlockBuilder
     }
 
     /**
-     * Sets a content of the layout block.
+     * Sets a content of the layout block, overwriting any previous content for that block.
      *
      * Output buffering is not used for this method.
-     *
-     * @param string $name Specifies the block name.
-     * @param string $content Specifies the block content.
-     * @return void
-     * @throws \Exception if there are no items in the block stack
      */
-    public function set($name, $content)
+    public function set(string $name, string $content): void
     {
         $this->blocks[$name] = $content;
     }
 
     /**
-     * Appends a content of the layout block.
+     * Appends content to a layout block.
      *
      * Output buffering is not used for this method.
-     *
-     * @param string $name Specifies the block name.
-     * @param string $content Specifies the block content.
-     * @return void
      */
-    public function append($name, $content)
+    public function append(string $name, string $content): void
     {
         if (!isset($this->blocks[$name])) {
             $this->blocks[$name] = '';
@@ -108,13 +99,11 @@ class BlockBuilder
     }
 
     /**
-     * Returns the layout block contents and deletes the block from memory.
+     * Returns the layout block contents of a given block name and deletes the block from memory.
      *
-     * @param string $name Specifies the block name.
-     * @param string $default Specifies a default block value to use if the block requested is not exists.
-     * @return string
+     * If the block does not exist, then the `$default` content will be returned instead.
      */
-    public function placeholder($name, $default = null)
+    public function placeholder(string $name, string $default = null): ?string
     {
         $result = $this->get($name, $default);
         unset($this->blocks[$name]);
@@ -127,16 +116,14 @@ class BlockBuilder
     }
 
     /**
-     * Returns the layout block contents but not deletes the block from memory.
+     * Returns the layout block contents of a given name, but does not delete it from memory.
      *
-     * @param string $name Specifies the block name.
-     * @param string $default Specifies a default block value to use if the block requested is not exists.
-     * @return string
+     * If the block does not exist, then the `$default` content will be returned instead.
      */
-    public function get($name, $default = null)
+    public function get(string $name, string $default = null): ?string
     {
         if (!isset($this->blocks[$name])) {
-            return  $default;
+            return $default;
         }
 
         return $this->blocks[$name];
@@ -144,10 +131,8 @@ class BlockBuilder
 
     /**
      * Clears all the registered blocks.
-     *
-     * @return void
      */
-    public function reset()
+    public function reset(): void
     {
         $this->blockStack = [];
         $this->blocks = [];
@@ -155,10 +140,8 @@ class BlockBuilder
 
     /**
      * Gets the block stack at this point.
-     *
-     * @return array
      */
-    public function getBlockStack()
+    public function getBlockStack(): array
     {
         return $this->blockStack;
     }

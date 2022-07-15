@@ -10,4 +10,13 @@ composer.lock
 # Other files
 .DS_Store
 php_errors.log
+
+#eclipse
+/.buildpath
+/.project
+/.settings/
+
+#phpunit
+tests/.phpunit.result.cache
 .phpunit.result.cache
+tests/tmp

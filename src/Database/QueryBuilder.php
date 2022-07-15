@@ -1,7 +1,8 @@
 <?php namespace Winter\Storm\Database;
 
-use App;
 use Winter\Storm\Support\Arr;
+use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Database\Query\Builder as QueryBuilderBase;
 use Illuminate\Database\Query\Expression;
 
@@ -17,7 +18,7 @@ class QueryBuilder extends QueryBuilderBase
     /**
      * The number of minutes to cache the query.
      *
-     * @var int
+     * @var int|null
      */
     protected $cacheMinutes;
 
@@ -112,14 +113,10 @@ class QueryBuilder extends QueryBuilderBase
      * Check the memory cache before executing the query
      *
      * @param  array  $columns
-     * @return array
+     * @return BaseCollection
      */
     protected function getDuplicateCached($columns = ['*'])
     {
-        if (is_null($this->columns)) {
-            $this->columns = $columns;
-        }
-
         $cache = MemoryCache::instance();
 
         if ($cache->has($this)) {
@@ -140,14 +137,10 @@ class QueryBuilder extends QueryBuilderBase
      * Execute the query as a cached "select" statement.
      *
      * @param  array  $columns
-     * @return array
+     * @return BaseCollection
      */
     public function getCached($columns = ['*'])
     {
-        if (is_null($this->columns)) {
-            $this->columns = $columns;
-        }
-
         // If the query is requested to be cached, we will cache it using a unique key
         // for this database connection and query statement, including the bindings
         // that are used on this query, providing great convenience when caching.
@@ -237,9 +230,8 @@ class QueryBuilder extends QueryBuilderBase
      * also strips off any orderBy clause.
      *
      * @param  string  $columns
-     * @return int
      */
-    public function count($columns = '*')
+    public function count($columns = '*'): int
     {
         $previousOrders = $this->orders;
 
@@ -389,10 +381,8 @@ class QueryBuilder extends QueryBuilderBase
 
     /**
      * Enable the memory cache on the query.
-     *
-     * @return \Illuminate\Database\Query\Builder|static
      */
-    public function enableDuplicateCache()
+    public function enableDuplicateCache(): static
     {
         $this->cachingDuplicateQueries = true;
 
@@ -401,10 +391,8 @@ class QueryBuilder extends QueryBuilderBase
 
     /**
      * Disable the memory cache on the query.
-     *
-     * @return \Illuminate\Database\Query\Builder|static
      */
-    public function disableDuplicateCache()
+    public function disableDuplicateCache(): static
     {
         $this->cachingDuplicateQueries = false;
 
@@ -468,7 +456,7 @@ class QueryBuilder extends QueryBuilderBase
         if ($this->groups || $this->havings) {
             $clone = $this->cloneForPaginationCount();
 
-            if (is_null($clone->columns) && !empty($this->joins)) {
+            if (empty($clone->columns) && !empty($this->joins)) {
                 $clone->select($this->from . '.*');
             }
 

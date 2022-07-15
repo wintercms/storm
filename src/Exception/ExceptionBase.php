@@ -1,7 +1,8 @@
 <?php namespace Winter\Storm\Exception;
 
-use File;
 use Exception;
+use Throwable;
+use Winter\Storm\Support\Facades\File;
 
 /**
  * The base exception class.
@@ -13,7 +14,7 @@ use Exception;
 class ExceptionBase extends Exception
 {
     /**
-     * @var Exception If this exception is acting as a mask, this property stores the face exception.
+     * @var Throwable If this exception is acting as a mask, this property stores the face exception.
      */
     protected $mask;
 
@@ -38,7 +39,7 @@ class ExceptionBase extends Exception
     protected $errorType;
 
     /**
-     * @var stdObject Cached code information for highlighting code.
+     * @var object Cached code information for highlighting code.
      */
     protected $highlight;
 
@@ -48,9 +49,9 @@ class ExceptionBase extends Exception
      * and an interface for displaying the CMS exception page.
      * @param string $message Error message.
      * @param int $code Error code.
-     * @param Exception $previous Previous exception.
+     * @param Throwable $previous Previous exception.
      */
-    public function __construct($message = "", $code = 0, Exception $previous = null)
+    public function __construct($message = "", $code = 0, Throwable $previous = null)
     {
         if ($this->className === null) {
             $this->className = get_called_class();
@@ -106,10 +107,10 @@ class ExceptionBase extends Exception
 
     /**
      * If this exception acts as a mask, sets the face for the foreign exception.
-     * @param Exception $exception Face for the mask, the underlying exception.
+     * @param Throwable $exception Face for the mask, the underlying exception.
      * @return void
      */
-    public function setMask(Exception $exception)
+    public function setMask(Throwable $exception)
     {
         $this->mask = $exception;
         $this->applyMask($exception);
@@ -118,10 +119,10 @@ class ExceptionBase extends Exception
     /**
      * This method is used when applying the mask exception to the face exception.
      * It can be used as an override for child classes who may use different masking logic.
-     * @param Exception $exception Face exception being masked.
+     * @param Throwable $exception Face exception being masked.
      * @return void
      */
-    public function applyMask(Exception $exception)
+    public function applyMask(Throwable $exception)
     {
         $this->file = $exception->getFile();
         $this->message = $exception->getMessage();
@@ -132,7 +133,7 @@ class ExceptionBase extends Exception
     /**
      * If this exception is acting as a mask, return the face exception. Otherwise return
      * this exception as the true one.
-     * @return Exception The underlying exception, or this exception if no mask is applied.
+     * @return Throwable The underlying exception, or this exception if no mask is applied.
      */
     public function getTrueException()
     {
@@ -146,7 +147,7 @@ class ExceptionBase extends Exception
     /**
      * Generates information used for highlighting the area of code in context of the exception line number.
      * The highlighted block of code will be six (6) lines before and after the problem line number.
-     * @return array Highlight information as an array, the following keys are supplied:
+     * @return object Highlight information as an object, the following keys are supplied:
      * startLine - The starting line number, 6 lines before the error line.
      * endLine - The ending line number, 6 lines after the error line.
      * errorLine - The focused error line number.
@@ -234,7 +235,7 @@ class ExceptionBase extends Exception
 
             $args = null;
             if (isset($event['args']) && count($event['args'])) {
-                $args = $this->formatStackArguments($event['args'], false);
+                $args = $this->formatStackArguments($event['args']);
             }
 
             $result[] = (object)[

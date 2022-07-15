@@ -19,11 +19,8 @@ class PathResolver
      * and directories.
      *
      * Returns canonical path if it can be resolved, otherwise `false`.
-     *
-     * @param string $path The path to resolve
-     * @return string|bool
      */
-    public static function resolve($path)
+    public static function resolve(string $path): string|bool
     {
         // Check if path is within any "open_basedir" restrictions
         if (!static::withinOpenBaseDir($path)) {
@@ -100,12 +97,8 @@ class PathResolver
 
     /**
      * Determines if the path is within the given directory.
-     *
-     * @param string $path
-     * @param string $directory
-     * @return bool
      */
-    public static function within($path, $directory)
+    public static function within(string $path, string $directory): bool
     {
         $directory = static::resolve($directory);
         $path = static::resolve($path);
@@ -115,12 +108,8 @@ class PathResolver
 
     /**
      * Join two paths, making sure they use the correct directory separators.
-     *
-     * @param string $prefix
-     * @param string $path The path to add to the prefix.
-     * @return string
      */
-    public static function join($prefix, $path = '')
+    public static function join(string $prefix, string $path = ''): string
     {
         $fullPath = rtrim(static::normalize($prefix, false) . '/' . static::normalize($path, false), '/');
 
@@ -133,11 +122,9 @@ class PathResolver
      * Converts any type of path (Unix or Windows) into a Unix-style path, so that we have a consistent format to work
      * with internally. All paths will be returned with no trailing path separator.
      *
-     * @param string $path
-     * @param bool $applyCwd If true, the current working directory will be appended if the path is relative.
-     * @return string
+     * If `$applyCwd` is true, the current working directory will be prepended if the path is relative.
      */
-    protected static function normalize($path, $applyCwd = true)
+    protected static function normalize(string $path, bool $applyCwd = true): string
     {
         // Change directory separators to Unix-based
         $path = rtrim(str_replace('\\', '/', $path), '/');
@@ -159,11 +146,8 @@ class PathResolver
 
     /**
      * Standardizes the path separators of a path back to the expected separator for the operating system.
-     *
-     * @param string $path
-     * @return string
      */
-    public static function standardize($path)
+    public static function standardize(string $path): string
     {
         return str_replace('/', DIRECTORY_SEPARATOR, static::normalize($path, false));
     }
@@ -171,10 +155,9 @@ class PathResolver
     /**
      * Resolves a symlink target.
      *
-     * @param mixed $path The symlink source's path.
-     * @return string|bool
+     * Returns the resolved symlink path, or `false` if it cannot be resolved.
      */
-    protected static function resolveSymlink($symlink)
+    protected static function resolveSymlink($symlink): string|bool
     {
         // Check that the symlink is valid and the target exists
         $stat = linkinfo($symlink);
@@ -205,11 +188,8 @@ class PathResolver
 
     /**
      * Checks if a given path is within "open_basedir" restrictions.
-     *
-     * @param string $path
-     * @return bool
      */
-    protected static function withinOpenBaseDir($path)
+    protected static function withinOpenBaseDir(string $path): bool
     {
         $baseDirs = ini_get('open_basedir');
 

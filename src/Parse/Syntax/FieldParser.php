@@ -59,21 +59,23 @@ class FieldParser
     ];
 
     /**
-     * Constructor
+     * Constructor.
+     *
      * @param string $template Template to parse.
+     * @param array $options
      */
-    public function __construct($template = null, $options = [])
+    final public function __construct($template, $options = [])
     {
-        if ($template) {
-            $this->tagPrefix = array_get($options, 'tagPrefix', '');
-            $this->template = $template;
-            $this->processTemplate($template);
-        }
+        $this->tagPrefix = array_get($options, 'tagPrefix', '');
+        $this->template = $template;
+        $this->processTemplate($template);
     }
 
     /**
      * Processes repeating tags first, then registered tags and assigns
      * the results to local object properties.
+     *
+     * @param string $template
      * @return void
      */
     protected function processTemplate($template)
@@ -103,7 +105,7 @@ class FieldParser
      * Static helper for new instances of this class.
      * @param string $template
      * @param array $options
-     * @return FieldParser
+     * @return static
      */
     public static function parse($template, $options = [])
     {
@@ -181,7 +183,7 @@ class FieldParser
      * Processes all repeating tags against a template, this will strip
      * any repeaters from the template for further processing.
      * @param  string $template
-     * @return void
+     * @return array
      */
     protected function processRepeaterTags($template)
     {
@@ -213,8 +215,8 @@ class FieldParser
     /**
      * Processes all registered tags against a template.
      * @param  string $template
-     * @param  bool $usingTags
-     * @return void
+     * @param  array $usingTags
+     * @return array
      */
     protected function processTags($template, $usingTags = null)
     {
@@ -375,7 +377,7 @@ class FieldParser
      *  2 - The default text inside the tag (optional), eg: Foobar
      *
      * @param  string $string
-     * @param  string $tags
+     * @param  array $tags
      * @return array
      */
     protected function processTagsRegex($string, $tags)

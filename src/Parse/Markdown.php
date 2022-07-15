@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Parse;
 
-use Event;
+use Winter\Storm\Support\Facades\Event;
 use Winter\Storm\Parse\Parsedown\Parsedown;
 
 /**
@@ -31,14 +31,41 @@ class Markdown
     use \Winter\Storm\Support\Traits\Emitter;
 
     /**
-     * @var Winter\Storm\Parse\Parsedown\Parsedown Parsedown instance
+     * @var string Parsedown class
      */
-    protected $parser;
+    protected $parserClass = \Winter\Storm\Parse\Parsedown\Parsedown::class;
+
+    /**
+     * Gets an instance of the parser.
+     *
+     * We return a new instance each time to prevent contamination of clean instances.
+     *
+     * @return Parsedown
+     */
+    protected function getParser()
+    {
+        return new $this->parserClass;
+    }
+
+    /**
+     * Sets the Markdown parser.
+     *
+     * @param string|object $parserClass
+     * @return void
+     */
+    public function setParser(string|object $parserClass)
+    {
+        if (is_object($parserClass)) {
+            $this->parserClass = get_class($parserClass);
+        } else {
+            $this->parserClass = $parserClass;
+        }
+    }
 
     /**
      * Parse text using Markdown and Markdown-Extra
-     * @param  string $text Markdown text to parse
-     * @return string       Resulting HTML
+     * @param string $text Markdown text to parse
+     * @return string Resulting HTML
      */
     public function parse($text)
     {
@@ -52,13 +79,9 @@ class Markdown
      */
     public function parseClean($text)
     {
-        $this->getParser()->setSafeMode(true);
+        $parser = $this->getParser()->setSafeMode(true);
 
-        $result = $this->parse($text);
-
-        $this->parser = null;
-
-        return $result;
+        return $this->parseInternal($text, 'text', $parser);
     }
 
     /**
@@ -68,13 +91,9 @@ class Markdown
      */
     public function parseSafe($text)
     {
-        $this->getParser()->setUnmarkedBlockTypes([]);
+        $parser = $this->getParser()->setUnmarkedBlockTypes([]);
 
-        $result = $this->parse($text);
-
-        $this->parser = null;
-
-        return $result;
+        return $this->parseInternal($text, 'text', $parser);
     }
 
     /**
@@ -90,16 +109,19 @@ class Markdown
     /**
      * Internal method for parsing
      */
-    protected function parseInternal($text, $method = 'text')
+    protected function parseInternal($text, $method = 'text', Parsedown $parser = null)
     {
+        if (is_null($parser)) {
+            $parser = $this->getParser();
+        }
         $data = new MarkdownData($text);
 
-        $this->fireEvent('beforeParse', $data, false);
-        Event::fire('markdown.beforeParse', $data, false);
+        $this->fireEvent('beforeParse', [$data], false);
+        Event::fire('markdown.beforeParse', [$data], false);
 
         $result = $data->text;
 
-        $result = $this->getParser()->$method($result);
+        $result = $parser->$method($result);
 
         $data->text = $result;
 
@@ -109,14 +131,5 @@ class Markdown
         Event::fire('markdown.parse', [$text, $data], false);
 
         return $data->text;
-    }
-
-    protected function getParser()
-    {
-        if ($this->parser === null) {
-            $this->parser = new Parsedown;
-        }
-
-        return $this->parser;
     }
 }

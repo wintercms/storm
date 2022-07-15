@@ -1,11 +1,10 @@
 <?php namespace Winter\Storm\Foundation\Bootstrap;
 
-use Dotenv\Dotenv;
-use Dotenv\Exception\InvalidPathException;
-use Symfony\Component\Console\Input\ArgvInput;
+use Illuminate\Support\Env;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables as BaseLoadEnvironmentVariables;
 
-class LoadEnvironmentVariables
+class LoadEnvironmentVariables extends BaseLoadEnvironmentVariables
 {
     /**
      * Bootstrap the given application.
@@ -15,56 +14,16 @@ class LoadEnvironmentVariables
      */
     public function bootstrap(Application $app)
     {
-        $this->checkForSpecificEnvironmentFile($app);
-
-        try {
-            DotEnv::create($app->environmentPath(), $app->environmentFile())->load();
-        }
-        catch (InvalidPathException $e) {
-            //
-        }
-
-        $app->detectEnvironment(function () {
-            return env('APP_ENV', 'production');
-        });
-    }
-
-    /**
-     * Detect if a custom environment file matching the APP_ENV exists.
-     *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
-     * @return void
-     */
-    protected function checkForSpecificEnvironmentFile($app)
-    {
-        if ($app->runningInConsole() && ($input = new ArgvInput)->hasParameterOption('--env')) {
-            $this->setEnvironmentFilePath(
-                $app,
-                $app->environmentFile().'.'.$input->getParameterOption('--env')
-            );
-        }
-
-        if (!env('APP_ENV')) {
+        if ($app->configurationIsCached()) {
             return;
         }
 
-        $this->setEnvironmentFilePath(
-            $app,
-            $app->environmentFile().'.'.env('APP_ENV')
-        );
-    }
+        // Force Laravel to do the work
+        parent::bootstrap($app);
 
-    /**
-     * Load a custom environment file.
-     *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
-     * @param  string  $file
-     * @return void
-     */
-    protected function setEnvironmentFilePath($app, $file)
-    {
-        if (file_exists($app->environmentPath().'/'.$file)) {
-            $app->loadEnvironmentFrom($file);
-        }
+        // Ensure that the application will always have an environment name set
+        $app->detectEnvironment(function () {
+            return Env::get('APP_ENV', 'production');
+        });
     }
 }

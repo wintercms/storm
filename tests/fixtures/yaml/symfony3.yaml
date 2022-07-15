@@ -1,0 +1,95 @@
+##
+## Numeric keys are not supported:
+##
+numeric_keys_not_supported:
+    # Form config file
+    form:
+        # field options array, unquoted keys & values
+        options:
+            0.1: 0.1
+            0.2: 0.2
+
+        # field options array, unquoted keys
+        options2:
+            0.1: '0.1'
+            0.2: '0.2'
+
+        # Aligned colons
+        options3 :
+            0.1  : 0.1
+            0.2  : 0.2
+
+    # version.yaml file
+    updates:
+        1.0.1: First version of Plugin
+        1.0.2:
+            - 'Create plugin tables'
+            - create_plugin_table.php
+        1.1:
+            - 'Add new component'
+            - create_component_table.php
+        1.1.1:
+            - 'Update column property'
+            - update_column_property.php
+
+
+
+##
+## Could not be parsed as it uses an unsupported built-in tag - FIXED IN VERSIONYAMLPARSER
+##
+# unsupported_build_tag:
+#     ## Version.yaml unquoted !!! usage
+#     1.0.0: First version of Plugin
+#     2.0.0: !!! Updated for Winter v1.2+
+#     3.0.0:
+#         - Multiple lines of changes
+#         - !!! Surprise! Some of them are important
+
+
+
+# ##
+# ## Non-string keys are not supported -> WONTFIX
+# ##
+# non_string_keys:
+#     # Reserved types as field options array
+#     options4:
+#         null: 'None'
+#         true: True
+#         FALSE: 'FALSE'
+
+
+
+# ##
+# ## Malformed inline YAML string -> WONTFIX
+# ##
+# malformed_inline_yaml_string:
+#     ## Colorpicker form widget availableColors option
+#     ## Documentation has correct example showing values need to be quoted, wontfix
+#     color:
+#         label: Custom color
+#         type: colorpicker
+#         availableColors: [#000000, #ffffff, #f2f2f2]
+
+
+
+# ##
+# ## Duplicate Key -> WONTFIX
+# ##
+# duplicate_key:
+#     ## Unintentional duplicate keys in form configuration
+#     myfield:
+#         label: 'Label'
+#         comment: author.plugin::lang.fields.myfield
+#         span: right
+#         type: text
+#         comment: 'Untranslated'
+
+
+
+# ##
+# ## The reserved indicator "@" cannot start a plain scalar -> WONTFIX
+# ##
+# reserved_indicator:
+#     ## Old usage of the "@" application path symbol, replaced with ~ in 2015
+#     ## @see https://github.com/wintercms/winter/commit/9d649ebb1e72624361f8152f39a8e9c097701792
+#     list: @/plugins/myauthor/myplugin/models/mymodel/columns.yaml

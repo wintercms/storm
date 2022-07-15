@@ -2,6 +2,7 @@
 
 use Closure;
 use ArrayAccess;
+use Illuminate\Config\Repository as BaseRepository;
 use Illuminate\Contracts\Config\Repository as RepositoryContract;
 
 /**
@@ -9,7 +10,7 @@ use Illuminate\Contracts\Config\Repository as RepositoryContract;
  *
  * @author Alexey Bobkov, Samuel Georges
  */
-class Repository implements ArrayAccess, RepositoryContract
+class Repository extends BaseRepository implements ArrayAccess, RepositoryContract
 {
     use \Winter\Storm\Support\Traits\KeyParser;
 
@@ -116,6 +117,27 @@ class Repository implements ArrayAccess, RepositoryContract
     }
 
     /**
+     * Get many configuration values.
+     *
+     * @param  array  $keys
+     * @return array
+     */
+    public function getMany($keys)
+    {
+        $config = [];
+
+        foreach ($keys as $key => $default) {
+            if (is_numeric($key)) {
+                [$key, $default] = [$default, null];
+            }
+
+            $config[$key] = $this->get($key, $default);
+        }
+
+        return $config;
+    }
+
+    /**
      * Set a given configuration value.
      *
      * @param  array|string  $key
@@ -146,48 +168,6 @@ class Repository implements ArrayAccess, RepositoryContract
                 array_set($this->items[$collection], $item, $value);
             }
         }
-    }
-
-    /**
-     * Prepend a value onto an array configuration value.
-     *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @return void
-     */
-    public function prepend($key, $value)
-    {
-        $array = $this->get($key);
-
-        array_unshift($array, $value);
-
-        $this->set($key, $array);
-    }
-
-    /**
-     * Push a value onto an array configuration value.
-     *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @return void
-     */
-    public function push($key, $value)
-    {
-        $array = $this->get($key);
-
-        $array[] = $value;
-
-        $this->set($key, $array);
-    }
-
-    /**
-     * Get all of the configuration items for the application.
-     *
-     * @return array
-     */
-    public function all()
-    {
-        return $this->items;
     }
 
     /**
@@ -462,7 +442,7 @@ class Repository implements ArrayAccess, RepositoryContract
      * @param  string  $key
      * @return bool
      */
-    public function offsetExists($key)
+    public function offsetExists($key): bool
     {
         return $this->has($key);
     }
@@ -473,7 +453,7 @@ class Repository implements ArrayAccess, RepositoryContract
      * @param  string  $key
      * @return mixed
      */
-    public function offsetGet($key)
+    public function offsetGet($key): mixed
     {
         return $this->get($key);
     }
@@ -485,7 +465,7 @@ class Repository implements ArrayAccess, RepositoryContract
      * @param  mixed  $value
      * @return void
      */
-    public function offsetSet($key, $value)
+    public function offsetSet($key, $value): void
     {
         $this->set($key, $value);
     }
@@ -496,7 +476,7 @@ class Repository implements ArrayAccess, RepositoryContract
      * @param  string  $key
      * @return void
      */
-    public function offsetUnset($key)
+    public function offsetUnset($key): void
     {
         $this->set($key, null);
     }

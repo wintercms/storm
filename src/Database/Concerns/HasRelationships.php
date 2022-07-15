@@ -134,7 +134,6 @@ trait HasRelationships
         'hasManyThrough'
     ];
 
-
     //
     // Relations
     //
@@ -152,13 +151,15 @@ trait HasRelationships
     /**
      * Returns relationship details from a supplied name.
      * @param string $name Relation name
-     * @return array
+     * @return array|null
      */
     public function getRelationDefinition($name)
     {
         if (($type = $this->getRelationType($name)) !== null) {
             return (array) $this->getRelationTypeDefinition($type, $name) + $this->getRelationDefaults($type);
         }
+
+        return null;
     }
 
     /**
@@ -179,7 +180,7 @@ trait HasRelationships
      * Returns the given relation definition.
      * @param string $type Relation type
      * @param string $name Relation name
-     * @return array
+     * @return string|null
      */
     public function getRelationTypeDefinition($type, $name)
     {
@@ -188,6 +189,8 @@ trait HasRelationships
         if (isset($definitions[$name])) {
             return $definitions[$name];
         }
+
+        return null;
     }
 
     /**
@@ -217,7 +220,7 @@ trait HasRelationships
     /**
      * Returns a relationship type based on a supplied name.
      * @param string $name Relation name
-     * @return string
+     * @return string|null
      */
     public function getRelationType($name)
     {
@@ -226,12 +229,14 @@ trait HasRelationships
                 return $type;
             }
         }
+
+        return null;
     }
 
     /**
      * Returns a relation class object
      * @param string $name Relation name
-     * @return string
+     * @return \Winter\Storm\Database\Relations\Relation|null
      */
     public function makeRelation($name)
     {
@@ -337,6 +342,11 @@ trait HasRelationships
             case 'morphToMany':
                 $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
                 $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], false, $relationName);
+
+                if (isset($relation['pivotModel'])) {
+                    $relationObj->using($relation['pivotModel']);
+                }
+
                 break;
 
             case 'morphedByMany':
@@ -466,7 +476,7 @@ trait HasRelationships
     /**
      * Define an polymorphic, inverse one-to-one or many relationship.
      * Overridden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the relation.
-     * @return \Winter\Storm\Database\Relations\BelongsTo
+     * @return \Winter\Storm\Database\Relations\MorphTo
      */
     public function morphTo($name = null, $type = null, $id = null, $ownerKey = null)
     {
@@ -488,7 +498,7 @@ trait HasRelationships
      * @param  string  $type
      * @param  string  $id
      * @param  string  $ownerKey
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return \Winter\Storm\Database\Relations\MorphTo
      */
     protected function morphEagerTo($name, $type, $id, $ownerKey)
     {
@@ -509,10 +519,10 @@ trait HasRelationships
      * @param  string  $name
      * @param  string  $type
      * @param  string  $id
-     * @param  string  $ownerKey
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @param  string|null  $ownerKey
+     * @return \Winter\Storm\Database\Relations\MorphTo
      */
-    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey)
+    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey = null)
     {
         $instance = $this->newRelatedInstance(
             static::getActualClassNameForMorph($target)
@@ -719,7 +729,7 @@ trait HasRelationships
     /**
      * Define an attachment one-to-one relationship.
      * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphOne
+     * @return \Winter\Storm\Database\Relations\AttachOne
      */
     public function attachOne($related, $isPublic = true, $localKey = null, $relationName = null)
     {
@@ -741,7 +751,7 @@ trait HasRelationships
     /**
      * Define an attachment one-to-many relationship.
      * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphMany
+     * @return \Winter\Storm\Database\Relations\AttachMany
      */
     public function attachMany($related, $isPublic = null, $localKey = null, $relationName = null)
     {
@@ -765,7 +775,7 @@ trait HasRelationships
      */
     protected function getRelationCaller()
     {
-        $backtrace = debug_backtrace(false);
+        $backtrace = debug_backtrace(0);
         $caller = ($backtrace[2]['function'] == 'handleRelation') ? $backtrace[4] : $backtrace[2];
         return $caller['function'];
     }
@@ -784,5 +794,179 @@ trait HasRelationships
     protected function setRelationValue($relationName, $value)
     {
         $this->$relationName()->setSimpleValue($value);
+    }
+
+     /**
+     * Dynamically add the provided relationship configuration to the local properties
+     *
+     * @throws InvalidArgumentException if the $type is invalid or if the $name is already in use
+     */
+    protected function addRelation(string $type, string $name, array $config): void
+    {
+        if (!in_array($type, static::$relationTypes)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Cannot add the "%s" relation to %s, %s is not a valid relationship type.',
+                    $name,
+                    get_class($this),
+                    $type
+                )
+            );
+        }
+
+        if ($this->hasRelation($name) || isset($this->{$name})) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Cannot add the "%s" relation to %s, it conflicts with an existing relation, attribute, or property.',
+                    $name,
+                    get_class($this)
+                )
+            );
+        }
+
+        $this->{$type} = array_merge($this->{$type}, [$name => $config]);
+    }
+
+    /**
+     * Dynamically add a HasOne relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addHasOneRelation(string $name, array $config): void
+    {
+        $this->addRelation('hasOne', $name, $config);
+    }
+
+    /**
+     * Dynamically add a HasMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addHasManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('hasMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a BelongsTo relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addBelongsToRelation(string $name, array $config): void
+    {
+        $this->addRelation('belongsTo', $name, $config);
+    }
+
+    /**
+     * Dynamically add a BelongsToMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addBelongsToManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('belongsToMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphTo relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphToRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphTo', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphOne relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphOneRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphOne', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphToMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphToManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphToMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a MorphedByMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addMorphedByManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('morphedByMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add an AttachOne relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addAttachOneRelation(string $name, array $config): void
+    {
+        $this->addRelation('attachOne', $name, $config);
+    }
+
+    /**
+     * Dynamically add an AttachMany relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addAttachManyRelation(string $name, array $config): void
+    {
+        $this->addRelation('attachMany', $name, $config);
+    }
+
+    /**
+     * Dynamically add a(n) HasOneThrough relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addHasOneThroughRelation(string $name, array $config): void
+    {
+        $this->addRelation('HasOneThrough', $name, $config);
+    }
+
+    /**
+     * Dynamically add a(n) HasManyThrough relationship
+     *
+     * @throws InvalidArgumentException if the provided relationship is already defined
+     */
+    public function addHasManyThroughRelation(string $name, array $config): void
+    {
+        $this->addRelation('HasManyThrough', $name, $config);
+    }
+
+    /**
+     * Get the polymorphic relationship columns.
+     *
+     * @param  string  $name
+     * @param  string|null  $type
+     * @param  string|null  $id
+     * @return array
+     */
+    protected function getMorphs($name, $type = null, $id = null)
+    {
+        return [$type ?: $name.'_type', $id ?: $name.'_id'];
     }
 }
