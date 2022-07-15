@@ -53,6 +53,11 @@ class Model extends EloquentModel implements ModelInterface
     public $duplicateCache = true;
 
     /**
+     * @var bool Indicates if all string model attributes will be trimmed prior to saving.
+     */
+    public $trimStringAttributes = true;
+
+    /**
      * @var array The array of models booted events.
      */
     protected static $eventsBooted = [];
@@ -1243,7 +1248,7 @@ class Model extends EloquentModel implements ModelInterface
         /*
          * Trim strings
          */
-        if (is_string($value)) {
+        if ($this->trimStringAttributes && is_string($value)) {
             $value = trim($value);
         }
 
