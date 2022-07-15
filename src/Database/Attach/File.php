@@ -128,10 +128,10 @@ class File extends Model
      * @param string $filePath The path to the file.
      * @return static
      */
-    public function fromFile($filePath)
+    public function fromFile($filePath, $filename = null)
     {
         $file = new FileObj($filePath);
-        $this->file_name = $file->getFilename();
+        $this->file_name = empty($filename) ? $file->getFilename() : $filename;
         $this->file_size = $file->getSize();
         $this->content_type = $file->getMimeType();
         $this->disk_name = $this->getDiskName();
@@ -150,10 +150,11 @@ class File extends Model
      */
     public function fromData($data, $filename)
     {
-        $tempPath = temp_path($filename);
+        $tempName = str_replace('.', '', uniqid('', true)) . '.tmp';
+        $tempPath = temp_path($tempName);
         FileHelper::put($tempPath, $data);
 
-        $file = $this->fromFile($tempPath);
+        $file = $this->fromFile($tempPath, basename($filename));
         FileHelper::delete($tempPath);
 
         return $file;
