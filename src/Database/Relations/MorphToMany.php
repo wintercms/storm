@@ -45,12 +45,6 @@ class MorphToMany extends BaseMorphToMany
         $relationName = null,
         $inverse = false
     ) {
-        $this->inverse = $inverse;
-
-        $this->morphType = $name.'_type';
-
-        $this->morphClass = $inverse ? $query->getModel()->getMorphClass() : $parent->getMorphClass();
-
         parent::__construct(
             $query,
             $parent,
@@ -60,7 +54,8 @@ class MorphToMany extends BaseMorphToMany
             $otherKey,
             $parentKey,
             $relatedKey,
-            $relationName
+            $relationName,
+            $inverse
         );
 
         $this->addDefinedConstraints();
