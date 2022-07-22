@@ -8,7 +8,7 @@ class Kernel extends ConsoleKernel
     /**
      * The bootstrap classes for the application.
      *
-     * @var array
+     * @var string[]
      */
     protected $bootstrappers = [
         \Winter\Storm\Foundation\Bootstrap\RegisterClassLoader::class,

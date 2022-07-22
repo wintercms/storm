@@ -1,12 +1,12 @@
 <?php namespace Winter\Storm\Parse;
 
-use Cache;
-use Config;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\Yaml\Yaml as YamlComponent;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
+use Winter\Storm\Support\Facades\Config;
 
 /**
  * Yaml helper class
@@ -16,7 +16,7 @@ use Winter\Storm\Parse\Processor\Contracts\YamlProcessor;
  */
 class Yaml
 {
-    /** @var YamlProcessor active YAML processor instance */
+    /** @var YamlProcessor|null active YAML processor instance */
     protected $processor;
 
     /**
@@ -29,11 +29,16 @@ class Yaml
     {
         $yaml = new Parser;
 
-        if (!is_null($this->processor)) {
+        // Only run the preprocessor if parsing fails
+        try {
+            $parsed = $yaml->parse($contents);
+        } catch (\Throwable $throwable) {
+            if (!$this->processor) {
+                throw $throwable;
+            }
             $contents = $this->processor->preprocess($contents);
+            $parsed = $yaml->parse($contents);
         }
-
-        $parsed = $yaml->parse($contents);
 
         if (!is_null($this->processor)) {
             $parsed = $this->processor->process($parsed);
@@ -74,19 +79,17 @@ class Yaml
      */
     public function render(array $vars = [], array $options = []): string
     {
-        extract(array_merge([
-            'inline' => 20,
-            'exceptionOnInvalidType' => false,
-            'objectSupport' => true,
-        ], $options));
+        $inline = (int) ($options['inline'] ?? 20);
+        $exceptionOnInvalidType = (bool) ($options['exceptionOnInvalidType'] ?? false);
+        $objectSupport = (bool) ($options['objectSupport'] ?? true);
 
         $flags = null;
 
-        if ($exceptionOnInvalidType) {
+        if ($exceptionOnInvalidType === true) {
             $flags |= YamlComponent::DUMP_EXCEPTION_ON_INVALID_TYPE;
         }
 
-        if ($objectSupport) {
+        if ($objectSupport === true) {
             $flags |= YamlComponent::DUMP_OBJECT;
         }
 

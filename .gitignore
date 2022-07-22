@@ -19,3 +19,4 @@ php_errors.log
 #phpunit
 tests/.phpunit.result.cache
 .phpunit.result.cache
+tests/tmp

@@ -22,6 +22,11 @@ jobs:
       extensions: curl, fileinfo, gd, mbstring, openssl, pdo, pdo_sqlite, sqlite3, xml, zip
       key: winter-storm-cache-v1.2
     steps:
+      - name: Cancel previous incomplete runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+
       - name: Checkout changes
         uses: actions/checkout@v2
 
@@ -44,7 +49,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.phpVersion }}
-          tools: composer:v2
           extensions: ${{ env.extensions }}
 
       - name: Setup dependency cache

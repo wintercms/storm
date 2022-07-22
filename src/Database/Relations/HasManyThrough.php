@@ -4,9 +4,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThroughBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $farParent
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class HasManyThrough extends HasManyThroughBase
 {
-    use DefinedConstraints;
+    use Concerns\DefinedConstraints;
 
     /**
      * @var string The "name" of the relationship.

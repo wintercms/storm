@@ -6,6 +6,9 @@ use Winter\Storm\Database\Model;
 
 /**
  * Throttle model
+ *
+ * @property \Winter\Storm\Auth\Models\User|null $user Related user.
+ * @method \Winter\Storm\Database\Relations\BelongsTo user() User relation.
  */
 class Throttle extends Model
 {
@@ -50,7 +53,7 @@ class Throttle extends Model
 
     /**
      * Returns the associated user with the throttler.
-     * @return User
+     * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function getUser()
     {

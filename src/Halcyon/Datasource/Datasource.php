@@ -1,56 +1,91 @@
 <?php namespace Winter\Storm\Halcyon\Datasource;
 
+use \Winter\Storm\Halcyon\Processors\Processor;
+
 /**
  * Datasource base class.
  */
-class Datasource
+abstract class Datasource implements DatasourceInterface
 {
     use \Winter\Storm\Support\Traits\Emitter;
 
     /**
-     * @var bool Indicates if the record is currently being force deleted.
+     * Indicates if the record is currently being force deleted.
      */
-    protected $forceDeleting = false;
+    protected bool $forceDeleting = false;
 
     /**
      * The query post processor implementation.
-     *
-     * @var \Winter\Storm\Halcyon\Processors\Processor
      */
-    protected $postProcessor;
+    protected Processor $postProcessor;
 
     /**
-     * Get the query post processor used by the connection.
-     *
-     * @return \Winter\Storm\Halcyon\Processors\Processor
+     * @inheritDoc
      */
-    public function getPostProcessor()
+    public function getPostProcessor(): Processor
     {
         return $this->postProcessor;
     }
 
     /**
-     * Force the deletion of a record against the datasource
-     *
-     * @param  string  $dirName
-     * @param  string  $fileName
-     * @param  string  $extension
-     * @return void
+     * @inheritDoc
      */
-    public function forceDelete(string $dirName, string $fileName, string $extension)
+    abstract public function selectOne(string $dirName, string $fileName, string $extension): ?array;
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function select(string $dirName, array $options = []): array;
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function insert(string $dirName, string $fileName, string $extension, string $content): int;
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function update(string $dirName, string $fileName, string $extension, string $content, ?string $oldFileName = null, ?string $oldExtension = null): int;
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function delete(string $dirName, string $fileName, string $extension): bool;
+
+    /**
+     * @inheritDoc
+     */
+    public function forceDelete(string $dirName, string $fileName, string $extension): bool
     {
         $this->forceDeleting = true;
 
-        $this->delete($dirName, $fileName, $extension);
+        $success = $this->delete($dirName, $fileName, $extension);
 
         $this->forceDeleting = false;
+
+        return $success;
     }
 
     /**
-     * Generate a cache key unique to this datasource.
+     * @inheritDoc
      */
-    public function makeCacheKey($name = '')
+    abstract public function lastModified(string $dirName, string $fileName, string $extension): ?int;
+
+    /**
+     * @inheritDoc
+     */
+    public function makeCacheKey(string $name = ''): string
     {
-        return crc32($name);
+        return hash('crc32b', $name);
     }
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function getPathsCacheKey(): string;
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function getAvailablePaths(): array;
 }

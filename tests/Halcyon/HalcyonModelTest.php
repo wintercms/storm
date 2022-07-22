@@ -1,9 +1,11 @@
 <?php
 
+use Illuminate\Http\Request;
 use Winter\Storm\Halcyon\Model;
 use Winter\Storm\Halcyon\Datasource\Resolver;
 use Winter\Storm\Halcyon\Datasource\FileDatasource;
 use Winter\Storm\Filesystem\Filesystem;
+use Winter\Storm\Support\Facades\Input;
 
 class HalcyonModelTest extends TestCase
 {
@@ -16,6 +18,9 @@ class HalcyonModelTest extends TestCase
         include_once __DIR__.'/../fixtures/halcyon/models/Content.php';
 
         $this->setDatasourceResolver();
+
+        // Fake a request so flash messages are not sent
+        Input::swap(new Request());
 
         $this->setValidatorOnModel();
     }

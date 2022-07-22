@@ -1,13 +1,14 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php namespace Winter\Storm\Database\Relations\Concerns;
 
 use Winter\Storm\Support\Facades\DbDongle;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
+use Winter\Storm\Database\Relations\BelongsToMany;
+use Winter\Storm\Database\Relations\MorphToMany;
 
 trait DeferOneOrMany
 {
     /**
      * Returns the model query with deferred bindings added
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function withDeferred($sessionKey)
     {
@@ -20,13 +21,15 @@ trait DeferOneOrMany
         /*
          * No join table will be used, strip the selected "pivot_" columns
          */
-        if ($this instanceof BelongsToManyBase) {
+        /** @phpstan-ignore-next-line */
+        if ($this instanceof BelongsToMany || $this instanceof MorphToMany) {
             $this->orphanMode = true;
         }
 
         $newQuery->where(function ($query) use ($sessionKey) {
 
             if ($this->parent->exists) {
+                /** @phpstan-ignore-next-line */
                 if ($this instanceof MorphToMany) {
                     /*
                      * Custom query for MorphToMany since a "join" cannot be used
@@ -35,24 +38,27 @@ trait DeferOneOrMany
                         $query
                             ->select($this->parent->getConnection()->raw(1))
                             ->from($this->table)
-                            ->where($this->getOtherKey(), DbDongle::raw(DbDongle::getTablePrefix().$this->related->getQualifiedKeyName()))
+                            ->where($this->getOtherKey(), DbDongle::raw(
+                                DbDongle::getTablePrefix() . $this->related->getQualifiedKeyName()
+                            ))
                             ->where($this->getForeignKey(), $this->parent->getKey())
                             ->where($this->getMorphType(), $this->getMorphClass());
                     });
-                }
-                elseif ($this instanceof BelongsToManyBase) {
+                /** @phpstan-ignore-next-line */
+                } elseif ($this instanceof BelongsToMany) {
                     /*
-                     * Custom query for BelongsToManyBase since a "join" cannot be used
+                     * Custom query for BelongsToMany since a "join" cannot be used
                      */
                     $query->whereExists(function ($query) {
                         $query
                             ->select($this->parent->getConnection()->raw(1))
                             ->from($this->table)
-                            ->where($this->getOtherKey(), DbDongle::raw(DbDongle::getTablePrefix().$this->related->getQualifiedKeyName()))
+                            ->where($this->getOtherKey(), DbDongle::raw(
+                                DbDongle::getTablePrefix() . $this->related->getQualifiedKeyName()
+                            ))
                             ->where($this->getForeignKey(), $this->parent->getKey());
                     });
-                }
-                else {
+                } else {
                     /*
                      * Trick the relation to add constraints to this nested query
                      */

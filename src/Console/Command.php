@@ -14,6 +14,23 @@ use Symfony\Component\Console\Completion\CompletionSuggestions;
 abstract class Command extends BaseCommand
 {
     /**
+     * @var array List of commands that this command replaces (aliases)
+     */
+    protected $replaces = [];
+
+    /**
+     * Create a new command instance.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        if (!empty($this->replaces)) {
+            $this->setAliases($this->replaces);
+        }
+    }
+
+    /**
      * Write a string in an alert box.
      *
      * @param  string  $string
@@ -80,6 +97,9 @@ abstract class Command extends BaseCommand
                     $dataType = 'Option';
                     $suggestionType = 'Options';
                     break;
+                default:
+                    // This should not be possible to ever be triggered given the type is hardcoded above
+                    throw new \Exception('Invalid input type being parsed during completion');
             }
             if (!empty($data)) {
                 foreach ($data as $name => $value) {

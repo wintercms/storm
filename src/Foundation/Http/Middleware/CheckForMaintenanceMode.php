@@ -2,11 +2,11 @@
 
 namespace Winter\Storm\Foundation\Http\Middleware;
 
-use Lang;
-use View;
 use Closure;
-use Response;
 use Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode as Middleware;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
 
 class CheckForMaintenanceMode extends Middleware
 {

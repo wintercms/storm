@@ -1,0 +1,15 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    paths:
+        - src
+    level: 5
+    excludePaths:
+        # Exclude PHP Parser files
+        - src/Parse/PHP/ArrayFile.php
+        - src/Parse/PHP/ArrayPrinter.php
+    databaseMigrationsPath:
+        - src/Auth/Migrations
+        - src/Database/Migrations

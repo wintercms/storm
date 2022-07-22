@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Http\Request;
+use Winter\Storm\Support\Facades\Input;
+
 class ValidationTest extends TestCase
 {
     use \Winter\Storm\Database\Traits\Validation;
@@ -20,13 +23,16 @@ class ValidationTest extends TestCase
         return 'mysql';
     }
 
-    protected function getTable()
+    protected function getTable($table = null)
     {
         return 'users';
     }
 
     public function testUnique()
     {
+        // Fake a request so flash messages are not sent
+        Input::swap(new Request());
+
         /**
          * The current model should be excluded when it exists, otherwise all models are evaluated
          *

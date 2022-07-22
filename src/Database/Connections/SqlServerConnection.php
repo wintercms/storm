@@ -4,11 +4,14 @@ use Closure;
 use Exception;
 use Throwable;
 use Illuminate\Database\Schema\SqlServerBuilder;
-use Doctrine\DBAL\Driver\PDOSqlsrv\Driver as DoctrineDriver;
+use Illuminate\Database\PDO\SqlServerDriver;
 use Illuminate\Database\Query\Processors\SqlServerProcessor;
-use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
+use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 
+/**
+ * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
+ */
 class SqlServerConnection extends Connection
 {
     /**
@@ -57,7 +60,7 @@ class SqlServerConnection extends Connection
     /**
      * Get the default query grammar instance.
      *
-     * @return \Illuminate\Database\Query\Grammars\SqlServerGrammar
+     * @return \Illuminate\Database\Grammar
      */
     protected function getDefaultQueryGrammar()
     {
@@ -71,7 +74,7 @@ class SqlServerConnection extends Connection
      */
     public function getSchemaBuilder()
     {
-        if (is_null($this->schemaGrammar)) {
+        if (!isset($this->schemaGrammar)) {
             $this->useDefaultSchemaGrammar();
         }
 
@@ -81,7 +84,7 @@ class SqlServerConnection extends Connection
     /**
      * Get the default schema grammar instance.
      *
-     * @return \Illuminate\Database\Schema\Grammars\SqlServerGrammar
+     * @return \Illuminate\Database\Grammar
      */
     protected function getDefaultSchemaGrammar()
     {
@@ -101,10 +104,10 @@ class SqlServerConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Doctrine\DBAL\Driver\PDOSqlsrv\Driver
+     * @return \Illuminate\Database\PDO\SqlServerDriver
      */
     protected function getDoctrineDriver()
     {
-        return new DoctrineDriver;
+        return new SqlServerDriver;
     }
 }

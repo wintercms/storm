@@ -108,7 +108,7 @@ class HtmlBuilder
      * Generate a HTML link.
      *
      * @param  string  $url
-     * @param  string  $title
+     * @param  string|false|null  $title
      * @param  array   $attributes
      * @param  bool    $secure
      * @return string
@@ -281,7 +281,7 @@ class HtmlBuilder
      *
      * @param  mixed    $key
      * @param  string  $type
-     * @param  string  $value
+     * @param  string|array  $value
      * @return string
      */
     protected function listingElement($key, $type, $value)
@@ -338,17 +338,17 @@ class HtmlBuilder
      * Build a single attribute element.
      *
      * @param  string  $key
-     * @param  string  $value
-     * @return string|void
+     * @param  string|array|null  $value
+     * @return string|null
      */
-    protected function attributeElement($key, $value)
+    protected function attributeElement($key, $value = null)
     {
         if (is_numeric($key)) {
             $key = $value;
         }
 
         if (is_null($value)) {
-            return;
+            return null;
         }
 
         if (is_array($value)) {
@@ -395,7 +395,7 @@ class HtmlBuilder
 
     /**
      * Removes HTML from a string
-     * @param $string String to strip HTML from
+     * @param string $string String to strip HTML from
      * @return string
      */
     public static function strip($string)
@@ -412,15 +412,11 @@ class HtmlBuilder
      */
     public static function limit($html, $maxLength = 100, $end = '...')
     {
-        $isUtf8 = true;
         $printedLength = 0;
         $position = 0;
         $tags = [];
 
-        $regex = $isUtf8
-            ? '{</?([a-z]+)[^>]*>|&#?[a-zA-Z0-9]+;|[\x80-\xFF][\x80-\xBF]*}'
-            : '{</?([a-z]+)[^>]*>|&#?[a-zA-Z0-9]+;}';
-
+        $regex = '{</?([a-z]+)[^>]*>|&#?[a-zA-Z0-9]+;|[\x80-\xFF][\x80-\xBF]*}';
         $result = '';
 
         while ($printedLength < $maxLength && preg_match($regex, $html, $match, PREG_OFFSET_CAPTURE, $position)) {
@@ -447,7 +443,7 @@ class HtmlBuilder
             else {
                 $tagName = $match[1][0];
                 if ($tag[1] == '/') {
-                    $openingTag = array_pop($tags);
+                    array_pop($tags);
                     $result .= $tag;
                 }
                 elseif ($tag[strlen($tag) - 2] == '/') {

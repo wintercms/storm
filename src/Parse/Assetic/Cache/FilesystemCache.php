@@ -1,8 +1,8 @@
 <?php namespace Winter\Storm\Parse\Assetic\Cache;
 
-use File;
 use RuntimeException;
 use Assetic\Cache\FilesystemCache as BaseFilesystemCache;
+use Winter\Storm\Support\Facades\File;
 
 /**
  * Assetic Filesystem Cache
