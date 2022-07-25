@@ -173,7 +173,7 @@ trait AttachOneOrMany
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.relation.beforeAdd', function (string $relationName, \October\Rain\Database\Model $relatedModel) use (\October\Rain\Database\Model $model) {
+             *     $model->bindEvent('model.relation.beforeAdd', function (string $relationName, \Winter\Storm\Database\Model $relatedModel) use (\Winter\Storm\Database\Model $model) {
              *         if ($relationName === 'dummyRelation') {
              *             throw new \Exception("Invalid relation!");
              *         }
@@ -208,7 +208,7 @@ trait AttachOneOrMany
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.relation.afterAdd', function (string $relationName, \October\Rain\Database\Model $relatedModel) use (\October\Rain\Database\Model $model) {
+             *     $model->bindEvent('model.relation.afterAdd', function (string $relationName, \Winter\Storm\Database\Model $relatedModel) use (\Winter\Storm\Database\Model $model) {
              *         $relatedClass = get_class($relatedModel);
              *         $modelClass = get_class($model);
              *         traceLog("{$relatedClass} was added as {$relationName} to {$modelClass}.");
@@ -246,7 +246,7 @@ trait AttachOneOrMany
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.relation.beforeRemove', function (string $relationName, \October\Rain\Database\Model $relatedModel) use (\October\Rain\Database\Model $model) {
+             *     $model->bindEvent('model.relation.beforeRemove', function (string $relationName, \Winter\Storm\Database\Model $relatedModel) use (\Winter\Storm\Database\Model $model) {
              *         if ($relationName === 'permanentRelation') {
              *             throw new \Exception("Cannot dissociate a permanent relation!");
              *         }
@@ -286,7 +286,7 @@ trait AttachOneOrMany
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.relation.afterRemove', function (string $relationName, \October\Rain\Database\Model $relatedModel) use (\October\Rain\Database\Model $model) {
+             *     $model->bindEvent('model.relation.afterRemove', function (string $relationName, \Winter\Storm\Database\Model $relatedModel) use (\Winter\Storm\Database\Model $model) {
              *         $relatedClass = get_class($relatedModel);
              *         $modelClass = get_class($model);
              *         traceLog("{$relatedClass} was removed from {$modelClass}.");
