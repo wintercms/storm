@@ -88,4 +88,3 @@ trait BelongsOrMorphsTo
         return $result;
     }
 }
-
