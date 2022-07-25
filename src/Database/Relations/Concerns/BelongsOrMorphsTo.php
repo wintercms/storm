@@ -1,7 +1,5 @@
 <?php namespace Winter\Storm\Database\Relations\Concerns;
 
-use Illuminate\Database\Eloquent\Model;
-
 trait BelongsOrMorphsTo
 {
     /**
