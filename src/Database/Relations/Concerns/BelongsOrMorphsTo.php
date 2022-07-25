@@ -6,11 +6,8 @@ trait BelongsOrMorphsTo
 {
     /**
      * Associate the model instance to the given parent.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function associate($model)
+    public function associate(Model $model): Model
     {
         /**
          * @event model.relation.beforeAssociate
@@ -49,10 +46,8 @@ trait BelongsOrMorphsTo
 
     /**
      * Dissociate previously associated model from the given parent.
-     *
-     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function dissociate()
+    public function dissociate(): Model
     {
         /**
          * @event model.relation.beforeDissociate
