@@ -699,7 +699,7 @@ class Resizer
     }
 
     /**
-     * Get the extension for the provided filename
+     * Get the extension from the options, otherwise use the filename extension
      */
     protected function getExtension(string $path): string
     {
