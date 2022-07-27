@@ -74,6 +74,29 @@ class ResizerTest extends TestCase
 
     /**
      * Given a Resizer with any image
+     * Test to see if the getExtension() method properly returns the filename extension for the provided filename
+     */
+    public function testGetExtension()
+    {
+        $this->setSource(self::SRC_PORTRAIT); // gif extension
+        $this->createFixtureResizer();
+
+        // no extension provided in path, no extension provided in options, should return source extension.
+        $extension = $this->callProtectedMethod($this->resizer, 'getExtension', ['dummy']);
+        $this->assertEquals('gif', $extension);
+
+        // no extension provided in options, extension provided in path, should return path extension
+        $extension = $this->callProtectedMethod($this->resizer, 'getExtension', ['dummy.jpg']);
+        $this->assertEquals('jpg', $extension);
+
+        // extension provided in options and in path, should return extension from options
+        $this->resizer->setOptions(['extension' => 'png']);
+        $extension = $this->callProtectedMethod($this->resizer, 'getExtension', ['dummy.jpg']);
+        $this->assertEquals('png', $extension);
+    }
+
+    /**
+     * Given a Resizer with any image
      * When the resize method is called with 0x0
      * Then the saved image should be the same as the original one (size, color and transparency)
      * @throws Exception
