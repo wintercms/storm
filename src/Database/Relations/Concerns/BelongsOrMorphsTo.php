@@ -58,14 +58,14 @@ trait BelongsOrMorphsTo
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.beforeDissociate', function (string $relationName) use (\Winter\Storm\Database\Model $model) {
+         *     $model->bindEvent('model.relation.beforeDissociate', function (string $relationName, Model $relatedModel) {
          *         if ($relationName === 'permanentRelation') {
          *             throw new \Exception("Cannot dissociate a permanent relation!");
          *         }
          *     });
          *
          */
-        $this->parent->fireEvent('model.relation.beforeDissociate', [$this->relationName]);
+        $this->parent->fireEvent('model.relation.beforeDissociate', [$this->relationName, $this->getRelated()]);
 
         $result = parent::dissociate();
 
@@ -75,13 +75,13 @@ trait BelongsOrMorphsTo
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.relation.afterDissociate', function (string $relationName) use (\Winter\Storm\Database\Model $model) {
+         *     $model->bindEvent('model.relation.afterDissociate', function (string $relationName, Model $relatedModel) use (\Winter\Storm\Database\Model $model) {
          *         $modelClass = get_class($model);
          *         traceLog("{$relationName} was dissociated from {$modelClass}.");
          *     });
          *
          */
-        $this->parent->fireEvent('model.relation.afterDissociate', [$this->relationName]);
+        $this->parent->fireEvent('model.relation.afterDissociate', [$this->relationName, $this->getRelated()]);
 
         return $result;
     }
