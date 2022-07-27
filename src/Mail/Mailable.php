@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Mail;
 
-use App;
+use Illuminate\Support\Facades\App;
 use Illuminate\Mail\Mailable as MailableBase;
 
 /**

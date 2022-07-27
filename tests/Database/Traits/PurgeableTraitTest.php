@@ -35,7 +35,7 @@ class PurgeableTraitTest extends DbTestCase
 
     protected function createTables()
     {
-        $this->db->schema()->create('test_purge', function ($table) {
+        $this->getBuilder()->create('test_purge', function ($table) {
             $table->increments('id');
             $table->string('name');
             $table->string('data')->nullable();

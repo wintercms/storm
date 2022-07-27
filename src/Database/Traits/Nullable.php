@@ -2,14 +2,14 @@
 
 use Exception;
 
+/**
+ * Enables nullification of empty values on model attributes.
+ *
+ * A model that uses this class must provide a property `$nullable`, that defines as an array all columns that will be
+ * set to `null` if they contain an empty value.
+ */
 trait Nullable
 {
-    /**
-     * @var array List of attribute names which should be set to null when empty.
-     *
-     * protected $nullable = [];
-     */
-
     /**
      * Boot the nullable trait for a model
      *
@@ -47,7 +47,7 @@ trait Nullable
 
     /**
      * Checks if the supplied value is empty, excluding zero.
-     * @param  string $value Value to check
+     * @param  mixed $value Value to check
      * @return bool
      */
     public function checkNullableValue($value)

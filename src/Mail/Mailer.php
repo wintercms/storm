@@ -1,11 +1,11 @@
 <?php namespace Winter\Storm\Mail;
 
-use Event;
-use Config;
-use Illuminate\Mail\Mailer as MailerBase;
+use Winter\Storm\Support\Facades\Config;
+use Winter\Storm\Support\Facades\Event;
 use Illuminate\Contracts\Mail\Mailable as MailableContract;
-use Illuminate\Support\Collection;
+use Illuminate\Mail\Mailer as MailerBase;
 use Illuminate\Mail\SentMessage;
+use Illuminate\Support\Collection;
 
 /**
  * Mailer class for sending mail.
@@ -24,7 +24,7 @@ class Mailer extends MailerBase
     /**
      * Send a new message when only a raw text part.
      *
-     * @param  string  $text
+     * @param  string|array  $view
      * @param  mixed  $callback
      * @return \Illuminate\Mail\SentMessage|null
      */
@@ -78,7 +78,7 @@ class Mailer extends MailerBase
             ($this->fireEvent('mailer.beforeSend', [$view, $data, $callback], true) === false) ||
             (Event::fire('mailer.beforeSend', [$view, $data, $callback], true) === false)
         ) {
-            return;
+            return null;
         }
 
         if ($view instanceof MailableContract) {
@@ -142,7 +142,7 @@ class Mailer extends MailerBase
             ($this->fireEvent('mailer.prepareSend', [$view, $message, $data], true) === false) ||
             (Event::fire('mailer.prepareSend', [$this, $view, $message, $data], true) === false)
         ) {
-            return;
+            return null;
         }
 
 
@@ -195,13 +195,13 @@ class Mailer extends MailerBase
      * - Support for the Winter MailParser
      *
      * @param  \Illuminate\Mail\Message $message
-     * @param  string $view
-     * @param  string $plain
-     * @param  string $raw
-     * @param  array $data
+     * @param  string|null $view
+     * @param  string|null $plain
+     * @param  string|null $raw
+     * @param  array|null $data
      * @return void
      */
-    protected function addContent($message, $view, $plain, $raw, $data)
+    protected function addContent($message, $view = null, $plain = null, $raw = null, $data = null)
     {
         /**
          * @event mailer.beforeAddContent
@@ -286,11 +286,11 @@ class Mailer extends MailerBase
      * Add the raw content to the provided message.
      *
      * @param  \Illuminate\Mail\Message  $message
-     * @param  string  $html
-     * @param  string  $text
+     * @param  string|null  $html
+     * @param  string|null  $text
      * @return void
      */
-    protected function addContentRaw($message, $html, $text)
+    protected function addContentRaw($message, $html = null, $text = null)
     {
         if (isset($html)) {
             $message->html($html);
@@ -304,7 +304,7 @@ class Mailer extends MailerBase
     /**
      * Queue a new e-mail message for sending.
      *
-     * @param  string|array  $view
+     * @param  MailableContract|string|array  $view
      * @param  array  $data
      * @param  \Closure|string  $callback
      * @param  string|null  $queue
@@ -341,7 +341,7 @@ class Mailer extends MailerBase
      * Queue a new e-mail message for sending after (n) seconds.
      *
      * @param  int  $delay
-     * @param  string|array  $view
+     * @param  MailableContract|string|array  $view
      * @param  array  $data
      * @param  \Closure|string  $callback
      * @param  string|null  $queue
@@ -401,7 +401,7 @@ class Mailer extends MailerBase
     /**
      * Helper for raw() method, send a new message when only a raw text part.
      * @param  array $recipients
-     * @param  string  $view
+     * @param  array|string  $view
      * @param  mixed   $callback
      * @param  array   $options
      * @return \Illuminate\Mail\SentMessage|null
@@ -438,10 +438,8 @@ class Mailer extends MailerBase
             $queue = $options;
             $bcc = false;
         } else {
-            extract(array_merge([
-                'queue' => false,
-                'bcc'   => false
-            ], $options));
+            $queue = (bool) ($options['queue'] ?? false);
+            $bcc = (bool) ($options['bcc'] ?? false);
         }
 
         $method = $queue === true ? 'queue' : 'send';
@@ -462,7 +460,8 @@ class Mailer extends MailerBase
 
     /**
      * Process a recipients object, which can look like the following:
-     *  - (string) admin@domain.tld
+     *  - (string) 'admin@domain.tld'
+     *  - (array) ['admin@domain.tld', 'other@domain.tld']
      *  - (object) ['email' => 'admin@domain.tld', 'name' => 'Adam Person']
      *  - (array) ['admin@domain.tld' => 'Adam Person', ...]
      *  - (array) [ (object|array) ['email' => 'admin@domain.tld', 'name' => 'Adam Person'], [...] ]
@@ -477,7 +476,10 @@ class Mailer extends MailerBase
             $result[$recipients] = null;
         } elseif (is_array($recipients) || $recipients instanceof Collection) {
             foreach ($recipients as $address => $person) {
-                if (is_string($person)) {
+                if (is_int($address) && is_string($person)) {
+                    // no name provided, only email address
+                    $result[$person] = null;
+                } elseif (is_string($person)) {
                     $result[$address] = $person;
                 } elseif (is_object($person)) {
                     if (empty($person->email) && empty($person->address)) {

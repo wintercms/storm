@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Foundation\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Winter\Storm\Support\Str;
 
 class ExecutionContextProvider extends ServiceProvider
 {
@@ -19,8 +20,7 @@ class ExecutionContextProvider extends ServiceProvider
 
             if (starts_with($requestPath, $backendUri)) {
                 return 'back-end';
-            }
-            else {
+            } else {
                 return 'front-end';
             }
         });
@@ -34,14 +34,10 @@ class ExecutionContextProvider extends ServiceProvider
      */
     protected function normalizeUrl($url)
     {
-        if (substr($url, 0, 1) != '/') {
-            $url = '/'.$url;
-        }
-
         if (!strlen($url)) {
-            $url = '/';
+            return '/';
         }
 
-        return $url;
+        return (!Str::startsWith($url, '/')) ? '/' . $url : $url;
     }
 }

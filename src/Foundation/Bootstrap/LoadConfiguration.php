@@ -1,24 +1,22 @@
 <?php namespace Winter\Storm\Foundation\Bootstrap;
 
+use Exception;
 use Winter\Storm\Config\Repository;
 use Winter\Storm\Config\FileLoader;
+use Winter\Storm\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Contracts\Foundation\Application;
-use Exception;
 
 class LoadConfiguration
 {
     /**
      * Bootstrap the given application.
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
-     * @return void
      */
-    public function bootstrap(Application $app)
+    public function bootstrap(Application $app): void
     {
         $fileLoader = new FileLoader(new Filesystem, $app['path.config']);
 
-        $app->detectEnvironment(function () use ($app) {
-            return $this->getEnvironmentFromHost($app);
+        $app->detectEnvironment(function () {
+            return $this->getEnvironmentFromHost();
         });
 
         $app->instance('config', $config = new Repository($fileLoader, $app['env']));
@@ -28,15 +26,13 @@ class LoadConfiguration
         mb_internal_encoding('UTF-8');
 
         // Fix for XDebug aborting threads > 100 nested
-        ini_set('xdebug.max_nesting_level', 1000);
+        ini_set('xdebug.max_nesting_level', '1000');
     }
 
     /**
      * Returns the environment based on hostname.
-     * @param  array  $config
-     * @return void
      */
-    protected function getEnvironmentFromHost(Application $app)
+    protected function getEnvironmentFromHost(): string
     {
         $config = $this->getEnvironmentConfiguration();
 
@@ -51,15 +47,14 @@ class LoadConfiguration
 
     /**
      * Load the environment configuration.
-     * @return array
      */
-    protected function getEnvironmentConfiguration()
+    protected function getEnvironmentConfiguration(): array
     {
         $config = [];
 
         $environment = env('APP_ENV');
 
-        if ($environment && file_exists($configPath = base_path().'/config/'.$environment.'/environment.php')) {
+        if ($environment && file_exists($configPath = base_path() . '/config/' . $environment . '/environment.php')) {
             try {
                 $config = require $configPath;
             }
@@ -67,7 +62,7 @@ class LoadConfiguration
                 //
             }
         }
-        elseif (file_exists($configPath = base_path().'/config/environment.php')) {
+        elseif (file_exists($configPath = base_path() . '/config/environment.php')) {
             try {
                 $config = require $configPath;
             }

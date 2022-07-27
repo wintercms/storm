@@ -256,13 +256,13 @@ class SyntaxFieldParserTest extends TestCase
 
     public function testProcessTag()
     {
-        $parser = new FieldParser;
         $content = '';
         $content .= '{text name="websiteName" label="Website Name" size="large"}{/text}'.PHP_EOL;
         $content .= '{text name="blogName" label="Blog Name" color="re\"d"}WinterCMS{/text}'.PHP_EOL;
         $content .= '{text name="storeName" label="Store Name" shape="circle"}{/text}';
         $content .= '{text label="Unnamed" distance="400m"}Foobar{/text}';
         $content .= '{foobar name="nullName" label="Valid tag, not searched by this test"}{/foobar}';
+        $parser = new FieldParser($content);
         list($tags, $fields) = self::callProtectedMethod($parser, 'processTags', [$content]);
 
         $unnamedTag = md5('{text label="Unnamed" distance="400m"}Foobar{/text}');
@@ -328,11 +328,11 @@ class SyntaxFieldParserTest extends TestCase
 
     public function testProcessTagsRegex()
     {
-        $parser = new FieldParser;
         $content = '';
         $content .= '{text name="websiteName" label="Website Name"}{/text}'.PHP_EOL;
         $content .= '{text name="blogName" label="Blog Name"}WinterCMS{/text}'.PHP_EOL;
         $content .= '{text name="storeName" label="Store Name"}{/text}';
+        $parser = new FieldParser($content);
         $result = self::callProtectedMethod($parser, 'processTagsRegex', [$content, ['text']]);
 
         $this->assertArrayHasKey(0, $result[2]);
@@ -346,8 +346,8 @@ class SyntaxFieldParserTest extends TestCase
 
     public function testProcessParamsRegex()
     {
-        $parser = new FieldParser;
         $content = 'name="test" comment="This is a test"';
+        $parser = new FieldParser($content);
         $result = self::callProtectedMethod($parser, 'processParamsRegex', [$content]);
 
         $this->assertArrayHasKey(0, $result[1]);

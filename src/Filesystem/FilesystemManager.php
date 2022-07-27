@@ -1,6 +1,5 @@
 <?php namespace Winter\Storm\Filesystem;
 
-use League\Flysystem\FilesystemInterface;
 use Illuminate\Filesystem\FilesystemManager as BaseFilesystemManager;
 
 class FilesystemManager extends BaseFilesystemManager
@@ -21,5 +20,23 @@ class FilesystemManager extends BaseFilesystemManager
             }
         }
         return $configName;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function resolve($name, $config = null)
+    {
+        if (is_null($config)) {
+            $config = $this->getConfig($name);
+        }
+
+        // Default local drivers to public visibility for backwards compatibility
+        // see https://github.com/wintercms/winter/issues/503
+        if ($name === 'local' && $config['driver'] === 'local' && empty($config['visibility'])) {
+            $config['visibility'] = 'public';
+        }
+
+        return parent::resolve($name, $config);
     }
 }

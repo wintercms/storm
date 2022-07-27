@@ -1,13 +1,13 @@
 <?php namespace Winter\Storm\Database;
 
 use Closure;
+use Exception;
+use DateTimeInterface;
 use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Argon\Argon;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
-use DateTimeInterface;
-use Exception;
 
 /**
  * Active Record base class.
@@ -15,11 +15,14 @@ use Exception;
  * Extends Eloquent with added extendability and deferred bindings.
  *
  * @author Alexey Bobkov, Samuel Georges
+ *
+ * @phpstan-property \Illuminate\Contracts\Events\Dispatcher|null $dispatcher
  */
-class Model extends EloquentModel
+class Model extends EloquentModel implements ModelInterface
 {
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
+    use Concerns\HidesAttributes;
     use \Winter\Storm\Support\Traits\Emitter;
     use \Winter\Storm\Extension\ExtendableTrait;
     use \Winter\Storm\Database\Traits\DeferredBinding;
@@ -48,6 +51,11 @@ class Model extends EloquentModel
      * @var bool Indicates if duplicate queries from this model should be cached in memory.
      */
     public $duplicateCache = true;
+
+    /**
+     * @var bool Indicates if all string model attributes will be trimmed prior to saving.
+     */
+    public $trimStringAttributes = true;
 
     /**
      * @var array The array of models booted events.
@@ -88,7 +96,7 @@ class Model extends EloquentModel
     {
         $model = new static($attributes);
 
-        $model->save(null, $sessionKey);
+        $model->save([], $sessionKey);
 
         return $model;
     }
@@ -143,6 +151,13 @@ class Model extends EloquentModel
     {
         $class = get_called_class();
 
+        // If the $dispatcher hasn't been set yet don't bother trying
+        // to register the nicer model events yet since it will silently fail
+        if (!isset(static::$dispatcher)) {
+            return;
+        }
+
+        // Events have already been booted, continue
         if (isset(static::$eventsBooted[$class])) {
             return;
         }
@@ -469,7 +484,7 @@ class Model extends EloquentModel
     /**
      * Checks if an attribute is jsonable or not.
      *
-     * @return array
+     * @return bool
      */
     public function isJsonable($key)
     {
@@ -522,7 +537,7 @@ class Model extends EloquentModel
     /**
      * Get a fresh timestamp for the model.
      *
-     * @return \Winter\Storm\Argon\Argon
+     * @return \Illuminate\Support\Carbon
      */
     public function freshTimestamp()
     {
@@ -597,10 +612,10 @@ class Model extends EloquentModel
     /**
      * Convert a DateTime to a storable string.
      *
-     * @param  \DateTime|int  $value
-     * @return string
+     * @param  \DateTime|int|null  $value
+     * @return string|null
      */
-    public function fromDateTime($value)
+    public function fromDateTime($value = null)
     {
         if (is_null($value)) {
             return $value;
@@ -613,7 +628,7 @@ class Model extends EloquentModel
      * Create a new Eloquent query builder for the model.
      *
      * @param  \Winter\Storm\Database\QueryBuilder $query
-     * @return \Winter\Storm\Database\Builder|static
+     * @return \Winter\Storm\Database\Builder
      */
     public function newEloquentBuilder($query)
     {
@@ -662,7 +677,7 @@ class Model extends EloquentModel
 
     public function __set($name, $value)
     {
-        return $this->extendableSet($name, $value);
+        $this->extendableSet($name, $value);
     }
 
     public function __call($name, $params)
@@ -723,7 +738,7 @@ class Model extends EloquentModel
     {
         return $using
             ? $using::fromRawAttributes($parent, $attributes, $table, $exists)
-            : new Pivot($parent, $attributes, $table, $exists);
+            : Pivot::fromAttributes($parent, $attributes, $table, $exists);
     }
 
     /**
@@ -733,7 +748,7 @@ class Model extends EloquentModel
      * @param  array   $attributes
      * @param  string  $table
      * @param  bool    $exists
-     * @return \Winter\Storm\Database\Pivot
+     * @return \Winter\Storm\Database\Pivot|null
      */
     public function newRelationPivot($relationName, $parent, $attributes, $table, $exists)
     {
@@ -741,7 +756,7 @@ class Model extends EloquentModel
 
         if (!is_null($definition) && array_key_exists('pivotModel', $definition)) {
             $pivotModel = $definition['pivotModel'];
-            return new $pivotModel($parent, $attributes, $table, $exists);
+            return $pivotModel::fromAttributes($parent, $attributes, $table, $exists);
         }
     }
 
@@ -754,7 +769,7 @@ class Model extends EloquentModel
      * @param array $options
      * @return bool
      */
-    protected function saveInternal($options = [])
+    protected function saveInternal(array $options = [])
     {
         /**
          * @event model.saveInternal
@@ -795,15 +810,6 @@ class Model extends EloquentModel
             return $result;
         }
 
-        /*
-         * If there is nothing to update, Eloquent will not fire afterSave(),
-         * events should still fire for consistency.
-         */
-        if ($result === null) {
-            $this->fireModelEvent('updated', false);
-            $this->fireModelEvent('saved', false);
-        }
-
         // Apply post deferred bindings
         if ($this->sessionKey !== null) {
             $this->commitDeferredAfter($this->sessionKey);
@@ -815,10 +821,10 @@ class Model extends EloquentModel
     /**
      * Save the model to the database.
      * @param array $options
-     * @param null $sessionKey
+     * @param string|null $sessionKey
      * @return bool
      */
-    public function save(array $options = null, $sessionKey = null)
+    public function save(?array $options = [], $sessionKey = null)
     {
         $this->sessionKey = $sessionKey;
         return $this->saveInternal(['force' => false] + (array) $options);
@@ -826,15 +832,16 @@ class Model extends EloquentModel
 
     /**
      * Save the model and all of its relationships.
+     *
      * @param array $options
-     * @param null $sessionKey
+     * @param string|null $sessionKey
      * @return bool
      */
-    public function push($options = null, $sessionKey = null)
+    public function push(?array $options = [], $sessionKey = null)
     {
         $always = Arr::get($options, 'always', false);
 
-        if (!$this->save(null, $sessionKey) && !$always) {
+        if (!$this->save([], $sessionKey) && !$always) {
             return false;
         }
 
@@ -866,11 +873,12 @@ class Model extends EloquentModel
     /**
      * Pushes the first level of relations even if the parent
      * model has no changes.
+     *
      * @param array $options
-     * @param string $sessionKey
+     * @param string|null $sessionKey
      * @return bool
      */
-    public function alwaysPush($options, $sessionKey)
+    public function alwaysPush(?array $options = [], $sessionKey = null)
     {
         return $this->push(['always' => true] + (array) $options, $sessionKey);
     }
@@ -1193,7 +1201,7 @@ class Model extends EloquentModel
      * Set a given attribute on the model.
      * @param string $key
      * @param mixed $value
-     * @return void
+     * @return mixed|null
      */
     public function setAttribute($key, $value)
     {
@@ -1208,7 +1216,8 @@ class Model extends EloquentModel
          * Handle direct relation setting
          */
         if ($this->hasRelation($key) && !$this->hasSetMutator($key)) {
-            return $this->setRelationValue($key, $value);
+            $this->setRelationValue($key, $value);
+            return;
         }
 
         /**
@@ -1239,7 +1248,7 @@ class Model extends EloquentModel
         /*
          * Trim strings
          */
-        if (is_string($value)) {
+        if ($this->trimStringAttributes && is_string($value)) {
             $value = trim($value);
         }
 

@@ -11,6 +11,11 @@ class Parser
     const CHAR_CLOSE = '}';
 
     /**
+     * @var string The template content to parse.
+     */
+    protected $template = '';
+
+    /**
      * @var \Winter\Storm\Parse\Syntax\FieldParser Field parser instance.
      */
     protected $fieldParser;
@@ -28,33 +33,33 @@ class Parser
 
     /**
      * Constructor.
+     *
      * Available options:
      * - varPrefix: Prefix to add to every top level parameter.
      * - tagPrefix: Prefix to add to all tags, in addition to tags without a prefix.
-     * @param array $options
+     *
      * @param string $template Template to parse.
+     * @param array $options
      */
-    public function __construct($template = null, $options = [])
+    final public function __construct($template, $options = [])
     {
-        if ($template) {
-            $this->template = $template;
-            $this->varPrefix = array_get($options, 'varPrefix', '');
-            $this->fieldParser = new FieldParser($template, $options);
+        $this->template = $template;
+        $this->varPrefix = array_get($options, 'varPrefix', '');
+        $this->fieldParser = new FieldParser($template, $options);
 
-            $textFilters = [
-                'md' => ['Markdown', 'parse'],
-                'media' => ['System\Classes\MediaLibrary', 'url']
-            ];
+        $textFilters = [
+            'md' => ['Winter\Storm\Parse\Markdown', 'parse'],
+            'media' => ['System\Classes\MediaLibrary', 'url']
+        ];
 
-            $this->textParser = new TextParser(['filters' => $textFilters]);
-        }
+        $this->textParser = new TextParser(['filters' => $textFilters]);
     }
 
     /**
      * Static helper for new instances of this class.
      * @param  string $template
      * @param  array $options
-     * @return self
+     * @return static
      */
     public static function parse($template, $options = [])
     {

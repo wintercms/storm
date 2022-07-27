@@ -22,6 +22,28 @@ class ModelTest extends DbTestCase
         $this->assertEquals(['id' => 'int', 'foo' => 'int'], $model->getCasts());
     }
 
+    public function testStringIsTrimmed()
+    {
+        $name = "Name";
+        $nameWithSpace = "  ${name}  ";
+        $model = new TestModelGuarded();
+
+        $model->name = $nameWithSpace;
+        $model->save();
+
+        // Make sure we load the database saved model
+        $model->refresh();
+        $this->assertEquals($name, $model->name);
+
+        $model->trimStringAttributes = false;
+        $model->name = $nameWithSpace;
+        $model->save();
+
+        // Refresh the model from the database
+        $model->refresh();
+        $this->assertEquals($nameWithSpace, $model->name);
+    }
+
     public function testIsGuarded()
     {
         $model = new TestModelGuarded();
@@ -78,12 +100,46 @@ class ModelTest extends DbTestCase
         $this->assertNull($model->name);
     }
 
+    public function testVisibleAttributes()
+    {
+        $model = TestModelVisible::create([
+            'name' => 'Visible Test',
+            'data' => 'Test data',
+            'description' => 'Test description',
+            'meta' => 'Some meta data'
+        ]);
+
+        $this->assertArrayNotHasKey('meta', $model->toArray());
+
+        $model->addVisible('meta');
+
+        $this->assertArrayHasKey('meta', $model->toArray());
+    }
+
+    public function testHiddenAttributes()
+    {
+        $model = TestModelHidden::create([
+            'name' => 'Hidden Test',
+            'data' => 'Test data',
+            'description' => 'Test description',
+            'meta' => 'Some meta data'
+        ]);
+
+        $this->assertArrayHasKey('description', $model->toArray());
+
+        $model->addHidden('description');
+
+        $this->assertArrayNotHasKey('description', $model->toArray());
+    }
+
     protected function createTable()
     {
-        $this->db->schema()->create('test_model', function ($table) {
+        $this->getBuilder()->create('test_model', function ($table) {
             $table->increments('id');
             $table->string('name')->nullable();
             $table->text('data')->nullable();
+            $table->text('description')->nullable();
+            $table->text('meta')->nullable();
             $table->boolean('on_guard')->nullable();
             $table->timestamps();
         });
@@ -108,4 +164,38 @@ class TestModelGuarded extends Model
             unset($this->is_guarded);
         }
     }
+}
+
+class TestModelVisible extends Model
+{
+    public $fillable = [
+        'name',
+        'data',
+        'description',
+        'meta'
+    ];
+
+    public $visible = [
+        'id',
+        'name',
+        'description'
+    ];
+
+    public $table = 'test_model';
+}
+
+class TestModelHidden extends Model
+{
+    public $fillable = [
+        'name',
+        'data',
+        'description',
+        'meta'
+    ];
+
+    public $hidden = [
+        'meta',
+    ];
+
+    public $table = 'test_model';
 }

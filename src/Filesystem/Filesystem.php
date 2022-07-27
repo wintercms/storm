@@ -1,9 +1,9 @@
 <?php namespace Winter\Storm\Filesystem;
 
-use Config;
 use DirectoryIterator;
 use FilesystemIterator;
 use ReflectionClass;
+use Winter\Storm\Support\Facades\Config;
 use Illuminate\Filesystem\Filesystem as FilesystemBase;
 
 /**
@@ -14,31 +14,32 @@ use Illuminate\Filesystem\Filesystem as FilesystemBase;
 class Filesystem extends FilesystemBase
 {
     /**
-     * @var string Default file permission mask as a string ("777").
+     * Default file permission mask as a string ("777").
      */
-    public $filePermissions = null;
+    public ?string $filePermissions = null;
 
     /**
-     * @var string Default folder permission mask as a string ("777").
+     * Default folder permission mask as a string ("777").
      */
-    public $folderPermissions = null;
+    public ?string $folderPermissions = null;
 
     /**
-     * @var array Known path symbols and their prefixes.
+     * Known path symbols and their prefixes.
      */
-    public $pathSymbols = [];
+    public array $pathSymbols = [];
 
     /**
-     * @var array|null Symlinks within base folder
+     * Symlinks within base folder
      */
-    protected $symlinks = null;
+    protected ?array $symlinks = null;
 
     /**
      * Determine if the given path contains no files.
-     * @param  string  $directory
-     * @return bool
+     *
+     * Returns a boolean regarding if the directory is empty or not. If the directory does not exist or is not
+     * readable, this method will return `null`.
      */
-    public function isDirectoryEmpty($directory)
+    public function isDirectoryEmpty(string $directory): ?bool
     {
         if (!is_readable($directory)) {
             return null;
@@ -57,11 +58,9 @@ class Filesystem extends FilesystemBase
     }
 
     /**
-     * Converts a file size in bytes to human readable format.
-     * @param  int $bytes
-     * @return string
+     * Converts a file size in bytes to a human readable format.
      */
-    public function sizeToString($bytes)
+    public function sizeToString(int $bytes): string
     {
         if ($bytes >= 1073741824) {
             return number_format($bytes / 1073741824, 2) . ' GB';
@@ -87,12 +86,13 @@ class Filesystem extends FilesystemBase
     }
 
     /**
-     * Returns a public file path from an absolute one
-     * eg: /home/mysite/public_html/welcome -> /welcome
-     * @param  string $path Absolute path
-     * @return string
+     * Returns a public file path from an absolute path.
+     *
+     * Eg: `/home/mysite/public_html/welcome` -> `/welcome`
+     *
+     * Returns `null` if the path cannot be converted.
      */
-    public function localToPublic($path)
+    public function localToPublic(string $path): ?string
     {
         $result = null;
         $publicPath = public_path();
@@ -124,12 +124,15 @@ class Filesystem extends FilesystemBase
     }
 
     /**
-     * Returns true if the specified path is within the path of the application
-     * @param  string  $path The path to
-     * @param  boolean $realpath Default true, uses realpath() to resolve the provided path before checking location. Set to false if you need to check if a potentially non-existent path would be within the application path
-     * @return boolean
+     * Determines if the given path is a local path.
+     *
+     * Returns `true` if the path is local, `false` otherwise.
+     *
+     * @param string $path The path to check
+     * @param boolean $realpath If `true` (default), the `realpath()` method will be used to resolve symlinks before checking if
+     *  the path is local. Set to `false` if you are looking up non-existent paths.
      */
-    public function isLocalPath($path, $realpath = true)
+    public function isLocalPath(string $path, bool $realpath = true): bool
     {
         $base = base_path();
 
@@ -141,34 +144,30 @@ class Filesystem extends FilesystemBase
     }
 
     /**
-     * Returns true if the provided disk is using the "local" driver
-     *
-     * @param Illuminate\Filesystem\FilesystemAdapter $disk
-     * @return boolean
+     * Determines if the given disk is using the "local" driver.
      */
-    public function isLocalDisk($disk)
+    public function isLocalDisk(\Illuminate\Filesystem\FilesystemAdapter $disk): bool
     {
         return ($disk->getAdapter() instanceof \League\Flysystem\Local\LocalFilesystemAdapter);
     }
 
     /**
-     * Finds the path to a class
-     * @param  mixed  $className Class name or object
-     * @return string The file path
+     * Finds the path of a given class.
+     *
+     * Returns `false` if the path cannot be determined.
+     *
+     * @param string|object $className Class name or object
      */
-    public function fromClass($className)
+    public function fromClass(string|object $className): string|false
     {
         $reflector = new ReflectionClass($className);
         return $reflector->getFileName();
     }
 
     /**
-     * Determine if a file exists with case insensitivity
-     * supported for the file only.
-     * @param  string $path
-     * @return mixed  Sensitive path or false
+     * Determines if a file exists (ignoring the case for the filename only).
      */
-    public function existsInsensitive($path)
+    public function existsInsensitive(string $path): string|false
     {
         if ($this->exists($path)) {
             return $path;
@@ -191,52 +190,48 @@ class Filesystem extends FilesystemBase
     }
 
     /**
-     * Normalizes the directory separator, often used by Win systems.
-     * @param  string $path Path name
-     * @return string       Normalized path
+     * Normalizes the directory separator, often used by Windows systems.
      */
-    public function normalizePath($path)
+    public function normalizePath(string $path): string
     {
         return str_replace('\\', '/', $path);
     }
 
     /**
-     * Converts a path using path symbol. Returns the original path if
-     * no symbol is used and no default is specified.
-     * @param  string $path
-     * @param  mixed $default
-     * @return string
+     * Converts a path using path symbol.
+     *
+     * Returns the original path if no symbol is used, and no default is specified.
      */
-    public function symbolizePath($path, $default = false)
+    public function symbolizePath(string $path, string|bool|null $default = null): string
     {
-        if (!$firstChar = $this->isPathSymbol($path)) {
-            return $default === false ? $path : $default;
+        if (!$this->isPathSymbol($path)) {
+            return (is_null($default)) ? $path : $default;
         }
 
+        $firstChar = substr($path, 0, 1);
         $_path = substr($path, 1);
         return $this->pathSymbols[$firstChar] . $_path;
     }
 
     /**
-     * Returns true if the path uses a symbol.
-     * @param  string  $path
-     * @return boolean
+     * Determines if the given path is using a path symbol.
      */
-    public function isPathSymbol($path)
+    public function isPathSymbol(string $path): bool
     {
-        $firstChar = substr($path, 0, 1);
-        if (isset($this->pathSymbols[$firstChar])) {
-            return $firstChar;
-        }
-
-        return false;
+        return array_key_exists(substr($path, 0, 1), $this->pathSymbols);
     }
 
     /**
      * Write the contents of a file.
-     * @param  string  $path
-     * @param  string  $contents
-     * @return int
+     *
+     * This method will also set the permissions based on the given chmod() mask in use.
+     *
+     * Returns the number of bytes written to the file, or `false` on failure.
+     *
+     * @param string $path
+     * @param string $contents
+     * @param bool|int $lock
+     * @return bool|int
      */
     public function put($path, $contents, $lock = false)
     {
@@ -247,8 +242,13 @@ class Filesystem extends FilesystemBase
 
     /**
      * Copy a file to a new location.
-     * @param  string  $path
-     * @param  string  $target
+     *
+     * This method will also set the permissions based on the given chmod() mask in use.
+     *
+     * Returns `true` if successful, or `false` on failure.
+     *
+     * @param string $path
+     * @param string $target
      * @return bool
      */
     public function copy($path, $target)
@@ -260,26 +260,28 @@ class Filesystem extends FilesystemBase
 
     /**
      * Create a directory.
-     * @param  string  $path
-     * @param  int     $mode
-     * @param  bool    $recursive
-     * @param  bool    $force
+     *
+     * @param string $path
+     * @param int $mode
+     * @param bool $recursive
+     * @param bool $force
      * @return bool
      */
     public function makeDirectory($path, $mode = 0777, $recursive = false, $force = false)
     {
-        if ($mask = $this->getFolderPermissions()) {
+        $mask = $this->getFolderPermissions();
+        if (!is_null($mask)) {
             $mode = $mask;
         }
 
         /*
          * Find the green leaves
          */
-        if ($recursive && $mask) {
+        if ($recursive === true && !is_null($mask)) {
             $chmodPath = $path;
             while (true) {
                 $basePath = dirname($chmodPath);
-                if ($chmodPath == $basePath) {
+                if ($chmodPath === $basePath) {
                     break;
                 }
                 if ($this->isDirectory($basePath)) {
@@ -287,8 +289,7 @@ class Filesystem extends FilesystemBase
                 }
                 $chmodPath = $basePath;
             }
-        }
-        else {
+        } else {
             $chmodPath = $path;
         }
 
@@ -312,10 +313,11 @@ class Filesystem extends FilesystemBase
     }
 
     /**
-     * Modify file/folder permissions
-     * @param  string $path
-     * @param  octal $mask
-     * @return void
+     * Modify file/folder permissions.
+     *
+     * @param string $path
+     * @param int|float|null $mask
+     * @return bool
      */
     public function chmod($path, $mask = null)
     {
@@ -326,20 +328,16 @@ class Filesystem extends FilesystemBase
         }
 
         if (!$mask) {
-            return;
+            return false;
         }
 
         return @chmod($path, $mask);
     }
 
     /**
-     * Modify file/folder permissions recursively
-     * @param  string $path
-     * @param  octal $fileMask
-     * @param  octal $directoryMask
-     * @return void
+     * Modify file/folder permissions recursively in a given path.
      */
-    public function chmodRecursive($path, $fileMask = null, $directoryMask = null)
+    public function chmodRecursive(string $path, int|float|null $fileMask = null, int|float|null $directoryMask = null): void
     {
         if (!$fileMask) {
             $fileMask = $this->getFilePermissions();
@@ -354,7 +352,8 @@ class Filesystem extends FilesystemBase
         }
 
         if (!$this->isDirectory($path)) {
-            return $this->chmod($path, $fileMask);
+            $this->chmod($path, $fileMask);
+            return;
         }
 
         $items = new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
@@ -372,9 +371,8 @@ class Filesystem extends FilesystemBase
 
     /**
      * Returns the default file permission mask to use.
-     * @return string Permission mask as octal (0777) or null
      */
-    public function getFilePermissions()
+    public function getFilePermissions(): int|float|null
     {
         return $this->filePermissions
             ? octdec($this->filePermissions)
@@ -383,9 +381,8 @@ class Filesystem extends FilesystemBase
 
     /**
      * Returns the default folder permission mask to use.
-     * @return string Permission mask as octal (0777) or null
      */
-    public function getFolderPermissions()
+    public function getFolderPermissions(): int|float|null
     {
         return $this->folderPermissions
             ? octdec($this->folderPermissions)
@@ -394,11 +391,8 @@ class Filesystem extends FilesystemBase
 
     /**
      * Match filename against a pattern.
-     * @param  string|array $fileName
-     * @param  string $pattern
-     * @return bool
      */
-    public function fileNameMatch($fileName, $pattern)
+    public function fileNameMatch(string $fileName, string $pattern): bool
     {
         if ($pattern === $fileName) {
             return true;
@@ -410,11 +404,9 @@ class Filesystem extends FilesystemBase
     }
 
     /**
-     * Finds symlinks within the base path and provides a source => target array of symlinks.
-     *
-     * @return void
+     * Finds symlinks within the base path and populates the local symlinks property with an array of source => target symlinks.
      */
-    protected function findSymlinks()
+    protected function findSymlinks(): void
     {
         $restrictBaseDir = Config::get('cms.restrictBaseDir', true);
         $deep = Config::get('develop.allowDeepSymlinks', false);

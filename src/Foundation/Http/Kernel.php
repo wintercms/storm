@@ -7,7 +7,7 @@ class Kernel extends HttpKernel
     /**
      * The bootstrap classes for the application.
      *
-     * @var array
+     * @var string[]
      */
     protected $bootstrappers = [
         \Winter\Storm\Foundation\Bootstrap\RegisterClassLoader::class,
@@ -71,7 +71,7 @@ class Kernel extends HttpKernel
      *
      * Forces the listed middleware to always be in the given order.
      *
-     * @var array
+     * @var string[]
      */
     protected $middlewarePriority = [
         \Illuminate\Session\Middleware\StartSession::class,
