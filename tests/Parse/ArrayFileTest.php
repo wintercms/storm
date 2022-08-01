@@ -438,7 +438,7 @@ PHP;
         $file = __DIR__ . '/../fixtures/parse/arrayfile/empty.php';
         $arrayFile = ArrayFile::open($file);
 
-        $this->expectException(\Winter\Storm\Exception\SystemException::class);
+        $this->expectException(\Winter\LaravelConfig\Exceptions\ConfigWriterException::class);
 
         $arrayFile->set([
             'w.i.n.t.e.r' => 'Winter CMS',
