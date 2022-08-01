@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Validation;
 
+use Throwable;
+
 use Illuminate\Validation\Validator as BaseValidator;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 
@@ -40,5 +42,16 @@ class Validator extends BaseValidator implements ValidatorContract
                 ));
             }
         }
+    }
+
+    protected function validateIsRegex($attribute, $value, $rule)
+    {
+        try {
+            preg_match($value, '');
+        } catch (Throwable $e) {
+            return false;
+        }
+
+        return true;
     }
 }
