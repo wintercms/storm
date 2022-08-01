@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Parse\PHP;
 
-use Winter\LaravelConfig\ArrayFile as BaseArrayFile;
+use Winter\LaravelConfigWriter\ArrayFile as BaseArrayFile;
 
 class ArrayFile extends BaseArrayFile
 {
