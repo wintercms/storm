@@ -98,6 +98,12 @@ class CheckForTrustedProxies
             ]);
             return;
         }
+        
+        // If all proxies are allowed, open the floodgates
+        if ($proxies === '**') {
+            $this->allowProxies($request, ['0.0.0.0/0', '2000:0:0:0:0:0:0:0/3']);
+            return;
+        }
 
         // Support comma-separated strings as well as arrays
         $proxies = (is_string($proxies))
