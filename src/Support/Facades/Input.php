@@ -22,18 +22,6 @@ class Input extends Facade
     }
 
     /**
-     * Gets all input data items.
-     *
-     * This method is used for all request verbs (GET, POST, PUT, and DELETE)
-     *
-     * @return array|null
-     */
-    public static function all()
-    {
-        return static::$app['request']->input();
-    }
-
-    /**
      * Get the registered name of the component.
      *
      * Resolves to:
