@@ -24,7 +24,9 @@ class Model extends EloquentModel implements ModelInterface
     use Concerns\HasRelationships;
     use Concerns\HidesAttributes;
     use \Winter\Storm\Support\Traits\Emitter;
-    use \Winter\Storm\Extension\ExtendableTrait;
+    use \Winter\Storm\Extension\ExtendableTrait {
+        addDynamicProperty as protected extendableAddDynamicProperty;
+    }
     use \Winter\Storm\Database\Traits\DeferredBinding;
 
     /**
@@ -669,6 +671,30 @@ class Model extends EloquentModel implements ModelInterface
     //
     // Magic
     //
+
+    /**
+     * Programmatically adds a property to the extendable class
+     *
+     * @param string $dynamicName The name of the property to add
+     * @param mixed $value The value of the property
+     * @return void
+     */
+    public function addDynamicProperty($dynamicName, $value = null)
+    {
+        if (array_key_exists($dynamicName, $this->getDynamicProperties())) {
+            return;
+        }
+
+        // Ensure that dynamic properties are automatically purged
+        if (!$this->methodExists('addPurgeable')) {
+            $this->extendableAddDynamicProperty('purgeable', []);
+            $this->extendClassWith(\Winter\Storm\Database\Behaviors\Purgeable::class);
+        };
+        $this->addPurgeable($dynamicName);
+
+        // Add the dynamic property
+        return $this->extendableAddDynamicProperty($dynamicName, $value);
+    }
 
     public function __get($name)
     {
