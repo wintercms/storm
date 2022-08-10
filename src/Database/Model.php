@@ -23,6 +23,7 @@ class Model extends EloquentModel implements ModelInterface
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
     use Concerns\HidesAttributes;
+    use Traits\Purgeable;
     use \Winter\Storm\Support\Traits\Emitter;
     use \Winter\Storm\Extension\ExtendableTrait {
         addDynamicProperty as protected extendableAddDynamicProperty;
@@ -48,6 +49,11 @@ class Model extends EloquentModel implements ModelInterface
      * @var array List of datetime attributes to convert to an instance of Carbon/DateTime objects.
      */
     protected $dates = [];
+
+    /**
+     * @var array List of attributes which should not be saved to the database.
+     */
+    protected $purgeable = [];
 
     /**
      * @var bool Indicates if duplicate queries from this model should be cached in memory.
@@ -686,10 +692,6 @@ class Model extends EloquentModel implements ModelInterface
         }
 
         // Ensure that dynamic properties are automatically purged
-        if (!$this->methodExists('addPurgeable')) {
-            $this->extendableAddDynamicProperty('purgeable', []);
-            $this->extendClassWith(\Winter\Storm\Database\Behaviors\Purgeable::class);
-        };
         $this->addPurgeable($dynamicName);
 
         // Add the dynamic property
