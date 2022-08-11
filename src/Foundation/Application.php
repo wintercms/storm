@@ -543,4 +543,15 @@ class Application extends ApplicationBase
     {
         return PathResolver::join($this->storagePath(), '/framework/classes.php');
     }
+    
+    /**
+     * This is a temporary fix for an issue with twig reflection.
+     * The full fix is here: https://github.com/twigphp/Twig/pull/3719
+     *
+     * @TODO: Remove this after Twig PR 3719 is merged.
+     */
+    public function __toString(): string
+    {
+        return get_called_class();
+    }
 }
