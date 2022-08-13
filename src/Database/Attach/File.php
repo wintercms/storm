@@ -185,14 +185,19 @@ class File extends Model
             // Attempt to detect the extension from the reported Content-Type, fall back to the original path extension
             // if not able to guess
             $mimesToExt = array_flip($this->autoMimeTypes);
-            if (!empty($data->headers['Content-Type']) && isset($mimesToExt[$data->headers['Content-Type']])) {
-                $ext = $mimesToExt[$data->headers['Content-Type']];
+            $headers = array_change_key_case($data->headers, CASE_LOWER);
+            if (!empty($headers['content-type']) && isset($mimesToExt[$headers['content-type']])) {
+                $ext = $mimesToExt[$headers['content-type']];
             } else {
-                $ext = pathinfo($filePath)['extension'];
+                $ext = pathinfo($filePath)['extension'] ?? '';
+            }
+
+            if (!empty($ext)) {
+                $ext = '.' . $ext;
             }
 
             // Generate the filename
-            $filename = "{$filename}.{$ext}";
+            $filename = "{$filename}{$ext}";
         }
 
         return $this->fromData($data, $filename);
