@@ -10,53 +10,6 @@ use Illuminate\Support\Str as StrHelper;
 class Str extends StrHelper
 {
     /**
-     * Converts number to its ordinal English form.
-     *
-     * This method converts 13 to 13th, 2 to 2nd ...
-     *
-     * @param integer $number Number to get its ordinal value
-     * @return string Ordinal representation of given string.
-     */
-    public static function ordinal($number)
-    {
-        if (in_array($number % 100, range(11, 13))) {
-            return $number.'th';
-        }
-
-        switch ($number % 10) {
-            case 1:
-                return $number.'st';
-            case 2:
-                return $number.'nd';
-            case 3:
-                return $number.'rd';
-            default:
-                return $number.'th';
-        }
-    }
-
-    /**
-     * Converts line breaks to a standard \r\n pattern.
-     */
-    public static function normalizeEol($string)
-    {
-        return preg_replace('~\R~u', "\r\n", $string);
-    }
-
-    /**
-     * Removes the starting slash from a class namespace \
-     */
-    public static function normalizeClassName($name)
-    {
-        if (is_object($name)) {
-            $name = get_class($name);
-        }
-
-        $name = '\\'.ltrim($name, '\\');
-        return $name;
-    }
-
-    /**
      * Generates a class ID from either an object or a string of the class name.
      */
     public static function getClassId($name)
@@ -91,5 +44,52 @@ class Str extends StrHelper
     public static function getPrecedingSymbols($string, $symbol)
     {
         return strlen($string) - strlen(ltrim($string, $symbol));
+    }
+
+    /**
+     * Converts line breaks to a standard \r\n pattern.
+     */
+    public static function normalizeEol($string)
+    {
+        return preg_replace('~\R~u', "\r\n", $string);
+    }
+
+    /**
+     * Removes the starting slash from a class namespace \
+     */
+    public static function normalizeClassName($name)
+    {
+        if (is_object($name)) {
+            $name = get_class($name);
+        }
+
+        $name = '\\'.ltrim($name, '\\');
+        return $name;
+    }
+
+    /**
+     * Converts number to its ordinal English form.
+     *
+     * This method converts 13 to 13th, 2 to 2nd ...
+     *
+     * @param integer $number Number to get its ordinal value
+     * @return string Ordinal representation of given string.
+     */
+    public static function ordinal($number)
+    {
+        if (in_array($number % 100, range(11, 13))) {
+            return $number.'th';
+        }
+
+        switch ($number % 10) {
+            case 1:
+                return $number.'st';
+            case 2:
+                return $number.'nd';
+            case 3:
+                return $number.'rd';
+            default:
+                return $number.'th';
+        }
     }
 }
