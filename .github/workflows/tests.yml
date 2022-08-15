@@ -72,5 +72,6 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
-            name: ResizerTest
+            name: ResizerTest-${{ matrix.operatingSystem }}-PHP${{ matrix.phpVersion }}
             path: tests/artifacts/ResizerTest/
+            if-no-files-found: error
