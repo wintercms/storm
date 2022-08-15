@@ -53,13 +53,11 @@ class ResizerTest extends TestCase
      */
     protected function tearDown(): void
     {
-        if (env('ENABLE_TESTING_ARTIFACTS', false)) {
-            if (!is_dir(self::ARTIFACTS_PATH)) {
-                @mkdir(self::ARTIFACTS_PATH, 0777, true);
-            }
-
-            copy($this->tmpTarget, self::ARTIFACTS_PATH . basename($this->tmpTarget));
+        if (!is_dir(self::ARTIFACTS_PATH)) {
+            @mkdir(self::ARTIFACTS_PATH, 0777, true);
         }
+
+        copy($this->tmpTarget, self::ARTIFACTS_PATH . basename($this->tmpTarget));
 
         @unlink($this->tmpTarget);
         @rmdir(self::TMP_TEST_FILE_PATH);
