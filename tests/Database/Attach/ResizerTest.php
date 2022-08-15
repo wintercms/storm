@@ -15,6 +15,7 @@ class ResizerTest extends TestCase
     const FIXTURE_SRC_BASE_PATH = self::FIXTURE_PATH . 'resizer/source/';
     const FIXTURE_TARGET_PATH = self::FIXTURE_PATH . 'resizer/target/';
     const TMP_TEST_FILE_PATH = self::FIXTURE_PATH . 'tmp/';
+    const ARTIFACTS_PATH = __DIR__ . '/../../artifacts/ResizerTest/';
 
     // Source image filenames
     const SRC_LANDSCAPE_ROTATED = 'landscape_rotated.jpg';
@@ -29,7 +30,7 @@ class ResizerTest extends TestCase
      */
     const COMMON_FIXTURES = [
         'reset' => 'testReset_testResize0x0_testResizeAutoLandscape1x1',
-        'square' => 'testResizeAutoSquare25x50_testResizeAutoSquare50x25_testResizeAutoSquare50x50_testResizeFitSquare50x50'
+        'square' => 'testResizeAutoSquare50x100_testResizeAutoSquare100x50_testResizeAutoSquare100x100_testResizeFitSquare100x100'
     ];
 
     /** @var string The path to the source image */
@@ -52,6 +53,12 @@ class ResizerTest extends TestCase
      */
     protected function tearDown(): void
     {
+        if (!is_dir(self::ARTIFACTS_PATH)) {
+            @mkdir(self::ARTIFACTS_PATH, 0777, true);
+        }
+
+        copy($this->tmpTarget, self::ARTIFACTS_PATH . basename($this->tmpTarget));
+
         @unlink($this->tmpTarget);
         @rmdir(self::TMP_TEST_FILE_PATH);
         parent::tearDown();
@@ -67,7 +74,7 @@ class ResizerTest extends TestCase
     {
         $this->setSource(self::SRC_LANDSCAPE_TRANSPARENT);
         $this->createFixtureResizer();
-        $this->resizer->resize(5, 5, ['mode' => 'crop']);
+        $this->resizer->resize(200, 200, ['mode' => 'crop']);
         $this->resizer->reset();
         $this->assertImageSameAsFixture(self::COMMON_FIXTURES['reset']);
     }
@@ -88,29 +95,29 @@ class ResizerTest extends TestCase
 
     /**
      * Given a Resizer with any image
-     * When the resize method is called with 20x0
-     * Then the saved image should have a width of 20 and its height set automatically
+     * When the resize method is called with 50x0
+     * Then the saved image should have a width of 50 and its height set automatically
      * @throws Exception
      */
-    public function testResize20x0()
+    public function testResize50x0()
     {
         $this->setSource(self::SRC_PORTRAIT);
         $this->createFixtureResizer();
-        $this->resizer->resize(20, 0);
+        $this->resizer->resize(50, 0);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
      * Given a Resizer with any image
-     * When the resize method is called with 0x20
-     * Then the saved image should have a height of 20 and its width set automatically
+     * When the resize method is called with 0x50
+     * Then the saved image should have a height of 50 and its width set automatically
      * @throws Exception
      */
-    public function testResize0x20()
+    public function testResize0x50()
     {
         $this->setSource(self::SRC_PORTRAIT);
         $this->createFixtureResizer();
-        $this->resizer->resize(0, 20);
+        $this->resizer->resize(0, 50);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
@@ -130,57 +137,57 @@ class ResizerTest extends TestCase
 
     /**
      * Given a Resizer with a landscape image
-     * When the resize method is called with the auto parameter and 25x50 dimensions
-     * Then the saved image should have a width of 25 and its height set automatically
+     * When the resize method is called with the auto parameter and 125x50 dimensions
+     * Then the saved image should have a width of 125 and its height set automatically
      * @throws Exception
      */
-    public function testResizeAutoLandscape25()
+    public function testResizeAutoLandscape125()
     {
         $this->setSource(self::SRC_LANDSCAPE_TRANSPARENT);
         $this->createFixtureResizer();
-        $this->resizer->resize(25, 50, ['mode' => 'auto']);
+        $this->resizer->resize(125, 50, ['mode' => 'auto']);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
      * Given a Resizer with a square image
-     * When the resize method is called with the auto parameter and a 25x50 dimension
-     * Then the saved image should have be 50x50 (largest dimension takes over)
+     * When the resize method is called with the auto parameter and a 50x100 dimension
+     * Then the saved image should have be 100x100 (largest dimension takes over)
      * @throws Exception
      */
-    public function testResizeAutoSquare25x50()
+    public function testResizeAutoSquare50x100()
     {
         $this->setSource(self::SRC_SQUARE);
         $this->createFixtureResizer();
-        $this->resizer->resize(25, 50, ['mode' => 'auto']);
+        $this->resizer->resize(50, 100, ['mode' => 'auto']);
         $this->assertImageSameAsFixture(self::COMMON_FIXTURES['square']);
     }
 
     /**
      * Given a Resizer with a square image
-     * When the resize method is called with the auto parameter and a 50x25 dimension
-     * Then the saved image should have be 50x50 (largest dimension takes over)
+     * When the resize method is called with the auto parameter and a 100x50 dimension
+     * Then the saved image should have be 100x100 (largest dimension takes over)
      * @throws Exception
      */
-    public function testResizeAutoSquare50x25()
+    public function testResizeAutoSquare100x50()
     {
         $this->setSource(self::SRC_SQUARE);
         $this->createFixtureResizer();
-        $this->resizer->resize(50, 25, ['mode' => 'auto']);
+        $this->resizer->resize(100, 50, ['mode' => 'auto']);
         $this->assertImageSameAsFixture(self::COMMON_FIXTURES['square']);
     }
 
     /**
      * Given a Resizer with a square image
-     * When the resize method is called with the auto parameter and a 50x50 dimension
-     * Then the saved image should have be 50x50
+     * When the resize method is called with the auto parameter and a 100x100 dimension
+     * Then the saved image should have be 100x100
      * @throws Exception
      */
-    public function testResizeAutoSquare50x50()
+    public function testResizeAutoSquare100x100()
     {
         $this->setSource(self::SRC_SQUARE);
         $this->createFixtureResizer();
-        $this->resizer->resize(50, 50, ['mode' => 'auto']);
+        $this->resizer->resize(100, 100, ['mode' => 'auto']);
         $this->assertImageSameAsFixture(self::COMMON_FIXTURES['square']);
     }
 
@@ -200,86 +207,86 @@ class ResizerTest extends TestCase
 
     /**
      * Given a Resizer with a transparent landscape image
-     * When the resize method is called with the auto parameter and 1x5 dimensions
-     * Then the saved image should be have a height of 5 and an automatic width
+     * When the resize method is called with the auto parameter and 1x50 dimensions
+     * Then the saved image should be have a height of 50 and an automatic width
      * @throws Exception
      */
-    public function testResizeAutoLandscape1x5()
+    public function testResizeAutoLandscape1x50()
     {
         $this->setSource(self::SRC_LANDSCAPE_TRANSPARENT);
         $this->createFixtureResizer();
-        $this->resizer->resize(1, 5);
+        $this->resizer->resize(1, 50);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
      * Given a Resizer with a transparent landscape image
-     * When the resize method is called with the auto parameter and 50x1 dimensions
-     * Then the saved image should have a width a 25 and an automatic height
+     * When the resize method is called with the auto parameter and 100x1 dimensions
+     * Then the saved image should have a width a 100 and an automatic height
      * @throws Exception
      */
-    public function testResizeAutoLandscape25x1()
+    public function testResizeAutoLandscape100x1()
     {
         $this->setSource(self::SRC_LANDSCAPE_TRANSPARENT);
         $this->createFixtureResizer();
-        $this->resizer->resize(25, 1);
+        $this->resizer->resize(100, 1);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
      * Given a Resizer with a square image
-     * When the resize method is called with the exact mode and 10x1=15 dimensions
-     * Then the saved image should be 10x15 and distorted
+     * When the resize method is called with the exact mode and 50x75 dimensions
+     * Then the saved image should be 50x75 and distorted
      * @throws Exception
      */
-    public function testResizeExact10x15()
+    public function testResizeExact50x75()
     {
         $this->setSource(self::SRC_SQUARE);
         $this->createFixtureResizer();
-        $this->resizer->resize(10, 15, ['mode' => 'exact']);
+        $this->resizer->resize(50, 75, ['mode' => 'exact']);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
      * Given a Resizer with any image
-     * When the resize method is called with the landscape mode and 10x1 dimensions
-     * Then the saved image should have a width of 10 and an automatic height
+     * When the resize method is called with the landscape mode and 100x1 dimensions
+     * Then the saved image should have a width of 100 and an automatic height
      * @throws Exception
      */
-    public function testResizeLandscape10x1()
+    public function testResizeLandscape100x1()
     {
         $this->setSource(self::SRC_PORTRAIT);
         $this->createFixtureResizer();
-        $this->resizer->resize(10, 1, ['mode' => 'landscape']);
+        $this->resizer->resize(100, 1, ['mode' => 'landscape']);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
      * Given a Resizer with any image
      * When the resize method is called with the portrait mode and 1x10 dimensions
-     * Then the saved image should have a width of 10 and an automatic height
+     * Then the saved image should have a width of 100 and an automatic height
      * @throws Exception
      */
-    public function testResizePortrait1x10()
+    public function testResizePortrait1x100()
     {
         $this->setSource(self::SRC_PORTRAIT);
         $this->createFixtureResizer();
-        $this->resizer->resize(1, 10, ['mode' => 'portrait']);
+        $this->resizer->resize(1, 100, ['mode' => 'portrait']);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
      * Given a Resizer with a white background gif image
-     * When the resize method is called with the auto parameter and 32x32 dimensions
-     * Then the saved image should have be 32x32 and with white background
+     * When the resize method is called with the auto parameter and 75x75 dimensions
+     * Then the saved image should have be 75x75 and with white background
      * Tests if white color is preserved/saved after resize operation
      * @throws Exception
      */
-    public function testResizeSaveBackgroundColor32x32()
+    public function testResizeSaveBackgroundColor75x75()
     {
         $this->setSource(self::SRC_GIF_BG);
         $this->createFixtureResizer();
-        $this->resizer->resize(32, 32);
+        $this->resizer->resize(75, 75);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
@@ -299,62 +306,44 @@ class ResizerTest extends TestCase
 
     /**
      * Given a Resizer with a landscape image
-     * When the resize method is called with the fit mode and 30x30 dimensions
-     * Then the saved image should have a width of 30 and an automatic height
+     * When the resize method is called with the fit mode and 150x150 dimensions
+     * Then the saved image should have a width of 150 and an automatic height
      * @throws Exception
      */
-    public function testResizeFitLandscape30x30()
+    public function testResizeFitLandscape150x150()
     {
         $this->setSource(self::SRC_LANDSCAPE_TRANSPARENT);
         $this->createFixtureResizer();
-        $this->resizer->resize(30, 30, ['mode' => 'fit']);
+        $this->resizer->resize(150, 150, ['mode' => 'fit']);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
      * Given a Resizer with a landscape image
-     * When the resize method is called with the fit mode and 30x30 dimensions
-     * Then the saved image should have a height of 30 and an automatic width
+     * When the resize method is called with the fit mode and 150x150 dimensions
+     * Then the saved image should have a height of 150 and an automatic width
      * @throws Exception
      */
-    public function testResizeFitPortrait30x30()
+    public function testResizeFitPortrait150x150()
     {
         $this->setSource(self::SRC_PORTRAIT);
         $this->createFixtureResizer();
-        $this->resizer->resize(30, 30, ['mode' => 'fit']);
+        $this->resizer->resize(150, 150, ['mode' => 'fit']);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
      * Given a Resizer with a square image
-     * When the resize method is called with the fit mode and 50x50 dimensions
-     * Then the saved image should have be 50x50
+     * When the resize method is called with the fit mode and 100x100 dimensions
+     * Then the saved image should have be 100x100
      * @throws Exception
      */
-    public function testResizeFitSquare50x50()
+    public function testResizeFitSquare100x100()
     {
         $this->setSource(self::SRC_SQUARE);
         $this->createFixtureResizer();
-        $this->resizer->resize(50, 50, ['mode' => 'fit']);
+        $this->resizer->resize(100, 100, ['mode' => 'fit']);
         $this->assertImageSameAsFixture(self::COMMON_FIXTURES['square']);
-    }
-
-    /**
-     * Given a Resizer with a JPG image which has an EXIF tag (Rotation=8)
-     * When the resize method is called with the auto mode and 30x30 dimensions
-     * Then the saved image should have the EXIF rotation applied and
-     * @throws Exception
-     */
-    public function testResizeAutoExifRotated30x30()
-    {
-        if (!function_exists('exif_read_data')) {
-            $this->markTestSkipped('Missing exif extension');
-        }
-
-        $this->setSource(self::SRC_LANDSCAPE_ROTATED);
-        $this->createFixtureResizer();
-        $this->resizer->resize(30, 30);
-        $this->assertImageSameAsFixture(__METHOD__);
     }
 
     /**
@@ -367,7 +356,7 @@ class ResizerTest extends TestCase
     {
         $this->setSource(self::SRC_SQUARE);
         $this->createFixtureResizer();
-        $this->resizer->resize(25, 25, ['sharpen' => 50]);
+        $this->resizer->resize(100, 100, ['sharpen' => 50]);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
@@ -377,11 +366,11 @@ class ResizerTest extends TestCase
      * Then the saved image should be cropped as expected
      * @throws Exception
      */
-    public function testCrop10x15()
+    public function testCrop30x45()
     {
         $this->setSource(self::SRC_PORTRAIT);
         $this->createFixtureResizer();
-        $this->resizer->crop(3, 5, 10, 15);
+        $this->resizer->crop(10, 50, 30, 45);
         $this->assertImageSameAsFixture(__METHOD__);
     }
 
@@ -438,12 +427,13 @@ class ResizerTest extends TestCase
             // Save resizer result to temp file
             $this->resizer->save($this->tmpTarget);
 
-            // Assert file is the same as expected output with 1% error permitted to account for library updates and whatnot
+            // Assert file is the same as expected output with 5% margin of error permitted to account for library
+            // updates and differences between OS image manipulation libraries.
             $this->assertSimilarGD(
                 $this->tmpTarget,
                 $this->target,
                 $methodName . ' result did not match ' . $this->target,
-                0.01
+                0.05
             );
         }
     }
