@@ -427,13 +427,13 @@ class ResizerTest extends TestCase
             // Save resizer result to temp file
             $this->resizer->save($this->tmpTarget);
 
-            // Assert file is the same as expected output with 8% error permitted to account for library updates
-            // and differences between OS image manipulation libraries.
+            // Assert file is the same as expected output with 5% margin of error permitted to account for library
+            // updates and differences between OS image manipulation libraries.
             $this->assertSimilarGD(
                 $this->tmpTarget,
                 $this->target,
                 $methodName . ' result did not match ' . $this->target,
-                0.08
+                0.05
             );
         }
     }
