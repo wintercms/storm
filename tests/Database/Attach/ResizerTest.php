@@ -15,6 +15,7 @@ class ResizerTest extends TestCase
     const FIXTURE_SRC_BASE_PATH = self::FIXTURE_PATH . 'resizer/source/';
     const FIXTURE_TARGET_PATH = self::FIXTURE_PATH . 'resizer/target/';
     const TMP_TEST_FILE_PATH = self::FIXTURE_PATH . 'tmp/';
+    const ARTIFACTS_PATH = __DIR__ . '/../../artifacts/ResizerTest/';
 
     // Source image filenames
     const SRC_LANDSCAPE_ROTATED = 'landscape_rotated.jpg';
@@ -52,6 +53,14 @@ class ResizerTest extends TestCase
      */
     protected function tearDown(): void
     {
+        if (env('ENABLE_TESTING_ARTIFACTS', false)) {
+            if (!is_dir(self::ARTIFACTS_PATH)) {
+                @mkdir(self::ARTIFACTS_PATH, 0777, true);
+            }
+
+            copy($this->tmpTarget, self::ARTIFACTS_PATH . basename($this->tmpTarget));
+        }
+
         @unlink($this->tmpTarget);
         @rmdir(self::TMP_TEST_FILE_PATH);
         parent::tearDown();

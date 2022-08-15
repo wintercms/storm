@@ -66,4 +66,12 @@ jobs:
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Run tests
+        env:
+            ENABLE_TEST_ARTIFACTS: 1
         run: ./vendor/bin/phpunit ./tests
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+            name: ResizerTest
+            path: ./tests/artifacts/ResizerTest/
