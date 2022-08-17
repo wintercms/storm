@@ -440,6 +440,22 @@ trait NestedTree
 
         return $includeSelf ? $query : $query->withoutSelf();
     }
+    
+    /**
+     * Extracts all children & nested children from current query expression.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function scopeWithoutChildren($query, $includeSelf = false)
+    {
+        $query->whereNot([
+            [$this->getLeftColumnName(), '>', $this->getLeft()],
+            [$this->getRightColumnName(), '<', $this->getRight()]
+        ]);
+
+        return $includeSelf ? $query : $query->withoutSelf();
+    }
 
     /**
      * Returns a prepared query with all parents up the tree.
