@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File as FileObj;
+use Winter\Storm\Exception\ApplicationException;
 
 /**
  * File attachment model
@@ -137,6 +138,29 @@ class File extends Model
         $this->disk_name = $this->getDiskName();
 
         $this->putFile($file->getRealPath(), $this->disk_name);
+
+        return $this;
+    }
+
+    /**
+     * Creates a file object from a file in storage.
+     */
+    public function fromStorage(string $filePath): static
+    {
+        $disk = $this->getDisk();
+
+        if (!$disk->exists($filePath)) {
+            throw new \InvalidArgumentException(sprintf('File `%s` not found in storage', $filePath));
+        }
+
+        $this->file_name = basename($filePath);
+        $this->file_size = $disk->size($filePath);
+        $this->content_type = $disk->mimeType($filePath);
+        $this->disk_name = $this->getDiskName();
+
+        if (!$disk->copy($filePath, $this->getDiskPath())) {
+            throw new ApplicationException('Unable to move uploaded file');
+        }
 
         return $this;
     }
@@ -529,8 +553,10 @@ class File extends Model
         if ($this->data !== null) {
             if ($this->data instanceof UploadedFile) {
                 $this->fromPost($this->data);
-            } else {
+            } elseif (file_exists($this->data)) {
                 $this->fromFile($this->data);
+            } else {
+                $this->fromStorage($this->data);
             }
 
             $this->data = null;
