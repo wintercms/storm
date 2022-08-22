@@ -159,7 +159,7 @@ class File extends Model
         $this->disk_name = $this->getDiskName();
 
         if (!$disk->copy($filePath, $this->getDiskPath())) {
-            throw new ApplicationException('Unable to move uploaded file');
+            throw new ApplicationException(sprintf('Unable to copy `%s` to `%s`', $filePath, $this->getDiskPath()));
         }
 
         return $this;
