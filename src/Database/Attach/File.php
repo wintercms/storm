@@ -143,7 +143,7 @@ class File extends Model
     }
 
     /**
-     * Creates a file object from a file in storage.
+     * Creates a file object from a file on the disk returned by $this->getDisk()
      */
     public function fromStorage(string $filePath): static
     {
