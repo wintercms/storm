@@ -150,7 +150,7 @@ class File extends Model
         $disk = $this->getDisk();
 
         if (!$disk->exists($filePath)) {
-            throw new \InvalidArgumentException(sprintf('File `%s` not found in storage', $filePath));
+            throw new \InvalidArgumentException(sprintf('File `%s` was not found on the storage disk', $filePath));
         }
 
         $this->file_name = basename($filePath);
