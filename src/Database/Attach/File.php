@@ -123,7 +123,7 @@ class File extends Model
     }
 
     /**
-     * Creates a file object from a file on the disk.
+     * Creates a file object from a file on the local filesystem.
      *
      * @param string $filePath The path to the file.
      * @return static
