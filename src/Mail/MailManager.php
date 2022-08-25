@@ -97,5 +97,4 @@ class MailManager extends BaseMailManager
         // key that was present in older version of Winter.
         return $this->app['config']['mail.default'] ?? $this->app['config']['mail.driver'];
     }
-
 }
