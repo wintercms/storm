@@ -1,9 +1,8 @@
 <?php namespace Winter\Storm\Database;
 
-use Db;
-use File;
-use Eloquent;
 use Exception;
+use Winter\Storm\Support\Facades\File;
+use Winter\Storm\Database\Model;
 
 /**
  * Database updater
@@ -25,18 +24,18 @@ class Updater
             return false;
         }
 
-        $this->isValidScript($object);
+        $this->isValidScript($object, $file);
 
-        Eloquent::unguard();
+        Model::unguard();
 
-        if ($object instanceof Updates\Migration) {
+        if ($object instanceof Updates\Migration && method_exists($object, 'up')) {
             $object->up();
         }
-        elseif ($object instanceof Updates\Seeder) {
+        elseif ($object instanceof Updates\Seeder && method_exists($object, 'run')) {
             $object->run();
         }
 
-        Eloquent::reguard();
+        Model::reguard();
 
         return true;
     }
@@ -52,15 +51,15 @@ class Updater
             return false;
         }
 
-        $this->isValidScript($object);
+        $this->isValidScript($object, $file);
 
-        Eloquent::unguard();
+        Model::unguard();
 
-        if ($object instanceof Updates\Migration) {
+        if ($object instanceof Updates\Migration && method_exists($object, 'down')) {
             $object->down();
         }
 
-        Eloquent::reguard();
+        Model::reguard();
 
         return true;
     }
@@ -68,16 +67,19 @@ class Updater
     /**
      * Resolve a migration instance from a file.
      * @param  string  $file
-     * @return object
+     * @return object|null
      */
     public function resolve($file)
     {
         if (!File::isFile($file)) {
-            return;
+            return null;
         }
 
-        require_once $file;
+        $instance = require_once $file;
 
+        if (is_object($instance)) {
+            return $instance;
+        }
         if ($class = $this->getClassFromFile($file)) {
             return new $class;
         }
@@ -86,7 +88,7 @@ class Updater
     /**
      * Checks if the object is a valid update script.
      */
-    protected function isValidScript($object)
+    protected function isValidScript($object, $file)
     {
         if ($object instanceof Updates\Migration) {
             return true;
@@ -96,15 +98,15 @@ class Updater
         }
 
         throw new Exception(sprintf(
-            'Database script [%s] must inherit Winter\Storm\Database\Updates\Migration or Winter\Storm\Database\Updates\Seeder classes',
-            get_class($object)
+            'Database script [%s] must define a class that inherits the "Winter\Storm\Database\Updates\Migration" or "Winter\Storm\Database\Updates\Seeder" classes',
+            $file
         ));
     }
 
     /**
      * Extracts the namespace and class name from a file.
      * @param string $file
-     * @return string
+     * @return string|false
      */
     public function getClassFromFile($file)
     {

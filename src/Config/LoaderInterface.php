@@ -32,6 +32,15 @@ interface LoaderInterface
     public function addNamespace($namespace, $hint);
 
     /**
+     * Registers an alias for a given namespace.
+     *
+     * @param string $namespace
+     * @param string $alias
+     * @return void
+     */
+    public function registerNamespaceAlias(string $namespace, string $alias);
+
+    /**
      * Returns all registered namespaces with the config
      * loader.
      *

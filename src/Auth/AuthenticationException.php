@@ -1,9 +1,9 @@
 <?php namespace Winter\Storm\Auth;
 
-use Config;
-use Winter\Storm\Exception\ApplicationException;
 use Exception;
-use Lang;
+use Illuminate\Support\Facades\Lang;
+use Winter\Storm\Support\Facades\Config;
+use Winter\Storm\Exception\ApplicationException;
 
 /**
  * Used when user authentication fails. Implements a softer error message.

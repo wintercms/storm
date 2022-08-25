@@ -1,5 +1,11 @@
 <?php namespace Winter\Storm\Support\Traits;
 
+use Closure;
+use Illuminate\Events\QueuedClosure;
+use Illuminate\Support\Traits\ReflectsClosures;
+use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Serialization;
+
 /**
  * Adds event related features to any class.
  *
@@ -7,6 +13,8 @@
  */
 trait Emitter
 {
+    use ReflectsClosures;
+
     /**
      * @var array Collection of registered events to be fired once only.
      */
@@ -24,22 +32,48 @@ trait Emitter
 
     /**
      * Create a new event binding.
+     * @param string|Closure|QueuedClosure  $event
+     * @param mixed  $callback when the third parameter is omitted and a Closure or QueuedClosure is provided
+     * this parameter is used as an integer this is used as priority variable
+     * @param int $priority
      * @return self
      */
-    public function bindEvent($event, $callback, $priority = 0)
+    public function bindEvent($event, $callback = null, $priority = 0)
     {
-        $this->emitterEventCollection[$event][$priority][] = $callback;
+        if ($event instanceof Closure || $event instanceof QueuedClosure) {
+            if ($priority === 0 && (is_int($callback) || filter_var($callback, FILTER_VALIDATE_INT))) {
+                $priority = (int) $callback;
+            }
+        }
+        if ($event instanceof Closure) {
+            return $this->bindEvent($this->firstClosureParameterType($event), $event, $priority);
+        } elseif ($event instanceof QueuedClosure) {
+            return $this->bindEvent($this->firstClosureParameterType($event->closure), $event->resolve(), $priority);
+        } elseif ($callback instanceof QueuedClosure) {
+            $callback = $callback->resolve();
+        }
+        $this->emitterEventCollection[$event][$priority][] = Serialization::wrapClosure($callback);
         unset($this->emitterEventSorted[$event]);
         return $this;
     }
 
     /**
      * Create a new event binding that fires once only
+     * @param string|Closure|QueuedClosure  $event
+     * @param QueuedClosure|Closure|null  $callback When a Closure or QueuedClosure is provided as the first parameter
+     * this parameter can be omitted
      * @return self
      */
-    public function bindEventOnce($event, $callback)
+    public function bindEventOnce($event, $callback = null)
     {
-        $this->emitterSingleEventCollection[$event][] = $callback;
+        if ($event instanceof Closure) {
+            return $this->bindEventOnce($this->firstClosureParameterType($event), $event);
+        } elseif ($event instanceof QueuedClosure) {
+            return $this->bindEventOnce($this->firstClosureParameterType($event->closure), $event->resolve());
+        } elseif ($callback instanceof QueuedClosure) {
+            $callback = $callback->resolve();
+        }
+        $this->emitterSingleEventCollection[$event][] = Serialization::wrapClosure($callback);
         return $this;
     }
 
@@ -47,7 +81,7 @@ trait Emitter
      * Sort the listeners for a given event by priority.
      *
      * @param  string  $eventName
-     * @return array
+     * @return void
      */
     protected function emitterEventSortEvents($eventName)
     {
@@ -62,7 +96,7 @@ trait Emitter
 
     /**
      * Destroys an event binding.
-     * @param string $event Event to destroy
+     * @param string|array|object $event Event to destroy
      * @return self
      */
     public function unbindEvent($event = null)
@@ -74,7 +108,11 @@ trait Emitter
             foreach ($event as $_event) {
                 $this->unbindEvent($_event);
             }
-            return;
+            return $this;
+        }
+
+        if (is_object($event)) {
+            $event = get_class($event);
         }
 
         if ($event === null) {
@@ -102,13 +140,16 @@ trait Emitter
      * @param string $event Event name
      * @param array $params Event parameters
      * @param boolean $halt Halt after first non-null result
-     * @return array Collection of event results / Or single result (if halted)
+     * @return array|mixed|null If halted, the first non-null result. If not halted, an array of event results. Returns
+     *  null if no listeners returned a result.
      */
     public function fireEvent($event, $params = [], $halt = false)
     {
-        if (!is_array($params)) {
-            $params = [$params];
-        }
+        // When the given "event" is actually an object we will assume it is an event
+        // object and use the class as the event name and this event itself as the
+        // payload to the handler, which makes object based events quite simple.
+        list($event, $params) = $this->parseEventAndPayload($event, $params);
+
         $result = [];
 
         /*
@@ -116,7 +157,7 @@ trait Emitter
          */
         if (isset($this->emitterSingleEventCollection[$event])) {
             foreach ($this->emitterSingleEventCollection[$event] as $callback) {
-                $response = call_user_func_array($callback, $params);
+                $response = call_user_func_array(Serialization::unwrapClosure($callback), $params);
                 if (is_null($response)) {
                     continue;
                 }
@@ -138,7 +179,7 @@ trait Emitter
             }
 
             foreach ($this->emitterEventSorted[$event] as $callback) {
-                $response = call_user_func_array($callback, $params);
+                $response = call_user_func_array(Serialization::unwrapClosure($callback), $params);
                 if (is_null($response)) {
                     continue;
                 }
@@ -150,5 +191,21 @@ trait Emitter
         }
 
         return $halt ? null : $result;
+    }
+
+    /**
+     * Parse the given event and payload and prepare them for dispatching.
+     *
+     * @param  mixed  $event
+     * @param  mixed  $payload
+     * @return array
+     */
+    protected function parseEventAndPayload($event, $payload = null)
+    {
+        if (is_object($event)) {
+            [$payload, $event] = [[$event], get_class($event)];
+        }
+
+        return [$event, Arr::wrap($payload)];
     }
 }

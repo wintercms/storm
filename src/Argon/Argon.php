@@ -1,11 +1,11 @@
 <?php namespace Winter\Storm\Argon;
 
-use Carbon\Carbon as DateBase;
+use Illuminate\Support\Carbon;
 
 /**
  * Umbrella class.
  */
-class Argon extends DateBase
+class Argon extends Carbon
 {
     /**
      * Function to call instead of format.
@@ -28,8 +28,17 @@ class Argon extends DateBase
      */
     protected static $parseFunction = 'parseWithCurrentLocale';
 
-    public static function parseWithCurrentLocale($time = null, $timezone = null)
-    {
+    /**
+     * Locale-aware parsing callback.
+     *
+     * This will ensure that the current locale is used when parsing dates.
+     *
+     * @throws \Carbon\Exceptions\InvalidFormatException If the format provided is invalid.
+     */
+    public static function parseWithCurrentLocale(
+        string|\DateTimeInterface|null $time = null,
+        string|\DateTimeZone|null $timezone = null
+    ): static {
         if (is_string($time)) {
             $time = static::translateTimeString($time, static::getLocale(), 'en');
         }
@@ -37,8 +46,18 @@ class Argon extends DateBase
         return parent::rawParse($time, $timezone);
     }
 
-    public static function createFromFormatWithCurrentLocale($format, $time = null, $timezone = null)
-    {
+    /**
+     * Locale-aware instance creation callback.
+     *
+     * This will ensure that the current locale is used when creating a new Argon/Carbon object.
+     *
+     * @throws \Carbon\Exceptions\InvalidFormatException If the format provided is invalid.
+     */
+    public static function createFromFormatWithCurrentLocale(
+        string $format,
+        string $time = null,
+        \DateTimeZone|string|false|null $timezone = null
+    ): static|false {
         if (is_string($time)) {
             $time = static::translateTimeString($time, static::getLocale(), 'en');
         }
@@ -48,11 +67,8 @@ class Argon extends DateBase
 
     /**
      * Get the language portion of the locale.
-     *
-     * @param string $locale
-     * @return string
      */
-    public static function getLanguageFromLocale($locale)
+    public static function getLanguageFromLocale(string $locale): string
     {
         $parts = explode('_', str_replace('-', '_', $locale));
 

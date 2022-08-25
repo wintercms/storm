@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Flash;
 
-use App;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\Facades\App;
 
 /**
  * Simple flash bag

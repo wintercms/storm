@@ -6,6 +6,11 @@ use Illuminate\Support\ServiceProvider as ServiceProviderBase;
 abstract class ModuleServiceProvider extends ServiceProviderBase
 {
     /**
+     * @var \Winter\Storm\Foundation\Application The application instance.
+     */
+    protected $app;
+    
+    /**
      * Bootstrap the application events.
      * @return void
      */
@@ -19,22 +24,13 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
             $this->loadViewsFrom($modulePath . '/views', $module);
             $this->loadTranslationsFrom($modulePath . '/lang', $module);
             $this->loadConfigFrom($modulePath . '/config', $module);
-        }
-    }
 
-    /**
-     * Register the service provider.
-     * @return void
-     */
-    public function register()
-    {
-        if ($module = $this->getModule(func_get_args())) {
             /*
              * Add routes, if available
              */
             $routesFile = base_path() . '/modules/' . $module . '/routes.php';
             if (File::isFile($routesFile)) {
-                require $routesFile;
+                $this->loadRoutesFrom($routesFile);
             }
         }
     }
@@ -55,8 +51,8 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
 
     /**
      * Registers a new console (artisan) command
-     * @param $key The command name
-     * @param $class The command class
+     * @param string $key The command name
+     * @param string $class The command class
      * @return void
      */
     public function registerConsoleCommand($key, $class)

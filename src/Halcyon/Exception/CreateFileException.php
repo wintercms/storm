@@ -14,7 +14,7 @@ class CreateFileException extends RuntimeException
     /**
      * Set the affected file path.
      *
-     * @param  string   $model
+     * @param  string   $path
      * @return $this
      */
     public function setInvalidPath($path)

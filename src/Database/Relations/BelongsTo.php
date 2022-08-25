@@ -4,10 +4,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $child
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class BelongsTo extends BelongsToBase
 {
-    use DeferOneOrMany;
-    use DefinedConstraints;
+    use Concerns\BelongsOrMorphsTo;
+    use Concerns\DeferOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * @var string The "name" of the relationship.

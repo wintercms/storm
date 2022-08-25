@@ -1,10 +1,12 @@
 <?php namespace Winter\Storm\Events;
 
+use Closure;
 use ReflectionClass;
-use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Serialization;
 use Winter\Storm\Support\Str;
 use Illuminate\Events\Dispatcher as BaseDispatcher;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Events\QueuedClosure;
 
 class Dispatcher extends BaseDispatcher
 {
@@ -25,22 +27,52 @@ class Dispatcher extends BaseDispatcher
     /**
      * Register an event listener with the dispatcher.
      *
-     * @param  string|array  $events
-     * @param  mixed  $listener
-     * @param  int  $priority
+     * @param  string|array|Closure|QueuedClosure  $events
+     * @param  mixed  $listener when the third parameter is omitted and a Closure or QueuedClosure is provided
+     * this parameter is used as an integer this is used as priority value
+     * @param int $priority
      * @return void
      */
-    public function listen($events, $listener, $priority = 0)
+    public function listen($events, $listener = null, $priority = 0)
     {
+        if ($events instanceof Closure || $events instanceof QueuedClosure) {
+            if ($priority === 0 && (is_int($listener) || filter_var($listener, FILTER_VALIDATE_INT))) {
+                $priority = (int) $listener;
+            }
+        }
+        if ($events instanceof Closure) {
+            $this->listen($this->firstClosureParameterType($events), $events, $priority);
+            return;
+        } elseif ($events instanceof QueuedClosure) {
+            $this->listen($this->firstClosureParameterType($events->closure), $events->resolve(), $priority);
+            return;
+        } elseif ($listener instanceof QueuedClosure) {
+            $listener = $listener->resolve();
+        }
+
         foreach ((array) $events as $event) {
             if (Str::contains($event, '*')) {
-                $this->setupWildcardListen($event, $listener);
+                $this->setupWildcardListen($event, Serialization::wrapClosure($listener));
             } else {
                 $this->listeners[$event][$priority][] = $this->makeListener($listener);
 
                 unset($this->sorted[$event]);
             }
         }
+    }
+
+    /**
+     * Register an event listener with the dispatcher.
+     *
+     * @param  \Closure|string|array  $listener
+     * @param  bool  $wildcard
+     * @return \Closure
+     */
+    public function makeListener($listener, $wildcard = false)
+    {
+        $listener = parent::makeListener($listener, $wildcard);
+
+        return Serialization::wrapClosure($listener);
     }
 
     /**
@@ -71,7 +103,7 @@ class Dispatcher extends BaseDispatcher
      * @param  string|object  $event
      * @param  mixed  $payload
      * @param  bool  $halt
-     * @return array|null
+     * @return array|mixed|null
      */
     public function fire($event, $payload = [], $halt = false)
     {
@@ -162,8 +194,8 @@ class Dispatcher extends BaseDispatcher
     /**
      * Sort the listeners for a given event by priority.
      *
-     * @param  string  $eventName
-     * @return array
+     * @param string $eventName
+     * @return void
      */
     protected function sortListeners($eventName)
     {
@@ -171,7 +203,7 @@ class Dispatcher extends BaseDispatcher
 
         // If listeners exist for the given event, we will sort them by the priority
         // so that we can call them in the correct order. We will cache off these
-        // sorted event listeners so we do not have to re-sort on every events.
+        // sorted event listeners so we do not have to re-sort on every event.
         if (isset($this->listeners[$eventName])) {
             krsort($this->listeners[$eventName]);
 

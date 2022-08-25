@@ -8,9 +8,8 @@ class Processor
      * Process the results of a singular "select" query.
      *
      * @param  \Winter\Storm\Halcyon\Builder  $query
-     * @param  array  $result
-     * @param  string $fileName
-     * @return array
+     * @param  array|null  $result
+     * @return array|null
      */
     public function processSelectOne(Builder $query, $result)
     {
@@ -48,8 +47,9 @@ class Processor
 
     /**
      * Helper to break down template content in to a useful array.
-     * @param  int     $mtime
-     * @param  string  $content
+     * @param  \Winter\Storm\Halcyon\Builder  $query
+     * @param  array|null  $result
+     * @param  string  $fileName
      * @return array
      */
     protected function parseTemplateContent($query, $result, $fileName)
@@ -58,7 +58,7 @@ class Processor
             'isCompoundObject' => $query->getModel()->isCompoundObject()
         ];
 
-        $content = array_get($result, 'content');
+        $content = array_get($result, 'content', '');
 
         $processed = SectionParser::parse($content, $options);
 

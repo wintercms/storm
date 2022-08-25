@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Support;
 
-use App; // @todo Allow external binding
+use Illuminate\Support\Facades\App; // @todo Allow external binding
 
 /**
  * IoC Singleton class.

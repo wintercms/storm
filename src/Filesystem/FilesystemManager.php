@@ -1,23 +1,9 @@
 <?php namespace Winter\Storm\Filesystem;
 
-use OpenCloud\Rackspace;
-use League\Flysystem\FilesystemInterface;
-use League\Flysystem\Rackspace\RackspaceAdapter;
 use Illuminate\Filesystem\FilesystemManager as BaseFilesystemManager;
 
 class FilesystemManager extends BaseFilesystemManager
 {
-    /**
-     * Adapt the filesystem implementation.
-     *
-     * @param  \League\Flysystem\FilesystemInterface  $filesystem
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
-     */
-    protected function adapt(FilesystemInterface $filesystem)
-    {
-        return new FilesystemAdapter($filesystem);
-    }
-
     /**
      * Identify the provided disk and return the name of its config
      *
@@ -37,38 +23,20 @@ class FilesystemManager extends BaseFilesystemManager
     }
 
     /**
-     * Create an instance of the Rackspace driver.
-     *
-     * @param  array  $config
-     * @return \Illuminate\Contracts\Filesystem\Cloud
+     * @inheritDoc
      */
-    public function createRackspaceDriver(array $config)
+    protected function resolve($name, $config = null)
     {
-        $client = new Rackspace($config['endpoint'], [
-            'username' => $config['username'], 'apiKey' => $config['key'],
-        ], $config['options'] ?? []);
+        if (is_null($config)) {
+            $config = $this->getConfig($name);
+        }
 
-        $root = $config['root'] ?? null;
+        // Default local drivers to public visibility for backwards compatibility
+        // see https://github.com/wintercms/winter/issues/503
+        if ($name === 'local' && $config['driver'] === 'local' && empty($config['visibility'])) {
+            $config['visibility'] = 'public';
+        }
 
-        return $this->adapt($this->createFlysystem(
-            new RackspaceAdapter($this->getRackspaceContainer($client, $config), $root),
-            $config
-        ));
-    }
-
-    /**
-     * Get the Rackspace Cloud Files container.
-     *
-     * @param  \OpenCloud\Rackspace  $client
-     * @param  array  $config
-     * @return \OpenCloud\ObjectStore\Resource\Container
-     */
-    protected function getRackspaceContainer(Rackspace $client, array $config)
-    {
-        $urlType = $config['url_type'] ?? null;
-
-        $store = $client->objectStoreService('cloudFiles', $config['region'], $urlType);
-
-        return $store->getContainer($config['container']);
+        return parent::resolve($name, $config);
     }
 }

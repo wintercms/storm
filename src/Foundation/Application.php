@@ -1,22 +1,22 @@
 <?php namespace Winter\Storm\Foundation;
 
-use Str;
-use Config;
 use Closure;
 use Throwable;
+use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Collection;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
-use Illuminate\Foundation\ProviderRepository;
-use Symfony\Component\Debug\Exception\FatalErrorException;
+use Illuminate\Support\Collection;
+use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
-use Winter\Storm\Router\RoutingServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
+use Winter\Storm\Foundation\ProviderRepository;
+use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
 use Winter\Storm\Foundation\Providers\MakerServiceProvider;
-use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
-use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
+use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Support\Facades\Config;
 
 class Application extends ApplicationBase
 {
@@ -56,6 +56,16 @@ class Application extends ApplicationBase
     protected $mediaPath;
 
     /**
+     * Get the version number of the application.
+     *
+     * @return string
+     */
+    public function version()
+    {
+        return static::VERSION . ' - Winter CMS';
+    }
+
+    /**
      * Get the path to the public / web directory.
      *
      * @return string
@@ -70,9 +80,9 @@ class Application extends ApplicationBase
      *
      * @return string
      */
-    public function langPath()
+    public function langPath($path = '')
     {
-        return PathResolver::join($this->basePath, '/lang');
+        return PathResolver::join($this->basePath, '/lang' . (!empty($path) ? "/$path" : ''));
     }
 
     /**
@@ -151,6 +161,7 @@ class Application extends ApplicationBase
         $this->instance('path.temp', $this->tempPath());
         $this->instance('path.uploads', $this->uploadsPath());
         $this->instance('path.media', $this->mediaPath());
+        $this->instance('path.lang', $this->langPath());
     }
 
     /**
@@ -214,7 +225,7 @@ class Application extends ApplicationBase
     /**
      * Set the temp path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setTempPath($path)
     {
@@ -237,7 +248,7 @@ class Application extends ApplicationBase
     /**
      * Set the uploads path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setUploadsPath($path)
     {
@@ -260,7 +271,7 @@ class Application extends ApplicationBase
     /**
      * Set the media path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setMediaPath($path)
     {
@@ -301,7 +312,7 @@ class Application extends ApplicationBase
      */
     public function before($callback)
     {
-        return $this['router']->before($callback);
+        $this['router']->before($callback);
     }
 
     /**
@@ -312,7 +323,7 @@ class Application extends ApplicationBase
      */
     public function after($callback)
     {
-        return $this['router']->after($callback);
+        $this['router']->after($callback);
     }
 
     /**
@@ -334,7 +345,7 @@ class Application extends ApplicationBase
      */
     public function fatal(Closure $callback)
     {
-        $this->error(function (FatalErrorException $e) use ($callback) {
+        $this->error(function (FatalError $e) use ($callback) {
             return call_user_func($callback, $e);
         });
     }
@@ -380,12 +391,12 @@ class Application extends ApplicationBase
     /**
      * Register all of the configured providers.
      *
-     * @var bool $isRetry If true, this is a second attempt without the cached packages.
+     * @param bool $isRetry If true, this is a second attempt without the cached packages.
      * @return void
      */
     public function registerConfiguredProviders($isRetry = false)
     {
-        $providers = Collection::make($this->config['app.providers'])
+        $providers = Collection::make($this->get('config')['app.providers'])
                         ->partition(function ($provider) {
                             return Str::startsWith($provider, 'Illuminate\\');
                         });
@@ -450,6 +461,7 @@ class Application extends ApplicationBase
             'encrypter'            => [\Illuminate\Encryption\Encrypter::class, \Illuminate\Contracts\Encryption\Encrypter::class],
             'db'                   => [\Illuminate\Database\DatabaseManager::class, \Illuminate\Database\ConnectionResolverInterface::class],
             'db.connection'        => [\Illuminate\Database\Connection::class, \Illuminate\Database\ConnectionInterface::class],
+            'db.schema'            => [\Illuminate\Database\Schema\Builder::class],
             'events'               => [\Illuminate\Events\Dispatcher::class, \Illuminate\Contracts\Events\Dispatcher::class],
             'files'                => [\Illuminate\Filesystem\Filesystem::class],
             'filesystem'           => [\Winter\Storm\Filesystem\FilesystemManager::class, \Illuminate\Contracts\Filesystem\Factory::class],
@@ -542,5 +554,32 @@ class Application extends ApplicationBase
     public function getCachedClassesPath()
     {
         return PathResolver::join($this->storagePath(), '/framework/classes.php');
+    }
+
+    /**
+     * Get the application namespace.
+     *
+     * @return string
+     */
+    public function getNamespace()
+    {
+        /**
+         * @TODO: Review calls to $app->getNamespace() that assume a single application namespace
+         * (Usually \App) instead of a collection of modules & plugins that all form the namespace.
+         * This is typically used for autoloading files and cleaning up output to remove extra
+         * unnecessary paths but those tasks should be handled completely differently in Winter CMS.
+         */
+        return '';
+    }
+
+    /**
+     * This is a temporary fix for an issue with twig reflection.
+     * The full fix is here: https://github.com/twigphp/Twig/pull/3719
+     *
+     * @TODO: Remove this after Twig PR 3719 is merged.
+     */
+    public function __toString(): string
+    {
+        return get_called_class();
     }
 }

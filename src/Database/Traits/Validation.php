@@ -1,13 +1,13 @@
 <?php namespace Winter\Storm\Database\Traits;
 
-use App;
-use Lang;
-use Input;
 use Exception;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Contracts\Validation\Rule;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Database\ModelException;
+use Winter\Storm\Support\Facades\Input;
 use Winter\Storm\Support\Facades\Validator;
 
 trait Validation
@@ -542,7 +542,7 @@ trait Validation
 
     /**
      * Create a new native event for handling beforeValidate().
-     * @param Closure|string $callback
+     * @param \Closure|string $callback
      * @return void
      */
     public static function validating($callback)
@@ -552,7 +552,7 @@ trait Validation
 
     /**
      * Create a new native event for handling afterValidate().
-     * @param Closure|string $callback
+     * @param \Closure|string $callback
      * @return void
      */
     public static function validated($callback)

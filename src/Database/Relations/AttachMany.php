@@ -1,25 +1,27 @@
 <?php namespace Winter\Storm\Database\Relations;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany as MorphManyBase;
 use Winter\Storm\Database\Attach\File as FileModel;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class AttachMany extends MorphManyBase
 {
-    use AttachOneOrMany;
-    use DefinedConstraints;
+    use Concerns\AttachOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * Create a new has many relationship instance.
      * @param Builder $query
      * @param Model $parent
-     * @param $type
-     * @param $id
-     * @param $isPublic
-     * @param $localKey
+     * @param string $type
+     * @param string $id
+     * @param bool $isPublic
+     * @param string $localKey
      * @param null|string $relationName
-     * @param null|string $keyType
      */
     public function __construct(Builder $query, Model $parent, $type, $id, $isPublic, $localKey, $relationName = null)
     {
@@ -81,7 +83,7 @@ class AttachMany extends MorphManyBase
 
         if ($files) {
             $value = [];
-            foreach ($value as $file) {
+            foreach ($files as $file) {
                 $value[] = $file->getPath();
             }
         }

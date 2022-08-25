@@ -1,7 +1,8 @@
 <?php namespace Winter\Storm\Database\Attach;
 
-use Symfony\Component\HttpFoundation\File\File as FileObj;
 use Exception;
+use GdImage;
+use Symfony\Component\HttpFoundation\File\File as FileObj;
 
 /**
  * Image resizer
@@ -40,12 +41,12 @@ class Resizer
     protected $mime;
 
     /**
-     * @var Resource The image (on disk) that's being resized.
+     * @var GdImage The image (on disk) that's being resized.
      */
     protected $image;
 
     /**
-     * @var Resource The cached, original image.
+     * @var GdImage The cached, original image.
      */
     protected $originalImage;
 
@@ -116,7 +117,8 @@ class Resizer
 
     /**
      * Manipulate an image resource in order to keep transparency for PNG and GIF files.
-     * @param $img
+     * @param GdImage $img
+     * @return void
      */
     protected function retainImageTransparency($img)
     {
@@ -264,7 +266,7 @@ class Resizer
     /**
      * Receives the original but rotated image
      * according to exif orientation
-     * @return resource (gd)
+     * @return GdImage|false
      */
     protected function getRotatedOriginal()
     {
@@ -451,7 +453,7 @@ class Resizer
         }
 
         // Determine the image type from the destination file
-        $extension = pathinfo($savePath, PATHINFO_EXTENSION) ?: $this->extension;
+        $extension = $this->getExtension($savePath);
 
         // Create and save an image based on it's extension
         switch (strtolower($extension)) {
@@ -472,7 +474,7 @@ class Resizer
 
             case 'png':
                 // Scale quality from 0-100 to 0-9
-                $scaleQuality = round(($imageQuality / 100) * 9);
+                $scaleQuality = (int) round(($imageQuality / 100) * 9);
 
                 // Invert quality setting as 0 is best, not 9
                 $invertScaleQuality = 9 - $scaleQuality;
@@ -491,8 +493,12 @@ class Resizer
                 break;
 
             default:
-                throw new Exception(sprintf('Invalid image type: %s. Accepted types: jpg, gif, png, webp.', $extension));
-                break;
+                throw new Exception(
+                    sprintf(
+                        'Invalid image type: %s. Accepted types: jpg, gif, png, webp.',
+                        $extension
+                    )
+                );
         }
 
         // Remove the resource for the resized image
@@ -525,8 +531,12 @@ class Resizer
                 $this->retainImageTransparency($img);
                 break;
             default:
-                throw new Exception(sprintf('Invalid mime type: %s. Accepted types: image/jpeg, image/gif, image/png, image/webp.', $this->mime));
-                break;
+                throw new Exception(
+                    sprintf(
+                        'Invalid mime type: %s. Accepted types: image/jpeg, image/gif, image/png, image/webp.',
+                        $this->mime
+                    )
+                );
         }
 
         return $img;
@@ -686,5 +696,13 @@ class Resizer
         $optimalHeight = round($this->height * $effectiveRatio);
 
         return [$optimalWidth, $optimalHeight];
+    }
+
+    /**
+     * Get the extension from the options, otherwise use the filename extension
+     */
+    protected function getExtension(string $path): string
+    {
+        return $this->getOption('extension') ?: (pathinfo($path, PATHINFO_EXTENSION) ?: $this->extension);
     }
 }

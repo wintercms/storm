@@ -2,6 +2,9 @@
 
 use Winter\Storm\Support\Facade;
 
+/**
+ * @see \Illuminate\Http\Request
+ */
 class Input extends Facade
 {
     /**

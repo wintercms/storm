@@ -4,6 +4,8 @@ use Winter\Storm\Database\Model;
 
 /**
  * Group model
+ *
+ * @method \Winter\Storm\Database\Relations\BelongsToMany users() Users relation.
  */
 class Group extends Model
 {
@@ -29,7 +31,7 @@ class Group extends Model
     ];
 
     /**
-     * @var array The attributes that aren't mass assignable.
+     * @var string[]|bool The attributes that aren't mass assignable.
      */
     protected $guarded = [];
 
