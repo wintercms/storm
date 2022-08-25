@@ -153,9 +153,14 @@ class File extends Model
             throw new \InvalidArgumentException(sprintf('File `%s` was not found on the storage disk', $filePath));
         }
 
-        $this->file_name = basename($filePath);
+        if (empty($this->file_name)) {
+            $this->file_name = basename($filePath);
+        }
+        if (empty($this->content_type)) {
+            $this->content_type = $disk->mimeType($filePath);
+        }
+
         $this->file_size = $disk->size($filePath);
-        $this->content_type = $disk->mimeType($filePath);
         $this->disk_name = $this->getDiskName();
 
         if (!$disk->copy($filePath, $this->getDiskPath())) {
