@@ -13,6 +13,9 @@ use Winter\Storm\Database\Model;
  */
 class Updater
 {
+    /**
+     * @var array Local cache of migration file paths to support anonymous migrations [$path => $anonInstance || $className]
+     */
     protected static $migrationCache = [];
 
     /**
