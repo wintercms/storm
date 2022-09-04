@@ -4,7 +4,7 @@
  * Console Command Trait that provides confirmation step that requires set
  * input to be provided in order to act as confirmation for an action
  *
- * @package winter\wn-system-module
+ * @package winter\storm
  * @author Luke Towers
  */
 trait ConfirmsWithInput
