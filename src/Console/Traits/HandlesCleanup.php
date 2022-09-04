@@ -4,6 +4,9 @@
  * Console Command Trait that injects cross-platform signal handling to trigger
  * cleanup on exit through the handleCleanup() method on the implementing class.
  *
+ * >**NOTE:** This trait requires the implementing class to implement the
+ * Symfony\Component\Console\Command\SignalableCommandInterface interface
+ *
  * @package winter\storm
  * @author Luke Towers
  */

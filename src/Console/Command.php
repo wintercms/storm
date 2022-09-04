@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Console;
 
 use Illuminate\Console\Command as BaseCommand;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
 
 /**
  * Command base class
@@ -8,7 +9,7 @@ use Illuminate\Console\Command as BaseCommand;
  *
  * @author Luke Towers
  */
-abstract class Command extends BaseCommand
+abstract class Command extends BaseCommand implements SignalableCommandInterface
 {
     use Traits\HandlesCleanup;
     use Traits\ProvidesAutocompletion;
