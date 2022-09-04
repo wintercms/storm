@@ -22,7 +22,7 @@ trait HandlesCleanup
         $signals = [];
         if (method_exists($this, 'handleCleanup')) {
             // Handle Windows OS
-            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            if (PHP_OS_FAMILY === 'Windows') {
                 // Attach to Windows Ctrl+C & Ctrl+Break events
                 if (function_exists('sapi_windows_set_ctrl_handler')) {
                     sapi_windows_set_ctrl_handler([$this, 'handleWindowsSignal'], true);
