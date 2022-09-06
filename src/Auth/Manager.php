@@ -5,12 +5,14 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Session\SessionManager;
 
 /**
  * Authentication manager
  */
-class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
+class Manager implements StatefulGuard, UserProvider
 {
     use \Winter\Storm\Support\Traits\Singleton;
 
@@ -889,5 +891,49 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         } else {
             return $this->getUser();
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function retrieveById($identifier)
+    {
+        return $this->findUserById($identifier);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function retrieveByCredentials(array $credentials)
+    {
+        return $this->validateInternal($credentials);
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * Not implemented.
+     */
+    public function retrieveByToken($identifier, $token)
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * Not implemented.
+     */
+    public function updateRememberToken(Authenticatable $user, $token)
+    {
+        return;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function validateCredentials(Authenticatable $user, array $credentials)
+    {
+        return ($user === $this->validateInternal($credentials));
     }
 }
