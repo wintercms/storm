@@ -16,8 +16,8 @@ trait CanResetPassword
     public function sendPasswordResetNotification($token)
     {
         Mail::rawTo(
-            $this->getEmailForPasswordReset(),
-            $this->defaultPasswordResetEmail(),
+            [$this->getEmailForPasswordReset()],
+            $this->defaultPasswordResetEmail($token),
             function ($message) {
                 $message->subject('Password reset request');
             }
@@ -27,11 +27,12 @@ trait CanResetPassword
     /**
      * The default password reset email content.
      *
+     * @param string $token
      * @return string
      */
-    protected function defaultPasswordResetEmail()
+    protected function defaultPasswordResetEmail($token)
     {
-        $url = Config::get('app.url') . '/reset-password/' . $this->token;
+        $url = Config::get('app.url') . '/reset-password/' . $token;
 
         return 'Hi,' . "\n\n"
             . 'Someone has requested a password reset for your account. If this was you, please go to the following URL to reset your password.' . "\n\n"
