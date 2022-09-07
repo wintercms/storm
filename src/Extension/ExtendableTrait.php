@@ -113,7 +113,9 @@ trait ExtendableTrait
          *     });
          *
          */
-        $this->fireEvent('extendable.afterConstruct');
+        if (method_exists($this, 'fireEvent')) {
+            $this->fireEvent('extendable.afterConstruct');
+        }
     }
 
     /**
