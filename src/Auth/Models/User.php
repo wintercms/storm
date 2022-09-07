@@ -20,7 +20,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable, 
     use \Winter\Storm\Database\Traits\Hashable;
     use \Winter\Storm\Database\Traits\Purgeable;
     use \Winter\Storm\Database\Traits\Validation;
-    use \Illuminate\Auth\Passwords\CanResetPassword;
+    use \Winter\Storm\Auth\Passwords\CanResetPassword;
 
     /**
      * @var string The table associated with the model.
