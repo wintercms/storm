@@ -40,13 +40,17 @@ class PasswordBrokerManager extends BasePasswordBrokerManager
             $key = base64_decode(substr($key, 7));
         }
 
-        $passwordResetModel = $this->getAuthInstance()->createPasswordResetModel();
-        $connection = $passwordResetModel->getConnectionName();
+        if (isset($config['connection'])) {
+            $connection = $config['connection'];
+        } else {
+            $passwordResetModel = $this->getAuthInstance()->createPasswordResetModel();
+            $connection = $passwordResetModel->getConnectionName();
+        }
 
         return new DatabaseTokenRepository(
             $this->app['db']->connection($connection),
             $this->app['hash'],
-            (new $passwordResetModel)->getTable(),
+            $config['table'] ?? (new $passwordResetModel)->getTable(),
             $key,
             $config['expire'] ?? 180,
             $config['throttle'] ?? 30,
