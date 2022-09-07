@@ -101,6 +101,19 @@ trait ExtendableTrait
 
             $this->extendClassWith($useClass);
         }
+
+        /**
+         * @event extendable.afterConstruct
+         * Called after the dynamic behaviors have been loaded.
+         *
+         * Example usage:
+         *
+         *     $model->bindEvent('extendable.afterConstruct', function () use (\Winter\Storm\Database\Model $model) {
+         *         \Log::info(get_class($model) . ' has booted and behaviors are loaded');
+         *     });
+         *
+         */
+        $this->fireEvent('extendable.afterConstruct');
     }
 
     /**
