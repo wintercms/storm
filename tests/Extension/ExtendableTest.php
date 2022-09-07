@@ -355,12 +355,6 @@ class ExtendableTestExampleExtendableClass extends Extendable
     {
         return $this->protectedFoo;
     }
-
-    // dummy method to appease test case on mock object
-    public function fireEvent($event)
-    {
-        return $event;
-    }
 }
 
 /*
