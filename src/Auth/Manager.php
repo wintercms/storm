@@ -47,6 +47,11 @@ class Manager implements StatefulGuard, UserProvider
     protected $throttleModel = Models\Throttle::class;
 
     /**
+     * @var string Password Reset Model Class
+     */
+    protected $passwordResetModel = Models\PasswordReset::class;
+
+    /**
      * @var bool Flag to enable login throttling
      */
     protected $useThrottle = true;
@@ -361,6 +366,21 @@ class Manager implements StatefulGuard, UserProvider
         }
 
         return $this->throttle[$cacheKey] = $throttle;
+    }
+
+    //
+    // Password Reset
+    //
+
+    /**
+     * Creates a new password reset model instance.
+     *
+     * @return Models\PasswordReset
+     */
+    public function createPasswordResetModel()
+    {
+        $class = '\\' . ltrim($this->passwordResetModel, '\\');
+        return new $class();
     }
 
     //
