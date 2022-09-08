@@ -187,7 +187,7 @@ trait ExtendableTrait
     /**
      * Programmatically adds a method to the extendable class.
      */
-    public function addDynamicMethod(string $name, callable $method, ?string $extension = null): void
+    public function addDynamicMethod(string $name, callable|string $method, ?string $extension = null): void
     {
         if (
             is_string($method) &&
