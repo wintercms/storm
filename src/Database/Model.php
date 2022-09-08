@@ -147,7 +147,7 @@ class Model extends EloquentModel implements ModelInterface
     /**
      * Extend this object properties upon construction.
      */
-    public static function extend(Closure $callback, $after = false)
+    public static function extend(callable $callback, bool $after = false)
     {
         self::extendableExtendCallback($callback, $after);
     }
