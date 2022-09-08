@@ -50,7 +50,7 @@ class Extendable
         return self::extendableCallStatic($name, $params);
     }
 
-    public static function extend(callable $callback, $after = false)
+    public static function extend(callable $callback, bool $after = false)
     {
         self::extendableExtendCallback($callback, $after);
     }
