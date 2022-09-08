@@ -33,9 +33,16 @@ trait ExtendableTrait
      * @var array Used to extend the constructor of an extendable class. Eg:
      *
      *     Class::extend(function($obj) { })
-     *
      */
     protected static $extendableCallbacks = [];
+
+    /**
+     * @var array Used to extend the constructor of an extendable class
+     *            AFTER the behaviors are loaded. Eg:
+     *
+     *     Class::extend(function($obj) { }, after: true)
+     */
+    protected static $extendableAfterConstructCallbacks = [];
 
     /**
      * @var array Collection of static methods used by behaviors.
@@ -101,6 +108,17 @@ trait ExtendableTrait
 
             $this->extendClassWith($useClass);
         }
+
+        /*
+         * Apply init callbacks after Behaviors have been loaded.
+         */
+        foreach ($classes as $class) {
+            if (isset(self::$extendableAfterConstructCallbacks[$class]) && is_array(self::$extendableAfterConstructCallbacks[$class])) {
+                foreach (self::$extendableAfterConstructCallbacks[$class] as $callback) {
+                    call_user_func(Serialization::unwrapClosure($callback), $this);
+                }
+            }
+        }
     }
 
     /**
@@ -108,16 +126,22 @@ trait ExtendableTrait
      * @param  callable $callback
      * @return void
      */
-    public static function extendableExtendCallback($callback)
+    public static function extendableExtendCallback($callback, $after = false)
     {
+        $var = 'extendableCallbacks';
         $class = get_called_class();
-        if (
-            !isset(self::$extendableCallbacks[$class]) ||
-            !is_array(self::$extendableCallbacks[$class])
-        ) {
-            self::$extendableCallbacks[$class] = [];
+
+        if ($after) {
+            $var = 'extendableAfterConstructCallbacks';
         }
-        self::$extendableCallbacks[$class][] = Serialization::wrapClosure($callback);
+
+        if (
+            !isset(self::${$var}[$class]) ||
+            !is_array(self::${$var}[$class])
+        ) {
+            self::${$var}[$class] = [];
+        }
+        self::${$var}[$class][] = Serialization::wrapClosure($callback);
     }
 
     /**
