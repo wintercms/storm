@@ -86,6 +86,70 @@ class Str extends StrHelper
     }
 
     /**
+     * Apply an index to a string, i.e.
+     * winter -> winter_1
+     * winter_1 -> winter_2
+     */
+    public static function index(string $str, string $separator = '_', int $starting = 1, int $step = 1): string
+    {
+        if (!preg_match('/(.*?)' . $separator . '(\d*$)/', $str, $matches)) {
+            return $str . $separator . $starting;
+        }
+
+        return $matches[1] . $separator . (((int) $matches[2]) + $step);
+    }
+
+    /**
+     * Apply a unique index to a string from provided list i.e.
+     * winter, [winter_1, winter_2] -> winter_3
+     * winter, [winter_1, winter_3] -> winter_4
+     */
+    public static function unique(string $str, array $list, string $separator = '_', int $starting = 1, int $step = 1): string
+    {
+        $indexes = [];
+
+        foreach ($list as $item) {
+            if (!preg_match('/(.*?)' . $str . $separator . '(\d*$)/', $item, $matches)) {
+                continue;
+            }
+
+            $indexes[] = (int) $matches[2];
+        }
+
+        return empty($indexes)
+            ? $str . $separator . $starting
+            : $str . $separator . (max($indexes) + $step);
+    }
+
+    /**
+     * Apply a unique index to a filename from provided list i.e.
+     * winter.txt, [winter_1.txt, winter_2.txt] -> winter_3.txt
+     * winter.txt, [winter_1.txt, winter_3.txt] -> winter_4.txt
+     */
+    public static function uniqueFile(string $str, array $list, string $separator = '_', int $starting = 1, int $step = 1): string
+    {
+        $indexes = [];
+
+        $info = pathinfo($str);
+
+        if (empty($info['filename']) || empty($info['extension'])) {
+            throw new \InvalidArgumentException('$str must be a file name');
+        }
+
+        foreach ($list as $item) {
+            if (!preg_match('/' . $info['filename'] . $separator . '(\d*)\.' . $info['extension'] . '/', $item, $matches)) {
+                continue;
+            }
+
+            $indexes[] = (int) $matches[1];
+        }
+
+        return empty($indexes)
+            ? $info['filename'] . $separator . $starting . '.' . $info['extension']
+            : $info['filename'] . $separator . (max($indexes) + $step) . '.' . $info['extension'];
+    }
+
+    /**
      * Converts line breaks to a standard \r\n pattern.
      */
     public static function normalizeEol($string)
