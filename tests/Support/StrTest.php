@@ -40,7 +40,7 @@ class StrTest extends TestCase
 
     public function testUniqueFile()
     {
-        $this->assertSame('winter_4.cms',  Str::uniqueFile('winter.cms', ['winter_1.cms', 'test_5', 'winter_2.cms']));
+        $this->assertSame('winter_4.cms',  Str::uniqueFile('winter.cms', ['winter_1.cms', 'test_5', 'winter_3.cms']));
         $this->assertSame('winter_98.cms', Str::uniqueFile('winter.cms', ['winter_97.cms', 'test_5', 'winter_1.cms']));
         $this->assertSame('winter 1.cms',  Str::uniqueFile('winter.cms', ['winter_1.cms', 'test_5', 'winter_3.cms'], ' '));
         $this->assertSame('winter_1.cms',  Str::uniqueFile('winter.cms', ['test_5']));
