@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Session\SessionManager;
+use Lang;
 
 /**
  * Authentication manager
@@ -230,7 +231,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         $loginName = $model->getLoginName();
 
         if (!array_key_exists($loginName, $credentials)) {
-            throw new AuthenticationException(sprintf('Login attribute "%s" was not provided.', $loginName));
+            throw new AuthenticationException(Lang('backend::lang.auth.attribute_not_provided', ['attribute' => $loginName]));
         }
 
         $query = $this->createUserModelQuery();
@@ -253,7 +254,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         /** @var Models\User */
         $user = $query->first();
         if (!$this->validateUserModel($user)) {
-            throw new AuthenticationException('A user was not found with the given credentials.');
+            throw new AuthenticationException(Lang::get('backend::lang.auth.invalid_user'));
         }
 
         /*
@@ -263,14 +264,11 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
             if (!$user->checkHashValue($credential, $value)) {
                 // Incorrect password
                 if ($credential === 'password') {
-                    throw new AuthenticationException(sprintf(
-                        'A user was found to match all plain text credentials however hashed credential "%s" did not match.',
-                        $credential
-                    ));
+                    throw new AuthenticationException(Lang::get('backend::lang.auth.invalid_password', ['credential' => $credential]));
                 }
 
                 // User not found
-                throw new AuthenticationException('A user was not found with the given credentials.');
+                throw new AuthenticationException(Lang::get('backend::lang.auth.invalid_user'));
             }
         }
 
@@ -314,7 +312,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     {
         $user = $this->findUserByLogin($loginName);
         if (!$user) {
-            throw new AuthenticationException("A user was not found with the given credentials.");
+            throw new AuthenticationException(Lang::get('backend::lang.auth.invalid_user'));
         }
 
         $userId = $user->getKey();
@@ -404,11 +402,11 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         $loginCredentialKey = isset($credentials[$loginName]) ? $loginName : 'login';
 
         if (empty($credentials[$loginCredentialKey])) {
-            throw new AuthenticationException(sprintf('The "%s" attribute is required.', $loginCredentialKey));
+            throw new AuthenticationException(Lang::get('backend::lang.auth.attribute_is_required', ['attribute' => $loginCredentialKey]));
         }
 
         if (empty($credentials['password'])) {
-            throw new AuthenticationException('The password attribute is required.');
+            throw new AuthenticationException(Lang::get('backend::lang.auth.password_is_required'));
         }
 
         /*
@@ -656,10 +654,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         // Deny users that aren't activated when activation is required
         if ($this->requireActivation && !$user->is_activated) {
             $login = $user->getLogin();
-            throw new AuthenticationException(sprintf(
-                'Cannot login user "%s" as they are not activated.',
-                $login
-            ));
+            throw new AuthenticationException(Lang::get('backend::lang.auth.user_not_activated', ['login' => $login]));
         }
 
         $this->user = $user;
