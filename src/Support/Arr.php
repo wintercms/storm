@@ -6,18 +6,14 @@ use InvalidArgumentException;
 /**
  * Array helper
  *
- * @author Alexey Bobkov, Samuel Georges
+ * @author Winter CMS
  */
 class Arr extends ArrHelper
 {
     /**
      * Build a new array using a callback.
-     *
-     * @param  array  $array
-     * @param  callable  $callback
-     * @return array
      */
-    public static function build(array $array, callable $callback)
+    public static function build(array $array, callable $callback): array
     {
         $results = [];
 
@@ -41,7 +37,7 @@ class Arr extends ArrHelper
         }
 
         if (!array_key_exists($targetKey, $array)) {
-            throw new \InvalidArgumentException(sprintf('Key "%s" does not exist in the array', $targetKey));
+            throw new InvalidArgumentException(sprintf('Key "%s" does not exist in the array', $targetKey));
         }
 
         $keys = array_diff(array_keys($array), [$targetKey]);
