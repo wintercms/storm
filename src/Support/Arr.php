@@ -32,10 +32,6 @@ class Arr extends ArrHelper
      */
     public static function moveKeyToIndex(array $array, string|int $targetKey, int $index): array
     {
-        if ($index < 0) {
-            $index = 0;
-        }
-
         if (!array_key_exists($targetKey, $array)) {
             throw new InvalidArgumentException(sprintf('Key "%s" does not exist in the array', $targetKey));
         }

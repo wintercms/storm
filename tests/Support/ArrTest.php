@@ -33,7 +33,14 @@ class ArrTest extends TestCase
             'two' => 'b',
         ], Arr::moveKeyToIndex($array, 'two', 10));
 
-        // Negative index inserting as first element
+        // Negative index works backwards
+        $this->assertSame([
+            'two' => 'b',
+            'one' => 'a',
+            'three' => 'c',
+        ], Arr::moveKeyToIndex($array, 'two', -2));
+
+        // Negative index beyond bounds inserting as first element
         $this->assertSame([
             'two' => 'b',
             'one' => 'a',
