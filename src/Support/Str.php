@@ -4,8 +4,6 @@ use Illuminate\Support\Str as StrHelper;
 
 /**
  * String helper
- *
- * @author Alexey Bobkov, Samuel Georges
  */
 class Str extends StrHelper
 {
@@ -86,42 +84,6 @@ class Str extends StrHelper
     }
 
     /**
-     * Apply an index to a string, i.e.
-     * winter -> winter_1
-     * winter_1 -> winter_2
-     */
-    public static function index(string $str, string $separator = '_', int $starting = 1, int $step = 1): string
-    {
-        if (!preg_match('/(.*?)' . $separator . '(\d*$)/', $str, $matches)) {
-            return $str . $separator . $starting;
-        }
-
-        return $matches[1] . $separator . (((int) $matches[2]) + $step);
-    }
-
-    /**
-     * Apply a unique index to a string from provided list i.e.
-     * winter, [winter_1, winter_2] -> winter_3
-     * winter, [winter_1, winter_3] -> winter_4
-     */
-    public static function unique(string $str, array $list, string $separator = '_', int $starting = 1, int $step = 1): string
-    {
-        $indexes = [];
-
-        foreach ($list as $item) {
-            if (!preg_match('/(.*?)' . $str . $separator . '(\d*$)/', $item, $matches)) {
-                continue;
-            }
-
-            $indexes[] = (int) $matches[2];
-        }
-
-        return empty($indexes)
-            ? $str . $separator . $starting
-            : $str . $separator . (max($indexes) + $step);
-    }
-
-    /**
      * Converts line breaks to a standard \r\n pattern.
      */
     public static function normalizeEol($string)
@@ -166,5 +128,36 @@ class Str extends StrHelper
             default:
                 return $number.'th';
         }
+    }
+
+    /**
+     * Ensures that the provide string will be unique within the provided array,
+     * adjusts it with the separator & step as necessary if not
+     *
+     * Examples:
+     * winter, [winter, winter_1, winter_2] -> winter_3
+     * winter, [winter_1, winter_3] -> winter
+     */
+    public static function unique(string $str, array $items, string $separator = '_', int $step = 1): string
+    {
+        $indexes = [];
+
+        if (!in_array($str, $items)) {
+            return $str;
+        } else {
+            $indexes[] = 0;
+        }
+
+        foreach ($items as $item) {
+            if (!preg_match('/(.*?)' . $str . $separator . '(\d*$)/', $item, $matches)) {
+                continue;
+            }
+
+            $indexes[] = (int) $matches[2];
+        }
+
+        return empty($indexes)
+            ? $str
+            : $str . $separator . (max($indexes) + $step);
     }
 }
