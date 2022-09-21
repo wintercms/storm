@@ -27,7 +27,7 @@ class Arr extends ArrHelper
     }
 
     /**
-     * Moves the key to the index within the array
+     * Moves the key to the index within the array, negative index will work backwards from the end of the array
      * @throws InvalidArgumentException if the key does not exist in the array
      */
     public static function moveKeyToIndex(array $array, string|int $targetKey, int $index): array
