@@ -119,9 +119,6 @@ trait BelongsOrMorphsToMany
      */
     public function attach($id, array $attributes = [], $touch = true)
     {
-        $insertData = $this->formatAttachRecords($this->parseIds($id), $attributes);
-        $attachedIdList = array_pluck($insertData, $this->relatedPivotKey);
-
         /**
          * @event model.relation.beforeAttach
          * Called before creating a new relation between models (only for BelongsToMany relation)
@@ -136,14 +133,21 @@ trait BelongsOrMorphsToMany
          *     });
          *
          */
-        if ($this->parent->fireEvent('model.relation.beforeAttach', [$this->relationName, $attachedIdList, $insertData], true) === false) {
+        if ($this->parent->fireEvent('model.relation.beforeAttach', [$this->relationName, $id, $attributes], true) === false) {
             return;
         }
+
+        $insertData = $this->formatAttachRecords($this->parseIds($id), $attributes);
+        $attachedIdList = array_pluck($insertData, $this->relatedPivotKey);
 
         // Here we will insert the attachment records into the pivot table. Once we have
         // inserted the records, we will touch the relationships if necessary and the
         // function will return. We can parse the IDs before inserting the records.
-        $this->newPivotStatement()->insert($insertData);
+        if ($this->using) {
+            $this->attachUsingCustomClass($id, $attributes);
+        } else {
+            $this->newPivotStatement()->insert($insertData);
+        }
 
         if ($touch) {
             $this->touchIfTouching();
