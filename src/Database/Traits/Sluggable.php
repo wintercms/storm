@@ -95,8 +95,8 @@ trait Sluggable
         $separator = $this->getSluggableSeparator();
         $_value = $value;
         while (($this->methodExists('withTrashed') && $this->allowTrashedSlugs) ?
-            $this->newSluggableQuery()->where($name, $_value)->withTrashed()->count() > 0 :
-            $this->newSluggableQuery()->where($name, $_value)->count() > 0
+            $this->newSluggableQuery()->where($name, $_value)->withTrashed()->exists() :
+            $this->newSluggableQuery()->where($name, $_value)->exists()
         ) {
             $counter++;
             $_value = $value . $separator . $counter;
