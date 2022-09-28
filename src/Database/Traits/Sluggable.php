@@ -94,7 +94,7 @@ trait Sluggable
         $counter = 1;
         $separator = $this->getSluggableSeparator();
         $_value = $value;
-        while ($this->newSluggableQuery()->where($name, $_value)->count() > 0) {
+        while ($this->newSluggableQuery()->where($name, $_value)->exists()) {
             $counter++;
             $_value = $value . $separator . $counter;
         }
