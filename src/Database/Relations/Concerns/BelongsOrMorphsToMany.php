@@ -125,9 +125,9 @@ trait BelongsOrMorphsToMany
         $eventArgs = [$this->relationName];
 
         if ($this->using) {
-            $eventArgs += [$id, $attributes];
+            $eventArgs = [...$eventArgs, $id, $attributes];
         } else {
-            $eventArgs += [$attachedIdList, $insertData];
+            $eventArgs = [...$eventArgs, $attachedIdList, $insertData];
         }
 
         /**
