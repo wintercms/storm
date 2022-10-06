@@ -95,7 +95,7 @@ class DbDatasource extends Datasource
      */
     protected function makeFilePath(string $dirName, string $fileName, string $extension): string
     {
-        return $dirName . '/' . $fileName . '.' . $extension;
+        return ltrim($dirName . '/' . $fileName . '.' . $extension, '/');
     }
 
     /**
