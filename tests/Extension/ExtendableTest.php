@@ -39,6 +39,26 @@ class ExtendableTest extends TestCase
         $this->assertEquals('bar', $subject->classAttribute);
     }
 
+    public function testExtendingExtendableClassAfterBehaviors()
+    {
+        // test default behavior
+        ExtendableTestExampleExtendableClass::extend(function ($extension) {
+            $this->assertFalse($extension->methodExists('getFoo'));
+        });
+
+        // test with after explicitly set to false
+        ExtendableTestExampleExtendableClass::extend(function ($extension) {
+            $this->assertFalse($extension->methodExists('getFoo'));
+        }, after: false);
+
+        // test with after set to true
+        ExtendableTestExampleExtendableClass::extend(function ($extension) {
+            $this->assertTrue($extension->methodExists('getFoo'));
+        }, after: true);
+
+        $instance = new ExtendableTestExampleExtendableClass;
+    }
+
     public function testSettingDeclaredPropertyOnClass()
     {
         $subject = $this->mockClassLoader(ExtendableTestExampleExtendableClass::class);
