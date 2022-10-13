@@ -949,7 +949,7 @@ trait HasRelationships
      */
     public function addHasOneThroughRelation(string $name, array $config): void
     {
-        $this->addRelation('HasOneThrough', $name, $config);
+        $this->addRelation('hasOneThrough', $name, $config);
     }
 
     /**
@@ -959,7 +959,7 @@ trait HasRelationships
      */
     public function addHasManyThroughRelation(string $name, array $config): void
     {
-        $this->addRelation('HasManyThrough', $name, $config);
+        $this->addRelation('hasManyThrough', $name, $config);
     }
 
     /**
