@@ -94,7 +94,7 @@ class MailManager extends BaseMailManager
     {
         // We will do the reverse of what Laravel does and check for "default" first, which is
         // populated by the Backend or the new "mail" config, before searching for the "driver"
-        // key that was present in older version of Winter.
+        // key that was present in older version of Winter (<1.2).
         return $this->app['config']['mail.default'] ?? $this->app['config']['mail.driver'];
     }
 }
