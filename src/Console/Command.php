@@ -35,9 +35,10 @@ abstract class Command extends BaseCommand implements SignalableCommandInterface
      * Write a string in an alert box.
      *
      * @param  string  $string
+     * @param  int|string|null  $verbosity
      * @return void
      */
-    public function alert($string)
+    public function alert($string, $verbosity = null)
     {
         $maxLength = 80;
         $padding = 5;
