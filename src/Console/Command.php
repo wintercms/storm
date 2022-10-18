@@ -61,7 +61,7 @@ abstract class Command extends BaseCommand implements SignalableCommandInterface
         $width = $innerLineWidth + ($border * 2);
 
         // Top border
-        $this->comment(str_repeat('*', $width));
+        $this->comment(str_repeat('*', $width), $verbosity);
 
         // Alert content
         foreach ($lines as $line) {
@@ -69,12 +69,13 @@ abstract class Command extends BaseCommand implements SignalableCommandInterface
             $this->comment(
                 str_repeat('*', $border)
                 . str_pad($line, $innerLineWidth, ' ', STR_PAD_BOTH)
-                . str_repeat('*', $border)
+                . str_repeat('*', $border),
+                $verbosity
             );
         }
 
         // Bottom border
-        $this->comment(str_repeat('*', $width));
+        $this->comment(str_repeat('*', $width), $verbosity);
 
         $this->newLine();
     }
