@@ -1,9 +1,7 @@
 <?php namespace Winter\Storm\Console;
 
-use Winter\Storm\Support\Str;
 use Illuminate\Console\Command as BaseCommand;
-use Symfony\Component\Console\Completion\CompletionInput;
-use Symfony\Component\Console\Completion\CompletionSuggestions;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
 
 /**
  * Command base class
@@ -11,8 +9,11 @@ use Symfony\Component\Console\Completion\CompletionSuggestions;
  *
  * @author Luke Towers
  */
-abstract class Command extends BaseCommand
+abstract class Command extends BaseCommand implements SignalableCommandInterface
 {
+    use Traits\HandlesCleanup;
+    use Traits\ProvidesAutocompletion;
+
     /**
      * @var array List of commands that this command replaces (aliases)
      */
@@ -34,9 +35,10 @@ abstract class Command extends BaseCommand
      * Write a string in an alert box.
      *
      * @param  string  $string
+     * @param  int|string|null  $verbosity
      * @return void
      */
-    public function alert($string)
+    public function alert($string, $verbosity = null)
     {
         $maxLength = 80;
         $padding = 5;
@@ -59,7 +61,7 @@ abstract class Command extends BaseCommand
         $width = $innerLineWidth + ($border * 2);
 
         // Top border
-        $this->comment(str_repeat('*', $width));
+        $this->comment(str_repeat('*', $width), $verbosity);
 
         // Alert content
         foreach ($lines as $line) {
@@ -67,74 +69,14 @@ abstract class Command extends BaseCommand
             $this->comment(
                 str_repeat('*', $border)
                 . str_pad($line, $innerLineWidth, ' ', STR_PAD_BOTH)
-                . str_repeat('*', $border)
+                . str_repeat('*', $border),
+                $verbosity
             );
         }
 
         // Bottom border
-        $this->comment(str_repeat('*', $width));
+        $this->comment(str_repeat('*', $width), $verbosity);
 
         $this->newLine();
     }
-
-    /**
-     * Provide autocompletion for this command's input
-     */
-    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
-    {
-        $inputs = [
-            'arguments' => $input->getArguments(),
-            'options'   => $input->getOptions(),
-        ];
-
-        foreach ($inputs as $type => $data) {
-            switch ($type) {
-                case 'arguments':
-                    $dataType = 'Argument';
-                    $suggestionType = 'Values';
-                    break;
-                case 'options':
-                    $dataType = 'Option';
-                    $suggestionType = 'Options';
-                    break;
-                default:
-                    // This should not be possible to ever be triggered given the type is hardcoded above
-                    throw new \Exception('Invalid input type being parsed during completion');
-            }
-            if (!empty($data)) {
-                foreach ($data as $name => $value) {
-                    // Skip the command argument since that's handled by Artisan directly
-                    if (
-                        $type === 'arguments'
-                        && in_array($name, ['command'])
-                    ) {
-                        continue;
-                    }
-
-                    $inputRoutingMethod = "mustSuggest{$dataType}ValuesFor";
-                    $suggestionValuesMethod = Str::camel('suggest ' . $name) . $suggestionType;
-                    $suggestionsMethod = 'suggest' . $suggestionType;
-
-                    if (
-                        method_exists($this, $suggestionValuesMethod)
-                        && $input->{$inputRoutingMethod}($name)
-                    ) {
-                        $values = $this->$suggestionValuesMethod($value, $inputs);
-                        $suggestions->{$suggestionsMethod}($values);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Example implementation of a suggestion method
-     */
-    // public function suggestMyArgumentValues(string $value = null, array $allInput): array
-    // {
-    //     if ($allInput['arguments']['dependent'] === 'matches') {
-    //         return ['some', 'suggested', 'values'];
-    //     }
-    //     return ['all', 'values'];
-    // }
 }

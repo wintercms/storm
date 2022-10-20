@@ -95,6 +95,8 @@ class Updater
         if ($class = $this->getClassFromFile($file)) {
             return new (static::$migrationCache[$file] = $class);
         }
+        
+        return null;
     }
 
     /**

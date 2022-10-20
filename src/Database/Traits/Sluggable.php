@@ -94,10 +94,7 @@ trait Sluggable
         $counter = 1;
         $separator = $this->getSluggableSeparator();
         $_value = $value;
-        while (($this->methodExists('withTrashed') && $this->allowTrashedSlugs) ?
-            $this->newSluggableQuery()->where($name, $_value)->withTrashed()->count() > 0 :
-            $this->newSluggableQuery()->where($name, $_value)->count() > 0
-        ) {
+        while ($this->newSluggableQuery()->where($name, $_value)->exists()) {
             $counter++;
             $_value = $value . $separator . $counter;
         }
@@ -107,13 +104,22 @@ trait Sluggable
 
     /**
      * Returns a query that excludes the current record if it exists
+     * Supports SoftDelete trait
      * @return Builder
      */
     protected function newSluggableQuery()
     {
-        return $this->exists
-            ? $this->newQuery()->where($this->getKeyName(), '<>', $this->getKey())
-            : $this->newQuery();
+        $query = $this->newQuery();
+
+        if ($this->exists) {
+            $query->where($this->getKeyName(), '<>', $this->getKey());
+        }
+
+        if ($this->methodExists('withTrashed') && $this->allowTrashedSlugs) {
+            $query->withTrashed();
+        }
+
+        return $query;
     }
 
     /**

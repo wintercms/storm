@@ -152,7 +152,19 @@ class Zip extends ZipArchive
             $folders = [];
             $recursive = false;
         } else {
-            $files = glob($source, GLOB_BRACE);
+            // Workaround for systems that do not support GLOB_BRACE (ie. Solaris, Alpine Linux)
+            if (!defined('GLOB_BRACE') && $includeHidden) {
+                $files = array_merge(
+                    glob(dirname($source) . '/*'),
+                    glob(dirname($source) . '/.[!.]*'),
+                    glob(dirname($source) . '/..?*')
+                );
+            } elseif (defined('GLOB_BRACE')) {
+                $files = glob($source, GLOB_BRACE);
+            } else {
+                $files = glob($source);
+            }
+
             $folders = glob(dirname($source) . '/*', GLOB_ONLYDIR);
         }
 

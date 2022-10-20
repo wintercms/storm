@@ -4,8 +4,6 @@ use Illuminate\Support\Str as StrHelper;
 
 /**
  * String helper
- *
- * @author Alexey Bobkov, Samuel Georges
  */
 class Str extends StrHelper
 {
@@ -130,5 +128,36 @@ class Str extends StrHelper
             default:
                 return $number.'th';
         }
+    }
+
+    /**
+     * Ensures that the provide string will be unique within the provided array,
+     * adjusts it with the separator & step as necessary if not
+     *
+     * Examples:
+     * winter, [winter, winter_1, winter_2] -> winter_3
+     * winter, [winter_1, winter_3] -> winter
+     */
+    public static function unique(string $str, array $items, string $separator = '_', int $step = 1): string
+    {
+        $indexes = [];
+
+        if (!in_array($str, $items)) {
+            return $str;
+        } else {
+            $indexes[] = 0;
+        }
+
+        foreach ($items as $item) {
+            if (!preg_match('/(.*?)' . $str . $separator . '(\d*$)/', $item, $matches)) {
+                continue;
+            }
+
+            $indexes[] = (int) $matches[2];
+        }
+
+        return empty($indexes)
+            ? $str
+            : $str . $separator . (max($indexes) + $step);
     }
 }
