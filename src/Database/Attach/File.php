@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File as FileObj;
+use Winter\Storm\Exception\ApplicationException;
 
 /**
  * File attachment model
@@ -123,7 +124,7 @@ class File extends Model
     }
 
     /**
-     * Creates a file object from a file on the disk.
+     * Creates a file object from a file on the local filesystem.
      *
      * @param string $filePath The path to the file.
      * @return static
@@ -137,6 +138,34 @@ class File extends Model
         $this->disk_name = $this->getDiskName();
 
         $this->putFile($file->getRealPath(), $this->disk_name);
+
+        return $this;
+    }
+
+    /**
+     * Creates a file object from a file on the disk returned by $this->getDisk()
+     */
+    public function fromStorage(string $filePath): static
+    {
+        $disk = $this->getDisk();
+
+        if (!$disk->exists($filePath)) {
+            throw new \InvalidArgumentException(sprintf('File `%s` was not found on the storage disk', $filePath));
+        }
+
+        if (empty($this->file_name)) {
+            $this->file_name = basename($filePath);
+        }
+        if (empty($this->content_type)) {
+            $this->content_type = $disk->mimeType($filePath);
+        }
+
+        $this->file_size = $disk->size($filePath);
+        $this->disk_name = $this->getDiskName();
+
+        if (!$disk->copy($filePath, $this->getDiskPath())) {
+            throw new ApplicationException(sprintf('Unable to copy `%s` to `%s`', $filePath, $this->getDiskPath()));
+        }
 
         return $this;
     }
@@ -185,14 +214,19 @@ class File extends Model
             // Attempt to detect the extension from the reported Content-Type, fall back to the original path extension
             // if not able to guess
             $mimesToExt = array_flip($this->autoMimeTypes);
-            if (!empty($data->headers['Content-Type']) && isset($mimesToExt[$data->headers['Content-Type']])) {
-                $ext = $mimesToExt[$data->headers['Content-Type']];
+            $headers = array_change_key_case($data->headers, CASE_LOWER);
+            if (!empty($headers['content-type']) && isset($mimesToExt[$headers['content-type']])) {
+                $ext = $mimesToExt[$headers['content-type']];
             } else {
-                $ext = pathinfo($filePath)['extension'];
+                $ext = pathinfo($filePath)['extension'] ?? '';
+            }
+
+            if (!empty($ext)) {
+                $ext = '.' . $ext;
             }
 
             // Generate the filename
-            $filename = "{$filename}.{$ext}";
+            $filename = "{$filename}{$ext}";
         }
 
         return $this->fromData($data, $filename);
@@ -530,8 +564,10 @@ class File extends Model
         if ($this->data !== null) {
             if ($this->data instanceof UploadedFile) {
                 $this->fromPost($this->data);
-            } else {
+            } elseif (file_exists($this->data)) {
                 $this->fromFile($this->data);
+            } else {
+                $this->fromStorage($this->data);
             }
 
             $this->data = null;

@@ -1,4 +1,4 @@
-<?php
+<?php namespace Events;
 
 use Winter\Storm\Foundation\Application;
 use Winter\Storm\Events\Dispatcher;
@@ -9,6 +9,9 @@ use Winter\Storm\Config\ConfigServiceProvider;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Bus;
+
+use EventTest;
+use TestCase;
 
 class DispatcherTest extends TestCase
 {
@@ -156,5 +159,53 @@ class DispatcherTest extends TestCase
         $dispatcher->listen($mock_queued_closure);
         $dispatcher->dispatch(new EventTest());
         $this->assertTrue($magic_value);
+    }
+
+    /**
+     * Test [$classInstance, 'method'] event listener format
+     */
+    public function testInstanceMethodListen()
+    {
+        $dispatcher = new Dispatcher();
+        $classInstance = new TestClass;
+
+        $dispatcher->listen('test.test', [$classInstance, 'instanceMethodHandler']);
+        $dispatcher->fire('test.test');
+
+        $this->assertTrue($classInstance->getMagicValue());
+    }
+
+    /**
+     * Test 'ClassName@method' event listener format
+     */
+    public function testClassMethodListen()
+    {
+        $magic_value = false;
+        $this->app->bind('TestClass', TestClass::class);
+
+        Event::listen('test.test', 'TestClass@classMethodHandler');
+        Event::fire('test.test', [&$magic_value]);
+
+        $this->assertTrue($magic_value);
+    }
+}
+
+class TestClass
+{
+    protected $magic_value = false;
+
+    public function instanceMethodHandler()
+    {
+        $this->magic_value = true;
+    }
+
+    public function classMethodHandler(&$value)
+    {
+        $value = true;
+    }
+
+    public function getMagicValue()
+    {
+        return $this->magic_value;
     }
 }

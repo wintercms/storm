@@ -326,6 +326,11 @@ trait HasRelationships
             case 'belongsToMany':
                 $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps']);
                 $relationObj = $this->$relationType($relation[0], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
+
+                if (isset($relation['pivotModel'])) {
+                    $relationObj->using($relation['pivotModel']);
+                }
+
                 break;
 
             case 'morphTo':
@@ -944,7 +949,7 @@ trait HasRelationships
      */
     public function addHasOneThroughRelation(string $name, array $config): void
     {
-        $this->addRelation('HasOneThrough', $name, $config);
+        $this->addRelation('hasOneThrough', $name, $config);
     }
 
     /**
@@ -954,7 +959,7 @@ trait HasRelationships
      */
     public function addHasManyThroughRelation(string $name, array $config): void
     {
-        $this->addRelation('HasManyThrough', $name, $config);
+        $this->addRelation('hasManyThrough', $name, $config);
     }
 
     /**

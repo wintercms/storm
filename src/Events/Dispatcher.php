@@ -265,4 +265,31 @@ class Dispatcher extends BaseDispatcher
             'class' => $class, 'method' => $method, 'data' => serialize($arguments),
         ]);
     }
+
+    /**
+     * Create the class based event callable.
+     *
+     * @param  array|string  $listener
+     * @return callable
+     */
+    protected function createClassCallable($listener)
+    {
+        [$class, $method] = is_array($listener)
+            ? $listener
+            : $this->parseClassCallable($listener);
+
+        $listener = $this->container->make($class);
+
+        if (! method_exists($listener, $method)) {
+            $method = '__invoke';
+        }
+
+        if ($this->handlerShouldBeQueued($class)) {
+            return $this->createQueuedHandlerCallable($class, $method);
+        }
+
+        return $this->handlerShouldBeDispatchedAfterDatabaseTransactions($listener)
+            ? $this->createCallbackForListenerRunningAfterCommits($listener, $method)
+            : [$listener, $method];
+    }
 }

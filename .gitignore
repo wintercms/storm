@@ -20,3 +20,4 @@ php_errors.log
 tests/.phpunit.result.cache
 .phpunit.result.cache
 tests/tmp
+tests/artifacts/*
