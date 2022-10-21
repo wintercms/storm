@@ -241,7 +241,7 @@ trait BelongsOrMorphsToMany
         }
 
         if ($sessionKey === null || $sessionKey === false) {
-            $this->attach($model->getKey(), $pivotData);
+            $this->attach($model, $pivotData);
             $this->parent->reloadRelations($this->relationName);
         }
         else {
@@ -255,7 +255,7 @@ trait BelongsOrMorphsToMany
     public function remove(Model $model, $sessionKey = null)
     {
         if ($sessionKey === null) {
-            $this->detach($model->getKey());
+            $this->detach($model);
             $this->parent->reloadRelations($this->relationName);
         }
         else {
