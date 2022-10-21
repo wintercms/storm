@@ -3,10 +3,10 @@ name: Tests
 on:
   push:
     branches:
-      - "wip/1.2"
+      - develop
   pull_request:
     branches:
-      - "wip/1.2"
+      - develop
 
 jobs:
   codeAnalysis:
@@ -60,4 +60,4 @@ jobs:
         run: composer install --no-interaction --no-progress --no-scripts
 
       - name: Analyse code
-        run: ./vendor/bin/phpstan analyse
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G --no-progress
