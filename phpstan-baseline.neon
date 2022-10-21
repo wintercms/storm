@@ -731,11 +731,6 @@ parameters:
 			path: src/Extension/Extendable.php
 
 		-
-			message: "#^Call to an undefined method Illuminate\\\\Events\\\\Dispatcher\\:\\:fire\\(\\)\\.$#"
-			count: 3
-			path: src/Foundation/Application.php
-
-		-
 			message: "#^Call to an undefined method Illuminate\\\\Routing\\\\Router\\:\\:after\\(\\)\\.$#"
 			count: 1
 			path: src/Foundation/Application.php
@@ -779,11 +774,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$view \\(array\\|string\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer\\:\\:laterOn\\(\\) should be compatible with parameter \\$view \\(Illuminate\\\\Contracts\\\\Mail\\\\Mailable\\) of method Illuminate\\\\Mail\\\\Mailer\\:\\:laterOn\\(\\)$#"
 			count: 1
 			path: src/Mail/Mailer.php
-
-		-
-			message: "#^Call to an undefined method Illuminate\\\\Contracts\\\\Events\\\\Dispatcher\\:\\:fire\\(\\)\\.$#"
-			count: 2
-			path: src/Router/CoreRouter.php
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Config\\\\Repository\\:\\:package\\(\\)\\.$#"

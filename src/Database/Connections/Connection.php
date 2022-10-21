@@ -62,13 +62,12 @@ class Connection extends ConnectionBase
      */
     protected function fireEvent(string $event, array|object $attributes = []): void
     {
-        /** @var \Winter\Storm\Events\Dispatcher|null */
         $eventManager = $this->events;
 
         if (!isset($eventManager)) {
             return;
         }
 
-        $eventManager->fire($event, $attributes);
+        $eventManager->dispatch($event, $attributes);
     }
 }
