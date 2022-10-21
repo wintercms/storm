@@ -4,6 +4,9 @@ use Winter\Storm\Database\MemoryCache;
 use Winter\Storm\Database\QueryBuilder;
 use Illuminate\Database\Connection as ConnectionBase;
 
+/**
+ * @phpstan-property \Illuminate\Contracts\Events\Dispatcher|null $events
+ */
 class Connection extends ConnectionBase
 {
     /**
@@ -62,12 +65,6 @@ class Connection extends ConnectionBase
      */
     protected function fireEvent(string $event, array|object $attributes = []): void
     {
-        $eventManager = $this->events;
-
-        if (!isset($eventManager)) {
-            return;
-        }
-
-        $eventManager->dispatch($event, $attributes);
+        $this->events?->dispatch($event, $attributes);
     }
 }
