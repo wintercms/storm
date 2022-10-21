@@ -114,9 +114,10 @@ trait HasSortableRelations
             $relation->updateExistingPivot($id, [ $column => (int)$order ]);
         } else {
             if ($id instanceof Model) {
-                $id = $id->getKey();
+                $record = $id;
+            } else {
+                $record = $relation->find($id);
             }
-            $record = $relation->find($id);
             $record->{$column} = (int)$order;
             $record->save();
         }
