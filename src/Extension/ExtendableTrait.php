@@ -424,7 +424,9 @@ trait ExtendableTrait
     }
 
     /**
-     * Magic method for `__call()`. Priority is as follows:
+     * Magic method for `__call()`.
+     *
+     * Callback priority is as follows:
      * - "Dynamic Methods" added locally to the object via addDynamicMethod($name, $callable)
      * - Methods available on Behaviors that have been implemented by the object
      * - Pass it to the parent's __call() method if it defines one
