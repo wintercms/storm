@@ -424,27 +424,31 @@ trait ExtendableTrait
     }
 
     /**
-     * Magic method for `__call()`
+     * Magic method for `__call()`. Priority is as follows:
+     * - "Dynamic Methods" added locally to the object via addDynamicMethod($name, $callable)
+     * - Methods available on Behaviors that have been implemented by the object
+     * - Pass it to the parent's __call() method if it defines one
+     *
      * @param  string $name
      * @param  array  $params
      * @return mixed
      */
     public function extendableCall($name, $params = null)
     {
+        if (isset($this->extensionData['dynamicMethods'][$name])) {
+            $dynamicCallable = $this->extensionData['dynamicMethods'][$name];
+
+            if (is_callable($dynamicCallable)) {
+                return call_user_func_array(Serialization::unwrapClosure($dynamicCallable), array_values($params));
+            }
+        }
+
         if (isset($this->extensionData['methods'][$name])) {
             $extension = $this->extensionData['methods'][$name];
             $extensionObject = $this->extensionData['extensions'][$extension];
 
             if (method_exists($extension, $name)) {
                 return call_user_func_array([$extensionObject, $name], array_values($params));
-            }
-        }
-
-        if (isset($this->extensionData['dynamicMethods'][$name])) {
-            $dynamicCallable = $this->extensionData['dynamicMethods'][$name];
-
-            if (is_callable($dynamicCallable)) {
-                return call_user_func_array(Serialization::unwrapClosure($dynamicCallable), array_values($params));
             }
         }
 
