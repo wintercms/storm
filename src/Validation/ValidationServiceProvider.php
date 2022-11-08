@@ -27,5 +27,7 @@ class ValidationServiceProvider extends BaseServiceProvider implements Deferrabl
 
             return $validator;
         });
+
+        Validator::extend('slug', \Winter\Storm\Validation\Rules\Slug::class);
     }
 }
