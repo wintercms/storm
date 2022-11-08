@@ -25,9 +25,9 @@ class ValidationServiceProvider extends BaseServiceProvider implements Deferrabl
                 $validator->setPresenceVerifier($app['validation.presence']);
             }
 
+            $validator->extend('slug', \Winter\Storm\Validation\Rules\Slug::class);
+
             return $validator;
         });
-
-        Validator::extend('slug', \Winter\Storm\Validation\Rules\Slug::class);
     }
 }
