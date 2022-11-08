@@ -156,8 +156,6 @@ class Str extends StrHelper
             $indexes[] = (int) $matches[2];
         }
 
-        return empty($indexes)
-            ? $str
-            : $str . $separator . (max($indexes) + $step);
+        return $str . $separator . (max($indexes) + $step);
     }
 }
