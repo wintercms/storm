@@ -45,6 +45,22 @@ class Str extends StrHelper
     }
 
     /**
+     * Check if the provided input is a valid JSON string.
+     */
+    public static function isJson(mixed $value): bool
+    {
+        if (!is_string($value)) {
+            return false;
+        }
+
+        try {
+            return !!json_decode($value, JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
      * Join items into a human readable list (e.g. "one, two, three, and four")
      * Uses different glue strings when there are only two elements and for
      * the final element. Defaults to joining using the Oxford comma.
