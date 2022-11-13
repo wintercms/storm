@@ -54,7 +54,7 @@ class Str extends StrHelper
         }
 
         try {
-            return !!json_decode($value, JSON_THROW_ON_ERROR);
+            return !!json_decode(json: $value, flags: JSON_THROW_ON_ERROR);
         } catch (\Throwable $e) {
             return false;
         }
