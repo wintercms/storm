@@ -56,11 +56,6 @@ parameters:
 			path: src/Auth/Models/User.php
 
 		-
-			message: "#^Parameter \\#1 \\$disk of static method Winter\\\\Storm\\\\Support\\\\Facades\\\\File\\:\\:isLocalDisk\\(\\) expects Illuminate\\\\Filesystem\\\\FilesystemAdapter, Illuminate\\\\Contracts\\\\Filesystem\\\\Filesystem given\\.$#"
-			count: 1
-			path: src/Database/Attach/File.php
-
-		-
 			message: "#^Parameter \\#1 \\$app of class Illuminate\\\\Database\\\\DatabaseManager constructor expects Illuminate\\\\Contracts\\\\Foundation\\\\Application, Illuminate\\\\Contracts\\\\Container\\\\Container given\\.$#"
 			count: 1
 			path: src/Database/Capsule/Manager.php
