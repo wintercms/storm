@@ -719,7 +719,7 @@ class File extends Model
         // Get the local path to the generated thumbnail
         $resizedImage = $this->isLocalStorage()
             ? $this->getLocalRootPath() . '/' . $thumbPath
-            : $this->getLocalPath($thumbFile);
+            : $this->getLocalTempPath($thumbFile);
 
         /*
          * Handle a broken source image
