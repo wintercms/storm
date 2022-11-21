@@ -243,8 +243,7 @@ trait BelongsOrMorphsToMany
         if ($sessionKey === null || $sessionKey === false) {
             $this->attach($model, $pivotData);
             $this->parent->reloadRelations($this->relationName);
-        }
-        else {
+        } else {
             $this->parent->bindDeferred($this->relationName, $model, $sessionKey, $pivotData);
         }
     }
