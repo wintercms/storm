@@ -1,19 +1,20 @@
 <?php namespace Winter\Storm\Database\Concerns;
 
-use Winter\Storm\Support\Str;
+use InvalidArgumentException;
+use Winter\Storm\Database\Model;
+use Winter\Storm\Database\Relations\AttachMany;
+use Winter\Storm\Database\Relations\AttachOne;
 use Winter\Storm\Database\Relations\BelongsTo;
 use Winter\Storm\Database\Relations\BelongsToMany;
 use Winter\Storm\Database\Relations\HasMany;
-use Winter\Storm\Database\Relations\HasOne;
-use Winter\Storm\Database\Relations\MorphMany;
-use Winter\Storm\Database\Relations\MorphToMany;
-use Winter\Storm\Database\Relations\MorphTo;
-use Winter\Storm\Database\Relations\MorphOne;
-use Winter\Storm\Database\Relations\AttachMany;
-use Winter\Storm\Database\Relations\AttachOne;
 use Winter\Storm\Database\Relations\HasManyThrough;
+use Winter\Storm\Database\Relations\HasOne;
 use Winter\Storm\Database\Relations\HasOneThrough;
-use InvalidArgumentException;
+use Winter\Storm\Database\Relations\MorphMany;
+use Winter\Storm\Database\Relations\MorphOne;
+use Winter\Storm\Database\Relations\MorphTo;
+use Winter\Storm\Database\Relations\MorphToMany;
+use Winter\Storm\Support\Str;
 
 trait HasRelationships
 {
@@ -219,10 +220,8 @@ trait HasRelationships
 
     /**
      * Returns a relationship type based on a supplied name.
-     * @param string $name Relation name
-     * @return string|null
      */
-    public function getRelationType($name)
+    public function getRelationType(string $name): ?string
     {
         foreach (static::$relationTypes as $type) {
             if ($this->getRelationTypeDefinition($type, $name) !== null) {
@@ -234,11 +233,9 @@ trait HasRelationships
     }
 
     /**
-     * Returns a relation class object
-     * @param string $name Relation name
-     * @return \Winter\Storm\Database\Relations\Relation|null
+     * Returns a new instance of a related model
      */
-    public function makeRelation($name)
+    public function makeRelation(string $name): ?Model
     {
         $relationType = $this->getRelationType($name);
         $relation = $this->getRelationDefinition($name);
@@ -248,7 +245,7 @@ trait HasRelationships
         }
 
         $relationClass = $relation[0];
-        return new $relationClass();
+        return $this->newRelatedInstance($relationClass);
     }
 
     /**

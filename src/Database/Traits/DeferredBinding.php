@@ -132,8 +132,7 @@ trait DeferredBinding
             /*
              * Find the slave model
              */
-            $slaveClass = $binding->slave_type;
-            $slaveModel = new $slaveClass;
+            $slaveModel = $this->makeRelation($relationName) ?: new $binding->slave_type;
             $slaveModel = $slaveModel->find($binding->slave_id);
 
             if (!$slaveModel) {
