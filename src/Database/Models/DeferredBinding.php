@@ -39,7 +39,7 @@ class DeferredBinding extends Model
     /**
      * Prevents duplicates and conflicting binds.
      */
-    public function beforeCreate(): null|false
+    public function beforeCreate()
     {
         if ($existingRecord = $this->findBindingRecord()) {
             /*
