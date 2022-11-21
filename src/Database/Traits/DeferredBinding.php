@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Database\Traits;
 
 use Winter\Storm\Database\Collection;
-use Winter\Storm\Database\Model;
+use Illuminate\Database\Eloquent\Model;
 use Winter\Storm\Database\Models\DeferredBinding as DeferredBindingModel;
 
 trait DeferredBinding

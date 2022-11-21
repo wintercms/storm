@@ -132,7 +132,7 @@ trait HasRelationships
         'attachOne',
         'attachMany',
         'hasOneThrough',
-        'hasManyThrough'
+        'hasManyThrough',
     ];
 
     //
@@ -142,9 +142,8 @@ trait HasRelationships
     /**
      * Checks if model has a relationship by supplied name.
      * @param string $name Relation name
-     * @return bool
      */
-    public function hasRelation($name)
+    public function hasRelation($name): bool
     {
         return $this->getRelationDefinition($name) !== null;
     }
@@ -152,9 +151,8 @@ trait HasRelationships
     /**
      * Returns relationship details from a supplied name.
      * @param string $name Relation name
-     * @return array|null
      */
-    public function getRelationDefinition($name)
+    public function getRelationDefinition($name): ?array
     {
         if (($type = $this->getRelationType($name)) !== null) {
             return (array) $this->getRelationTypeDefinition($type, $name) + $this->getRelationDefaults($type);
@@ -196,9 +194,8 @@ trait HasRelationships
 
     /**
      * Returns relationship details for all relations defined on this model.
-     * @return array
      */
-    public function getRelationDefinitions()
+    public function getRelationDefinitions(): array
     {
         $result = [];
 
