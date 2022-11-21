@@ -60,7 +60,7 @@ class DeferredBinding extends Model
     /**
      * Finds a duplicate binding record.
      */
-    protected function findBindingRecord(): ?self
+    protected function findBindingRecord(): ?\Illuminate\Database\Eloquent\Model
     {
         return self::where('master_type', $this->master_type)
             ->where('master_field', $this->master_field)
