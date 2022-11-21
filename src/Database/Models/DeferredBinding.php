@@ -59,8 +59,6 @@ class DeferredBinding extends Model
 
     /**
      * Finds a duplicate binding record.
-     *
-     * @return self|null
      */
     protected function findBindingRecord()
     {
