@@ -24,6 +24,33 @@ class MarkdownTest extends TestCase
         $this->assertEquals($html, $this->removeLineEndings(Markdown::parseSafe($markdown)));
     }
 
+    public function testDisableAndEnableMethods()
+    {
+        $parser = Markdown::disableAutolinking()->disableTables();
+
+        $markdown = file_get_contents(dirname(__DIR__) . '/fixtures/markdown/table_inline_markdown.md');
+        $html = $this->removeLineEndings(file_get_contents(dirname(__DIR__) . '/fixtures/markdown/table_inline_markdown_disabled.html'));
+
+        $this->assertEquals($html, $this->removeLineEndings($parser->parse($markdown)));
+
+        // Re-enable tables and autolinking
+        $parser->enableAutolinking()->enableTables();
+
+        $html = $this->removeLineEndings(file_get_contents(dirname(__DIR__) . '/fixtures/markdown/table_inline_markdown.html'));
+
+        $this->assertEquals($html, $this->removeLineEndings($parser->parse($markdown)));
+    }
+
+    public function testFrontMatter()
+    {
+        $parser = Markdown::enableFrontMatter();
+
+        $markdown = file_get_contents(dirname(__DIR__) . '/fixtures/markdown/front_matter.md');
+        $html = $this->removeLineEndings(file_get_contents(dirname(__DIR__) . '/fixtures/markdown/front_matter.html'));
+
+        $this->assertEquals($html, $this->removeLineEndings($parser->parse($markdown)));
+    }
+
     /**
      * Data provider to provide test cases for Markdown parsing.
      *

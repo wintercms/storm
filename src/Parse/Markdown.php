@@ -292,10 +292,20 @@ class Markdown
     {
         $frontMatterParser = new FrontMatterParser(new SymfonyYamlFrontMatterParser);
         $parts = $frontMatterParser->parse($markdown);
-        $this->frontMatter = $parts->getFrontMatter() ?? [];
+        $this->frontMatterData = $parts->getFrontMatter() ?? [];
         $contents = $parts->getContent();
 
         return $contents;
+    }
+
+    /**
+     * Gets the front matter extracted from the document.
+     *
+     * This should be called after the Markdown has been parsed.
+     */
+    public function getFrontMatter(): array
+    {
+        return $this->frontMatterData;
     }
 
     /**

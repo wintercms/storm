@@ -4,3 +4,4 @@
 | `|` broken   | \| 2.2       |
 | `\|` 2.1     | \| 2.2       |
 | `\\|` 2.1    | [link](/)    |
+| https://google.com | Autolink |
