@@ -5,6 +5,13 @@ use Winter\Storm\Support\Facades\Markdown;
 class MarkdownTest extends TestCase
 {
     /**
+     * Test fixtures that should be skipped by the data provider.
+     */
+    protected array $specialTests = [
+        'front_matter',
+    ];
+
+    /**
      * @dataProvider markdownData
      * @param string $name
      * @param string $markdown
@@ -49,6 +56,18 @@ class MarkdownTest extends TestCase
         $html = $this->removeLineEndings(file_get_contents(dirname(__DIR__) . '/fixtures/markdown/front_matter.html'));
 
         $this->assertEquals($html, $this->removeLineEndings($parser->parse($markdown)));
+        $this->assertEquals([
+            'title' => 'My document',
+            'group' => 'Documents',
+            'meta_title' => 'My document | My site',
+            'show_contents' => true,
+        ], $parser->getFrontMatter());
+
+        // Test document with no front matter
+        $markdown = file_get_contents(dirname(__DIR__) . '/fixtures/markdown/code_block.md');
+        $parser = Markdown::enableFrontMatter();
+        $parser->parse($markdown);
+        $this->assertCount(0, $parser->getFrontMatter());
     }
 
     /**
@@ -66,6 +85,9 @@ class MarkdownTest extends TestCase
                 $name = $file->getBasename('.md');
 
                 if ($name === 'README') {
+                    continue;
+                }
+                if (in_array($name, $this->specialTests)) {
                     continue;
                 }
 

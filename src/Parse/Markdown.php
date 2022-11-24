@@ -33,6 +33,38 @@ use Winter\Storm\Support\Facades\Event;
  *
  * @author Alexey Bobkov, Samuel Georges (Original implementation based on Parsedown)
  * @author Ben Thomson <git@alfreido.com> (Rewritten implementation using CommonMark)
+ *
+ * @method static enableAttributes()
+ * @method static enableAutolinking()
+ * @method static enableFootnotes()
+ * @method static enableFrontMatter()
+ * @method static enableHeadingPermalinks()
+ * @method static enableInlineOnly()
+ * @method static enableSafeMode()
+ * @method static enableTaskLists()
+ * @method static enableTables()
+ * @method static enableTableOfContents()
+ * @method static disableAttributes()
+ * @method static disableAutolinking()
+ * @method static disableFootnotes()
+ * @method static disableFrontMatter()
+ * @method static disableHeadingPermalinks()
+ * @method static disableInlineOnly()
+ * @method static disableSafeMode()
+ * @method static disableTaskLists()
+ * @method static disableTables()
+ * @method static disableTableOfContents()
+ * @method static \Winter\Storm\Parse\Markdown setAttributes(bool $enabled)
+ * @method static \Winter\Storm\Parse\Markdown setAutolinking(bool $enabled)
+ * @method static \Winter\Storm\Parse\Markdown setConfig(array $config)
+ * @method static \Winter\Storm\Parse\Markdown setFootnotes(bool $enabled)
+ * @method static \Winter\Storm\Parse\Markdown setFrontMatter(bool $enabled)
+ * @method static \Winter\Storm\Parse\Markdown setHeadingPermalinks(bool $enabled)
+ * @method static \Winter\Storm\Parse\Markdown setInlineOnly(bool $enabled)
+ * @method static \Winter\Storm\Parse\Markdown setSafeMode(bool $enabled)
+ * @method static \Winter\Storm\Parse\Markdown setTaskLists(bool $enabled)
+ * @method static \Winter\Storm\Parse\Markdown setTables(bool $enabled)
+ * @method static \Winter\Storm\Parse\Markdown setTableOfContents(bool $enabled)
  **/
 class Markdown
 {
@@ -97,11 +129,6 @@ class Markdown
      * Extracted front matter (metadata) from the Markdown content.
      */
     protected ?array $frontMatterData = null;
-
-    /**
-     * Extracted table of contents from the Markdown content.
-     */
-    protected ?array $tableOfContentData = null;
 
     /**
      * The Markdown parser class to use.
@@ -238,6 +265,9 @@ class Markdown
             if ($this->autolinking) {
                 $environment->addExtension(new AutolinkExtension);
             }
+            if ($this->safeMode) {
+                $environment->addExtension(new DisallowedRawHtmlExtension);
+            }
         }
 
         return $environment;
@@ -260,14 +290,17 @@ class Markdown
     {
         $data = new MarkdownData($markdown);
 
-        $this->fireEvent('beforeParse', [$data], false);
-        Event::fire('markdown.beforeParse', [$data], false);
+        $this->fireEvent('beforeParse', [$data, $environment], false);
+        Event::fire('markdown.beforeParse', [$data, $environment], false);
 
         $markdown = $data->text;
 
         // Parse the Markdown into a document (abstract syntax tree)
         $parser = $this->getParser($environment);
         $document = $parser->parse($markdown);
+
+        $this->fireEvent('beforeRender', [$document, $environment], false);
+        Event::fire('markdown.beforeRender', [$document, $environment], false);
 
         // Render the AST as a HTML document
         $renderer = $this->getRenderer($environment);
