@@ -26,7 +26,7 @@ use League\CommonMark\Renderer as CoreRenderer;
 use League\Config\ConfigurationBuilderInterface;
 use Nette\Schema\Expect;
 
-final class CommonMarkCoreExtension implements ConfigurableExtensionInterface
+class CommonMarkCoreExtension implements ConfigurableExtensionInterface
 {
     public function configureSchema(ConfigurationBuilderInterface $builder): void
     {
