@@ -49,7 +49,7 @@ class Markdown extends Facade
     /**
      * {@inheritDoc}
      */
-    protected static $cached = true;
+    protected static $cached = false;
 
     /**
      * {@inheritDoc}
