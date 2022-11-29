@@ -135,8 +135,8 @@ class ClassLoader
                 foreach ($pathsToTry as $classPath) {
                     if ($this->isRealFilePath($classPath)) {
                         $this->includeClass($class, $classPath);
-
-                        if (!is_null($reverse = $this->getReverseAlias($class))) {
+						$reverse = $this->getReverseAlias($class);
+                        if (!is_null($reverse)) {
                             if (!class_exists($reverse, false) && !in_array($reverse, $this->loadedAliases)) {
                                 class_alias($class, $reverse);
                                 $this->reversedClasses[] = $reverse;
