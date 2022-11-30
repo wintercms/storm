@@ -123,6 +123,17 @@ class RelationsTest extends DbTestCase
         $this->assertEquals($data, $category->pivot->data);
     }
 
+    public function testAddWithPivotData()
+    {
+        $post = Post::first();
+        $this->assertEquals(1, count($post->categories));
+
+        $post->categories()->add($this->seeded['categories'][1], null, ['data'=>'Hello World!']);
+
+        $this->assertEquals(2, count($post->categories));
+        $this->assertEquals('Hello World!', $post->categories()->get()->last()->pivot->data);
+    }
+
     public function testTerms()
     {
         $post = Post::create([

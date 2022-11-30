@@ -695,7 +695,7 @@ class Model extends EloquentModel implements ModelInterface
         $this->addPurgeable($dynamicName);
 
         // Add the dynamic property
-        return $this->extendableAddDynamicProperty($dynamicName, $value);
+        $this->extendableAddDynamicProperty($dynamicName, $value);
     }
 
     public function __get($name)
