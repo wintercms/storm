@@ -122,6 +122,14 @@ trait BelongsOrMorphsToMany
         $insertData = $this->formatAttachRecords($this->parseIds($id), $attributes);
         $attachedIdList = array_pluck($insertData, $this->relatedPivotKey);
 
+        $eventArgs = [$this->relationName];
+
+        if ($this->using) {
+            $eventArgs = [...$eventArgs, $id, $attributes];
+        } else {
+            $eventArgs = [...$eventArgs, $attachedIdList, $insertData];
+        }
+
         /**
          * @event model.relation.beforeAttach
          * Called before creating a new relation between models (only for BelongsToMany relation)
@@ -135,15 +143,21 @@ trait BelongsOrMorphsToMany
          *         }
          *     });
          *
+         * >**NOTE:** If a custom pivotModel is being used the parameters will actually be `string $relationName, mixed $id, array $attributes`
+         *
          */
-        if ($this->parent->fireEvent('model.relation.beforeAttach', [$this->relationName, $attachedIdList, $insertData], true) === false) {
+        if ($this->parent->fireEvent('model.relation.beforeAttach', $eventArgs, true) === false) {
             return;
         }
 
         // Here we will insert the attachment records into the pivot table. Once we have
         // inserted the records, we will touch the relationships if necessary and the
         // function will return. We can parse the IDs before inserting the records.
-        $this->newPivotStatement()->insert($insertData);
+        if ($this->using) {
+            $this->attachUsingCustomClass($id, $attributes);
+        } else {
+            $this->newPivotStatement()->insert($insertData);
+        }
 
         if ($touch) {
             $this->touchIfTouching();
@@ -159,8 +173,10 @@ trait BelongsOrMorphsToMany
          *         traceLog("New relation {$relationName} was created", $attachedIdList);
          *     });
          *
+         * >**NOTE:** If a custom pivotModel is being used the parameters will actually be `string $relationName, mixed $id, array $attributes`
+         *
          */
-        $this->parent->fireEvent('model.relation.afterAttach', [$this->relationName, $attachedIdList, $insertData]);
+        $this->parent->fireEvent('model.relation.afterAttach', $eventArgs);
     }
 
     /**
@@ -225,10 +241,9 @@ trait BelongsOrMorphsToMany
         }
 
         if ($sessionKey === null || $sessionKey === false) {
-            $this->attach($model->getKey(), $pivotData);
+            $this->attach($model, $pivotData);
             $this->parent->reloadRelations($this->relationName);
-        }
-        else {
+        } else {
             $this->parent->bindDeferred($this->relationName, $model, $sessionKey, $pivotData);
         }
     }
@@ -239,7 +254,7 @@ trait BelongsOrMorphsToMany
     public function remove(Model $model, $sessionKey = null)
     {
         if ($sessionKey === null) {
-            $this->detach($model->getKey());
+            $this->detach($model);
             $this->parent->reloadRelations($this->relationName);
         }
         else {

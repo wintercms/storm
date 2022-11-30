@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $child
+ * @phpstan-property \Winter\Storm\Database\Model $parent
  */
 class BelongsTo extends BelongsToBase
 {
+    use Concerns\BelongsOrMorphsTo;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
 
@@ -33,8 +35,7 @@ class BelongsTo extends BelongsToBase
     {
         if ($sessionKey === null) {
             $this->associate($model);
-        }
-        else {
+        } else {
             $this->child->bindDeferred($this->relationName, $model, $sessionKey);
         }
     }
@@ -46,8 +47,7 @@ class BelongsTo extends BelongsToBase
     {
         if ($sessionKey === null) {
             $this->dissociate();
-        }
-        else {
+        } else {
             $this->child->unbindDeferred($this->relationName, $model, $sessionKey);
         }
     }
@@ -76,8 +76,7 @@ class BelongsTo extends BelongsToBase
 
             $this->associate($value);
             $this->child->setRelation($this->relationName, $value);
-        }
-        else {
+        } else {
             $this->child->setAttribute($this->getForeignKeyName(), $value);
             $this->child->reloadRelations($this->relationName);
         }

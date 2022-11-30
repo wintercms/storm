@@ -1,7 +1,5 @@
 <?php namespace Winter\Storm\Config;
 
-use Exception;
-
 use PhpParser\Error;
 use PhpParser\Lexer\Emulative;
 use PhpParser\ParserFactory;

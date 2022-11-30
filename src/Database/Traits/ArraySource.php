@@ -100,11 +100,13 @@ trait ArraySource
      */
     protected function arraySourceCreateDb(): void
     {
-        if (File::exists($this->arraySourceGetDbPath())) {
-            File::delete($this->arraySourceGetDbPath());
+        if ($this->arraySourceCanStoreDb()) {
+            if (File::exists($this->arraySourceGetDbPath())) {
+                File::delete($this->arraySourceGetDbPath());
+            }
+            // Create SQLite file
+            File::put($this->arraySourceGetDbPath(), '');
         }
-        // Create SQLite file
-        File::put($this->arraySourceGetDbPath(), '');
 
         $records = $this->getRecords();
 

@@ -1,9 +1,11 @@
 <?php namespace Winter\Storm\Auth;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Session\SessionManager;
 
 /**
  * Authentication manager
@@ -73,11 +75,17 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     public $ipAddress = '0.0.0.0';
 
     /**
+     * Session manager instance.
+     */
+    protected SessionManager $sessionManager;
+
+    /**
      * Initializes the singleton
      */
     protected function init()
     {
         $this->ipAddress = Request::ip();
+        $this->sessionManager = App::make(SessionManager::class);
     }
 
     //
@@ -479,7 +487,19 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         Session::put($this->sessionKey, $toPersist);
 
         if ($remember) {
-            Cookie::queue(Cookie::forever($this->sessionKey, json_encode($toPersist)));
+            $config = $this->sessionManager->getSessionConfig();
+            Cookie::queue(
+                Cookie::forever(
+                    $this->sessionKey,
+                    json_encode($toPersist),
+                    $config['path'],
+                    $config['domain'],
+                    $config['secure'] ?? false,
+                    $config['http_only'] ?? true,
+                    false,
+                    $config['same_site'] ?? null
+                )
+            );
         }
     }
 

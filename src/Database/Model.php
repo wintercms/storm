@@ -23,8 +23,11 @@ class Model extends EloquentModel implements ModelInterface
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
     use Concerns\HidesAttributes;
+    use Traits\Purgeable;
     use \Winter\Storm\Support\Traits\Emitter;
-    use \Winter\Storm\Extension\ExtendableTrait;
+    use \Winter\Storm\Extension\ExtendableTrait {
+        addDynamicProperty as protected extendableAddDynamicProperty;
+    }
     use \Winter\Storm\Database\Traits\DeferredBinding;
 
     /**
@@ -46,6 +49,11 @@ class Model extends EloquentModel implements ModelInterface
      * @var array List of datetime attributes to convert to an instance of Carbon/DateTime objects.
      */
     protected $dates = [];
+
+    /**
+     * @var array List of attributes which should not be saved to the database.
+     */
+    protected $purgeable = [];
 
     /**
      * @var bool Indicates if duplicate queries from this model should be cached in memory.
@@ -670,6 +678,26 @@ class Model extends EloquentModel implements ModelInterface
     // Magic
     //
 
+    /**
+     * Programmatically adds a property to the extendable class
+     *
+     * @param string $dynamicName The name of the property to add
+     * @param mixed $value The value of the property
+     * @return void
+     */
+    public function addDynamicProperty($dynamicName, $value = null)
+    {
+        if (array_key_exists($dynamicName, $this->getDynamicProperties())) {
+            return;
+        }
+
+        // Ensure that dynamic properties are automatically purged
+        $this->addPurgeable($dynamicName);
+
+        // Add the dynamic property
+        $this->extendableAddDynamicProperty($dynamicName, $value);
+    }
+
     public function __get($name)
     {
         return $this->extendableGet($name);
@@ -1002,12 +1030,27 @@ class Model extends EloquentModel implements ModelInterface
 
     /**
      * Get an attribute from the model.
-     * Overrided from {@link Eloquent} to implement recognition of the relation.
+     * Overrides {@link Eloquent} to support loading from property-defined relations.
+     *
+     * @param string $key
      * @return mixed
      */
     public function getAttribute($key)
     {
-        if (array_key_exists($key, $this->attributes) || $this->hasGetMutator($key)) {
+        if (!$key) {
+            return;
+        }
+
+        // If the attribute exists in the attribute array or has a "get" mutator we will
+        // get the attribute's value. Otherwise, we will proceed as if the developers
+        // are asking for a relationship's value. This covers both types of values.
+        if (
+            array_key_exists($key, $this->attributes)
+            || array_key_exists($key, $this->casts)
+            || $this->hasGetMutator($key)
+            || $this->hasAttributeMutator($key)
+            || $this->isClassCastable($key)
+        ) {
             return $this->getAttributeValue($key);
         }
 
@@ -1016,6 +1059,10 @@ class Model extends EloquentModel implements ModelInterface
         }
 
         if ($this->hasRelation($key)) {
+            if ($this->preventsLazyLoading) {
+                $this->handleLazyLoadingViolation($key);
+            }
+
             return $this->getRelationshipFromMethod($key);
         }
     }

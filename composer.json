@@ -37,7 +37,7 @@
 
         "assetic/framework": "~3.0",
         "doctrine/dbal": "^2.6",
-        "erusev/parsedown-extra": "~0.7",
+        "enshrined/svg-sanitize": "^0.15",
         "laravel/framework": "^9.1",
         "laravel/tinker": "^2.7",
         "league/csv": "~9.1",
@@ -47,7 +47,8 @@
         "symfony/yaml": "^6.0",
         "twig/twig": "~3.0",
         "wikimedia/less.php": "~3.0",
-        "wikimedia/minify": "~2.2"
+        "wikimedia/minify": "~2.2",
+        "winter/laravel-config-writer": "^1.0.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5.8",
