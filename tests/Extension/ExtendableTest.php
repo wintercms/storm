@@ -16,10 +16,6 @@ class ExtendableTest extends TestCase
 
         $this->registerMockClassLoader();
 
-        $this->classLoader->addDirectories([
-            'plugins'
-        ]);
-
         $this->classLoader->addNamespaceAliases([
             'Real\\ExtendableTest' => 'Alias\\ExtendableTest',
             'Real' => 'Alias',
