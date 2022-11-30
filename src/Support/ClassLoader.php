@@ -112,8 +112,9 @@ class ClassLoader
 
         // Check our registered autoload packages for a match
         foreach ($this->autoloadedPackages as $prefix => $path) {
-            if (Str::startsWith($class, $prefix)) {
-                $parts = explode('\\', Str::after($class, $prefix));
+            $lowerClass = strtolower($class);
+            if (Str::startsWith($lowerClass, $prefix)) {
+                $parts = explode('\\', substr($class, strlen($prefix)));
                 $file = array_pop($parts) . '.php';
                 $namespace = implode('\\', $parts);
                 $directory = str_replace(['\\', '_'], DIRECTORY_SEPARATOR, $namespace);
@@ -230,7 +231,7 @@ class ClassLoader
      */
     public function autoloadPackage(string $namespacePrefix, string $relativePath): void
     {
-        $this->autoloadedPackages[$namespacePrefix] = $relativePath;
+        $this->autoloadedPackages[ltrim(Str::lower($namespacePrefix), '\\')] = $relativePath;
 
         // Ensure packages are sorted by length of the prefix to prevent a greedier prefix
         // from being matched first when attempting to autoload a class
