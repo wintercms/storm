@@ -248,6 +248,12 @@ class ClassLoader
     public function autoloadPackage(string $namespacePrefix, string $relativePath): void
     {
         $this->autoloadedPackages[$namespacePrefix] = $relativePath;
+
+        // Ensure packages are sorted by length of the prefix to prevent a greedier prefix
+        // from being matched first when attempting to autoload a class
+        uksort($this->autoloadedPackages, function ($a, $b) {
+            return Str::substrCount($b, '\\') <=> Str::substrCount($a, '\\');
+        });
     }
 
     /**
