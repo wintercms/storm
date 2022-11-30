@@ -19,6 +19,8 @@ class ClassLoaderTest extends TestCase
         );
 
         $this->classLoader->register();
+
+        $this->classLoader->autoloadPackage('Winter\\Plugin', 'plugins/winter/plugin');
     }
 
     public function tearDown(): void
