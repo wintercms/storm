@@ -1,35 +1,47 @@
 <?php namespace Winter\Storm\Support\Traits;
 
+use Illuminate\Contracts\Container\Container;
+
 /**
  * Singleton trait.
  *
  * Allows a simple interface for treating a class as a singleton.
  * Usage: myObject::instance()
  *
- * @author Alexey Bobkov, Samuel Georges
+ * @author Alexey Bobkov, Samuel Georges, Luke Towers
  */
 trait Singleton
 {
-    protected static $instance;
-
     /**
      * Create a new instance of this singleton.
-     *
-     * @return static
      */
-    final public static function instance()
+    final public static function instance(?Container $container = null): static
     {
-        return isset(static::$instance)
-            ? static::$instance
-            : static::$instance = new static;
+        if (!$container) {
+            $container = app();
+        }
+
+        if (!$container->bound(static::class)) {
+            $container->singleton(static::class, function () {
+                return new static;
+            });
+        }
+
+        return $container->make(static::class);
     }
 
     /**
      * Forget this singleton's instance if it exists
      */
-    final public static function forgetInstance()
+    final public static function forgetInstance(?Container $container = null): void
     {
-        static::$instance = null;
+        if (!$container) {
+            $container = app();
+        }
+
+        if ($container->bound(static::class)) {
+            $container->forgetInstance(static::class);
+        }
     }
 
     /**

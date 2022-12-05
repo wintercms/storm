@@ -82,6 +82,11 @@ class Manager implements StatefulGuard, UserProvider
     public $ipAddress = '0.0.0.0';
 
     /**
+     * Session manager instance.
+     */
+    protected SessionManager $sessionManager;
+
+    /**
      * Initializes the singleton
      */
     protected function init()

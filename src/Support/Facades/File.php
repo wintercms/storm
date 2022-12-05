@@ -43,6 +43,7 @@ use Winter\Storm\Support\Facade;
  * @method static string sizeToString(int $bytes)
  * @method static string|null localToPublic(string $path)
  * @method static bool isLocalPath(string $path, bool $realpath = true)
+ * @method static bool isLocalDisk(\Illuminate\Filesystem\FilesystemAdapter $disk)
  * @method static string|null fromClass(string|object $classname)
  * @method static string|false existsInsensitive(string $path)
  * @method static string normalizePath(string $path)

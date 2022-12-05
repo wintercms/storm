@@ -20,7 +20,8 @@ trait ConfirmsWithInput
         $confirmed = false;
 
         if ($this->option('force')) {
-            $this->warn("The --force option was provided, proceeding without confirmation...");
+            $this->newLine();
+            $this->components->warn("The --force option was provided, proceeding without confirmation...");
             $confirmed = true;
         } else {
             $prompt = "Please type \"$requiredInput\" to proceed or CANCEL to cancel";
@@ -34,6 +35,10 @@ trait ConfirmsWithInput
                     $confirmed = true;
                 }
             } while ($confirmed === false);
+        }
+
+        if (!$confirmed) {
+            $this->components->warn('Command canceled.');
         }
 
         return $confirmed;

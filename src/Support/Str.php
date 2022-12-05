@@ -4,8 +4,6 @@ use Illuminate\Support\Str as StrHelper;
 
 /**
  * String helper
- *
- * @author Alexey Bobkov, Samuel Georges
  */
 class Str extends StrHelper
 {
@@ -44,6 +42,22 @@ class Str extends StrHelper
     public static function getPrecedingSymbols($string, $symbol)
     {
         return strlen($string) - strlen(ltrim($string, $symbol));
+    }
+
+    /**
+     * Check if the provided input is a valid JSON string.
+     */
+    public static function isJson(mixed $value): bool
+    {
+        if (!is_string($value)) {
+            return false;
+        }
+
+        try {
+            return !!json_decode(json: $value, flags: JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     /**
@@ -130,5 +144,34 @@ class Str extends StrHelper
             default:
                 return $number.'th';
         }
+    }
+
+    /**
+     * Ensures that the provide string will be unique within the provided array,
+     * adjusts it with the separator & step as necessary if not
+     *
+     * Examples:
+     * winter, [winter, winter_1, winter_2] -> winter_3
+     * winter, [winter_1, winter_3] -> winter
+     */
+    public static function unique(string $str, array $items, string $separator = '_', int $step = 1): string
+    {
+        $indexes = [];
+
+        if (!in_array($str, $items)) {
+            return $str;
+        } else {
+            $indexes[] = 0;
+        }
+
+        foreach ($items as $item) {
+            if (!preg_match('/(.*?)' . $str . $separator . '(\d*$)/', $item, $matches)) {
+                continue;
+            }
+
+            $indexes[] = (int) $matches[2];
+        }
+
+        return $str . $separator . (max($indexes) + $step);
     }
 }

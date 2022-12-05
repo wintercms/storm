@@ -304,7 +304,6 @@ class_alias(\Winter\Storm\Parse\Bracket::class, \October\Rain\Parse\Bracket::cla
 class_alias(\Winter\Storm\Parse\Ini::class, \October\Rain\Parse\Ini::class);
 class_alias(\Winter\Storm\Parse\Markdown::class, \October\Rain\Parse\Markdown::class);
 class_alias(\Winter\Storm\Parse\MarkdownData::class, \October\Rain\Parse\MarkdownData::class);
-class_alias(\Winter\Storm\Parse\Parsedown\Parsedown::class, \October\Rain\Parse\Parsedown\Parsedown::class);
 class_alias(\Winter\Storm\Parse\ParseServiceProvider::class, \October\Rain\Parse\ParseServiceProvider::class);
 class_alias(\Winter\Storm\Parse\Syntax\FieldParser::class, \October\Rain\Parse\Syntax\FieldParser::class);
 class_alias(\Winter\Storm\Parse\Syntax\Parser::class, \October\Rain\Parse\Syntax\Parser::class);

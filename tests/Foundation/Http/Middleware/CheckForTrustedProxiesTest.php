@@ -20,7 +20,7 @@ class CheckForTrustedProxiesTest extends TestCase
     {
         $request = $this->createProxiedRequest();
 
-        $this->assertEquals('173.174.200.38', $request->getClientIp());
+        $this->assertEquals('192.168.10.10', $request->getClientIp());
         $this->assertEquals('http', $request->getScheme());
         $this->assertEquals('root.host', $request->getHost());
         $this->assertEquals(8000, $request->getPort());
@@ -34,9 +34,9 @@ class CheckForTrustedProxiesTest extends TestCase
     public function testTrustedProxy()
     {
         $request = $this->createProxiedRequest();
-        $request->setTrustedProxies(['173.174.200.38'], Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO);
+        $request->setTrustedProxies(['192.168.10.10'], Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO);
 
-        $this->assertEquals('192.168.10.10', $request->getClientIp());
+        $this->assertEquals('173.174.200.38', $request->getClientIp());
         $this->assertEquals('https', $request->getScheme());
         $this->assertEquals('proxy.host', $request->getHost());
         $this->assertEquals(443, $request->getPort());
@@ -53,7 +53,7 @@ class CheckForTrustedProxiesTest extends TestCase
         $request = $this->createProxiedRequest();
 
         $middleware->handle($request, function ($request) {
-            $this->assertEquals('192.168.10.10', $request->getClientIp());
+            $this->assertEquals('173.174.200.38', $request->getClientIp());
             $this->assertEquals('https', $request->getScheme());
             $this->assertEquals('proxy.host', $request->getHost());
             $this->assertEquals(443, $request->getPort());
@@ -67,14 +67,25 @@ class CheckForTrustedProxiesTest extends TestCase
      */
     public function testTrustedProxyMiddlewareWithStringIp()
     {
-        $middleware = $this->createTrustedProxyMock('173.174.200.38', 'HEADER_X_FORWARDED_ALL');
+        $middleware = $this->createTrustedProxyMock('192.168.10.10', 'HEADER_X_FORWARDED_ALL');
+        $request = $this->createProxiedRequest();
+
+        $middleware->handle($request, function ($request) {
+            $this->assertEquals('173.174.200.38', $request->getClientIp());
+            $this->assertEquals('https', $request->getScheme());
+            $this->assertEquals('proxy.host', $request->getHost());
+            $this->assertEquals(443, $request->getPort());
+        });
+
+        // Failure state
+        $middleware = $this->createTrustedProxyMock('192.168.12.12', 'HEADER_X_FORWARDED_ALL');
         $request = $this->createProxiedRequest();
 
         $middleware->handle($request, function ($request) {
             $this->assertEquals('192.168.10.10', $request->getClientIp());
-            $this->assertEquals('https', $request->getScheme());
-            $this->assertEquals('proxy.host', $request->getHost());
-            $this->assertEquals(443, $request->getPort());
+            $this->assertEquals('http', $request->getScheme());
+            $this->assertEquals('root.host', $request->getHost());
+            $this->assertEquals(8000, $request->getPort());
         });
     }
 
@@ -85,14 +96,25 @@ class CheckForTrustedProxiesTest extends TestCase
      */
     public function testTrustedProxyMiddlewareWithStringCsv()
     {
-        $middleware = $this->createTrustedProxyMock('173.174.200.38, 173.174.200.38', 'HEADER_X_FORWARDED_ALL');
+        $middleware = $this->createTrustedProxyMock('192.168.10.10, 192.168.11.11', 'HEADER_X_FORWARDED_ALL');
+        $request = $this->createProxiedRequest();
+
+        $middleware->handle($request, function ($request) {
+            $this->assertEquals('173.174.200.38', $request->getClientIp());
+            $this->assertEquals('https', $request->getScheme());
+            $this->assertEquals('proxy.host', $request->getHost());
+            $this->assertEquals(443, $request->getPort());
+        });
+
+        // Failure state
+        $middleware = $this->createTrustedProxyMock('192.168.12.12, 192.168.13.13', 'HEADER_X_FORWARDED_ALL');
         $request = $this->createProxiedRequest();
 
         $middleware->handle($request, function ($request) {
             $this->assertEquals('192.168.10.10', $request->getClientIp());
-            $this->assertEquals('https', $request->getScheme());
-            $this->assertEquals('proxy.host', $request->getHost());
-            $this->assertEquals(443, $request->getPort());
+            $this->assertEquals('http', $request->getScheme());
+            $this->assertEquals('root.host', $request->getHost());
+            $this->assertEquals(8000, $request->getPort());
         });
     }
 
@@ -103,29 +125,22 @@ class CheckForTrustedProxiesTest extends TestCase
      */
     public function testTrustedProxyMiddlewareWithArray()
     {
-        $middleware = $this->createTrustedProxyMock(['173.174.200.38', '173.174.200.38'], 'HEADER_X_FORWARDED_ALL');
-        $request = $this->createProxiedRequest();
-
-        $middleware->handle($request, function ($request) {
-            $this->assertEquals('192.168.10.10', $request->getClientIp());
-            $this->assertEquals('https', $request->getScheme());
-            $this->assertEquals('proxy.host', $request->getHost());
-            $this->assertEquals(443, $request->getPort());
-        });
-    }
-
-    /**
-     * Test an untrusted connection through a proxy through middleware with an array of IP addresses.
-     *
-     * @return void
-     */
-    public function testUntrustedProxyMiddlewareWithArray()
-    {
-        $middleware = $this->createTrustedProxyMock(['173.174.100.1', '173.174.100.2'], 'HEADER_X_FORWARDED_ALL');
+        $middleware = $this->createTrustedProxyMock(['192.168.10.10', '192.168.11.11'], 'HEADER_X_FORWARDED_ALL');
         $request = $this->createProxiedRequest();
 
         $middleware->handle($request, function ($request) {
             $this->assertEquals('173.174.200.38', $request->getClientIp());
+            $this->assertEquals('https', $request->getScheme());
+            $this->assertEquals('proxy.host', $request->getHost());
+            $this->assertEquals(443, $request->getPort());
+        });
+
+        // Failure state
+        $middleware = $this->createTrustedProxyMock(['192.168.12.12', '192.168.13.13'], 'HEADER_X_FORWARDED_ALL');
+        $request = $this->createProxiedRequest();
+
+        $middleware->handle($request, function ($request) {
+            $this->assertEquals('192.168.10.10', $request->getClientIp());
             $this->assertEquals('http', $request->getScheme());
             $this->assertEquals('root.host', $request->getHost());
             $this->assertEquals(8000, $request->getPort());
@@ -139,11 +154,11 @@ class CheckForTrustedProxiesTest extends TestCase
      */
     public function testUntrustedHeaders()
     {
-        $middleware = $this->createTrustedProxyMock('173.174.200.38', Request::HEADER_FORWARDED);
+        $middleware = $this->createTrustedProxyMock('192.168.10.10', Request::HEADER_FORWARDED);
         $request = $this->createProxiedRequest();
 
         $middleware->handle($request, function ($request) {
-            $this->assertEquals('173.174.200.38', $request->getClientIp());
+            $this->assertEquals('192.168.10.10', $request->getClientIp());
             $this->assertEquals('http', $request->getScheme());
             $this->assertEquals('root.host', $request->getHost());
             $this->assertEquals(8000, $request->getPort());
@@ -157,11 +172,11 @@ class CheckForTrustedProxiesTest extends TestCase
      */
     public function testTrustOnlyForwardedFor()
     {
-        $middleware = $this->createTrustedProxyMock('173.174.200.38', Request::HEADER_X_FORWARDED_FOR);
+        $middleware = $this->createTrustedProxyMock('192.168.10.10', Request::HEADER_X_FORWARDED_FOR);
         $request = $this->createProxiedRequest();
 
         $middleware->handle($request, function ($request) {
-            $this->assertEquals('192.168.10.10', $request->getClientIp());
+            $this->assertEquals('173.174.200.38', $request->getClientIp());
             $this->assertEquals('http', $request->getScheme());
             $this->assertEquals('root.host', $request->getHost());
             $this->assertEquals(8000, $request->getPort());
@@ -175,11 +190,11 @@ class CheckForTrustedProxiesTest extends TestCase
      */
     public function testTrustOnlyForwardedPort()
     {
-        $middleware = $this->createTrustedProxyMock('173.174.200.38', Request::HEADER_X_FORWARDED_PORT);
+        $middleware = $this->createTrustedProxyMock('192.168.10.10', Request::HEADER_X_FORWARDED_PORT);
         $request = $this->createProxiedRequest();
 
         $middleware->handle($request, function ($request) {
-            $this->assertEquals('173.174.200.38', $request->getClientIp());
+            $this->assertEquals('192.168.10.10', $request->getClientIp());
             $this->assertEquals('http', $request->getScheme());
             $this->assertEquals('root.host', $request->getHost());
             $this->assertEquals(443, $request->getPort());
@@ -195,11 +210,11 @@ class CheckForTrustedProxiesTest extends TestCase
      */
     public function testTrustOnlyForwardedProto()
     {
-        $middleware = $this->createTrustedProxyMock('173.174.200.38', 'HEADER_X_FORWARDED_PROTO');
+        $middleware = $this->createTrustedProxyMock('192.168.10.10', Request::HEADER_X_FORWARDED_PROTO);
         $request = $this->createProxiedRequest();
 
         $middleware->handle($request, function ($request) {
-            $this->assertEquals('173.174.200.38', $request->getClientIp());
+            $this->assertEquals('192.168.10.10', $request->getClientIp());
             $this->assertEquals('https', $request->getScheme());
             $this->assertEquals('root.host', $request->getHost());
             $this->assertEquals(8000, $request->getPort());
@@ -214,17 +229,163 @@ class CheckForTrustedProxiesTest extends TestCase
     public function testTrustOnlyForwardedHostPortAndProto()
     {
         $middleware = $this->createTrustedProxyMock(
-            '173.174.200.38',
+            '192.168.10.10',
             Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO
         );
         $request = $this->createProxiedRequest();
 
         $middleware->handle($request, function ($request) {
-            $this->assertEquals('173.174.200.38', $request->getClientIp());
+            $this->assertEquals('192.168.10.10', $request->getClientIp());
             $this->assertEquals('https', $request->getScheme());
             $this->assertEquals('proxy.host', $request->getHost());
             $this->assertEquals(443, $request->getPort());
         });
+    }
+
+    /**
+     * Tests getting client IP from the "X-Forwarded-For" header with multiple IP addresses
+     *
+     * @return void
+     */
+    public function testGetClientIps()
+    {
+        $middleware = $this->createTrustedProxyMock(
+            '192.168.10.10',
+            Request::HEADER_X_FORWARDED_FOR
+        );
+
+        $forwardedFor = [
+            '192.0.2.2',
+            '192.0.2.2, 192.0.2.199',
+            '192.0.2.2, 192.0.2.199, 99.99.99.99',
+            '192.0.2.2,192.0.2.199',
+        ];
+
+        foreach ($forwardedFor as $forwardedForHeader) {
+            $request = $this->createProxiedRequest(['HTTP_X_FORWARDED_FOR' => $forwardedForHeader]);
+
+            $middleware->handle($request, function ($request) {
+                $ips = $request->getClientIps();
+                $this->assertEquals('192.0.2.2', end($ips));
+            });
+        }
+    }
+
+    /**
+     * Tests getting client IP from the "X-Forwarded-For" header with multiple IP addresses where some
+     * proxies are trusted.
+     *
+     * @return void
+     */
+    public function testGetClientIpSomeProxiesTrusted()
+    {
+        $middleware = $this->createTrustedProxyMock(
+            ['192.168.10.10', '192.0.2.199'],
+            Request::HEADER_X_FORWARDED_FOR
+        );
+
+        $forwardedFor = [
+            '192.0.2.2',
+            '192.0.2.2, 192.0.2.199',
+            '99.99.99.99, 192.0.2.2, 192.0.2.199',
+            '192.0.2.2,192.0.2.199',
+        ];
+
+        foreach ($forwardedFor as $forwardedForHeader) {
+            $request = $this->createProxiedRequest(['HTTP_X_FORWARDED_FOR' => $forwardedForHeader]);
+
+            $middleware->handle($request, function ($request) {
+                $this->assertEquals('192.0.2.2', $request->getClientIp());
+            });
+        }
+    }
+
+    /**
+     * Tests getting client IP from the "X-Forwarded-For" header with multiple IP addresses where all
+     * proxies are trusted through the wildcard character.
+     *
+     * @return void
+     */
+    public function testGetClientIpAllProxiesTrusted()
+    {
+        $middleware = $this->createTrustedProxyMock(
+            '*',
+            Request::HEADER_X_FORWARDED_FOR
+        );
+
+        $forwardedFor = [
+            '192.0.2.2',
+            '192.0.2.199, 192.0.2.2',
+            '192.0.2.199,192.0.2.2',
+            '99.99.99.99,192.0.2.199,192.0.2.2',
+        ];
+
+        foreach ($forwardedFor as $forwardedForHeader) {
+            $request = $this->createProxiedRequest(['HTTP_X_FORWARDED_FOR' => $forwardedForHeader]);
+
+            $middleware->handle($request, function ($request) {
+                $this->assertEquals('192.0.2.2', $request->getClientIp());
+            });
+        }
+    }
+
+    /**
+     * Tests getting client IP from the "X-Forwarded-For" header with multiple IP addresses where all
+     * proxies in the chain are trusted through the double-wildcard ('**') characters.
+     *
+     * @return void
+     */
+    public function testGetClientIpAllChainedProxiesTrusted()
+    {
+        $middleware = $this->createTrustedProxyMock(
+            '**',
+            Request::HEADER_X_FORWARDED_FOR
+        );
+
+        $forwardedFor = [
+            '192.0.2.2',
+            '192.0.2.2, 192.0.2.199',
+            '192.0.2.2, 99.99.99.99, 192.0.2.199',
+            '192.0.2.2, 2001:0db8:0a0b:12f0:0000:0000:0000:0001, 192.0.2.199',
+            '192.0.2.2, 2c01:0db8:0a0b:12f0:0000:0000:0000:0001, 192.0.2.199',
+            '192.0.2.2,192.0.2.199',
+        ];
+
+        foreach ($forwardedFor as $forwardedForHeader) {
+            $request = $this->createProxiedRequest(['HTTP_X_FORWARDED_FOR' => $forwardedForHeader]);
+
+            $middleware->handle($request, function ($request) {
+                $this->assertEquals('192.0.2.2', $request->getClientIp());
+            });
+        }
+
+        // Failure state
+        $middleware = $this->createTrustedProxyMock(
+            '*',
+            Request::HEADER_X_FORWARDED_FOR
+        );
+
+        $forwardedFor = [
+            '192.0.2.2',
+            '192.0.2.2, 192.0.2.199',
+            '192.0.2.2, 99.99.99.99, 192.0.2.199',
+            '192.0.2.2, 2001:0db8:0a0b:12f0:0000:0000:0000:0001, 192.0.2.199',
+            '192.0.2.2, 2c01:0db8:0a0b:12f0:0000:0000:0000:0001, 192.0.2.199',
+            '192.0.2.2,192.0.2.199',
+        ];
+
+        // Items 1 should pass. The rest should fail.
+        foreach ($forwardedFor as $i => $forwardedForHeader) {
+            $request = $this->createProxiedRequest(['HTTP_X_FORWARDED_FOR' => $forwardedForHeader]);
+
+            $middleware->handle($request, function ($request) use ($i) {
+                if ($i === 0) {
+                    $this->assertEquals('192.0.2.2', $request->getClientIp(), 'Index ' . $i . ' failed when it should pass');
+                } else {
+                    $this->assertNotEquals('192.0.2.2', $request->getClientIp(), 'Index ' . $i . ' passed when it should fail');
+                }
+            });
+        }
     }
 
     /**
@@ -236,13 +397,13 @@ class CheckForTrustedProxiesTest extends TestCase
     protected function createProxiedRequest(array $overrides = [])
     {
         $defaults = [
-            'HTTP_X_FORWARDED_FOR' => '192.168.10.10',
+            'HTTP_X_FORWARDED_FOR' => '173.174.200.38',
             'HTTP_X_FORWARDED_HOST' => 'proxy.host',
             'HTTP_X_FORWARDED_PORT' => '443',
             'HTTP_X_FORWARDED_PROTO' => 'https',
             'SERVER_PORT' => 8000,
             'HTTP_HOST' => 'root.host',
-            'REMOTE_ADDR' => '173.174.200.38',
+            'REMOTE_ADDR' => '192.168.10.10',
         ];
 
         $request = Request::create(
