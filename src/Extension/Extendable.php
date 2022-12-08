@@ -90,9 +90,6 @@ class Extendable
      *
      * An outer scope may be provided by providing a second parameter, which will then be passed through to the closure
      * as its first parameter. If this is not given, the current instance will be provided as the first parameter.
-     *
-     * @param \Closure $callback
-     * @return void
      */
     protected function extendableAddLocalExtension(\Closure $callback, ?object $outerScope = null)
     {
