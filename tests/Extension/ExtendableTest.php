@@ -327,11 +327,41 @@ class ExtendableTest extends TestCase
 
         $this->assertEquals('bar', $object->getProtectedFooAttribute());
 
-        $object->extend(function () {
+        $return = $object->extend(function () {
             $this->protectedFoo = 'foo';
+            return 'bar';
         });
 
         $this->assertEquals('foo', $object->getProtectedFooAttribute());
+        $this->assertEquals('bar', $return);
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        // Should return back to 'bar', as only the previous instance was extended
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+    }
+
+    public function testLocalExtensionWithOuterScope()
+    {
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+        $outerScope = null;
+
+        $return = $object->extend(function ($instance) use (&$outerScope) {
+            $outerScope = $instance;
+            $this->protectedFoo = 'foo';
+            return 'bar';
+        }, $this);
+
+        $this->assertEquals('foo', $object->getProtectedFooAttribute());
+        $this->assertEquals('bar', $return);
+        $this->assertSame($outerScope, $this);
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        // Should return back to 'bar', as only the previous instance was extended
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
     }
 }
 
