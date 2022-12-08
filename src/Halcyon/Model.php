@@ -1720,6 +1720,10 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      */
     public static function __callStatic($method, $parameters)
     {
+        if ($method === 'extend') {
+            return parent::__callStatic($method, $parameters);
+        }
+
         $instance = new static;
 
         return call_user_func_array([$instance, $method], $parameters);
