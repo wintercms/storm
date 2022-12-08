@@ -46,7 +46,7 @@ class Extendable
             if (empty($params[0])) {
                 throw new \InvalidArgumentException('The extend() method requires a callback parameter or closure.');
             }
-            return $this->extendableAddLocalExtension($params[0]);
+            return $this->extendableAddLocalExtension($params[0], $params[1] ?? null);
         }
 
         return $this->extendableCall($name, $params);
@@ -82,8 +82,20 @@ class Extendable
         static::extendableExtendCallback($callback, $scoped, $outerScope);
     }
 
-    protected function extendableAddLocalExtension(callable $callback)
+    /**
+     * Adds local extensibility to the current instance.
+     *
+     * This rebinds a given closure to the current instance, making it able to access protected and private methods. This
+     * makes any call using `$this` within the closure act on the extended class, not the class providing the extension.
+     *
+     * An outer scope may be provided by providing a second parameter, which will then be passed through to the closure
+     * as its first parameter. If this is not given, the current instance will be provided as the first parameter.
+     *
+     * @param \Closure $callback
+     * @return void
+     */
+    protected function extendableAddLocalExtension(\Closure $callback, ?object $outerScope = null)
     {
-        return $callback->call($this, $this);
+        return $callback->call($this, $outerScope ?? $this);
     }
 }
