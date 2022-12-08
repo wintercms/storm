@@ -2,8 +2,6 @@
 
 use Winter\Storm\Extension\Extendable;
 use Winter\Storm\Extension\ExtensionBase;
-use Winter\Storm\Filesystem\Filesystem;
-use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Testing\MocksClassLoader;
 
 class ExtendableTest extends TestCase
@@ -362,6 +360,46 @@ class ExtendableTest extends TestCase
 
         // Should return back to 'bar', as only the previous instance was extended
         $this->assertEquals('bar', $object->getProtectedFooAttribute());
+    }
+
+    public function testScopedExtensionCreatingDynamicMethodWithinScope()
+    {
+        ExtendableTestExampleExtendableClassDotNotation::extend(function () {
+            $this->addDynamicMethod('changeFoo', function () {
+                $this->protectedFoo = 'foo';
+                return $this;
+            });
+        }, true);
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+        $this->assertEquals('foo', $object->changeFoo()->getProtectedFooAttribute());
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        // Should still contain the same dynamic method as it's declared globally
+        $this->assertEquals('foo', $object->changeFoo()->getProtectedFooAttribute());
+    }
+
+    public function testLocalExtensionCreatingDynamicMethodWithinScope()
+    {
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $object->extend(function () {
+            $this->addDynamicMethod('changeFoo', function () {
+                $this->protectedFoo = 'foo';
+                return $this;
+            });
+        });
+
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+        $this->assertEquals('foo', $object->changeFoo()->getProtectedFooAttribute());
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        // Should not contain the same dynamic method as it's declared locally
+        $this->assertFalse($object->methodExists('changeFoo'));
     }
 }
 
