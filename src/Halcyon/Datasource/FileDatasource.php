@@ -36,8 +36,6 @@ class FileDatasource extends Datasource
 
     /**
      * The maximum depth of the filesystem to scan, defaulting to 1 subdirectory.
-     *
-     * @var int
      */
     protected int $maxDepth = 1;
 
