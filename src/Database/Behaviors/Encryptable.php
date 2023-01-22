@@ -48,7 +48,7 @@ class Encryptable extends ExtensionBase
     /**
      * Encrypter instance.
      */
-    protected Encrypter $encrypterInstance;
+    protected ?Encrypter $encrypterInstance = null;
 
     /**
      * List of original attribute values before they were encrypted.
@@ -66,17 +66,10 @@ class Encryptable extends ExtensionBase
      */
     public function bootEncryptable(): void
     {
-        if (!property_exists(get_class(), 'encryptable')) {
+        if (!$this->model->propertyExists('encryptable')) {
             throw new Exception(sprintf(
-                'You must define a $encryptable property in %s to use the Encryptable trait.',
-                get_called_class()
-            ));
-        }
-
-        if (!$this->model->methodExists('getEncryptableAttributes')) {
-            throw new Exception(sprintf(
-                'You must define a getEncryptableAttributes method in %s to use the Encryptable trait.',
-                $this->model::class,
+                'You must define an $encryptable property on the %s class to use the Encryptable behavior.',
+                get_class($model)
             ));
         }
 
