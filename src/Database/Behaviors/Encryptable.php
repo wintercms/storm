@@ -29,7 +29,7 @@ use Winter\Storm\Extension\ExtensionBase;
  *     });
  *
  * >**NOTE**: Encrypted attributes will be serialized and unserialized
- * as a part of the encryption / decryption process. Do not make an 
+ * as a part of the encryption / decryption process. Do not make an
  * attribute that is encryptable also jsonable at the same time as the
  * jsonable process will attempt to decode a value that has already been
  * unserialized by the encrypter.
