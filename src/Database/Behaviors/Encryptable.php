@@ -2,26 +2,58 @@
 
 use App;
 use Exception;
+use Illuminate\Contracts\Encryption\Encrypter;
+use Winter\Storm\Extension\ExtensionBase;
 
-class Encryptable extends \Winter\Storm\Extension\ExtensionBase
+/**
+ * Encryptable model behavior
+ *
+ * Usage:
+ *
+ * In the model class definition:
+ *
+ *     public $implement = [
+ *         \Winter\Storm\Database\Behaviors\Encryptable::class,
+ *     ];
+ *
+ *     /**
+ *      * List of attributes to encrypt.
+ *      * /
+ *     protected array $encryptable = ['api_key', 'api_secret'];
+ *
+ * Dynamically attached to third party model:
+ *
+ *     TargetModel::extend(function ($model) {
+ *         $model->addDynamicProperty('encryptable', ['encrypt_this']);
+ *         $model->extendClassWith(\Winter\Storm\Database\Behaviors\Encryptable::class);
+ *     });
+ *
+ * >**NOTE**: Encrypted attributes will be serialized and unserialized
+ * as a part of the encryption / decryption process. Do not make an 
+ * attribute that is encryptable also jsonable at the same time as the
+ * jsonable process will attempt to decode a value that has already been
+ * unserialized by the encrypter.
+ *
+ */
+class Encryptable extends ExtensionBase
 {
     protected $model;
 
     /**
-     * @var array List of attribute names which should be encrypted
+     * List of attribute names which should be encrypted
      *
-     * protected $encryptable = [];
+     * protected array $encryptable = [];
      */
 
     /**
-     * @var \Illuminate\Contracts\Encryption\Encrypter Encrypter instance.
+     * Encrypter instance.
      */
-    protected $encrypterInstance;
+    protected Encrypter $encrypterInstance;
 
     /**
-     * @var array List of original attribute values before they were encrypted.
+     * List of original attribute values before they were encrypted.
      */
-    protected $originalEncryptableValues = [];
+    protected array $originalEncryptableValues = [];
 
     public function __construct($parent)
     {
@@ -31,11 +63,15 @@ class Encryptable extends \Winter\Storm\Extension\ExtensionBase
 
     /**
      * Boot the encryptable trait for a model.
-     * @return void
      */
-    public function bootEncryptable()
+    public function bootEncryptable(): void
     {
-        $self = $this;
+        if (!property_exists(get_class(), 'encryptable')) {
+            throw new Exception(sprintf(
+                'You must define a $encryptable property in %s to use the Encryptable trait.',
+                get_called_class()
+            ));
+        }
 
         if (!$this->model->methodExists('getEncryptableAttributes')) {
             throw new Exception(sprintf(
@@ -47,17 +83,16 @@ class Encryptable extends \Winter\Storm\Extension\ExtensionBase
         /*
          * Encrypt required fields when necessary
          */
-        $this->model::extend(function ($model) use ($self) {
+        $this->model::extend(function ($model) {
             $encryptable = $model->getEncryptableAttributes();
-            $model->bindEvent('model.beforeSetAttribute', function ($key, $value) use ($model, $encryptable, $self) {
+            $model->bindEvent('model.beforeSetAttribute', function ($key, $value) use ($model, $encryptable) {
                 if (in_array($key, $encryptable) && !is_null($value)) {
-                    return $self->makeEncryptableValue($key, $value);
+                    return $model->makeEncryptableValue($key, $value);
                 }
             });
-            $model->bindEvent('model.beforeGetAttribute', function ($key) use ($model, $encryptable, $self) {
-                $attributes = $model->getAttributes();
-                if (in_array($key, $encryptable) && array_get($attributes, $key) != null) {
-                    return $self->getEncryptableValue($model, $key);
+            $model->bindEvent('model.beforeGetAttribute', function ($key) use ($model, $encryptable) {
+                if (in_array($key, $encryptable) && array_get($model->getAttributes(), $key) != null) {
+                    return $model->getEncryptableValue($key);
                 }
             });
         });
@@ -65,65 +100,52 @@ class Encryptable extends \Winter\Storm\Extension\ExtensionBase
 
     /**
      * Encrypts an attribute value and saves it in the original locker.
-     * @param  string $key   Attribute
-     * @param  string $value Value to encrypt
-     * @return string        Encrypted value
      */
-    public function makeEncryptableValue($key, $value)
+    public function makeEncryptableValue(string $key, mixed $value): string
     {
         $this->originalEncryptableValues[$key] = $value;
-        return $this->getEncrypter()->encrypt($value);
+        return $this->model->getEncrypter()->encrypt($value);
     }
 
     /**
      * Decrypts an attribute value
-     * @param  string $model Model
-     * @param  string $key Attribute
-     * @return string      Decrypted value
      */
-    public function getEncryptableValue($model, $key)
+    public function getEncryptableValue(string $key): ?mixed
     {
-        $attributes = $model->getAttributes();
+        $attributes = $this->model->getAttributes();
         return isset($attributes[$key])
-            ? $this->getEncrypter()->decrypt($attributes[$key])
+            ? $this->model->getEncrypter()->decrypt($attributes[$key])
             : null;
     }
 
     /**
      * Returns the original values of any encrypted attributes.
-     * @return array
      */
-    public function getOriginalEncryptableValues()
+    public function getOriginalEncryptableValues(): array
     {
         return $this->originalEncryptableValues;
     }
 
     /**
      * Returns the original values of any encrypted attributes.
-     * @return mixed
      */
-    public function getOriginalEncryptableValue($attribute)
+    public function getOriginalEncryptableValue(string $attribute): ?mixed
     {
         return $this->originalEncryptableValues[$attribute] ?? null;
     }
 
     /**
      * Provides the encrypter instance.
-     *
-     * @return \Illuminate\Contracts\Encryption\Encrypter
      */
-    public function getEncrypter()
+    public function getEncrypter(): Encrypter
     {
         return (!is_null($this->encrypterInstance)) ? $this->encrypterInstance : App::make('encrypter');
     }
 
     /**
      * Sets the encrypter instance.
-     *
-     * @param \Illuminate\Contracts\Encryption\Encrypter $encrypter
-     * @return void
      */
-    public function setEncrypter(\Illuminate\Contracts\Encryption\Encrypter $encrypter)
+    public function setEncrypter(Encrypter $encrypter): void
     {
         $this->encrypterInstance = $encrypter;
     }
