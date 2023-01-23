@@ -11,6 +11,8 @@
  *
  * See the `ExtensionBase` class for creating extension classes.
  *
+ * @method mixed extend(callable $callback, ?object $outerScope = null)
+ * @method static void extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
  * @author Alexey Bobkov, Samuel Georges
  */
 class Extendable
@@ -49,7 +51,7 @@ class Extendable
             if ($params[0] instanceof \Closure) {
                 return $this->extendableAddLocalExtension($params[0], $params[1] ?? null);
             }
-            return $this->extendableAddExtension(\Closure::fromCallable($params[0]), $params[1] ?? false, $params[2] ?? null);
+            return $this->extendableAddLocalExtension(\Closure::fromCallable($params[0]), $params[1] ?? false);
         }
 
         return $this->extendableCall($name, $params);

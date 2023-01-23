@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Collection as CollectionBase;
  * @author Alexey Bobkov, Samuel Georges
  *
  * @phpstan-property \Illuminate\Contracts\Events\Dispatcher|null $dispatcher
+ * @method static void extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
  */
 class Model extends EloquentModel implements ModelInterface
 {
@@ -729,7 +730,8 @@ class Model extends EloquentModel implements ModelInterface
             if (empty($params[0])) {
                 throw new \InvalidArgumentException('The extend() method requires a callback parameter or closure.');
             }
-            return self::extendableExtendCallback($params[0], $params[1] ?? false, $params[2] ?? null);
+            self::extendableExtendCallback($params[0], $params[1] ?? false, $params[2] ?? null);
+            return;
         }
 
         return parent::__callStatic($name, $params);
