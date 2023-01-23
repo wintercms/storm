@@ -15,11 +15,11 @@ class CoreRouter extends RouterBase
     {
         $this->currentRequest = $request;
 
-        $this->events->fire('router.before', [$request]);
+        $this->events->dispatch('router.before', [$request]);
 
         $response = $this->dispatchToRoute($request);
 
-        $this->events->fire('router.after', [$request, $response]);
+        $this->events->dispatch('router.after', [$request, $response]);
 
         return $response;
     }

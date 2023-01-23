@@ -158,7 +158,7 @@ class ClassLoader
      */
     protected function resolvePath(string $path): string
     {
-        if (!Str::startsWith($path, ['/', '\\'])) {
+        if (!Str::startsWith($path, ['/', '\\', $this->basePath . DIRECTORY_SEPARATOR])) {
             $path = $this->basePath . DIRECTORY_SEPARATOR . $path;
         }
         return $path;

@@ -44,6 +44,7 @@ jobs:
         with:
           php-version: '8.0'
           extensions: ${{ env.extensions }}
+          coverage: none
 
       - name: Setup dependency cache
         id: composercache
