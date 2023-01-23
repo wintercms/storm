@@ -761,11 +761,6 @@ parameters:
 			path: src/Foundation/Application.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between array\\|null and false will always evaluate to false\\.$#"
-			count: 1
-			path: src/Foundation/Exception/Handler.php
-
-		-
 			message: "#^Conditional return type uses subject type TCacheValue which is not part of PHPDoc @template tags\\.$#"
 			count: 1
 			path: src/Halcyon/MemoryRepository.php
