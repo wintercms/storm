@@ -103,7 +103,7 @@ class Dispatcher extends BaseDispatcher
      * @param  string|object  $event
      * @param  mixed  $payload
      * @param  bool  $halt
-     * @return array|mixed|null
+     * @return array|mixed
      */
     public function fire($event, $payload = [], $halt = false)
     {
@@ -116,7 +116,7 @@ class Dispatcher extends BaseDispatcher
      * @param  string|object  $event
      * @param  mixed  $payload
      * @param  bool  $halt
-     * @return array|null
+     * @return array|mixed
      */
     public function dispatch($event, $payload = [], $halt = false)
     {

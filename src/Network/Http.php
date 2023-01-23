@@ -368,7 +368,7 @@ class Http
          */
         curl_close($curl);
 
-        if ($this->streamFile && !empty($stream) && !empty($headerStream)) {
+        if ($this->streamFile) {
             rewind($headerStream);
             $this->headers = $this->headerToArray(stream_get_contents($headerStream));
             fclose($headerStream);
