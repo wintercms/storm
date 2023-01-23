@@ -757,16 +757,11 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Events\\\\Dispatcher\\:\\:fire\\(\\)\\.$#"
-			count: 3
+			count: 2
 			path: src/Foundation/Application.php
 
 		-
-			message: "#^Call to an undefined method Illuminate\\\\Routing\\\\Router\\:\\:after\\(\\)\\.$#"
-			count: 1
-			path: src/Foundation/Application.php
-
-		-
-			message: "#^Call to an undefined method Illuminate\\\\Routing\\\\Router\\:\\:before\\(\\)\\.$#"
+			message: "#^Parameter \\#3 \\$replacement of method Illuminate\\\\Support\\\\Collection\\<int\\<0, 1\\>,Illuminate\\\\Support\\\\Collection\\<\\(int\\|string\\), mixed\\>\\>\\:\\:splice\\(\\) expects array\\<Illuminate\\\\Support\\\\Collection\\<\\(int\\|string\\), mixed\\>\\>, array\\{array\\} given\\.$#"
 			count: 1
 			path: src/Foundation/Application.php
 
@@ -774,6 +769,16 @@ parameters:
 			message: "#^Call to an undefined method Illuminate\\\\Contracts\\\\Foundation\\\\Application\\:\\:getCachedClassesPath\\(\\)\\.$#"
 			count: 1
 			path: src/Foundation/Console/ClearCompiledCommand.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between array\\|null and false will always evaluate to false\\.$#"
+			count: 1
+			path: src/Foundation/Exception/Handler.php
+
+		-
+			message: "#^Conditional return type uses subject type TCacheValue which is not part of PHPDoc @template tags\\.$#"
+			count: 1
+			path: src/Halcyon/MemoryRepository.php
 
 		-
 			message: "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer\\:\\:queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue\\:\\:queue\\(\\)$#"
@@ -829,11 +834,6 @@ parameters:
 			message: "#^Return type \\(void\\) of method Winter\\\\Storm\\\\Support\\\\Testing\\\\Fakes\\\\MailFake\\:\\:send\\(\\) should be compatible with return type \\(Illuminate\\\\Mail\\\\SentMessage\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\Mailer\\:\\:send\\(\\)$#"
 			count: 1
 			path: src/Support/Testing/Fakes/MailFake.php
-
-		-
-			message: "#^Call to an undefined method Illuminate\\\\Translation\\\\Translator\\:\\:trans\\(\\)\\.$#"
-			count: 1
-			path: src/Support/helpers.php
 
 		-
 			message: "#^Call to function is_null\\(\\) with Closure will always evaluate to false\\.$#"
