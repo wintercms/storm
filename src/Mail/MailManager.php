@@ -22,7 +22,7 @@ class MailManager extends BaseMailManager
         /*
          * Extensibility
          */
-        $this->app['events']->fire('mailer.beforeRegister', [$this]);
+        $this->app['events']->dispatch('mailer.beforeRegister', [$this]);
 
         return parent::mailer($name);
     }
@@ -68,7 +68,7 @@ class MailManager extends BaseMailManager
         /*
          * Extensibility
          */
-        $this->app['events']->fire('mailer.register', [$this, $mailer]);
+        $this->app['events']->dispatch('mailer.register', [$this, $mailer]);
 
         return $mailer;
     }
