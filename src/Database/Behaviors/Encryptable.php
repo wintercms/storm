@@ -69,25 +69,22 @@ class Encryptable extends ExtensionBase
         if (!$this->model->propertyExists('encryptable')) {
             throw new Exception(sprintf(
                 'You must define an $encryptable property on the %s class to use the Encryptable behavior.',
-                get_class($model)
+                get_class($this->model)
             ));
         }
 
         /*
          * Encrypt required fields when necessary
          */
-        $this->model::extend(function ($model) {
-            $encryptable = $model->getEncryptableAttributes();
-            $model->bindEvent('model.beforeSetAttribute', function ($key, $value) use ($model, $encryptable) {
-                if (in_array($key, $encryptable) && !is_null($value)) {
-                    return $model->makeEncryptableValue($key, $value);
-                }
-            });
-            $model->bindEvent('model.beforeGetAttribute', function ($key) use ($model, $encryptable) {
-                if (in_array($key, $encryptable) && array_get($model->getAttributes(), $key) != null) {
-                    return $model->getEncryptableValue($key);
-                }
-            });
+        $this->model->bindEvent('model.beforeSetAttribute', function ($key, $value) {
+            if (in_array($key, $this->model->getEncryptableAttributes()) && !is_null($value)) {
+                return $this->model->makeEncryptableValue($key, $value);
+            }
+        });
+        $this->model->bindEvent('model.beforeGetAttribute', function ($key) {
+            if (in_array($key, $this->model->getEncryptableAttributes()) && array_get($this->model->getAttributes(), $key) != null) {
+                return $this->model->getEncryptableValue($key);
+            }
         });
     }
 
@@ -103,12 +100,20 @@ class Encryptable extends ExtensionBase
     /**
      * Decrypts an attribute value
      */
-    public function getEncryptableValue(string $key): ?mixed
+    public function getEncryptableValue(string $key): mixed
     {
         $attributes = $this->model->getAttributes();
         return isset($attributes[$key])
             ? $this->model->getEncrypter()->decrypt($attributes[$key])
             : null;
+    }
+
+    /**
+     * Returns a collection of fields that will be encrypted.
+     */
+    public function getEncryptableAttributes(): array
+    {
+        return $this->model->encryptable;
     }
 
     /**
@@ -122,7 +127,7 @@ class Encryptable extends ExtensionBase
     /**
      * Returns the original values of any encrypted attributes.
      */
-    public function getOriginalEncryptableValue(string $attribute): ?mixed
+    public function getOriginalEncryptableValue(string $attribute): mixed
     {
         return $this->originalEncryptableValues[$attribute] ?? null;
     }
