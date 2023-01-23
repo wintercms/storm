@@ -43,10 +43,13 @@ class Extendable
     public function __call($name, $params)
     {
         if ($name === 'extend') {
-            if (empty($params[0])) {
+            if (empty($params[0]) || !is_callable($params[0])) {
                 throw new \InvalidArgumentException('The extend() method requires a callback parameter or closure.');
             }
-            return $this->extendableAddLocalExtension($params[0], $params[1] ?? null);
+            if ($params[0] instanceof \Closure) {
+                return $this->extendableAddLocalExtension($params[0], $params[1] ?? null);
+            }
+            return $this->extendableAddExtension(\Closure::fromCallable($params[0]), $params[1] ?? false, $params[2] ?? null);
         }
 
         return $this->extendableCall($name, $params);
