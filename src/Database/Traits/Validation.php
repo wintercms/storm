@@ -111,6 +111,25 @@ trait Validation
      */
     protected function getValidationAttributes()
     {
+        /**
+         * @event model.getValidationAttributes
+         * Called when fetching the model attributes to validate the model
+         *
+         * Example usage from TranslatableBehavior class:
+         *
+         *     $model->bindEvent('model.getValidationAttributes', function() {
+         *         $locale = $this->translateContext();
+         *         if ($locale !== $this->translatableDefault) {
+         *             $attributes = $this->model->getAttributes();
+         *             return array_merge($attributes, $this->getTranslateDirty($locale));
+         *         }
+         *     });
+         *
+         */
+        if ($attributes = $this->fireEvent('model.getValidationAttributes', [], true)) {
+            return $attributes;
+        }
+
         return $this->getAttributes();
     }
 
