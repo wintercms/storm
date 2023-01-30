@@ -117,20 +117,21 @@ trait Validation
          *
          * Example usage from TranslatableBehavior class:
          *
-         *     $model->bindEvent('model.getValidationAttributes', function() {
+         *     $model->bindEvent('model.getValidationAttributes', function ($attributes) {
          *         $locale = $this->translateContext();
          *         if ($locale !== $this->translatableDefault) {
-         *             $attributes = $this->model->getAttributes();
          *             return array_merge($attributes, $this->getTranslateDirty($locale));
          *         }
          *     });
          *
          */
-        if ($attributes = $this->fireEvent('model.getValidationAttributes', [], true)) {
-            return $attributes;
+
+        $attributes = $this->getAttributes();
+        if (($validationAttributes = $this->fireEvent('model.getValidationAttributes', [$attributes], true)) !== null) {
+            return $validationAttributes;
         }
 
-        return $this->getAttributes();
+        return $attributes;
     }
 
     /**
