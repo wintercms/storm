@@ -124,6 +124,21 @@ class Filesystem extends FilesystemBase
     }
 
     /**
+     * Returns whether the file path is an absolute path.
+     * @see Symfony\Component\Filesystem\Filesystem::isAbsolutePath()
+     */
+    public function isAbsolutePath(string $file): bool
+    {
+        return '' !== $file && (strspn($file, '/\\', 0, 1)
+            || (\strlen($file) > 3 && ctype_alpha($file[0])
+                && ':' === $file[1]
+                && strspn($file, '/\\', 2, 1)
+            )
+            || null !== parse_url($file, \PHP_URL_SCHEME)
+        );
+    }
+
+    /**
      * Determines if the given path is a local path.
      *
      * Returns `true` if the path is local, `false` otherwise.
@@ -231,7 +246,7 @@ class Filesystem extends FilesystemBase
      * @param string $path
      * @param string $contents
      * @param bool|int $lock
-     * @return bool|int
+     * @return int|false
      */
     public function put($path, $contents, $lock = false)
     {
