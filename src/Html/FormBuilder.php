@@ -286,7 +286,7 @@ class FormBuilder
             $merge = compact('type', 'value', 'id');
 
             $options = array_filter(array_merge($options, $merge), function ($item) {
-                return !is_null($item);
+                return !empty($item);
             });
         }
 
