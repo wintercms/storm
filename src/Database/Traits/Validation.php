@@ -111,6 +111,7 @@ trait Validation
      */
     protected function getValidationAttributes()
     {
+        $attributes = $this->getAttributes();
         /**
          * @event model.getValidationAttributes
          * Called when fetching the model attributes to validate the model
@@ -125,8 +126,6 @@ trait Validation
          *     });
          *
          */
-
-        $attributes = $this->getAttributes();
         if (($validationAttributes = $this->fireEvent('model.getValidationAttributes', [$attributes], true)) !== null) {
             return $validationAttributes;
         }
