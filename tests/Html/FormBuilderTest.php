@@ -7,7 +7,6 @@ use Winter\Storm\Router\UrlGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollection;
 
-
 class FormBuilderTest extends TestCase
 {
     public function setUp() : void
