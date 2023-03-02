@@ -756,16 +756,6 @@ parameters:
 			path: src/Extension/Extendable.php
 
 		-
-			message: "#^Parameter \\#3 \\$replacement of method Illuminate\\\\Support\\\\Collection\\<int\\<0, 1\\>,Illuminate\\\\Support\\\\Collection\\<\\(int\\|string\\), mixed\\>\\>\\:\\:splice\\(\\) expects array\\<Illuminate\\\\Support\\\\Collection\\<\\(int\\|string\\), mixed\\>\\>, array\\{array\\} given\\.$#"
-			count: 1
-			path: src/Foundation/Application.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between array\\|null and false will always evaluate to false\\.$#"
-			count: 1
-			path: src/Foundation/Exception/Handler.php
-
-		-
 			message: "#^Conditional return type uses subject type TCacheValue which is not part of PHPDoc @template tags\\.$#"
 			count: 1
 			path: src/Halcyon/MemoryRepository.php
