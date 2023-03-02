@@ -16,10 +16,6 @@ class ExtendableTest extends TestCase
 
         $this->registerMockClassLoader();
 
-        $this->classLoader->addDirectories([
-            'plugins'
-        ]);
-
         $this->classLoader->addNamespaceAliases([
             'Real\\ExtendableTest' => 'Alias\\ExtendableTest',
             'Real' => 'Alias',
@@ -174,14 +170,6 @@ class ExtendableTest extends TestCase
         $this->expectExceptionMessage('Call to undefined method ExtendableTestExampleExtendableClass::protectedMars()');
 
         echo ExtendableTestExampleExtendableClass::protectedMars();
-    }
-
-    public function testInvalidImplementValue()
-    {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Class ExtendableTestInvalidExtendableClass contains an invalid $implement value');
-
-        $result = new ExtendableTestInvalidExtendableClass;
     }
 
     public function testSoftImplementFake()

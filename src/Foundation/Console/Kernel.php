@@ -42,6 +42,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $this->bootstrap();
-        $this->app['events']->fire('console.schedule', [$schedule]);
+        $this->app['events']->dispatch('console.schedule', [$schedule]);
     }
 }

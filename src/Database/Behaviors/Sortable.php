@@ -13,7 +13,9 @@ use Winter\Storm\Extension\ExtensionBase;
  *
  * In the model class definition:
  *
- *   public $implement = ['\Winter\Storm\Database\Traits\Sortable'];
+ *   public $implement = [
+ *       \Winter\Storm\Database\Behaviors\Sortable::class,
+ *   ];
  *
  * To set orders:
  *

@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\App;
  *
  * @author Alexey Bobkov, Samuel Georges
  */
-
 trait ExtendableTrait
 {
     /**
@@ -72,18 +71,12 @@ trait ExtendableTrait
         /*
          * Apply extensions
          */
-        if (!$this->implement) {
-            return;
-        }
-
         if (is_string($this->implement)) {
             $uses = explode(',', $this->implement);
-        }
-        elseif (is_array($this->implement)) {
+        } elseif (is_array($this->implement)) {
             $uses = $this->implement;
-        }
-        else {
-            throw new Exception(sprintf('Class %s contains an invalid $implement value', get_class($this)));
+        } else {
+            return;
         }
 
         foreach ($uses as $use) {
@@ -424,27 +417,33 @@ trait ExtendableTrait
     }
 
     /**
-     * Magic method for `__call()`
+     * Magic method for `__call()`.
+     *
+     * Callback priority is as follows:
+     * - "Dynamic Methods" added locally to the object via addDynamicMethod($name, $callable)
+     * - Methods available on Behaviors that have been implemented by the object
+     * - Pass it to the parent's __call() method if it defines one
+     *
      * @param  string $name
      * @param  array  $params
      * @return mixed
      */
     public function extendableCall($name, $params = null)
     {
+        if (isset($this->extensionData['dynamicMethods'][$name])) {
+            $dynamicCallable = $this->extensionData['dynamicMethods'][$name];
+
+            if (is_callable($dynamicCallable)) {
+                return call_user_func_array(Serialization::unwrapClosure($dynamicCallable), array_values($params));
+            }
+        }
+
         if (isset($this->extensionData['methods'][$name])) {
             $extension = $this->extensionData['methods'][$name];
             $extensionObject = $this->extensionData['extensions'][$extension];
 
             if (method_exists($extension, $name)) {
                 return call_user_func_array([$extensionObject, $name], array_values($params));
-            }
-        }
-
-        if (isset($this->extensionData['dynamicMethods'][$name])) {
-            $dynamicCallable = $this->extensionData['dynamicMethods'][$name];
-
-            if (is_callable($dynamicCallable)) {
-                return call_user_func_array(Serialization::unwrapClosure($dynamicCallable), array_values($params));
             }
         }
 

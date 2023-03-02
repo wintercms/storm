@@ -88,8 +88,7 @@ trait MorphOneOrMany
              *
              */
             $this->parent->fireEvent('model.relation.afterAdd', [$this->relationName, $model]);
-        }
-        else {
+        } else {
             $this->parent->bindDeferred($this->relationName, $model, $sessionKey);
         }
     }

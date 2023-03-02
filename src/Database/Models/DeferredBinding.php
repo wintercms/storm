@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Database\Models;
 
-use Exception;
 use Carbon\Carbon;
+use Exception;
 use Winter\Storm\Database\Model;
 
 /**
@@ -74,7 +74,7 @@ class DeferredBinding extends Model
     /**
      * Cancel all deferred bindings to this model.
      */
-    public static function cancelDeferredActions($masterType, $sessionKey)
+    public static function cancelDeferredActions(string $masterType, string $sessionKey): void
     {
         $records = self::where('master_type', $masterType)
             ->where('session_key', $sessionKey)
@@ -88,7 +88,7 @@ class DeferredBinding extends Model
     /**
      * Delete this binding and cancel is actions
      */
-    public function deleteCancel()
+    public function deleteCancel(): void
     {
         $this->deleteSlaveRecord();
         $this->delete();
@@ -97,7 +97,7 @@ class DeferredBinding extends Model
     /**
      * Clean up orphan bindings.
      */
-    public static function cleanUp($days = 5)
+    public static function cleanUp(int $days = 5): void
     {
         $records = self::where('created_at', '<', Carbon::now()->subDays($days)->toDateTimeString())->get();
 
@@ -109,7 +109,7 @@ class DeferredBinding extends Model
     /**
      * Logic to cancel a bindings action.
      */
-    protected function deleteSlaveRecord()
+    protected function deleteSlaveRecord(): void
     {
         /*
          * Try to delete unbound hasOne/hasMany records from the details table
@@ -144,8 +144,7 @@ class DeferredBinding extends Model
             if (!$relatedObj->$foreignKey) {
                 $relatedObj->delete();
             }
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             // Do nothing
         }
     }

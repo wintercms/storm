@@ -69,6 +69,6 @@ class Connection extends ConnectionBase
             return;
         }
 
-        $eventManager->fire($event, $attributes);
+        $eventManager->dispatch($event, $attributes);
     }
 }

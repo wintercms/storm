@@ -14,7 +14,7 @@ class EventFakeTest extends TestCase
     {
         $event = 'event.fake.test';
 
-        $this->faker->fire($event);
+        $this->faker->dispatch($event);
         $this->faker->assertDispatched($event);
     }
 }
