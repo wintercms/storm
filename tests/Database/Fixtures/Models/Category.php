@@ -1,0 +1,26 @@
+<?php
+
+namespace Winter\Storm\Tests\Database\Fixtures\Models;
+
+use Winter\Storm\Database\Model;
+
+class Category extends Model
+{
+    /**
+     * @var string The database table used by the model.
+     */
+    public $table = 'database_tester_categories';
+
+    public $belongsToMany = [
+        'posts' => [
+            'Winter\Storm\Tests\Database\Fixtures\Models\Post',
+            'table' => 'database_tester_categories_posts',
+            'pivot' => ['category_name', 'post_name']
+        ]
+    ];
+
+    public function getCustomNameAttribute()
+    {
+        return $this->name.' (#'.$this->id.')';
+    }
+}

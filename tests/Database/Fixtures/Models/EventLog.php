@@ -1,0 +1,32 @@
+<?php
+
+namespace Winter\Storm\Tests\Database\Fixtures\Models;
+
+use Winter\Storm\Database\Model;
+
+class EventLog extends Model
+{
+    use \Winter\Storm\Database\Traits\SoftDelete;
+
+    /**
+     * @var string The database table used by the model.
+     */
+    public $table = 'database_tester_event_log';
+
+    /**
+     * @var array Guarded fields
+     */
+    protected $guarded = ['*'];
+
+    /**
+     * @var array Fillable fields
+     */
+    protected $fillable = [];
+
+    /**
+     * @var array Relations
+     */
+    public $morphTo = [
+        'related' => []
+    ];
+}
