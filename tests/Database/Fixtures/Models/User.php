@@ -33,10 +33,10 @@ class User extends Model
     ];
 
     public $attachOne = [
-        'avatar' => 'System\Models\File'
+        'avatar' => 'Winter\Storm\Database\Attach\File'
     ];
 
     public $attachMany = [
-        'photos' => 'System\Models\File'
+        'photos' => 'Winter\Storm\Database\Attach\File'
     ];
 }

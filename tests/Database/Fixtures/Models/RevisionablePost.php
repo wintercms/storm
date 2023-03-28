@@ -38,7 +38,7 @@ class RevisionablePost extends Post
      * @var array Relations
      */
     public $morphMany = [
-        'revision_history' => ['System\Models\Revision', 'name' => 'revisionable']
+        'revision_history' => ['Winter\Storm\Database\Models\Revision', 'name' => 'revisionable']
     ];
 
     /**
