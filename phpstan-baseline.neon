@@ -756,11 +756,6 @@ parameters:
 			path: src/Extension/Extendable.php
 
 		-
-			message: "#^Conditional return type uses subject type TCacheValue which is not part of PHPDoc @template tags\\.$#"
-			count: 1
-			path: src/Halcyon/MemoryRepository.php
-
-		-
 			message: "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer\\:\\:queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue\\:\\:queue\\(\\)$#"
 			count: 1
 			path: src/Mail/Mailer.php
