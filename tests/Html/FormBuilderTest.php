@@ -232,6 +232,16 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('value', 'my value', $result);
     }
 
+    public function testFormInputBooleanAttribute()
+    {
+        $result = $this->formBuilder->input(type: 'text', name: 'my-name', value: 'my value', options: ['required']);
+
+        $this->assertElementIs('input', $result);
+        $this->assertElementAttributeEquals('name', 'my-name', $result);
+        $this->assertElementAttributeEquals('type', 'text', $result);
+        $this->assertElementHasAttribute('required', $result);
+    }
+
     /**
      * @testdox can create a text input of type "email".
      */
