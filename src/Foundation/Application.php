@@ -312,7 +312,7 @@ class Application extends ApplicationBase
      */
     public function before($callback)
     {
-        $this['router']->before($callback);
+        $this->make('router')->before($callback);
     }
 
     /**
@@ -323,7 +323,7 @@ class Application extends ApplicationBase
      */
     public function after($callback)
     {
-        $this['router']->after($callback);
+        $this->make('router')->after($callback);
     }
 
     /**

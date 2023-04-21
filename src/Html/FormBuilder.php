@@ -285,6 +285,10 @@ class FormBuilder
             // when creating the HTML element. Then, we will return the entire input.
             $merge = compact('type', 'value', 'id');
 
+            if ($id === "") {
+                unset($merge['id']);
+            }
+
             $options = array_filter(array_merge($options, $merge), function ($item) {
                 return !is_null($item);
             });

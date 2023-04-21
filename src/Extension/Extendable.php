@@ -20,9 +20,9 @@ class Extendable
     use ExtendableTrait;
 
     /**
-     * @var array Extensions implemented by this class.
+     * @var string|array|null Extensions implemented by this class.
      */
-    public $implement;
+    public $implement = null;
 
     /**
      * Constructor

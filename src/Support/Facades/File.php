@@ -4,7 +4,7 @@ use Winter\Storm\Support\Facade;
 
 /**
  * @method static bool exists(string $path)
- * @method static string get(string $path, bool $lock)
+ * @method static string get(string $path, bool $lock = false)
  * @method static string sharedGet(string $path)
  * @method static mixed getRequire(string $path)
  * @method static mixed requireOnce(string $file)

@@ -35,7 +35,7 @@ if (!function_exists('trans')) {
      */
     function trans($id = null, $parameters = [], $locale = null)
     {
-        /** @var \Winter\Storm\Translation\Translator */
+        /** @var \Winter\Storm\Translation\Translator $translator */
         $translator = app('translator');
         return $translator->trans($id, $parameters, $locale);
     }

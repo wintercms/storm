@@ -170,14 +170,6 @@ class ExtendableTest extends TestCase
         echo ExtendableTestExampleExtendableClass::protectedMars();
     }
 
-    public function testInvalidImplementValue()
-    {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Class ExtendableTestInvalidExtendableClass contains an invalid $implement value');
-
-        $result = new ExtendableTestInvalidExtendableClass;
-    }
-
     public function testSoftImplementFake()
     {
         $result = $this->mockClassLoader(ExtendableTestExampleExtendableSoftImplementFakeClass::class);

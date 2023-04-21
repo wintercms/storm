@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\App;
  *
  * @author Alexey Bobkov, Samuel Georges
  */
-
 trait ExtendableTrait
 {
     /**
@@ -80,18 +79,12 @@ trait ExtendableTrait
         /*
          * Apply extensions
          */
-        if (!$this->implement) {
-            return;
-        }
-
         if (is_string($this->implement)) {
             $uses = explode(',', $this->implement);
-        }
-        elseif (is_array($this->implement)) {
+        } elseif (is_array($this->implement)) {
             $uses = $this->implement;
-        }
-        else {
-            throw new Exception(sprintf('Class %s contains an invalid $implement value', get_class($this)));
+        } else {
+            return;
         }
 
         foreach ($uses as $use) {

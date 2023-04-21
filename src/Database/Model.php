@@ -32,9 +32,9 @@ class Model extends EloquentModel implements ModelInterface
     use \Winter\Storm\Database\Traits\DeferredBinding;
 
     /**
-     * @var array Behaviors implemented by this model.
+     * @var string|array|null Extensions implemented by this class.
      */
-    public $implement;
+    public $implement = null;
 
     /**
      * @var array Make the model's attributes public so behaviors can modify them.
