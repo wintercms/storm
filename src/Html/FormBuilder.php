@@ -279,10 +279,6 @@ class FormBuilder
             // value in the session for the value in the old input data then we'll look
             // in the model instance if one is set. Otherwise we will just use empty.
             $merge['id'] = $this->getIdAttribute($name, $options);
-
-            if ($merge['id'] === "") {
-                unset($merge['id']);
-            }
         }
 
         if (!in_array($type, $this->skipValueTypes)) {
@@ -830,7 +826,7 @@ class FormBuilder
      *
      * @param  string  $name
      * @param  array   $attributes
-     * @return string
+     * @return string|null
      */
     public function getIdAttribute($name, $attributes)
     {
@@ -842,7 +838,7 @@ class FormBuilder
             return $name;
         }
 
-        return '';
+        return null;
     }
 
     /**
