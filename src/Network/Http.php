@@ -445,7 +445,7 @@ class Http
     /**
      * Add JSON encoded payload
      */
-    public function json(array|string $payload) : self
+    public function json(array|string $payload): self
     {
         if (is_array($payload)) {
             $payload = json_encode($payload);
