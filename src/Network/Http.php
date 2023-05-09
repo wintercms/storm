@@ -115,7 +115,7 @@ class Http
     public $requestOptions = [];
 
     /**
-     * @var array Request data.
+     * @var array|string Request data.
      */
     public $requestData;
 
@@ -440,6 +440,20 @@ class Http
             }
         }
         return $headers;
+    }
+
+    /**
+     * Add JSON encoded payload
+     */
+    public function json(array|string $payload) : self
+    {
+        if (is_array($payload)) {
+            $payload = json_encode($payload);
+        }
+        $this->requestData = $payload;
+        $this->header('Content-Type', 'application/json');
+
+        return $this;
     }
 
     /**
