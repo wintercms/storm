@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Network;
 
 use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Support\Str;
 
 /**
  * HTTP Network Access
@@ -452,10 +453,11 @@ class Http
             foreach ($key as $_key => $_value) {
                 $this->data($_key, $_value);
             }
-            return $this;
+        } elseif (is_null($value) && Str::isJson($key)) {
+            $this->requestData = $key;
+        } else {
+            $this->requestData[$key] = $value;
         }
-
-        $this->requestData[$key] = $value;
         return $this;
     }
 
