@@ -458,17 +458,13 @@ class Http
 
     /**
      * Add a data to the request.
-     * @param string $value
-     * @return self
      */
-    public function data($key, $value = null)
+    public function data(array|string $key, string $value = null): self
     {
         if (is_array($key)) {
             foreach ($key as $_key => $_value) {
                 $this->data($_key, $_value);
             }
-        } elseif (is_null($value) && Str::isJson($key)) {
-            $this->requestData = $key;
         } else {
             $this->requestData[$key] = $value;
         }
