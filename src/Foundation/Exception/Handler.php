@@ -54,7 +54,9 @@ class Handler extends ExceptionHandler
          *         }
          *     });
          */
-        if (app()->make('events')->fire('exception.beforeReport', [$throwable], true) === false) {
+        /** @var \Winter\Storm\Events\Dispatcher */
+        $events = app()->make('events');
+        if ($events->dispatch('exception.beforeReport', [$throwable], true) === false) {
             return;
         }
 
@@ -76,7 +78,7 @@ class Handler extends ExceptionHandler
          *         app('sentry')->captureException($throwable);
          *     });
          */
-        app()->make('events')->fire('exception.report', [$throwable]);
+        app()->make('events')->dispatch('exception.report', [$throwable]);
     }
 
     /**
@@ -99,7 +101,7 @@ class Handler extends ExceptionHandler
             return Response::make($response, $statusCode);
         }
 
-        if ($event = app()->make('events')->fire('exception.beforeRender', [$throwable, $statusCode, $request], true)) {
+        if ($event = app()->make('events')->dispatch('exception.beforeRender', [$throwable, $statusCode, $request], true)) {
             return Response::make($event, $statusCode);
         }
 

@@ -5,9 +5,7 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 class Kernel extends HttpKernel
 {
     /**
-     * The bootstrap classes for the application.
-     *
-     * @var string[]
+     * {@inheritDoc}
      */
     protected $bootstrappers = [
         \Winter\Storm\Foundation\Bootstrap\RegisterClassLoader::class,
@@ -22,9 +20,7 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The application's global HTTP middleware stack.
-     *
-     * @var array
+     * {@inheritDoc}
      */
     protected $middleware = [
         \Winter\Storm\Foundation\Http\Middleware\CheckForTrustedHost::class,
@@ -33,9 +29,7 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The application's route middleware.
-     *
-     * @var array
+     * {@inheritDoc}
      */
     protected $routeMiddleware = [
         // 'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
@@ -47,9 +41,7 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The application's route middleware groups.
-     *
-     * @var array
+     * {@inheritDoc}
      */
     protected $middlewareGroups = [
         'web' => [
@@ -67,11 +59,7 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The priority-sorted list of middleware.
-     *
-     * Forces the listed middleware to always be in the given order.
-     *
-     * @var string[]
+     * {@inheritDoc}
      */
     protected $middlewarePriority = [
         \Illuminate\Session\Middleware\StartSession::class,

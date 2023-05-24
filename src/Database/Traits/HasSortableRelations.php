@@ -2,6 +2,8 @@
 
 use Exception;
 
+use Winter\Sorm\Database\Model;
+
 /**
  * HasSortableRelations trait
  *
@@ -50,7 +52,7 @@ trait HasSortableRelations
             if (array_key_exists($relationName, $sortableRelations)) {
                 $column = $this->getRelationSortOrderColumn($relationName);
 
-                $this->updateRelationOrder($relationName, $relatedModel->id, $column);
+                $this->updateRelationOrder($relationName, $relatedModel->getKey(), $column);
             }
         });
 
@@ -101,7 +103,7 @@ trait HasSortableRelations
     /**
      * Update relation record sort_order.
      */
-    protected function updateRelationOrder(string $relationName, int $id, string $column, int $order = 0) : void
+    protected function updateRelationOrder(string $relationName, string|int|Model $id, string $column, int $order = 0) : void
     {
         $relation = $this->{$relationName}();
 
@@ -111,7 +113,11 @@ trait HasSortableRelations
         if (method_exists($relation, 'updateExistingPivot')) {
             $relation->updateExistingPivot($id, [ $column => (int)$order ]);
         } else {
-            $record = $relation->find($id);
+            if ($id instanceof Model) {
+                $record = $id;
+            } else {
+                $record = $relation->find($id);
+            }
             $record->{$column} = (int)$order;
             $record->save();
         }

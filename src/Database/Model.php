@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Collection as CollectionBase;
  * @author Alexey Bobkov, Samuel Georges
  *
  * @phpstan-property \Illuminate\Contracts\Events\Dispatcher|null $dispatcher
+ * @method static void extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
  */
 class Model extends EloquentModel implements ModelInterface
 {
@@ -31,9 +32,9 @@ class Model extends EloquentModel implements ModelInterface
     use \Winter\Storm\Database\Traits\DeferredBinding;
 
     /**
-     * @var array Behaviors implemented by this model.
+     * @var string|array|null Extensions implemented by this class.
      */
-    public $implement;
+    public $implement = null;
 
     /**
      * @var array Make the model's attributes public so behaviors can modify them.
@@ -142,14 +143,6 @@ class Model extends EloquentModel implements ModelInterface
         else {
             unset($this->relations[$relationName]);
         }
-    }
-
-    /**
-     * Extend this object properties upon construction.
-     */
-    public static function extend(Closure $callback)
-    {
-        self::extendableExtendCallback($callback);
     }
 
     /**
@@ -710,6 +703,16 @@ class Model extends EloquentModel implements ModelInterface
 
     public function __call($name, $params)
     {
+        if ($name === 'extend') {
+            if (empty($params[0]) || !is_callable($params[0])) {
+                throw new \InvalidArgumentException('The extend() method requires a callback parameter or closure.');
+            }
+            if ($params[0] instanceof \Closure) {
+                return $params[0]->call($this, $params[1] ?? $this);
+            }
+            return \Closure::fromCallable($params[0])->call($this, $params[1] ?? $this);
+        }
+
         /*
          * Never call handleRelation() anywhere else as it could
          * break getRelationCaller(), use $this->{$name}() instead
@@ -719,6 +722,19 @@ class Model extends EloquentModel implements ModelInterface
         }
 
         return $this->extendableCall($name, $params);
+    }
+
+    public static function __callStatic($name, $params)
+    {
+        if ($name === 'extend') {
+            if (empty($params[0])) {
+                throw new \InvalidArgumentException('The extend() method requires a callback parameter or closure.');
+            }
+            self::extendableExtendCallback($params[0], $params[1] ?? false, $params[2] ?? null);
+            return;
+        }
+
+        return parent::__callStatic($name, $params);
     }
 
     /**

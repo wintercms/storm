@@ -2,6 +2,9 @@
 
 use Illuminate\Foundation\Console\ClearCompiledCommand as ClearCompiledCommandBase;
 
+/**
+ * @property \Winter\Storm\Foundation\Application $laravel
+ */
 class ClearCompiledCommand extends ClearCompiledCommandBase
 {
     /**
