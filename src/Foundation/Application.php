@@ -68,11 +68,12 @@ class Application extends ApplicationBase
     /**
      * Get the path to the public / web directory.
      *
+     * @param string $path
      * @return string
      */
-    public function publicPath()
+    public function publicPath($path = '')
     {
-        return $this->basePath;
+        return $this->joinPaths($this->basePath, $path);
     }
 
     /**
