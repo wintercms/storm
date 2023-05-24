@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Collection as CollectionBase;
  */
 class Model extends EloquentModel implements ModelInterface
 {
+    use Concerns\HasAttributes;
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
     use Concerns\HidesAttributes;
