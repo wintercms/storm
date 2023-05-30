@@ -3,10 +3,10 @@ name: Tests
 on:
   push:
     branches:
-      - "wip/1.2"
+      - develop
   pull_request:
     branches:
-      - "wip/1.2"
+      - develop
 
 jobs:
   codeAnalysis:
@@ -28,7 +28,7 @@ jobs:
         id: extcache
         uses: shivammathur/cache-extensions@v1
         with:
-          php-version: '8.0'
+          php-version: '8.1'
           extensions: ${{ env.extensions }}
           key: ${{ env.key }}
 
@@ -42,8 +42,9 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.0'
+          php-version: '8.1'
           extensions: ${{ env.extensions }}
+          coverage: none
 
       - name: Setup dependency cache
         id: composercache
@@ -60,4 +61,4 @@ jobs:
         run: composer install --no-interaction --no-progress --no-scripts
 
       - name: Analyse code
-        run: ./vendor/bin/phpstan analyse
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G --no-progress

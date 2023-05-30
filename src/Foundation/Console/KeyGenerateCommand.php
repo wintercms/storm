@@ -9,13 +9,14 @@ class KeyGenerateCommand extends KeyGenerateCommandBase
      * Write a new environment file with the given key.
      *
      * @param  string  $key
-     * @return void
+     * @return bool
      */
     protected function writeNewEnvironmentFileWith($key)
     {
         $env = EnvFile::open($this->laravel->environmentFilePath());
         $env->set('APP_KEY', $key);
         $env->write();
+        return true;
     }
 
     /**

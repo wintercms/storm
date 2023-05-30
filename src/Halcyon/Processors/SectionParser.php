@@ -60,6 +60,59 @@ class SectionParser
     }
 
     /**
+     * Renders the provided settings data into a string that can be stored in the Settings section
+     */
+    public static function renderSettings(array $data): string
+    {
+        $iniParser = new Ini;
+        $trim = function (&$values) use (&$trim) {
+            foreach ($values as &$value) {
+                if (!is_array($value)) {
+                    $value = trim($value);
+                }
+                else {
+                    $trim($value);
+                }
+            }
+        };
+        $settings = array_get($data, 'settings', []);
+        $trim($settings);
+
+        return $iniParser->render($settings);
+    }
+
+    /**
+     * Renders the provided string into a string that can be stored in the Code section
+     */
+    public static function renderCode(string $code, array $options = []): string
+    {
+        $wrapCodeInPhpTags = array_get($options, 'wrapCodeInPhpTags', true);
+
+        $code = trim($code);
+        if ($code) {
+            if (isset($wrapCodeInPhpTags) && $wrapCodeInPhpTags === true) {
+                $code = preg_replace('/^\<\?php/', '', $code);
+                $code = preg_replace('/^\<\?/', '', $code);
+                $code = preg_replace('/\?>$/', '', $code);
+                $code = trim($code, PHP_EOL);
+                $code = '<?php'.PHP_EOL.$code.PHP_EOL.'?>';
+            } else {
+                $code = $code;
+            }
+        }
+
+        return $code;
+    }
+
+    /**
+     * Renders the provided string into a string that can be stored in the Markup section
+     */
+    public static function renderMarkup(string $markup): string
+    {
+        return trim($markup);
+    }
+
+    /**
      * Renders a CMS object as file content.
      * @throws InvalidArgumentException if section separators are found in the settings or code sections
      */
@@ -75,38 +128,10 @@ class SectionParser
             return array_get($data, 'content', '');
         }
 
-        // Prepare settings section for saving
-        $iniParser = new Ini;
-        $trim = function (&$values) use (&$trim) {
-            foreach ($values as &$value) {
-                if (!is_array($value)) {
-                    $value = trim($value);
-                }
-                else {
-                    $trim($value);
-                }
-            }
-        };
-        $settings = array_get($data, 'settings', []);
-        $trim($settings);
-        $settings = $iniParser->render($settings);
-
-        // Prepare code section for saving
-        $code = trim(array_get($data, 'code', '') ?? '');
-        if ($code) {
-            if (isset($wrapCodeInPhpTags) && $wrapCodeInPhpTags === true) {
-                $code = preg_replace('/^\<\?php/', '', $code);
-                $code = preg_replace('/^\<\?/', '', $code);
-                $code = preg_replace('/\?>$/', '', $code);
-                $code = trim($code, PHP_EOL);
-                $code = '<?php'.PHP_EOL.$code.PHP_EOL.'?>';
-            } else {
-                $code = $code;
-            }
-        }
-
-        // Prepare markup section for saving
-        $markup = trim(array_get($data, 'markup', ''));
+        // Prepare sections for saving
+        $settings = static::renderSettings($data);
+        $code = static::renderCode(array_get($data, 'code', '') ?? '', $sectionOptions);
+        $markup = static::renderMarkup(array_get($data, 'markup', ''));
 
         /*
          * Build content
@@ -173,6 +198,40 @@ class SectionParser
     }
 
     /**
+     * Parses the Settings section into an array
+     */
+    public static function parseSettings(string $settings): array
+    {
+        $iniParser = new Ini;
+        return @$iniParser->parse($settings)
+            ?: [self::ERROR_INI => $settings];
+    }
+
+    /**
+     * Processes the Code section into a usable form
+     */
+    public static function parseCode(string $code): string
+    {
+        $code = trim($code);
+        if ($code) {
+            $code = preg_replace('/^\s*\<\?php/', '', $code);
+            $code = preg_replace('/^\s*\<\?/', '', $code);
+            $code = preg_replace('/\?\>\s*$/', '', $code);
+            $code = trim($code, PHP_EOL);
+        }
+
+        return $code;
+    }
+
+    /**
+     * Processes the Markup section into a usable form
+     */
+    public static function parseMarkup(string $markup): string
+    {
+        return $markup;
+    }
+
+    /**
      * Parses Halcyon section content.
      * The expected file format is following:
      *
@@ -205,7 +264,6 @@ class SectionParser
             return $result;
         }
 
-        $iniParser = new Ini;
         $sections = static::parseIntoSections($content);
         $count = count($sections);
         foreach ($sections as &$section) {
@@ -213,23 +271,14 @@ class SectionParser
         }
 
         if ($count >= 3) {
-            $result['settings'] = @$iniParser->parse($sections[0])
-                ?: [self::ERROR_INI => $sections[0]];
-
-            $result['code'] = $sections[1];
-            $result['code'] = preg_replace('/^\s*\<\?php/', '', $result['code']);
-            $result['code'] = preg_replace('/^\s*\<\?/', '', $result['code']);
-            $result['code'] = preg_replace('/\?\>\s*$/', '', $result['code']);
-            $result['code'] = trim($result['code'], PHP_EOL);
-
-            $result['markup'] = $sections[2];
+            $result['settings'] = static::parseSettings($sections[0]);
+            $result['code'] = static::parseCode($sections[1]);
+            $result['markup'] = static::parseMarkup($sections[2]);
         } elseif ($count == 2) {
-            $result['settings'] = @$iniParser->parse($sections[0])
-                ?: [self::ERROR_INI => $sections[0]];
-
-            $result['markup'] = $sections[1];
+            $result['settings'] = static::parseSettings($sections[0]);
+            $result['markup'] = static::parseMarkup($sections[1]);
         } elseif ($count == 1) {
-            $result['markup'] = $sections[0];
+            $result['markup'] = static::parseMarkup($sections[0]);
         }
 
         return $result;

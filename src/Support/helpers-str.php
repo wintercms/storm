@@ -5,6 +5,16 @@ use Winter\Storm\Support\Str;
 //
 // Winter Helpers
 //
+if (!function_exists('is_json')) {
+    /**
+     * Check if the provided input is a valid JSON string.
+     */
+    function is_json(mixed $value): bool
+    {
+        return Str::isJson($value);
+    }
+}
+
 if (!function_exists('str_ordinal')) {
     /**
      * Converts number to its ordinal English form.

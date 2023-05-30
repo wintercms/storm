@@ -1,16 +1,16 @@
 <?php namespace Winter\Storm\Database\Attach;
 
 use Exception;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Winter\Storm\Network\Http;
-use Winter\Storm\Database\Model;
-use Winter\Storm\Support\Facades\File as FileHelper;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File as FileObj;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Winter\Storm\Database\Model;
 use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Network\Http;
+use Winter\Storm\Support\Facades\File as FileHelper;
 
 /**
  * File attachment model
@@ -644,11 +644,7 @@ class File extends Model
         $thumbPublic = $this->getPath($thumbFile);
 
         if (!$this->hasFile($thumbFile)) {
-            if ($this->isLocalStorage()) {
-                $this->makeThumbLocal($thumbFile, $thumbPath, $width, $height, $options);
-            } else {
-                $this->makeThumbStorage($thumbFile, $thumbPath, $width, $height, $options);
-            }
+            $this->makeThumb($thumbFile, $thumbPath, $width, $height, $options);
         }
 
         return $thumbPublic;
@@ -685,11 +681,8 @@ class File extends Model
 
     /**
      * Returns the default thumbnail options.
-     *
-     * @param array $overrideOptions Overridden options
-     * @return array
      */
-    protected function getDefaultThumbOptions($overrideOptions = [])
+    protected function getDefaultThumbOptions(array|string $override = []): array
     {
         $defaultOptions = [
             'mode'      => 'auto',
@@ -700,11 +693,11 @@ class File extends Model
             'extension' => 'auto',
         ];
 
-        if (!is_array($overrideOptions)) {
-            $overrideOptions = ['mode' => $overrideOptions];
+        if (!is_array($override)) {
+            $override = ['mode' => $override];
         }
 
-        $options = array_merge($defaultOptions, $overrideOptions);
+        $options = array_merge($defaultOptions, $override);
 
         $options['mode'] = strtolower($options['mode']);
 
@@ -716,91 +709,49 @@ class File extends Model
     }
 
     /**
-     * Generate the thumbnail based on the local file system.
-     *
-     * This step is necessary to simplify things and ensure the correct file permissions are given
-     * to the local files.
-     *
-     * @param string $thumbFile
-     * @param string $thumbPath
-     * @param int $width
-     * @param int $height
-     * @param array $options
-     * @return void
+     * Generate a thumbnail
      */
-    protected function makeThumbLocal($thumbFile, $thumbPath, $width, $height, $options)
+    protected function makeThumb(string $thumbFile, string $thumbPath, int $width, int $height, array $options = []): void
     {
-        $rootPath = $this->getLocalRootPath();
-        $filePath = $rootPath.'/'.$this->getDiskPath();
-        $thumbPath = $rootPath.'/'.$thumbPath;
+        // Get the local path to the source image
+        $sourceImage = $this->getLocalPath();
+
+        // Get the local path to the generated thumbnail
+        $resizedImage = $this->isLocalStorage()
+            ? $this->getLocalRootPath() . '/' . $thumbPath
+            : $this->getLocalTempPath($thumbFile);
 
         /*
          * Handle a broken source image
          */
         if (!$this->hasFile($this->disk_name)) {
-            BrokenImage::copyTo($thumbPath);
+            BrokenImage::copyTo($resizedImage);
         } else {
             /*
             * Generate thumbnail
             */
             try {
-                Resizer::open($filePath)
+                Resizer::open($sourceImage)
                     ->resize($width, $height, $options)
-                    ->save($thumbPath)
+                    ->save($resizedImage)
                 ;
             } catch (Exception $ex) {
                 Log::error($ex);
-                BrokenImage::copyTo($thumbPath);
+                BrokenImage::copyTo($resizedImage);
             }
         }
 
-        FileHelper::chmod($thumbPath);
-    }
-
-    /**
-     * Generate the thumbnail based on a remote storage engine.
-     *
-     * @param string $thumbFile
-     * @param string $thumbPath
-     * @param int $width
-     * @param int $height
-     * @param array $options
-     * @return void
-     */
-    protected function makeThumbStorage($thumbFile, $thumbPath, $width, $height, $options)
-    {
-        $tempFile = $this->getLocalTempPath();
-        $tempThumb = $this->getLocalTempPath($thumbFile);
-
-        /*
-         * Handle a broken source image
-         */
-        if (!$this->hasFile($this->disk_name)) {
-            BrokenImage::copyTo($tempThumb);
+        // Handle cleanup based on the storage disk location, local or remote
+        if ($this->isLocalStorage()) {
+            // Ensure that the generated thumbnail has the correct permissions on local
+            FileHelper::chmod($resizedImage);
         } else {
-            /*
-            * Generate thumbnail
-            */
-            $this->copyStorageToLocal($this->getDiskPath(), $tempFile);
+            // Copy the generated thumbnail to the remote disk
+            $this->copyLocalToStorage($resizedImage, $thumbPath);
 
-            try {
-                Resizer::open($tempFile)
-                    ->resize($width, $height, $options)
-                    ->save($tempThumb)
-                ;
-            } catch (Exception $ex) {
-                Log::error($ex);
-                BrokenImage::copyTo($tempThumb);
-            }
-
-            FileHelper::delete($tempFile);
+            // Remove the temporary generated thumbnail
+            FileHelper::delete($resizedImage);
         }
-
-        /*
-         * Publish to storage and clean up
-         */
-        $this->copyLocalToStorage($tempThumb, $thumbPath);
-        FileHelper::delete($tempThumb);
     }
 
     /**
@@ -839,10 +790,8 @@ class File extends Model
 
     /**
      * Generates a disk name from the supplied file name.
-     *
-     * @return string
      */
-    protected function getDiskName()
+    protected function getDiskName(): string
     {
         if ($this->disk_name !== null) {
             return $this->disk_name;
@@ -862,11 +811,8 @@ class File extends Model
 
     /**
      * Returns a temporary local path to work from.
-     *
-     * @param string|null $path Optional path to append to the temp path
-     * @return string
      */
-    protected function getLocalTempPath($path = null)
+    protected function getLocalTempPath(?string $path = null): string
     {
         if (!$path) {
             return $this->getTempPath() . '/' . md5($this->getDiskPath()) . '.' . $this->getExtension();
@@ -1118,7 +1064,7 @@ class File extends Model
     /**
      * Returns the storage disk the file is stored on
      *
-     * @return Filesystem
+     * @return FilesystemAdapter
      */
     public function getDisk()
     {
@@ -1149,11 +1095,19 @@ class File extends Model
 
     /**
      * If working with local storage, determine the absolute local path.
-     *
-     * @return string
      */
-    protected function getLocalRootPath()
+    protected function getLocalRootPath(): string
     {
-        return storage_path() . '/app';
+        $path = null;
+
+        if ($this->isLocalStorage()) {
+            $path = $this->getDisk()->getConfig()['root'] ?? null;
+        }
+
+        if (is_null($path)) {
+            $path = storage_path('app');
+        }
+
+        return $path;
     }
 }

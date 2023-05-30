@@ -22,6 +22,7 @@ jobs:
         with:
           php-version: '7.3'
           tools: phpcs
+          coverage: none
       - name: Run code quality checks (on push)
         if: github.event_name == 'push'
         run: ./.github/workflows/utilities/phpcs-push ${{ github.sha }}

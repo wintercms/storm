@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Request;
 use Winter\Storm\Support\Collection;
 
 require_once("helpers-array.php");
@@ -35,7 +36,9 @@ if (!function_exists('trans')) {
      */
     function trans($id = null, $parameters = [], $locale = null)
     {
-        return app('translator')->trans($id, $parameters, $locale);
+        /** @var \Winter\Storm\Translation\Translator $translator */
+        $translator = app('translator');
+        return $translator->trans($id, $parameters, $locale);
     }
 }
 

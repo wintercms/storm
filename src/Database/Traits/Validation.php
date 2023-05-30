@@ -132,10 +132,13 @@ trait Validation
      * Instantiates the validator used by the validation process, depending if the class
      * is being used inside or outside of Laravel. Optional connection string to make
      * the validator use a different database connection than the default connection.
-     * @return \Illuminate\Validation\Validator
+     *
+     * @return \Illuminate\Contracts\Validation\Validator
+     * @phpstan-return \Illuminate\Validation\Validator
      */
     protected static function makeValidator($data, $rules, $customMessages, $attributeNames, $connection = null)
     {
+        /** @var \Illuminate\Validation\Validator $validator */
         $validator = Validator::make($data, $rules, $customMessages, $attributeNames);
 
         if ($connection !== null) {

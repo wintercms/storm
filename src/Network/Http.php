@@ -111,7 +111,7 @@ class Http
     /**
      * @var array cURL Options.
      */
-    public $requestOptions;
+    public $requestOptions = [];
 
     /**
      * @var array Request data.
@@ -280,7 +280,7 @@ class Http
             curl_setopt($curl, CURLOPT_MAXREDIRS, $this->maxRedirects);
         }
 
-        if ($this->requestOptions && is_array($this->requestOptions)) {
+        if (count($this->requestOptions)) {
             curl_setopt_array($curl, $this->requestOptions);
         }
 
@@ -368,7 +368,7 @@ class Http
          */
         curl_close($curl);
 
-        if ($this->streamFile && !empty($stream) && !empty($headerStream)) {
+        if ($this->streamFile) {
             rewind($headerStream);
             $this->headers = $this->headerToArray(stream_get_contents($headerStream));
             fclose($headerStream);

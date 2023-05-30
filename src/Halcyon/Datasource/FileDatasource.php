@@ -35,6 +35,11 @@ class FileDatasource extends Datasource
     protected $resolvedBasePaths = [];
 
     /**
+     * The maximum depth of the filesystem to scan, defaulting to 1 subdirectory.
+     */
+    protected int $maxDepth = 1;
+
+    /**
      * Create a new datasource instance.
      *
      * @param string $basePath
@@ -98,7 +103,7 @@ class FileDatasource extends Datasource
         }
 
         $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
-        $it->setMaxDepth(1); // Support only a single level of subdirectories
+        $it->setMaxDepth($this->maxDepth);
         $it->rewind();
 
         while ($it->valid()) {

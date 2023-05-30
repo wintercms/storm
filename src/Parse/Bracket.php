@@ -178,7 +178,7 @@ class Bracket
      * a looping tag.
      * @param  string $string
      * @param  string $key
-     * @return string
+     * @return string[]|false
      */
     protected function parseLoopRegex($string, $key)
     {

@@ -56,21 +56,6 @@ parameters:
 			path: src/Auth/Models/User.php
 
 		-
-			message: "#^Parameter \\#1 \\$disk of static method Winter\\\\Storm\\\\Filesystem\\\\Filesystem\\:\\:isLocalDisk\\(\\) expects Illuminate\\\\Filesystem\\\\FilesystemAdapter, Illuminate\\\\Contracts\\\\Filesystem\\\\Filesystem given\\.$#"
-			count: 1
-			path: src/Database/Attach/File.php
-
-		-
-			message: "#^Access to an undefined property Winter\\\\Storm\\\\Database\\\\Model\\:\\:\\$purgeable\\.$#"
-			count: 4
-			path: src/Database/Behaviors/Purgeable.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Model\\:\\:purgeAttributes\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Behaviors/Purgeable.php
-
-		-
 			message: "#^Parameter \\#1 \\$app of class Illuminate\\\\Database\\\\DatabaseManager constructor expects Illuminate\\\\Contracts\\\\Foundation\\\\Application, Illuminate\\\\Contracts\\\\Container\\\\Container given\\.$#"
 			count: 1
 			path: src/Database/Capsule/Manager.php
@@ -371,7 +356,7 @@ parameters:
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$currentPage \\(int\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$columns \\(array\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
+			message: "#^Parameter \\#2 \\$currentPage \\(int\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
 			count: 1
 			path: src/Database/Relations/BelongsToMany.php
 
@@ -576,6 +561,21 @@ parameters:
 			path: src/Database/Relations/MorphMany.php
 
 		-
+			message: "#^Parameter \\#1 \\$query of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOneOrMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:__construct\\(\\) expects Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>, Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\> given\\.$#"
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
+			message: "#^Parameter \\$parent of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphMany\\:\\:__construct\\(\\) has invalid type Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\.$#"
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
+			message: "#^Parameter \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphMany\\:\\:__construct\\(\\) has invalid type Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\.$#"
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/MorphOne.php
@@ -608,6 +608,21 @@ parameters:
 		-
 			message: "#^Call to private method update\\(\\) of parent class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOne\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\.$#"
 			count: 2
+			path: src/Database/Relations/MorphOne.php
+
+		-
+			message: "#^Parameter \\#1 \\$query of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOneOrMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:__construct\\(\\) expects Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>, Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\> given\\.$#"
+			count: 1
+			path: src/Database/Relations/MorphOne.php
+
+		-
+			message: "#^Parameter \\$parent of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphOne\\:\\:__construct\\(\\) has invalid type Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\.$#"
+			count: 1
+			path: src/Database/Relations/MorphOne.php
+
+		-
+			message: "#^Parameter \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphOne\\:\\:__construct\\(\\) has invalid type Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\.$#"
+			count: 1
 			path: src/Database/Relations/MorphOne.php
 
 		-
@@ -691,7 +706,7 @@ parameters:
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$currentPage \\(int\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$columns \\(array\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
+			message: "#^Parameter \\#2 \\$currentPage \\(int\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
 			count: 1
 			path: src/Database/Relations/MorphToMany.php
 
@@ -741,11 +756,6 @@ parameters:
 			path: src/Extension/Extendable.php
 
 		-
-			message: "#^Call to an undefined method Illuminate\\\\Contracts\\\\Foundation\\\\Application\\:\\:getCachedClassesPath\\(\\)\\.$#"
-			count: 1
-			path: src/Foundation/Console/ClearCompiledCommand.php
-
-		-
 			message: "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer\\:\\:queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue\\:\\:queue\\(\\)$#"
 			count: 1
 			path: src/Mail/Mailer.php
@@ -774,6 +784,11 @@ parameters:
 			message: "#^Parameter \\#3 \\$view \\(array\\|string\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer\\:\\:laterOn\\(\\) should be compatible with parameter \\$view \\(Illuminate\\\\Contracts\\\\Mail\\\\Mailable\\) of method Illuminate\\\\Mail\\\\Mailer\\:\\:laterOn\\(\\)$#"
 			count: 1
 			path: src/Mail/Mailer.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Config\\\\Repository\\:\\:package\\(\\)\\.$#"
+			count: 1
+			path: src/Support/ModuleServiceProvider.php
 
 		-
 			message: "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Support\\\\Testing\\\\Fakes\\\\MailFake\\:\\:queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue\\:\\:queue\\(\\)$#"

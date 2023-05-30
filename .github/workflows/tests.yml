@@ -50,6 +50,7 @@ jobs:
         with:
           php-version: ${{ matrix.phpVersion }}
           extensions: ${{ env.extensions }}
+          coverage: none
 
       - name: Setup dependency cache
         id: composercache

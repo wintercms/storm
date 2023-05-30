@@ -1,4 +1,6 @@
-<?php namespace Winter\Storm\Parse;
+<?php
+
+namespace Winter\Storm\Parse;
 
 use Illuminate\Support\ServiceProvider;
 use Winter\Storm\Parse\Processor\Symfony3Processor;
@@ -11,7 +13,6 @@ class ParseServiceProvider extends ServiceProvider
      * @var array
      */
     public $singletons = [
-        'parse.markdown' => Markdown::class,
         'parse.twig' => Twig::class,
         'parse.ini' => Ini::class,
     ];
@@ -22,6 +23,10 @@ class ParseServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind('parse.markdown', function ($app) {
+            return new Markdown;
+        });
+
         $this->app->singleton('parse.yaml', function ($app) {
             $yaml = new Yaml();
             $yaml->setProcessor(new Symfony3Processor);
