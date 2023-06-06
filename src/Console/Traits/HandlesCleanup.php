@@ -39,7 +39,7 @@ trait HandlesCleanup
     /**
      * Handle the provided Unix process signal
      */
-    public function handleSignal(int $signal): int|false
+    public function handleSignal(int $signal): void
     {
         // Handle the signal
         if (method_exists($this, 'handleCleanup')) {
@@ -48,10 +48,8 @@ trait HandlesCleanup
 
         // Exit cleanly at this point if this was a user termination
         if (in_array($signal, [SIGINT, SIGQUIT])) {
-            return 0;
+            exit(0);
         }
-
-        return false;
     }
 
     /**
