@@ -20,22 +20,26 @@ class FileLoader extends FileLoaderBase
     {
         $namespace = str_replace('.', '/', $namespace);
 
-        $file = "{$this->path}/{$locale}/{$namespace}/{$group}.php";
-
-        if ($this->files->exists($file)) {
-            return array_replace_recursive($lines, $this->files->getRequire($file));
-        }
-
-        // Try "xx-xx" format
-        $locale = str_replace('_', '-', strtolower($locale));
-
-        if ("{$this->path}/{$locale}/{$namespace}/{$group}.php" !== $file) {
-            $file = "{$this->path}/{$locale}/{$namespace}/{$group}.php";
+        foreach ($this->paths as $path) {
+            $file = "{$path}/{$locale}/{$namespace}/{$group}.php";
 
             if ($this->files->exists($file)) {
                 return array_replace_recursive($lines, $this->files->getRequire($file));
             }
+
+            // Try "xx-xx" format
+            $locale = str_replace('_', '-', strtolower($locale));
+
+            if ("{$path}/{$locale}/{$namespace}/{$group}.php" !== $file) {
+                $file = "{$path}/{$locale}/{$namespace}/{$group}.php";
+
+                if ($this->files->exists($file)) {
+                    return array_replace_recursive($lines, $this->files->getRequire($file));
+                }
+            }
         }
+
+
 
         return $lines;
     }
