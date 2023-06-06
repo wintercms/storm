@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\App;
+use Mockery as m;
 use Winter\Storm\Mail\MailManager;
 use Winter\Storm\Support\Facades\Mail;
 use Winter\Storm\Support\Testing\Fakes\MailFake;
