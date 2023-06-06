@@ -29,10 +29,10 @@ class FileLoader extends FileLoaderBase
                 }
 
                 // Look for a Winter-managed namespace with a Winter-formatted locale (xx-xx instead of xx_XX)
-                $underscoreLocale = str_replace('_', '-', strtolower($locale));
-                $underscoreFile = "{$path}/{$underscoreLocale}/{$winterNamespace}/{$group}.php";
-                if ($underscoreFile !== $file && $this->files->exists($underscoreFile)) {
-                    return array_replace_recursive($lines, $this->files->getRequire($underscoreFile));
+                $dashLocale = str_replace('_', '-', strtolower($locale));
+                $dashFile = "{$path}/{$dashLocale}/{$winterNamespace}/{$group}.php";
+                if ($dashFile !== $file && $this->files->exists($dashFile)) {
+                    return array_replace_recursive($lines, $this->files->getRequire($dashFile));
                 }
 
                 // Look for a vendor-managed namespace
@@ -66,10 +66,10 @@ class FileLoader extends FileLoaderBase
                 }
 
                 // Try "xx-xx" format
-                $underscoreLocale = str_replace('_', '-', strtolower($locale));
-                $underscoreFile = "{$path}/{$underscoreLocale}/{$group}.php";
-                if ($underscoreFile !== $file && $this->files->exists($underscoreFile)) {
-                    return $this->files->getRequire($underscoreFile);
+                $dashLocale = str_replace('_', '-', strtolower($locale));
+                $dashFile = "{$path}/{$dashLocale}/{$group}.php";
+                if ($dashFile !== $file && $this->files->exists($dashFile)) {
+                    return $this->files->getRequire($dashFile);
                 }
 
                 return $output;
