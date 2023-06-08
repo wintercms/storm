@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Scaffold;
 
 use Exception;
+use Illuminate\Foundation\Inspiring;
 use ReflectionClass;
 use Winter\Storm\Console\Command;
 use Winter\Storm\Filesystem\Filesystem;
@@ -149,6 +150,8 @@ abstract class GeneratorCommand extends Command
         $this->makeStubs();
 
         $this->info($this->type . ' created successfully.');
+
+        $this->info(Inspiring::quote());
     }
 
     /**

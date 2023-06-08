@@ -786,11 +786,6 @@ parameters:
 			path: src/Mail/Mailer.php
 
 		-
-			message: "#^Call to an undefined method Illuminate\\\\Config\\\\Repository\\:\\:package\\(\\)\\.$#"
-			count: 1
-			path: src/Support/ModuleServiceProvider.php
-
-		-
 			message: "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Support\\\\Testing\\\\Fakes\\\\MailFake\\:\\:queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue\\:\\:queue\\(\\)$#"
 			count: 1
 			path: src/Support/Testing/Fakes/MailFake.php
