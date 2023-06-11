@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Request;
 use Winter\Storm\Support\Collection;
 
 require_once("helpers-array.php");

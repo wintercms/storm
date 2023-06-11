@@ -2,8 +2,6 @@
 
 use Winter\Storm\Extension\Extendable;
 use Winter\Storm\Extension\ExtensionBase;
-use Winter\Storm\Filesystem\Filesystem;
-use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Testing\MocksClassLoader;
 
 class ExtendableTest extends TestCase
@@ -263,6 +261,137 @@ class ExtendableTest extends TestCase
         $test = $unserialized->bazbal();
         $this->assertInstanceOf(Closure::class, $test);
         $this->assertEquals($test(), $test_string);
+    }
+
+    public function testScopedExtension()
+    {
+        $getFoo = null;
+        $protectedBar = null;
+        $scope = null;
+
+        ExtendableTestExampleExtendableClassDotNotation::extend(function ($instance) use (&$getFoo, &$protectedBar, &$scope) {
+            $protectedBar = $this->protectedBar();
+            $scope = $instance;
+
+            $this->addDynamicMethod('getFoo', function () use (&$getFoo) {
+                $getFoo = 'foo';
+            });
+
+            $this->getFoo();
+        }, true);
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $this->assertEquals('foo', $getFoo);
+        $this->assertEquals('foo', $protectedBar);
+        $this->assertNull($scope);
+    }
+
+    public function testScopedExtensionWithOuterScope()
+    {
+        $this->getFoo = null;
+        $this->protectedBar = null;
+        $outerScope = null;
+
+        ExtendableTestExampleExtendableClassDotNotation::extend(function ($instance) use (&$outerScope) {
+            $outerScope = $instance;
+            $instance->protectedBar = $this->protectedBar();
+
+            $this->addDynamicMethod('getFoo', function () use ($instance) {
+                $instance->getFoo = 'foo';
+            });
+
+            $this->getFoo();
+        }, true, $this);
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $this->assertEquals('foo', $this->getFoo);
+        $this->assertEquals('foo', $this->protectedBar);
+        $this->assertSame($outerScope, $this);
+    }
+
+    public function testLocalExtension()
+    {
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+
+        $return = $object->extend(function () {
+            $this->protectedFoo = 'foo';
+            return 'bar';
+        });
+
+        $this->assertEquals('foo', $object->getProtectedFooAttribute());
+        $this->assertEquals('bar', $return);
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        // Should return back to 'bar', as only the previous instance was extended
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+    }
+
+    public function testLocalExtensionWithOuterScope()
+    {
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+        $outerScope = null;
+
+        $return = $object->extend(function ($instance) use (&$outerScope) {
+            $outerScope = $instance;
+            $this->protectedFoo = 'foo';
+            return 'bar';
+        }, $this);
+
+        $this->assertEquals('foo', $object->getProtectedFooAttribute());
+        $this->assertEquals('bar', $return);
+        $this->assertSame($outerScope, $this);
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        // Should return back to 'bar', as only the previous instance was extended
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+    }
+
+    public function testScopedExtensionCreatingDynamicMethodWithinScope()
+    {
+        ExtendableTestExampleExtendableClassDotNotation::extend(function () {
+            $this->addDynamicMethod('changeFoo', function () {
+                $this->protectedFoo = 'foo';
+                return $this;
+            });
+        }, true);
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+        $this->assertEquals('foo', $object->changeFoo()->getProtectedFooAttribute());
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        // Should still contain the same dynamic method as it's declared globally
+        $this->assertEquals('foo', $object->changeFoo()->getProtectedFooAttribute());
+    }
+
+    public function testLocalExtensionCreatingDynamicMethodWithinScope()
+    {
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $object->extend(function () {
+            $this->addDynamicMethod('changeFoo', function () {
+                $this->protectedFoo = 'foo';
+                return $this;
+            });
+        });
+
+        $this->assertEquals('bar', $object->getProtectedFooAttribute());
+        $this->assertEquals('foo', $object->changeFoo()->getProtectedFooAttribute());
+
+        $object = new ExtendableTestExampleExtendableClassDotNotation;
+
+        // Should not contain the same dynamic method as it's declared locally
+        $this->assertFalse($object->methodExists('changeFoo'));
     }
 }
 
