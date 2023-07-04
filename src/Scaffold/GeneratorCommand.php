@@ -133,7 +133,7 @@ abstract class GeneratorCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return bool|null
+     * @return int|bool|null
      */
     public function handle()
     {
@@ -152,7 +152,6 @@ abstract class GeneratorCommand extends Command
             $this->error($e->getMessage());
             return 1;
         }
-
 
         $this->makeStubs();
 
