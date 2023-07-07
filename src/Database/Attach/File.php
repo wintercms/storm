@@ -843,8 +843,6 @@ class File extends Model
             file_put_contents($sourcePath, Svg::extract($sourcePath));
         }
 
-        pathinfo($destinationPath, PATHINFO_EXTENSION);
-
         if (!$this->isLocalStorage()) {
             return $this->copyLocalToStorage($sourcePath, $destinationPath);
         }
