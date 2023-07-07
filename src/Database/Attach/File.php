@@ -11,6 +11,7 @@ use Winter\Storm\Database\Model;
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Network\Http;
 use Winter\Storm\Support\Facades\File as FileHelper;
+use Winter\Storm\Support\Svg;
 
 /**
  * File attachment model
@@ -834,17 +835,26 @@ class File extends Model
             $destinationFileName = $this->disk_name;
         }
 
-        $destinationPath = $this->getStorageDirectory() . $this->getPartitionDirectory();
+        $destinationFolder = $this->getStorageDirectory() . $this->getPartitionDirectory();
+        $destinationPath = $destinationFolder . $destinationFileName;
+
+        // Filter SVG files
+        if (pathinfo($destinationPath, PATHINFO_EXTENSION) === 'svg') {
+            file_put_contents($sourcePath, Svg::extract($sourcePath));
+        }
+
+        pathinfo($destinationPath, PATHINFO_EXTENSION);
 
         if (!$this->isLocalStorage()) {
-            return $this->copyLocalToStorage($sourcePath, $destinationPath . $destinationFileName);
+            return $this->copyLocalToStorage($sourcePath, $destinationPath);
         }
 
         /*
          * Using local storage, tack on the root path and work locally
          * this will ensure the correct permissions are used.
          */
-        $destinationPath = $this->getLocalRootPath() . '/' . $destinationPath;
+        $destinationFolder = $this->getLocalRootPath() . '/' . $destinationFolder;
+        $destinationPath = $destinationFolder . $destinationFileName;
 
         /*
          * Verify the directory exists, if not try to create it. If creation fails
@@ -852,13 +862,13 @@ class File extends Model
          * otherwise trigger the error.
          */
         if (
-            !FileHelper::isDirectory($destinationPath) &&
-            !FileHelper::makeDirectory($destinationPath, 0777, true, true)
+            !FileHelper::isDirectory($destinationFolder) &&
+            !FileHelper::makeDirectory($destinationFolder, 0777, true, true)
         ) {
             trigger_error(error_get_last()['message'], E_USER_WARNING);
         }
 
-        return FileHelper::copy($sourcePath, $destinationPath . $destinationFileName);
+        return FileHelper::copy($sourcePath, $destinationPath);
     }
 
     /**

@@ -113,6 +113,7 @@ class Definitions
             'png',
             'webp',
             'gif',
+            'svg',
             'js',
             'map',
             'ico',
@@ -147,7 +148,7 @@ class Definitions
             'webm',
             'mkv',
             'rar',
-            'zip'
+            'zip',
         ];
     }
 
@@ -167,6 +168,7 @@ class Definitions
             'png',
             'webp',
             'gif',
+            'svg',
             'ico',
             'css',
             'js',
@@ -178,7 +180,7 @@ class Definitions
             'md',
             'less',
             'sass',
-            'scss'
+            'scss',
         ];
     }
 
@@ -197,7 +199,8 @@ class Definitions
             'bmp',
             'png',
             'webp',
-            'gif'
+            'gif',
+            'svg',
         ];
     }
 
@@ -217,7 +220,7 @@ class Definitions
             'mpg',
             'mpeg',
             'mkv',
-            'webm'
+            'webm',
         ];
     }
 
@@ -235,7 +238,7 @@ class Definitions
             'wav',
             'wma',
             'm4a',
-            'ogg'
+            'ogg',
         ];
     }
 }
