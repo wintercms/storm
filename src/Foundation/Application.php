@@ -282,6 +282,25 @@ class Application extends ApplicationBase
     }
 
     /**
+     * Normalize a relative or absolute path to a cache file.
+     *
+     * @param  string  $key
+     * @param  string  $default
+     * @return string
+     */
+    protected function normalizeCachePath($key, $default)
+    {
+        $path = parent::normalizeCachePath($key, $default);
+
+        $directory = pathinfo($path, PATHINFO_DIRNAME);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        return $path;
+    }
+
+    /**
      * Resolve the given type from the container.
      *
      * (Overriding Container::make)
