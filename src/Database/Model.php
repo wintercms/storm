@@ -1,13 +1,15 @@
 <?php namespace Winter\Storm\Database;
 
+use Cache;
 use Closure;
-use Exception;
 use DateTimeInterface;
+use Exception;
+use Illuminate\Database\Eloquent\Collection as CollectionBase;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Throwable;
+use Winter\Storm\Argon\Argon;
 use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Str;
-use Winter\Storm\Argon\Argon;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Illuminate\Database\Eloquent\Collection as CollectionBase;
 
 /**
  * Active Record base class.
@@ -83,6 +85,53 @@ class Model extends EloquentModel implements ModelInterface
         $this->extendableConstruct();
 
         $this->fill($attributes);
+    }
+
+    /**
+     * Static helper for isDatabaseReady()
+     */
+    public static function hasDatabaseTable(): bool
+    {
+        return (new static)->isDatabaseReady();
+    }
+
+    /**
+     * Check if the model's database connection is ready
+     */
+    public function isDatabaseReady(): bool
+    {
+        $cacheKey = sprintf('winter.storm::model.%s.isDatabaseReady.%s.%s', get_class($this), $this->getConnectionName() ?? '', $this->getTable());
+        if ($result = Cache::get($cacheKey)) {
+            return $result;
+        }
+
+        // Resolver hasn't been set yet
+        if (!static::getConnectionResolver()) {
+            return false;
+        }
+
+        // Connection hasn't been set yet or the database doesn't exist
+        try {
+            $connection = $this->getConnection();
+            $connection->getPdo();
+        } catch (Throwable $ex) {
+            return false;
+        }
+
+        // Database exists but table doesn't
+        try {
+            $schema = $connection->getSchemaBuilder();
+            $table = $this->getTable();
+            if (!$schema->hasTable($table)) {
+                return false;
+            }
+        } catch (Throwable $ex) {
+            return false;
+        }
+
+        Cache::forever($cacheKey, true);
+
+        return true;
     }
 
     /**
