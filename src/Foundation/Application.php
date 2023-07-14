@@ -381,18 +381,24 @@ class Application extends ApplicationBase
 
     /**
      * Returns true if a database connection is present.
-     * @return boolean
      */
-    public function hasDatabase()
+    public function hasDatabase(): bool
     {
         try {
             $this['db.connection']->getPdo();
-        }
-        catch (Throwable $ex) {
+        } catch (Throwable $ex) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the provided table is present on the default database connection.
+     */
+    public function hasDatabaseTable(string $table): bool
+    {
+        return $this->hasDatabase() && $this['db.connection']->getSchemaBuilder()->hasTable($table);
     }
 
     /**
