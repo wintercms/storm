@@ -431,8 +431,8 @@ class Filesystem extends FilesystemBase
         $iterator = function ($path) use (&$iterator, &$symlinks, $basePath, $restrictBaseDir, $deep) {
             foreach (new DirectoryIterator($path) as $directory) {
                 if (
-                    $directory->isDir() === false
-                    || $directory->isDot() === true
+                    $directory->isDot()
+                    || !$directory->isDir()
                 ) {
                     continue;
                 }
