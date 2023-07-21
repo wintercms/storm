@@ -223,7 +223,7 @@ class Model extends EloquentModel implements ModelInterface
 
                 // No replicated / pruned events
                 if (
-                    ($radical === 'replicat' || $radical === 'prun') 
+                    ($radical === 'replicat' || $radical === 'prun')
                     && $event === 'ed'
                 ) {
                     continue;
