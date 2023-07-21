@@ -221,8 +221,11 @@ class Model extends EloquentModel implements ModelInterface
                 $eventMethod = $radical . $event; // saving / saved
                 $method = $hook . ucfirst($radical); // beforeSave / afterSave
 
-                if (($radical === 'replicat' || $radical === 'prun') 
-                     && $event === 'ed') {
+                // No replicated / pruned events
+                if (
+                    ($radical === 'replicat' || $radical === 'prun') 
+                    && $event === 'ed'
+                ) {
                     continue;
                 }
 
