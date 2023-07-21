@@ -213,13 +213,18 @@ class Model extends EloquentModel implements ModelInterface
             return;
         }
 
-        $radicals = ['creat', 'sav', 'updat', 'delet', 'fetch'];
+        $radicals = ['creat', 'sav', 'updat', 'delet', 'fetch', 'prun', 'replicat'];
         $hooks = ['before' => 'ing', 'after' => 'ed'];
 
         foreach ($radicals as $radical) {
             foreach ($hooks as $hook => $event) {
                 $eventMethod = $radical . $event; // saving / saved
                 $method = $hook . ucfirst($radical); // beforeSave / afterSave
+
+                if (($radical === 'replicat' || $radical === 'prun') 
+                     && $event === 'ed') {
+                    continue;
+                }
 
                 if ($radical != 'fetch') {
                     $method .= 'e';
@@ -480,6 +485,44 @@ class Model extends EloquentModel implements ModelInterface
     }
 
     /**
+     * Handle the "replicating" model event
+     */
+    protected function beforeReplicate()
+    {
+        /**
+         * @event model.beforeReplicate
+         * Called before the model is replicated
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
+         *
+         * Example usage:
+         *
+         *     $model->bindEvent('model.beforeReplicate', function () use (\Winter\Storm\Database\Model $model) {
+         *         $model->name = $model->name . ' copy';
+         *     });
+         *
+         */
+    }
+
+    /**
+     * Handle the "pruning" model event
+     */
+    protected function beforePrune()
+    {
+        /**
+         * @event model.beforePrune
+         * Called before the model is pruned
+         * > **Note:** also triggered in Winter\Storm\Halcyon\Model
+         *
+         * Example usage:
+         *
+         *     $model->bindEvent('model.beforePrune', function () use (\Winter\Storm\Database\Model $model) {
+         *         $model->attachment->delete();
+         *     });
+         *
+         */
+    }
+
+    /**
      * Flush the memory cache.
      * @return void
      */
@@ -579,7 +622,7 @@ class Model extends EloquentModel implements ModelInterface
             [
                 'creating', 'created', 'updating', 'updated',
                 'deleting', 'deleted', 'saving', 'saved',
-                'restoring', 'restored', 'fetching', 'fetched'
+                'restoring', 'restored', 'fetching', 'fetched', 'pruning', 'replicating'
             ],
             $this->observables
         );
