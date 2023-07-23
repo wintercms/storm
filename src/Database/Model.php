@@ -1095,6 +1095,20 @@ class Model extends EloquentModel implements ModelInterface
     //
 
     /**
+     * Determine if the given attribute will be processed by getAttributeValue().
+     */
+    public function hasAttribute(string $key): bool
+    {
+        return (
+            array_key_exists($key, $this->attributes)
+            || array_key_exists($key, $this->casts)
+            || $this->hasGetMutator($key)
+            || $this->hasAttributeMutator($key)
+            || $this->isClassCastable($key)
+        );
+    }
+
+    /**
      * Get an attribute from the model.
      * Overrides {@link Eloquent} to support loading from property-defined relations.
      *
@@ -1110,13 +1124,7 @@ class Model extends EloquentModel implements ModelInterface
         // If the attribute exists in the attribute array or has a "get" mutator we will
         // get the attribute's value. Otherwise, we will proceed as if the developers
         // are asking for a relationship's value. This covers both types of values.
-        if (
-            array_key_exists($key, $this->attributes)
-            || array_key_exists($key, $this->casts)
-            || $this->hasGetMutator($key)
-            || $this->hasAttributeMutator($key)
-            || $this->isClassCastable($key)
-        ) {
+        if ($this->hasAttribute($key)) {
             return $this->getAttributeValue($key);
         }
 
