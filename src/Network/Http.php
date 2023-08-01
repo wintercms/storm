@@ -445,11 +445,14 @@ class Http
     /**
      * Add JSON encoded payload
      */
-    public function json(array|string $payload): self
+    public function json(mixed $payload): self
     {
-        if (is_array($payload)) {
-            $payload = json_encode($payload);
+        if (!Str::isJson($payload)) {
+            if (!$payload = json_encode($payload)) {
+                throw new ApplicationException('provided payload cannot be json_encoded ');
+            }
         }
+
         $this->requestData = $payload;
         $this->header('Content-Type', 'application/json');
 
