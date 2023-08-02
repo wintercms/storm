@@ -449,7 +449,7 @@ class Http
     {
         if (!Str::isJson($payload)) {
             if (!$payload = json_encode($payload)) {
-                throw new ApplicationException('provided payload cannot be json_encoded ');
+                throw new ApplicationException('The provided payload failed to be encoded as JSON');
             }
         }
 
