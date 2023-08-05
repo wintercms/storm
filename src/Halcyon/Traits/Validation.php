@@ -120,16 +120,16 @@ trait Validation
             ? $this->throwOnValidation
             : true;
 
+        if ($this->methodExists('beforeValidate')) {
+            $this->beforeValidate();
+        }
+
         if (($this->fireModelEvent('validating') === false) || ($this->fireEvent('model.beforeValidate') === false)) {
             if ($throwOnValidation) {
                 throw new ModelException($this);
             }
 
             return false;
-        }
-
-        if ($this->methodExists('beforeValidate')) {
-            $this->beforeValidate();
         }
 
         /*
@@ -209,12 +209,12 @@ trait Validation
             }
         }
 
-        $this->fireModelEvent('validated', false);
-        $this->fireEvent('model.afterValidate');
-
         if ($this->methodExists('afterValidate')) {
             $this->afterValidate();
         }
+
+        $this->fireModelEvent('validated', false);
+        $this->fireEvent('model.afterValidate');
 
         if (!$success && $throwOnValidation) {
             throw new ModelException($this);

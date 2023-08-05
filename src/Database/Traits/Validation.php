@@ -174,6 +174,10 @@ trait Validation
             ? $this->throwOnValidation
             : true;
 
+        if ($this->methodExists('beforeValidate')) {
+            $this->beforeValidate();
+        }
+
         /**
          * @event model.beforeValidate
          * Called before the model is validated
@@ -192,10 +196,6 @@ trait Validation
             }
 
             return false;
-        }
-
-        if ($this->methodExists('beforeValidate')) {
-            $this->beforeValidate();
         }
 
         /*
@@ -323,6 +323,10 @@ trait Validation
             }
         }
 
+        if ($this->methodExists('afterValidate')) {
+            $this->afterValidate();
+        }
+
         /**
          * @event model.afterValidate
          * Called after the model is validated
@@ -336,10 +340,6 @@ trait Validation
          */
         $this->fireModelEvent('validated', false);
         $this->fireEvent('model.afterValidate');
-
-        if ($this->methodExists('afterValidate')) {
-            $this->afterValidate();
-        }
 
         if (!$success && $throwOnValidation) {
             throw new ModelException($this);

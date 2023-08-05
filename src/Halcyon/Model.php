@@ -239,11 +239,14 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
                 }
 
                 self::$eventMethod(function ($model) use ($method) {
-                    $model->fireEvent('model.' . $method);
+                    $result = null;
 
                     if ($model->methodExists($method)) {
-                        return $model->$method();
+                        $result = $model->$method();
                     }
+                    $model->fireEvent('model.' . $method);
+
+                    return $result;
                 });
             }
         }
