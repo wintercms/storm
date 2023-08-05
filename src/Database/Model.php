@@ -1,13 +1,15 @@
 <?php namespace Winter\Storm\Database;
 
+use Cache;
 use Closure;
-use Exception;
 use DateTimeInterface;
+use Exception;
+use Illuminate\Database\Eloquent\Collection as CollectionBase;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Throwable;
+use Winter\Storm\Argon\Argon;
 use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Str;
-use Winter\Storm\Argon\Argon;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Illuminate\Database\Eloquent\Collection as CollectionBase;
 
 /**
  * Active Record base class.
@@ -83,6 +85,54 @@ class Model extends EloquentModel implements ModelInterface
         $this->extendableConstruct();
 
         $this->fill($attributes);
+    }
+
+    /**
+     * Static helper for isDatabaseReady()
+     */
+    public static function hasDatabaseTable(): bool
+    {
+        return (new static)->isDatabaseReady();
+    }
+
+    /**
+     * Check if the model's database connection is ready
+     */
+    public function isDatabaseReady(): bool
+    {
+        $cacheKey = sprintf('winter.storm::model.%s.isDatabaseReady.%s.%s', get_class($this), $this->getConnectionName() ?? '', $this->getTable());
+        if ($result = Cache::get($cacheKey)) {
+            return $result;
+        }
+
+        // Resolver hasn't been set yet
+        /** @phpstan-ignore-next-line */
+        if (!static::getConnectionResolver()) {
+            return false;
+        }
+
+        // Connection hasn't been set yet or the database doesn't exist
+        try {
+            $connection = $this->getConnection();
+            $connection->getPdo();
+        } catch (Throwable $ex) {
+            return false;
+        }
+
+        // Database exists but table doesn't
+        try {
+            $schema = $connection->getSchemaBuilder();
+            $table = $this->getTable();
+            if (!$schema->hasTable($table)) {
+                return false;
+            }
+        } catch (Throwable $ex) {
+            return false;
+        }
+
+        Cache::forever($cacheKey, true);
+
+        return true;
     }
 
     /**
@@ -1048,6 +1098,20 @@ class Model extends EloquentModel implements ModelInterface
     //
 
     /**
+     * Determine if the given attribute will be processed by getAttributeValue().
+     */
+    public function hasAttribute(string $key): bool
+    {
+        return (
+            array_key_exists($key, $this->attributes)
+            || array_key_exists($key, $this->casts)
+            || $this->hasGetMutator($key)
+            || $this->hasAttributeMutator($key)
+            || $this->isClassCastable($key)
+        );
+    }
+
+    /**
      * Get an attribute from the model.
      * Overrides {@link Eloquent} to support loading from property-defined relations.
      *
@@ -1063,13 +1127,7 @@ class Model extends EloquentModel implements ModelInterface
         // If the attribute exists in the attribute array or has a "get" mutator we will
         // get the attribute's value. Otherwise, we will proceed as if the developers
         // are asking for a relationship's value. This covers both types of values.
-        if (
-            array_key_exists($key, $this->attributes)
-            || array_key_exists($key, $this->casts)
-            || $this->hasGetMutator($key)
-            || $this->hasAttributeMutator($key)
-            || $this->isClassCastable($key)
-        ) {
+        if ($this->hasAttribute($key)) {
             return $this->getAttributeValue($key);
         }
 

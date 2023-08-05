@@ -25,11 +25,28 @@ class Extendable
     public $implement = null;
 
     /**
+     * Indicates if the extendable constructor has completed.
+     */
+    protected bool $extendableConstructed = false;
+
+    /**
+     * This stores any locally-scoped callbacks fired before the extendable constructor had completed.
+     */
+    protected array $localCallbacks = [];
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->extendableConstruct();
+        $this->extendableConstructed = true;
+
+        if (count($this->localCallbacks)) {
+            foreach ($this->localCallbacks as $callback) {
+                $this->extendableAddLocalExtension($callback[0], $callback[1]);
+            }
+        }
     }
 
     public function __get($name)
@@ -98,6 +115,11 @@ class Extendable
      */
     protected function extendableAddLocalExtension(\Closure $callback, ?object $outerScope = null)
     {
+        if (!$this->extendableConstructed) {
+            $this->localCallbacks[] = [$callback, $outerScope];
+            return;
+        }
+
         return $callback->call($this, $outerScope ?? $this);
     }
 }
