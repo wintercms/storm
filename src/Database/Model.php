@@ -226,11 +226,10 @@ class Model extends EloquentModel implements ModelInterface
                 }
 
                 self::$eventMethod(function ($model) use ($method) {
-                    $model->fireEvent('model.' . $method);
-
                     if ($model->methodExists($method)) {
-                        return $model->$method();
+                        $model->bindEvent('model.' . $method, [$model, $method]);
                     }
+                    $model->fireEvent('model.' . $method);
                 });
             }
         }
