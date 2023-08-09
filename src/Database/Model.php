@@ -230,7 +230,7 @@ class Model extends EloquentModel implements ModelInterface
                         // register a default priority(0) listener to call the model method
                         $model->bindEvent('model.' . $method, [$model, $method]);
                     }
-                    return $model->fireEvent('model.' . $method, true);
+                    return $model->fireEvent('model.' . $method, halt:true);
                 });
             }
         }
