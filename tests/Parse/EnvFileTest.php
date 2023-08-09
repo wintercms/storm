@@ -161,19 +161,19 @@ class EnvFileTest extends TestCase
         $env->write($tmpFile);
 
         $result = file_get_contents($tmpFile);
-        $this->assertStringContainsString('APP_KEY="true"', $result);
+        $this->assertStringContainsString('APP_KEY=true', $result);
 
         $env->set(['APP_KEY' => false]);
         $env->write($tmpFile);
 
         $result = file_get_contents($tmpFile);
-        $this->assertStringContainsString('APP_KEY="false"', $result);
+        $this->assertStringContainsString('APP_KEY=false', $result);
 
         $env->set(['APP_KEY' => null]);
         $env->write($tmpFile);
 
         $result = file_get_contents($tmpFile);
-        $this->assertStringContainsString('APP_KEY="null"', $result);
+        $this->assertStringContainsString('APP_KEY=null', $result);
 
         unlink($tmpFile);
     }
