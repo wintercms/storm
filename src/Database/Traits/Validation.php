@@ -174,6 +174,12 @@ trait Validation
             ? $this->throwOnValidation
             : true;
 
+        if ($this->methodExists('beforeValidate')) {
+            // Register the method as a listener with default priority
+            // to allow for complete control over the execution order
+            $model->bindEvent('model.beforeValidate', [$model, 'beforeValidate']);
+        }
+
         /**
          * @event model.beforeValidate
          * Called before the model is validated
@@ -186,16 +192,12 @@ trait Validation
          *     });
          *
          */
-        if (($this->fireModelEvent('validating') === false) || ($this->fireEvent('model.beforeValidate', [], true) === false)) {
+        if (($this->fireModelEvent('validating') === false) || ($this->fireEvent('model.beforeValidate', halt: true) === false)) {
             if ($throwOnValidation) {
                 throw new ModelException($this);
             }
 
             return false;
-        }
-
-        if ($this->methodExists('beforeValidate')) {
-            $this->beforeValidate();
         }
 
         /*
@@ -323,6 +325,12 @@ trait Validation
             }
         }
 
+        if ($this->methodExists('afterValidate')) {
+            // Register the method as a listener with default priority
+            // to allow for complete control over the execution order
+            $model->bindEvent('model.afterValidate', [$model, 'afterValidate']);
+        }
+
         /**
          * @event model.afterValidate
          * Called after the model is validated
@@ -335,11 +343,7 @@ trait Validation
          *
          */
         $this->fireModelEvent('validated', false);
-        $this->fireEvent('model.afterValidate');
-
-        if ($this->methodExists('afterValidate')) {
-            $this->afterValidate();
-        }
+        $this->fireEvent('model.afterValidate', halt: true);
 
         if (!$success && $throwOnValidation) {
             throw new ModelException($this);

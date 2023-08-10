@@ -24,6 +24,11 @@ trait SoftDelete
         static::addGlobalScope(new SoftDeletingScope);
 
         static::restoring(function ($model) {
+            if ($model->methodExists('beforeRestore')) {
+                // Register the method as a listener with default priority
+                // to allow for complete control over the execution order
+                $model->bindEvent('model.beforeRestore', [$model, 'beforeRestore']);
+            }
             /**
              * @event model.beforeRestore
              * Called before the model is restored from a soft delete
@@ -35,13 +40,15 @@ trait SoftDelete
              *     });
              *
              */
-            $model->fireEvent('model.beforeRestore');
-            if ($model->methodExists('beforeRestore')) {
-                $model->beforeRestore();
-            }
+            return $model->fireEvent('model.beforeRestore', halt: true);
         });
 
         static::restored(function ($model) {
+            if ($model->methodExists('afterRestore')) {
+                // Register the method as a listener with default priority
+                // to allow for complete control over the execution order
+                $model->bindEvent('model.afterRestore', [$model, 'afterRestore']);
+            }
             /**
              * @event model.afterRestore
              * Called after the model is restored from a soft delete
@@ -53,10 +60,7 @@ trait SoftDelete
              *     });
              *
              */
-            $model->fireEvent('model.afterRestore');
-            if ($model->methodExists('afterRestore')) {
-                $model->afterRestore();
-            }
+            return $model->fireEvent('model.afterRestore', halt: true);
         });
     }
 
