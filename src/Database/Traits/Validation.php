@@ -177,7 +177,7 @@ trait Validation
         if ($this->methodExists('beforeValidate')) {
             // Register the method as a listener with default priority
             // to allow for complete control over the execution order
-            $model->bindEvent('model.beforeValidate', [$model, 'beforeValidate']);
+            $this->bindEvent('model.beforeValidate', [$this, 'beforeValidate']);
         }
 
         /**
@@ -328,7 +328,7 @@ trait Validation
         if ($this->methodExists('afterValidate')) {
             // Register the method as a listener with default priority
             // to allow for complete control over the execution order
-            $model->bindEvent('model.afterValidate', [$model, 'afterValidate']);
+            $this->bindEvent('model.afterValidate', [$this, 'afterValidate']);
         }
 
         /**
