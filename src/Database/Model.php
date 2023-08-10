@@ -231,7 +231,9 @@ class Model extends EloquentModel implements ModelInterface
                         // to allow for complete control over the execution order
                         $model->bindEvent('model.' . $method, [$model, $method]);
                     }
-                    // First listener that returns a non-null result will cancel the further propagation of the event
+                    // First listener that returns a non-null result will cancel the
+                    // further propagation of the event; If that result is false, the
+                    // underlying action will get cancelled (e.g. creating, saving, deleting)
                     return $model->fireEvent('model.' . $method, halt: true);
                 });
             }
