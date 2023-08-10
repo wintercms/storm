@@ -231,8 +231,8 @@ class Model extends EloquentModel implements ModelInterface
                         // to allow for complete control over the execution order
                         $model->bindEvent('model.' . $method, [$model, $method]);
                     }
-                    // Use a halting event; First listener that returns false cancels the event.
-                    return $model->fireEvent('model.' . $method, halt:true);
+                    // First listener that returns a non-null result will cancel the further propagation of the event
+                    return $model->fireEvent('model.' . $method, halt: true);
                 });
             }
         }
