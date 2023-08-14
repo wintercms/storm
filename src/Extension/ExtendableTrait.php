@@ -8,6 +8,7 @@ use Closure;
 use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Serialization;
 use Illuminate\Support\Facades\App;
+use ReflectionException;
 
 /**
  * This extension trait is used when access to the underlying base class
@@ -386,9 +387,9 @@ trait ExtendableTrait
             }
         }
 
-        $parent = get_parent_class();
-        if ($parent !== false && method_exists($parent, '__get')) {
-            return parent::__get($name);
+        $parent = $this->extensionGetParentClass();
+        if ($parent !== false && $this->extensionMethodExists($parent, '__get')) {
+            return $this->extensionCallMethod($parent, '__get', [$name]);
         }
 
         return null;
@@ -413,9 +414,9 @@ trait ExtendableTrait
         /*
          * This targets trait usage in particular
          */
-        $parent = get_parent_class();
-        if ($parent !== false && method_exists($parent, '__set')) {
-            parent::__set($name, $value);
+        $parent = $this->extensionGetParentClass();
+        if ($parent !== false && $this->extensionMethodExists($parent, '__set')) {
+            return $this->extensionCallMethod($parent, '__set', [$name, $value]);
         }
 
         /*
@@ -457,9 +458,9 @@ trait ExtendableTrait
             }
         }
 
-        $parent = get_parent_class();
-        if ($parent !== false && method_exists($parent, '__call')) {
-            return parent::__call($name, $params);
+        $parent = $this->extensionGetParentClass();
+        if ($parent !== false && $this->extensionMethodExists($parent, '__call')) {
+            return $this->extensionCallMethod($parent, '__call', [$name, $params]);
         }
 
         throw new BadMethodCallException(sprintf(
@@ -549,5 +550,76 @@ trait ExtendableTrait
         }
 
         return self::$extendableClassLoader = App::make(ClassLoader::class);
+    }
+
+    /**
+     * Gets the parent class using reflection.
+     *
+     * The parent class must either not be the `Extendable` class, or must not be using the `ExtendableTrait` trait,
+     * in order to prevent infinite loops.
+     *
+     * @return ReflectionClass|false
+     */
+    protected function extensionGetParentClass(object $instance = null)
+    {
+        // Shortcut to prevent infinite loops if the class extends Extendable.
+        if ($this instanceof Extendable) {
+            return false;
+        }
+
+        // Find if any parent uses the Extendable trait
+        if (!is_null($instance)) {
+            $reflector = $instance;
+        } else {
+            $reflector = new ReflectionClass($this);
+        }
+        $parent = $reflector->getParentClass();
+
+        // If there's no parent, stop here.
+        if ($parent === false) {
+            return false;
+        }
+
+        while (!in_array(ExtendableTrait::class, $parent->getTraitNames())) {
+            $parent = $parent->getParentClass();
+            if ($parent === false) {
+                break;
+            }
+        }
+
+        // If no parent uses the Extendable trait, then return the parent class
+        if ($parent === false) {
+            return $reflector->getParentClass();
+        }
+
+        // Otherwise, we need to loop through until we find the parent class that doesn't use the Extendable trait
+        return $this->extensionGetParentClass($parent);
+    }
+
+    /**
+     * Determines if the given class reflection contains the given method.
+     */
+    protected function extensionMethodExists(ReflectionClass $class, string $methodName): bool
+    {
+        try {
+            $method = $class->getMethod($methodName);
+
+            if (!$method->isPublic()) {
+                return false;
+            }
+        } catch (ReflectionException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Calls a method through reflection.
+     */
+    protected function extensionCallMethod(ReflectionClass $class, string $method, array $params)
+    {
+        $method = $class->getMethod($method);
+        return $method->invokeArgs($this, $params);
     }
 }
