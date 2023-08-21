@@ -311,6 +311,8 @@ class QueryBuilder extends QueryBuilderBase
             return 0;
         }
 
+        $this->clearDuplicateCache();
+
         if ($update === []) {
             return (int) $this->insert($values);
         }
