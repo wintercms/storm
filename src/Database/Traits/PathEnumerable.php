@@ -177,7 +177,7 @@ trait PathEnumerable
     public function getEnumerablePath(): string
     {
         if ($this->parent()->exists()) {
-            return $this->parent->path . '/' . $this->id;
+            return $this->parent->{$this->getPathColumnName()} . '/' . $this->id;
         }
 
         return '/' . $this->id;
@@ -188,7 +188,7 @@ trait PathEnumerable
      */
     public function setEnumerablePath(): void
     {
-        $this->path = $path = $this->getEnumerablePath();
+        $this->{$this->getPathColumnName()} = $path = $this->getEnumerablePath();
 
         $this->newQuery()
             ->where($this->getKeyName(), $this->id)
