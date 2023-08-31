@@ -124,6 +124,14 @@ trait PathEnumerable
     }
 
     /**
+     * Gets a nested collection of all records.
+     */
+    public function getNested(): Collection
+    {
+        return $this->newQuery()->get()->toNested();
+    }
+
+    /**
      * Root nodes scope.
      *
      * Gets all record that form the root nodes of the hierarchy.

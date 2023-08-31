@@ -148,6 +148,37 @@ class PathEnumerableTest extends DbTestCase
         $this->assertNull(TestModelEnumerablePath::find($child->id));
     }
 
+    public function testGetNestedRecords()
+    {
+        $grandparents = new TestModelEnumerablePath([
+            'name' => 'Grandparents',
+        ]);
+        $parents = new TestModelEnumerablePath([
+            'name' => 'Parents',
+        ]);
+        $daughter = new TestModelEnumerablePath([
+            'name' => 'Daughter',
+        ]);
+        $child = new TestModelEnumerablePath([
+            'name' => 'Child',
+        ]);
+
+        $grandparents->save();
+        $parents->parent = $grandparents;
+        $parents->save();
+        $daughter->parent = $parents;
+        $daughter->save();
+        $child->parent = $daughter;
+        $child->save();
+
+        $grandparents->reload();
+        $nested = $grandparents->getNested();
+        $this->assertEquals($grandparents->name, $nested->get(1)->name);
+        $this->assertEquals($parents->name, $nested->get(1)->children->get(0)->name);
+        $this->assertEquals($daughter->name, $nested->get(1)->children->get(0)->children->get(0)->name);
+        $this->assertEquals($child->name, $nested->get(1)->children->get(0)->children->get(0)->children->get(0)->name);
+    }
+
     protected function createTable()
     {
         $this->getBuilder()->create('path_enumerable', function ($table) {
