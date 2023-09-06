@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\App;
+use Illuminate\Mail\MailManager;
 use Winter\Storm\Support\Facades\Mail;
 use Winter\Storm\Support\Testing\Fakes\MailFake;
 
@@ -11,7 +12,7 @@ class MailFakeTest extends TestCase
         parent::setUp();
 
         App::shouldReceive('getLocale')->andReturn('en/US');
-        Mail::swap(new MailFake());
+        Mail::swap(new MailFake(new MailManager(app())));
 
         $this->recipient = 'fake@localhost';
         $this->subject = 'MailFake test';

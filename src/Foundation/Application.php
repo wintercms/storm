@@ -70,9 +70,9 @@ class Application extends ApplicationBase
      *
      * @return string
      */
-    public function publicPath()
+    public function publicPath($path = '')
     {
-        return $this->basePath;
+        return $this->joinPaths($this->basePath, $path);
     }
 
     /**

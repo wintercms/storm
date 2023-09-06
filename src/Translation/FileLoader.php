@@ -20,20 +20,22 @@ class FileLoader extends FileLoaderBase
     {
         $namespace = str_replace('.', '/', $namespace);
 
-        $file = "{$this->path}/{$locale}/{$namespace}/{$group}.php";
-
-        if ($this->files->exists($file)) {
-            return array_replace_recursive($lines, $this->files->getRequire($file));
-        }
-
-        // Try "xx-xx" format
-        $locale = str_replace('_', '-', strtolower($locale));
-
-        if ("{$this->path}/{$locale}/{$namespace}/{$group}.php" !== $file) {
-            $file = "{$this->path}/{$locale}/{$namespace}/{$group}.php";
+        foreach ($this->paths as $path) {
+            $file = "{$path}/{$locale}/{$namespace}/{$group}.php";
 
             if ($this->files->exists($file)) {
                 return array_replace_recursive($lines, $this->files->getRequire($file));
+            }
+
+            // Try "xx-xx" format
+            $locale = str_replace('_', '-', strtolower($locale));
+
+            if ("{$path}/{$locale}/{$namespace}/{$group}.php" !== $file) {
+                $file = "{$path}/{$locale}/{$namespace}/{$group}.php";
+
+                if ($this->files->exists($file)) {
+                    return array_replace_recursive($lines, $this->files->getRequire($file));
+                }
             }
         }
 
@@ -51,21 +53,21 @@ class FileLoader extends FileLoaderBase
      * @param  string  $group
      * @return array
      */
-    protected function loadPath($path, $locale, $group)
+    protected function loadPaths($paths, $locale, $group)
     {
-        if ($this->files->exists($full = "{$path}/{$locale}/{$group}.php")) {
-            return $this->files->getRequire($full);
-        }
-
-        // Try "xx-xx" format
-        $locale = str_replace('_', '-', strtolower($locale));
-
-        if ("{$path}/{$locale}/{$group}.php" !== $full) {
-            if ($this->files->exists($full = "{$path}/{$locale}/{$group}.php")) {
-                return $this->files->getRequire($full);
+        return collect($paths)
+        ->reduce(function ($output, $path) use ($locale, $group) {
+            $loc = str_replace('_', '-', strtolower($locale));
+            $full1 = "{$path}/{$locale}/{$group}.php";
+            foreach ($loc === $locale ? [$full1] : [$full1, "{$path}/{$loc}/{$group}.php"] as $full) {
+                if ($this->files->exists($full)) {
+                    $output = array_replace_recursive($output, $this->files->getRequire($full));
+                    break;
+                }
             }
-        }
 
-        return [];
+            return $output;
+        }, []);
+
     }
 }
