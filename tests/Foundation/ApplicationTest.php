@@ -5,6 +5,9 @@ use Winter\Storm\Filesystem\PathResolver;
 
 class ApplicationTest extends TestCase
 {
+    protected $app;
+    protected $basePath;
+    
     protected function setUp(): void
     {
         // Mock application
