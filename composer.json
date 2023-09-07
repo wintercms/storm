@@ -36,7 +36,7 @@
         "ext-zip": "*",
 
         "assetic/framework": "~3.0",
-        "doctrine/dbal": "^2.6",
+        "doctrine/dbal": "^3.6",
         "enshrined/svg-sanitize": "~0.16",
         "laravel/framework": "^10.1",
         "laravel/tinker": "^2.7",
