@@ -124,9 +124,11 @@ trait SoftDelete
                 }
 
                 if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
-                    /*
-                     * special case for relations using pivot table
-                     */
+                    // relations using pivot table
+                    $relation = $this->{$name}();
+                    $deletedAtColumn = array_get($options, 'deletedAtColumn', 'deleted_at');
+                    $time = $this->fromDateTime($this->freshTimestamp());
+                    $query = $relation->newPivotQuery()->update(array($deletedAtColumn => $time));
                 } else {
                     if ($relation instanceof EloquentModel) {
                         $relation->delete();
@@ -198,9 +200,10 @@ trait SoftDelete
                 }
 
                 if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
-                    /*
-                     * special case for relations using pivot table
-                     */
+                    // relations using pivot table
+                    $relation = $this->{$name}();
+                    $deletedAtColumn = array_get($options, 'deletedAtColumn', 'deleted_at');
+                    $query = $relation->newPivotQuery()->update(array($deletedAtColumn => null));
                 } else {
                     $relation = $this->{$name}()->onlyTrashed()->getResults();
                     if (!$relation) {
