@@ -123,13 +123,19 @@ trait SoftDelete
                     continue;
                 }
 
-                if ($relation instanceof EloquentModel) {
-                    $relation->delete();
-                }
-                elseif ($relation instanceof CollectionBase) {
-                    $relation->each(function ($model) {
-                        $model->delete();
-                    });
+                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
+                    /*
+                     * special case for relations using pivot table
+                     */
+                } else {
+                    if ($relation instanceof EloquentModel) {
+                        $relation->delete();
+                    }
+                    elseif ($relation instanceof CollectionBase) {
+                        $relation->each(function ($model) {
+                            $model->delete();
+                        });
+                    }
                 }
             }
         }
@@ -191,18 +197,24 @@ trait SoftDelete
                     continue;
                 }
 
-                $relation = $this->{$name}()->onlyTrashed()->getResults();
-                if (!$relation) {
-                    continue;
-                }
+                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
+                    /*
+                     * special case for relations using pivot table
+                     */
+                } else {
+                    $relation = $this->{$name}()->onlyTrashed()->getResults();
+                    if (!$relation) {
+                        continue;
+                    }
 
-                if ($relation instanceof EloquentModel) {
-                    $relation->restore();
-                }
-                elseif ($relation instanceof CollectionBase) {
-                    $relation->each(function ($model) {
-                        $model->restore();
-                    });
+                    if ($relation instanceof EloquentModel) {
+                        $relation->restore();
+                    }
+                    elseif ($relation instanceof CollectionBase) {
+                        $relation->each(function ($model) {
+                            $model->restore();
+                        });
+                    }
                 }
             }
         }
