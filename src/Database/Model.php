@@ -1016,13 +1016,18 @@ class Model extends EloquentModel implements ModelInterface
                     continue;
                 }
 
-                if ($relation instanceof EloquentModel) {
-                    $relation->forceDelete();
-                }
-                elseif ($relation instanceof CollectionBase) {
-                    $relation->each(function ($model) {
-                        $model->forceDelete();
-                    });
+                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
+                    // we want to remove the pivot record, not the actual relation record
+                    $relation()->detach();
+                } else {
+                    if ($relation instanceof EloquentModel) {
+                        $relation->forceDelete();
+                    }
+                    elseif ($relation instanceof CollectionBase) {
+                        $relation->each(function ($model) {
+                            $model->forceDelete();
+                        });
+                    }
                 }
             }
 

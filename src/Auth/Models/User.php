@@ -154,17 +154,6 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
         $this->forceSave();
     }
 
-    /**
-     * Delete the user groups
-     * @return void
-     */
-    public function afterDelete()
-    {
-        if ($this->hasRelation('groups')) {
-            $this->groups()->detach();
-        }
-    }
-
     //
     // Persistence (used by Cookies and Sessions)
     //
