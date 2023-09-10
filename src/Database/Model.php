@@ -1008,10 +1008,6 @@ class Model extends EloquentModel implements ModelInterface
              * Hard 'delete' definition
              */
             foreach ($relations as $name => $options) {
-                if (!Arr::get($options, 'delete', false)) {
-                    continue;
-                }
-
                 if (!$relation = $this->{$name}) {
                     continue;
                 }
@@ -1020,6 +1016,10 @@ class Model extends EloquentModel implements ModelInterface
                     // we want to remove the pivot record, not the actual relation record
                     $relation()->detach();
                 } else {
+                    if (!Arr::get($options, 'delete', false)) {
+                        continue;
+                    }
+
                     if ($relation instanceof EloquentModel) {
                         $relation->forceDelete();
                     }
