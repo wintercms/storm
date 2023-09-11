@@ -66,7 +66,11 @@ class Encryptable extends ExtensionBase
      */
     public function bootEncryptable(): void
     {
-        if (!$this->model->propertyExists('encryptable')) {
+        $isEncryptable = $this->model->extend(function () {
+            return $this->propertyExists('encryptable');
+        });
+        
+        if (!$isEncryptable) {
             throw new Exception(sprintf(
                 'You must define an $encryptable property on the %s class to use the Encryptable behavior.',
                 get_class($this->model)
@@ -113,7 +117,9 @@ class Encryptable extends ExtensionBase
      */
     public function getEncryptableAttributes(): array
     {
-        return $this->model->encryptable;
+        return $this->model->extend(function () {
+            return $this->encryptable;
+        });
     }
 
     /**
