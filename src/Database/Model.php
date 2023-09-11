@@ -1022,8 +1022,7 @@ class Model extends EloquentModel implements ModelInterface
 
                     if ($relation instanceof EloquentModel) {
                         $relation->forceDelete();
-                    }
-                    elseif ($relation instanceof CollectionBase) {
+                    } elseif ($relation instanceof CollectionBase) {
                         $relation->each(function ($model) {
                             $model->forceDelete();
                         });
