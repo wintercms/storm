@@ -187,12 +187,12 @@ trait SoftDelete
      */
     protected function updatePivotDeletedAtColumn(string $relationName, array $options, string|null $value)
     {
-        $relation = $this->{$relationName}();
+        $relation = $this->{$relationName};
 
         // get deletedAtColumn from the relation options, otherwise use default
         $deletedAtColumn = array_get($options, 'deletedAtColumn', 'deleted_at');
 
-        $query = $relation->newPivotQuery()->update([
+        $query = $relation()->newPivotQuery()->update([
             $deletedAtColumn => $value,
         ]);
     }
