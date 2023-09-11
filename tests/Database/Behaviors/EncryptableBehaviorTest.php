@@ -65,7 +65,7 @@ class TestModelEncryptableBehavior extends \Winter\Storm\Database\Model
         \Winter\Storm\Database\Behaviors\Encryptable::class,
     ];
 
-    public $encryptable = ['secret'];
+    protected $encryptable = ['secret'];
     protected $fillable = ['secret'];
     protected $table = 'secrets';
 }
