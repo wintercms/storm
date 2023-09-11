@@ -77,13 +77,13 @@ class Encryptable extends ExtensionBase
          * Encrypt required fields when necessary
          */
         $this->model->bindEvent('model.beforeSetAttribute', function ($key, $value) {
-            if (in_array($key, $this->model->getEncryptableAttributes()) && !is_null($value)) {
-                return $this->model->makeEncryptableValue($key, $value);
+            if (in_array($key, $this->getEncryptableAttributes()) && !is_null($value)) {
+                return $this->makeEncryptableValue($key, $value);
             }
         });
         $this->model->bindEvent('model.beforeGetAttribute', function ($key) {
-            if (in_array($key, $this->model->getEncryptableAttributes()) && array_get($this->model->getAttributes(), $key) != null) {
-                return $this->model->getEncryptableValue($key);
+            if (in_array($key, $this->getEncryptableAttributes()) && array_get($this->model->getAttributes(), $key) != null) {
+                return $this->getEncryptableValue($key);
             }
         });
     }
@@ -94,7 +94,7 @@ class Encryptable extends ExtensionBase
     public function makeEncryptableValue(string $key, mixed $value): string
     {
         $this->originalEncryptableValues[$key] = $value;
-        return $this->model->getEncrypter()->encrypt($value);
+        return $this->getEncrypter()->encrypt($value);
     }
 
     /**
@@ -104,7 +104,7 @@ class Encryptable extends ExtensionBase
     {
         $attributes = $this->model->getAttributes();
         return isset($attributes[$key])
-            ? $this->model->getEncrypter()->decrypt($attributes[$key])
+            ? $this->getEncrypter()->decrypt($attributes[$key])
             : null;
     }
 
