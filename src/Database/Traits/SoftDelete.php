@@ -130,8 +130,7 @@ trait SoftDelete
                 } else {
                     if ($relation instanceof EloquentModel) {
                         $relation->delete();
-                    }
-                    elseif ($relation instanceof CollectionBase) {
+                    } elseif ($relation instanceof CollectionBase) {
                         $relation->each(function ($model) {
                             $model->delete();
                         });
@@ -223,8 +222,7 @@ trait SoftDelete
 
                     if ($relation instanceof EloquentModel) {
                         $relation->restore();
-                    }
-                    elseif ($relation instanceof CollectionBase) {
+                    } elseif ($relation instanceof CollectionBase) {
                         $relation->each(function ($model) {
                             $model->restore();
                         });
