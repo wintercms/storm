@@ -39,7 +39,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
      * @var array Relations
      */
     public $belongsToMany = [
-        'groups' => [Group::class, 'table' => 'users_groups']
+        'groups' => [Group::class, 'table' => 'users_groups', 'delete' => true],
     ];
 
     public $belongsTo = [
