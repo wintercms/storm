@@ -15,6 +15,11 @@ abstract class Command extends BaseCommand implements SignalableCommandInterface
     use Traits\ProvidesAutocompletion;
 
     /**
+     * @var \Winter\Storm\Foundation\Application
+     */
+    protected $laravel;
+
+    /**
      * @var array List of commands that this command replaces (aliases)
      */
     protected $replaces = [];

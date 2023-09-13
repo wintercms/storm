@@ -132,6 +132,63 @@ class ModelTest extends DbTestCase
         $this->assertArrayNotHasKey('description', $model->toArray());
     }
 
+    public function testUpsert()
+    {
+        $this->getBuilder()->create('test_model2', function ($table) {
+            $table->increments('id');
+            $table->string('name')->nullable();
+            $table->timestamps();
+        });
+
+        $this->getBuilder()->create('test_model_middle', function ($table) {
+            $table->increments('id');
+            $table->string('value')->nullable();
+            $table->timestamps();
+
+            $table->integer('model1_id')->unsigned();
+            $table->integer('model2_id')->unsigned();
+
+            $table->foreign('model1_id')->references('id')->on('test_model1');
+            $table->foreign('model2_id')->references('id')->on('test_model2');
+            $table->unique(['model1_id', 'model2_id']);
+        });
+
+        $model1Row = TestModelGuarded::create([
+            'name' => 'Row 1',
+            'data' => 'Test data'
+        ]);
+
+        $model2Row = TestModel2::create([
+            'name' => 'Test',
+        ]);
+
+        $test3Row = TestModelMiddle::create([
+            'model1_id' => $model1Row->id,
+            'model2_id' => $model2Row->id,
+            'value' => '1'
+        ]);
+
+        TestModelMiddle::upsert([
+            'model1_id' => $model1Row->id,
+            'model2_id' => $model2Row->id,
+            'value' => '1'
+        ], ['model1_id', 'model2_id'], ['value']);
+
+        $modelMiddleRow = TestModelMiddle::first();
+
+        $this->assertEquals('1', $modelMiddleRow->value);
+
+        TestModelMiddle::upsert([
+            'model1_id' => $model1Row->id,
+            'model2_id' => $model2Row->id,
+            'value' => '2'
+        ], ['model1_id', 'model2_id'], ['value']);
+
+        $modelMiddleRow = TestModelMiddle::first();
+
+        $this->assertEquals('2', $modelMiddleRow->value);
+    }
+
     protected function createTable()
     {
         $this->getBuilder()->create('test_model', function ($table) {
@@ -198,4 +255,18 @@ class TestModelHidden extends Model
     ];
 
     public $table = 'test_model';
+}
+
+class TestModel2 extends Model
+{
+    protected $guarded = [];
+
+    public $table = 'test_model2';
+}
+
+class TestModelMiddle extends Model
+{
+    protected $guarded = [];
+
+    public $table = 'test_model_middle';
 }

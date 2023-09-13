@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Network;
 
 use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Support\Str;
 
 /**
  * HTTP Network Access
@@ -111,10 +112,10 @@ class Http
     /**
      * @var array cURL Options.
      */
-    public $requestOptions;
+    public $requestOptions = [];
 
     /**
-     * @var array Request data.
+     * @var array|string Request data.
      */
     public $requestData;
 
@@ -280,7 +281,7 @@ class Http
             curl_setopt($curl, CURLOPT_MAXREDIRS, $this->maxRedirects);
         }
 
-        if ($this->requestOptions && is_array($this->requestOptions)) {
+        if (count($this->requestOptions)) {
             curl_setopt_array($curl, $this->requestOptions);
         }
 
@@ -442,20 +443,34 @@ class Http
     }
 
     /**
-     * Add a data to the request.
-     * @param string $value
-     * @return self
+     * Add JSON encoded payload
      */
-    public function data($key, $value = null)
+    public function json(mixed $payload): self
+    {
+        if (!Str::isJson($payload)) {
+            if (!$payload = json_encode($payload)) {
+                throw new ApplicationException('The provided payload failed to be encoded as JSON');
+            }
+        }
+
+        $this->requestData = $payload;
+        $this->header('Content-Type', 'application/json');
+
+        return $this;
+    }
+
+    /**
+     * Add a data to the request.
+     */
+    public function data(array|string $key, string $value = null): self
     {
         if (is_array($key)) {
             foreach ($key as $_key => $_value) {
                 $this->data($_key, $_value);
             }
-            return $this;
+        } else {
+            $this->requestData[$key] = $value;
         }
-
-        $this->requestData[$key] = $value;
         return $this;
     }
 

@@ -30,7 +30,7 @@ class FormBuilder
     /**
      * The session store implementation.
      */
-    protected ?\Illuminate\Session\Store $session;
+    protected ?\Illuminate\Session\Store $session = null;
 
     /**
      * The current model instance for the form.
@@ -228,9 +228,9 @@ class FormBuilder
     {
         $token = !empty($this->csrfToken)
             ? $this->csrfToken
-            : $this->session->token();
+            : ($this->session?->token() ?? null);
 
-        return $this->hidden('_token', $token);
+        return ($token) ? $this->hidden('_token', $token) : '';
     }
 
     /**
@@ -270,25 +270,24 @@ class FormBuilder
             $options['name'] = $name;
         }
 
+        $merge = [
+            'type' => $type,
+        ];
+
         if (!empty($name)) {
             // We will get the appropriate value for the given field. We will look for the
             // value in the session for the value in the old input data then we'll look
             // in the model instance if one is set. Otherwise we will just use empty.
-            $id = $this->getIdAttribute($name, $options);
-
-            if (!in_array($type, $this->skipValueTypes)) {
-                $value = $this->getValueAttribute($name, $value);
-            }
-
-            // Once we have the type, value, and ID we can merge them into the rest of the
-            // attributes array so we can convert them into their HTML attribute format
-            // when creating the HTML element. Then, we will return the entire input.
-            $merge = compact('type', 'value', 'id');
-
-            $options = array_filter(array_merge($options, $merge), function ($item) {
-                return !is_null($item);
-            });
+            $merge['id'] = $this->getIdAttribute($name, $options);
         }
+
+        if (!in_array($type, $this->skipValueTypes)) {
+            $merge['value'] = $this->getValueAttribute($name, $value);
+        }
+
+        $options = array_filter(array_merge($options, $merge), function ($item) {
+            return (!is_null($item) && $item !== false);
+        });
 
         return '<input' . $this->html->attributes($options) . '>';
     }
@@ -827,7 +826,7 @@ class FormBuilder
      *
      * @param  string  $name
      * @param  array   $attributes
-     * @return string
+     * @return string|null
      */
     public function getIdAttribute($name, $attributes)
     {
@@ -839,17 +838,17 @@ class FormBuilder
             return $name;
         }
 
-        return '';
+        return null;
     }
 
     /**
      * Get the value that should be assigned to the field.
      *
-     * @param  string  $name
-     * @param  string|array  $value
+     * @param  string|null  $name
+     * @param  string|array|int|null  $value
      * @return string|array|null
      */
-    public function getValueAttribute($name, $value = null)
+    public function getValueAttribute(?string $name = null, $value = null)
     {
         if (empty($name)) {
             return $value;

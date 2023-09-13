@@ -158,7 +158,7 @@ class ClassLoader
      */
     protected function resolvePath(string $path): string
     {
-        if (!Str::startsWith($path, ['/', '\\', $this->basePath . DIRECTORY_SEPARATOR])) {
+        if (!$this->files->isAbsolutePath($path)) {
             $path = $this->basePath . DIRECTORY_SEPARATOR . $path;
         }
         return $path;
@@ -228,10 +228,17 @@ class ClassLoader
 
     /**
      * Add a namespace prefix to the autoloader
+     *
+     * @param string $namespacePrefix The namespace prefix for this package
+     * @param string $path The path to this package, either relative to the base path or absolute
      */
-    public function autoloadPackage(string $namespacePrefix, string $relativePath): void
+    public function autoloadPackage(string $namespacePrefix, string $path): void
     {
-        $this->autoloadedPackages[ltrim(Str::lower($namespacePrefix), '\\')] = $relativePath;
+        // Normalize the path to an absolute path and then attempt to use the relative path
+        // if the path is contained within the basePath
+        $path = Str::after($this->resolvePath($path), $this->basePath . DIRECTORY_SEPARATOR);
+
+        $this->autoloadedPackages[ltrim(Str::lower($namespacePrefix), '\\')] = $path;
 
         // Ensure packages are sorted by length of the prefix to prevent a greedier prefix
         // from being matched first when attempting to autoload a class

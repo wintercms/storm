@@ -36,7 +36,7 @@ class DispatcherTest extends TestCase
         $dispatcher->listen('test.test', function () use (&$magic_value) {
             $magic_value = true;
         });
-        $dispatcher->fire('test.test');
+        $dispatcher->dispatch('test.test');
         $this->assertTrue($magic_value);
     }
 
@@ -170,7 +170,7 @@ class DispatcherTest extends TestCase
         $classInstance = new TestClass;
 
         $dispatcher->listen('test.test', [$classInstance, 'instanceMethodHandler']);
-        $dispatcher->fire('test.test');
+        $dispatcher->dispatch('test.test');
 
         $this->assertTrue($classInstance->getMagicValue());
     }

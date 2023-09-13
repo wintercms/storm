@@ -129,7 +129,7 @@ class Application extends ApplicationBase
 
         $exceptions = [];
         foreach ($bootstrappers as $bootstrapper) {
-            $this['events']->fire('bootstrapping: '.$bootstrapper, [$this]);
+            $this['events']->dispatch('bootstrapping: '.$bootstrapper, [$this]);
 
             // Defer any exceptions until after the application has been
             // bootstrapped so that the exception handler can run without issues
@@ -139,7 +139,7 @@ class Application extends ApplicationBase
                 $exceptions[] = $ex;
             }
 
-            $this['events']->fire('bootstrapped: '.$bootstrapper, [$this]);
+            $this['events']->dispatch('bootstrapped: '.$bootstrapper, [$this]);
         }
 
         if (!empty($exceptions)) {
@@ -282,6 +282,25 @@ class Application extends ApplicationBase
     }
 
     /**
+     * Normalize a relative or absolute path to a cache file.
+     *
+     * @param  string  $key
+     * @param  string  $default
+     * @return string
+     */
+    protected function normalizeCachePath($key, $default)
+    {
+        $path = parent::normalizeCachePath($key, $default);
+
+        $directory = pathinfo($path, PATHINFO_DIRNAME);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        return $path;
+    }
+
+    /**
      * Resolve the given type from the container.
      *
      * (Overriding Container::make)
@@ -312,7 +331,7 @@ class Application extends ApplicationBase
      */
     public function before($callback)
     {
-        $this['router']->before($callback);
+        $this->make('router')->before($callback);
     }
 
     /**
@@ -323,7 +342,7 @@ class Application extends ApplicationBase
      */
     public function after($callback)
     {
-        $this['router']->after($callback);
+        $this->make('router')->after($callback);
     }
 
     /**
@@ -362,18 +381,24 @@ class Application extends ApplicationBase
 
     /**
      * Returns true if a database connection is present.
-     * @return boolean
      */
-    public function hasDatabase()
+    public function hasDatabase(): bool
     {
         try {
             $this['db.connection']->getPdo();
-        }
-        catch (Throwable $ex) {
+        } catch (Throwable $ex) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the provided table is present on the default database connection.
+     */
+    public function hasDatabaseTable(string $table): bool
+    {
+        return $this->hasDatabase() && $this['db.connection']->getSchemaBuilder()->hasTable($table);
     }
 
     /**
@@ -385,7 +410,7 @@ class Application extends ApplicationBase
     {
         parent::setLocale($locale);
 
-        $this['events']->fire('locale.changed', [$locale]);
+        $this['events']->dispatch('locale.changed', [$locale]);
     }
 
     /**
