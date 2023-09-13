@@ -3,6 +3,7 @@
 use App;
 use Exception;
 use Illuminate\Contracts\Encryption\Encrypter;
+use Winter\Storm\Database\Model;
 use Winter\Storm\Extension\ExtensionBase;
 
 /**
@@ -37,7 +38,7 @@ use Winter\Storm\Extension\ExtensionBase;
  */
 class Encryptable extends ExtensionBase
 {
-    protected $model;
+    protected Model $model;
 
     /**
      * List of attribute names which should be encrypted
@@ -67,9 +68,10 @@ class Encryptable extends ExtensionBase
     public function bootEncryptable(): void
     {
         $isEncryptable = $this->model->extend(function () {
+            /** @var Model $this */
             return $this->propertyExists('encryptable');
         });
-        
+
         if (!$isEncryptable) {
             throw new Exception(sprintf(
                 'You must define an $encryptable property on the %s class to use the Encryptable behavior.',
@@ -118,7 +120,7 @@ class Encryptable extends ExtensionBase
     public function getEncryptableAttributes(): array
     {
         return $this->model->extend(function () {
-            return $this->encryptable;
+            return $this->encryptable ?? [];
         });
     }
 
