@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Database\Behaviors;
 
 use App;
-use Exception;
+use ApplicationException;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Extension\ExtensionBase;
@@ -73,7 +73,7 @@ class Encryptable extends ExtensionBase
         });
 
         if (!$isEncryptable) {
-            throw new Exception(sprintf(
+            throw new ApplicationException(sprintf(
                 'You must define an $encryptable property on the %s class to use the Encryptable behavior.',
                 get_class($this->model)
             ));
@@ -88,7 +88,7 @@ class Encryptable extends ExtensionBase
             }
         });
         $this->model->bindEvent('model.beforeGetAttribute', function ($key) {
-            if (in_array($key, $this->getEncryptableAttributes()) && array_get($this->model->getAttributes(), $key) != null) {
+            if (in_array($key, $this->getEncryptableAttributes()) && array_get($this->model->attributes, $key) != null) {
                 return $this->getEncryptableValue($key);
             }
         });
@@ -137,7 +137,7 @@ class Encryptable extends ExtensionBase
      */
     public function getOriginalEncryptableValue(string $attribute): mixed
     {
-        return $this->originalEncryptableValues[$attribute] ?? null;
+        return array_get($this->originalEncryptableValues, $attribute, null);
     }
 
     /**
