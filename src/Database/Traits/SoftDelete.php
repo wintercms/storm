@@ -118,16 +118,14 @@ trait SoftDelete
                 if (!array_get($options, 'softDelete', false)) {
                     continue;
                 }
-
-                if (!$relation = $this->{$name}) {
-                    continue;
-                }
-
                 if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
                     // relations using pivot table
                     $value = $this->fromDateTime($this->freshTimestamp());
                     $this->updatePivotDeletedAtColumn($name, $options, $value);
                 } else {
+                    if (!$relation = $this->{$name}) {
+                        continue;
+                    }
                     if ($relation instanceof EloquentModel) {
                         $relation->delete();
                     } elseif ($relation instanceof CollectionBase) {
