@@ -1013,6 +1013,9 @@ class Model extends EloquentModel implements ModelInterface
                 }
 
                 if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
+                    if (!Arr::get($options, 'detach', true)) {
+                        continue;
+                    }
                     // we want to remove the pivot record, not the actual relation record
                     $relation()->detach();
                 } else {
@@ -1026,17 +1029,6 @@ class Model extends EloquentModel implements ModelInterface
                         $relation->each(function ($model) {
                             $model->forceDelete();
                         });
-                    }
-                }
-            }
-
-            /*
-             * Belongs-To-Many should clean up after itself always
-             */
-            if ($type == 'belongsToMany') {
-                foreach ($relations as $name => $options) {
-                    if (Arr::get($options, 'detach', true)) {
-                        $this->{$name}()->detach();
                     }
                 }
             }
