@@ -1,8 +1,6 @@
 <?php
 
-namespace Winter\Storm\Tests\Database\Traits;
-
-class SoftDeleteTest extends \DbTestCase
+class SoftDeleteTest extends DbTestCase
 {
     protected $seeded = [];
 
