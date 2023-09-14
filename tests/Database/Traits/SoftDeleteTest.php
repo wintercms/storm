@@ -16,6 +16,7 @@ class SoftDeleteTest extends \DbTestCase
         ];
 
         $this->createTables();
+        $this->seedTables();
     }
 
     protected function createTables()
@@ -39,8 +40,6 @@ class SoftDeleteTest extends \DbTestCase
             $table->unsignedInteger('category_id');
             $table->timestamp('deleted_at')->nullable();
         });
-
-        $this->seedTables();
     }
 
     protected function seedTables()
@@ -68,7 +67,7 @@ class SoftDeleteTest extends \DbTestCase
 
     public function testDeleteAndRestore()
     {
-        $post = Post::where('title', 'First Post')->first();
+        $post = Post::first();
         $this->assertTrue($post->deleted_at === null);
         $this->assertTrue($post->categories()->where('deleted_at', null)->count() === 2);
 
@@ -102,9 +101,9 @@ class Post extends \Winter\Storm\Database\Model
     public $belongsToMany = [
         'categories' => [
             Category::class,
-            'table'     => 'categories_posts',
-            'key'       => 'post_id',
-            'otherKey'  => 'category_id',
+            'table'      => 'categories_posts',
+            'key'        => 'post_id',
+            'otherKey'   => 'category_id',
             'softDelete' => true,
         ],
     ];
@@ -124,9 +123,9 @@ class Category extends \Winter\Storm\Database\Model
     public $belongsToMany = [
         'posts' => [
             Post::class,
-            'table'      => 'categories_posts',
-            'key'        => 'category_id',
-            'otherKey'   => 'post_id',
+            'table'     => 'categories_posts',
+            'key'       => 'category_id',
+            'otherKey'  => 'post_id',
         ],
     ];
 }

@@ -127,6 +127,7 @@ trait SoftDelete
                     // relations using pivot table
                     $value = $this->fromDateTime($this->freshTimestamp());
                     $this->updatePivotDeletedAtColumn($name, $options, $value);
+
                 } else {
                     if ($relation instanceof EloquentModel) {
                         $relation->delete();
@@ -187,12 +188,10 @@ trait SoftDelete
      */
     protected function updatePivotDeletedAtColumn(string $relationName, array $options, string|null $value)
     {
-        $relation = $this->{$relationName};
-
         // get deletedAtColumn from the relation options, otherwise use default
         $deletedAtColumn = array_get($options, 'deletedAtColumn', 'deleted_at');
 
-        $query = $relation()->newPivotQuery()->update([
+        $this->{$relationName}()->newPivotQuery()->update([
             $deletedAtColumn => $value,
         ]);
     }

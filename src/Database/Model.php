@@ -1017,7 +1017,7 @@ class Model extends EloquentModel implements ModelInterface
                         continue;
                     }
                     // we want to remove the pivot record, not the actual relation record
-                    $relation()->detach();
+                    $this->{$name}()->detach();
                 } else {
                     if (!Arr::get($options, 'delete', false)) {
                         continue;
