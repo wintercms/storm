@@ -115,6 +115,9 @@ trait SoftDelete
         $definitions = $this->getRelationDefinitions();
         foreach ($definitions as $type => $relations) {
             foreach ($relations as $name => $options) {
+                if (!$relation = $this->{$name}) {
+                    continue;
+                }
                 if (!array_get($options, 'softDelete', false)) {
                     continue;
                 }
@@ -123,9 +126,6 @@ trait SoftDelete
                     $value = $this->fromDateTime($this->freshTimestamp());
                     $this->updatePivotDeletedAtColumn($name, $options, $value);
                 } else {
-                    if (!$relation = $this->{$name}) {
-                        continue;
-                    }
                     if ($relation instanceof EloquentModel) {
                         $relation->delete();
                     } elseif ($relation instanceof CollectionBase) {
