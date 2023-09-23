@@ -1,17 +1,24 @@
 <?php
 
 use Illuminate\Support\Facades\App;
+use Mockery as m;
+use Winter\Storm\Mail\MailManager;
 use Winter\Storm\Support\Facades\Mail;
 use Winter\Storm\Support\Testing\Fakes\MailFake;
 
 class MailFakeTest extends TestCase
 {
+    protected ?MailManager $manager = null;
+    protected string $recipient = '';
+    protected string $subject = '';
+
     public function setUp(): void
     {
         parent::setUp();
 
         App::shouldReceive('getLocale')->andReturn('en/US');
-        Mail::swap(new MailFake());
+        $this->manager = m::mock(MailManager::class);
+        Mail::swap(new MailFake($this->manager));
 
         $this->recipient = 'fake@localhost';
         $this->subject = 'MailFake test';

@@ -23,6 +23,7 @@ use Winter\Storm\Support\Str;
  */
 class Model extends EloquentModel implements ModelInterface
 {
+    use Concerns\HasAttributes;
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
     use Concerns\HidesAttributes;
