@@ -68,6 +68,5 @@ class FileLoader extends FileLoaderBase
 
             return $output;
         }, []);
-
     }
 }
