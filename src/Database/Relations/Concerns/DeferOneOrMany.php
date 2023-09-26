@@ -123,7 +123,7 @@ trait DeferOneOrMany
 
     /**
      * Returns the related "slave id" key in a database friendly format.
-     * @return \Illuminate\Database\Query\Expression
+     * @return \Illuminate\Contracts\Database\Query\Expression
      */
     protected function getWithDeferredQualifiedKeyName()
     {

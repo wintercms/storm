@@ -48,7 +48,7 @@ class FileLoader extends FileLoaderBase
      * This is an override from the base Laravel functionality that allows "xx-xx" locale format
      * files as well as "xx_XX" locale format files. The "xx_XX" format is considered authorative.
      *
-     * @param  string  $path
+     * @param  array<string>  $paths
      * @param  string  $locale
      * @param  string  $group
      * @return array

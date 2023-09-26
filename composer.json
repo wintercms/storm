@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": "^8.0.2",
+        "php": "^8.1",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-dom": "*",
@@ -58,7 +58,7 @@
         "php-parallel-lint/php-parallel-lint": "^1.0",
         "meyfa/phpunit-assert-gd": "^2.0.0|^3.0.0",
         "dms/phpunit-arraysubset-asserts": "^0.1.0|^0.2.1",
-        "nunomaduro/larastan": "~2.3",
+        "nunomaduro/larastan": "dev-master",
         "orchestra/testbench": "^8.4"
     },
     "suggest": {

@@ -12,7 +12,7 @@ use Winter\Storm\Support\Facade;
  * @method static array|\Winter\Storm\Flash\FlashBag info(string $message = null)
  * @method static \Winter\Storm\Flash\FlashBag add(string $key, string $message)
  * @method static void store()
- * @method static void forget(string $key = null)
+ * @method static \Winter\Storm\Flash\FlashBag forget(string $key = null)
  * @method static void purge();
  *
  * @see \Winter\Storm\Flash\FlashBag
