@@ -998,6 +998,7 @@ class Model extends EloquentModel implements ModelInterface
 
     /**
      * Locates relations with delete flag and cascades the delete event.
+     * For pivot relations, detach the pivot record unless the detach flag is false.
      * @return void
      */
     protected function performDeleteOnRelations()
@@ -1013,11 +1014,10 @@ class Model extends EloquentModel implements ModelInterface
                 }
 
                 if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
-                    if (!Arr::get($options, 'detach', true)) {
-                        continue;
-                    }
                     // we want to remove the pivot record, not the actual relation record
-                    $this->{$name}()->detach();
+                    if (Arr::get($options, 'detach', true)) {
+                        $this->{$name}()->detach();
+                    }
                 } else {
                     if (!Arr::get($options, 'delete', false)) {
                         continue;
