@@ -1018,7 +1018,7 @@ class Model extends EloquentModel implements ModelInterface
                     if (Arr::get($options, 'detach', true)) {
                         $this->{$name}()->detach();
                     }
-                } else if (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
+                } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
                     // the model does not own the related record, we should not remove it.
                     continue;
                 } else {
