@@ -19,7 +19,7 @@ use Winter\Storm\Support\Str;
  * @author Alexey Bobkov, Samuel Georges
  *
  * @phpstan-property \Illuminate\Contracts\Events\Dispatcher|null $dispatcher
- * @method static void extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
+ * @method static mixed extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
  */
 class Model extends EloquentModel implements ModelInterface
 {
