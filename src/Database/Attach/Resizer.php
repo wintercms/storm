@@ -10,16 +10,19 @@ use Symfony\Component\HttpFoundation\File\File as FileObj;
  * Usage:
  *      Resizer::open(mixed $file)
  *          ->resize(int $width , int $height, string 'exact, portrait, landscape, auto, fit or crop')
- *          ->save(string 'path/to/file.jpg', int $quality);
+ *          ->setOptions(['quality' => int $quality])
+ *          ->save(string 'path/to/file.jpg');
  *
  *      // Resize and save an image.
  *      Resizer::open(Input::file('field_name'))
  *          ->resize(800, 600, 'crop')
- *          ->save('path/to/file.jpg', 100);
+ *          ->setOptions(['quality' => 100])
+ *          ->save('path/to/file.jpg');
  *
  *      // Recompress an image.
  *      Resizer::open('path/to/image.jpg')
- *          ->save('path/to/new_image.jpg', 60);
+ *          ->setOptions(['quality' => 60])
+ *          ->save('path/to/new_image.jpg');
  *
  * @author Alexey Bobkov, Samuel Georges
  */
