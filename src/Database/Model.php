@@ -1018,6 +1018,9 @@ class Model extends EloquentModel implements ModelInterface
                     if (Arr::get($options, 'detach', true)) {
                         $this->{$name}()->detach();
                     }
+                } else if (in_array($type, ['hasOneThrough', 'hasManyThrough'])) {
+                    // the model does not own the relation, we should not remove it.
+                    continue;
                 } else {
                     if (!Arr::get($options, 'delete', false)) {
                         continue;
