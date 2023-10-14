@@ -125,7 +125,10 @@ trait SoftDelete
                     // relations using pivot table
                     $value = $this->fromDateTime($this->freshTimestamp());
                     $this->updatePivotDeletedAtColumn($name, $options, $value);
-                } else {
+                } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
+                    // the model does not own the related record, we should not remove it.
+                    continue;
+                } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
                     if ($relation instanceof EloquentModel) {
                         $relation->delete();
                     } elseif ($relation instanceof CollectionBase) {
