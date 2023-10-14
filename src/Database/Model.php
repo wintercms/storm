@@ -1021,8 +1021,7 @@ class Model extends EloquentModel implements ModelInterface
                 } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
                     // the model does not own the related record, we should not remove it.
                     continue;
-                } else {
-                    // attachOne, attachMany, hasOne, hasMany, morphOne, morphMany
+                } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
                     if (!Arr::get($options, 'delete', false)) {
                         continue;
                     }
