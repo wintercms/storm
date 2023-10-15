@@ -132,50 +132,44 @@ class ModelTest extends \DbTestCase
     }
 
     // tests hasOneThrough & hasManyThrough
-    public function testDeleteOnThroughRelations()
+    public function testDeleteWithThroughRelations()
     {
         $website = $this->seeded['websites'][0];
         $user = $this->seeded['users'][0];
 
-        $this->assertEquals(2, Phone::count());
-        $this->assertEquals(2, Post::count());
+        $phoneCount = Phone::count();
+        $postCount = Post::count();
 
-        $this->assertEquals(1, $website->phone()->count());
-        $this->assertEquals(2, $website->posts()->count());
+        $phoneRelationCount = $website->phone()->count();
+        $postsRelationCount = $website->posts()->count();
 
-        $this->assertEquals(1, $user->phone()->count());
-        $this->assertEquals(2, $user->posts()->count());
+        $this->assertEquals($phoneRelationCount, $user->phone()->count());
+        $this->assertEquals($postsRelationCount, $user->posts()->count());
 
         $website->delete();
 
-        $this->assertEquals(1, $user->phone()->count());
-        $this->assertEquals(2, $user->posts()->count());
+        $this->assertEquals($phoneRelationCount, $user->phone()->count());
+        $this->assertEquals($postsRelationCount, $user->posts()->count());
 
-        $this->assertEquals(2, Phone::count());
-        $this->assertEquals(2, Post::count());
+        $this->assertEquals($phoneCount, Phone::count());
+        $this->assertEquals($postCount, Post::count());
     }
 
     // tests hasMany
-    public function testDeleteOnHasManyRelation()
+    public function testDeleteWithHasManyRelation()
     {
         $website = $this->seeded['websites'][0];
         $user = $this->seeded['users'][0];
 
-        $this->assertEquals(2, Phone::count());
-        $this->assertEquals(2, Post::count());
-
-        $this->assertEquals(1, $website->phone()->count());
-        $this->assertEquals(2, $website->posts()->count());
-
-        $this->assertEquals(1, $user->phone()->count());
-        $this->assertEquals(2, $user->posts()->count());
-
-        $this->assertEquals(1, $website->users()->count());
+        $usersRelationCount = $website->users()->count();
+        $websiteCount = Website::count();
+        $userCount = User::count();
 
         $website->delete();
 
-        $this->assertEquals(1, Website::count());
-        $this->assertEquals(2, User::count());
+        $this->assertEquals($usersRelationCount, $website->users()->count());
+        $this->assertEquals($websiteCount - 1, Website::count());
+        $this->assertEquals($userCount, User::count());
 
         // test with relation "delete" flag set to true
         Website::extend(function ($model) {
@@ -184,28 +178,28 @@ class ModelTest extends \DbTestCase
 
         $website = Website::find($this->seeded['websites'][1]->id);
 
-        $this->assertEquals(1, $website->users()->count());
+        $websiteCount = Website::count();
+        $userCount = User::count();
 
         $website->delete();
 
-        $this->assertEquals(0, Website::count());
-        $this->assertEquals(1, User::count());
+        $this->assertEquals($websiteCount - 1, Website::count());
+        $this->assertEquals($userCount - 1, User::count());
     }
 
     // tests morphMany
-    public function testDeleteOnMorphManyRelation()
+    public function testDeleteWithMorphManyRelation()
     {
         $post = $this->seeded['posts'][0];
 
-        $this->assertEquals(2, Post::count());
-        $this->assertEquals(2, Comment::count());
-
-        $this->assertEquals(1, $post->comments()->count());
+        $commentsRelationCount = $post->comments()->count();
+        $postCount =  Post::count();
+        $commentCount = Comment::count();
 
         $post->delete();
 
-        $this->assertEquals(1, Post::count());
-        $this->assertEquals(2, Comment::count());
+        $this->assertEquals($postCount - 1, Post::count());
+        $this->assertEquals($commentCount, Comment::count());
 
         // test with relation "delete" flag set to true
         Post::extend(function ($model) {
@@ -214,36 +208,34 @@ class ModelTest extends \DbTestCase
 
         $post = Post::find($this->seeded['posts'][1]->id);
 
-        $this->assertEquals(1, $post->comments()->count());
+        $postCount =  Post::count();
+        $commentCount = Comment::count();
 
         $post->delete();
 
-        $this->assertEquals(0, Post::count());
-        $this->assertEquals(1, Comment::count());
+        $this->assertEquals($postCount - 1, Post::count());
+        $this->assertEquals($commentCount - 1, Comment::count());
     }
 
     // tests belongsToMany
-    public function testDeleteOnBelongsToManyRelation()
+    public function testDeleteWithBelongsToManyRelation()
     {
         $user = $this->seeded['users'][0];
 
-        $this->assertEquals(2, User::count());
-        $this->assertEquals(2, Role::count());
-
-        $this->assertEquals(1, $user->roles()->count());
-
-        $this->assertEquals(3, DB::table('role_user')->count());
+        $userRolePivotCount = DB::table('role_user')->count();
+        $userCount = User::count();
+        $roleCount = Role::count();
 
         $user->delete();
 
         // verify that pivot record has been removed
-        $this->assertEquals(2, DB::table('role_user')->count());
+        $this->assertEquals($userRolePivotCount - 1, DB::table('role_user')->count());
 
         // verify user has been deleted
-        $this->assertEquals(1, User::count());
+        $this->assertEquals($userCount - 1, User::count());
 
         // verify both roles still exist
-        $this->assertEquals(2, Role::count());
+        $this->assertEquals($roleCount, Role::count());
 
         // test with relation "detach" flag set to false (default is true)
         User::extend(function ($model) {
@@ -252,41 +244,39 @@ class ModelTest extends \DbTestCase
 
         $user = User::find($this->seeded['users'][1]->id);
 
-        $this->assertEquals(2, $user->roles()->count());
-        $this->assertEquals(2, DB::table('role_user')->count());
+        $userRolePivotCount = DB::table('role_user')->count();
+        $userCount = User::count();
+        $roleCount = Role::count();
 
         $user->delete();
 
         // verify pivot record has NOT been removed
-        $this->assertEquals(2, DB::table('role_user')->count());
+        $this->assertEquals($userRolePivotCount, DB::table('role_user')->count());
 
         // verify both roles still exist
-        $this->assertEquals(2, Role::count());
+        $this->assertEquals($roleCount, Role::count());
     }
 
     // tests morphToMany
-    public function testDeleteOnMorphToManyRelation()
+    public function testDeleteWithMorphToManyRelation()
     {
         $post = $this->seeded['posts'][0];
+        $image = $this->seeded['images'][0];
 
-        $this->assertEquals(2, Post::count());
-        $this->assertEquals(2, Image::count());
-
-        $this->assertEquals(1, $post->images()->count());
-        $this->assertEquals(1, $this->seeded['images'][0]->posts()->count());
-
-        $this->assertEquals(2, DB::table('imageables')->count());
+        $imageablesPivotCount = DB::table('imageables')->count();
+        $postCount = Post::count();
+        $imageCount = Image::count();
 
         $post->delete();
 
         // verify that pivot record has been removed
-        $this->assertEquals(1, DB::table('imageables')->count());
+        $this->assertEquals($imageablesPivotCount - 1, DB::table('imageables')->count());
 
         // verify post has been deleted
-        $this->assertEquals(1, Post::count());
+        $this->assertEquals($postCount - 1, Post::count());
 
         // verify image still exists
-        $this->assertEquals(2, Image::count());
+        $this->assertEquals($imageCount, Image::count());
 
         // test with relation "detach" flag set to false (default is true)
         Post::extend(function ($model) {
@@ -295,39 +285,42 @@ class ModelTest extends \DbTestCase
 
         $post = Post::find($this->seeded['posts'][1]->id);
 
-        $this->assertEquals(1, $post->images()->count());
+        $imageablesPivotCount = DB::table('imageables')->count();
+        $postCount = Post::count();
+        $imageCount = Image::count();
 
         $post->delete();
 
         // verify that pivot record has NOT been removed
-        $this->assertEquals(1, DB::table('imageables')->count());
+        $this->assertEquals($imageablesPivotCount, DB::table('imageables')->count());
 
-        $this->assertEquals(0, Post::count());
-        $this->assertEquals(2, Image::count());
+        // verify post has been deleted
+        $this->assertEquals($postCount - 1, Post::count());
+
+        // verify image still exists
+        $this->assertEquals($imageCount, Image::count());
     }
 
     // tests morphedByMany
-    public function testDeleteOnMorphedByManyRelation()
+    public function testDeleteWithMorphedByManyRelation()
     {
         $image = $this->seeded['images'][0];
+        $post = $this->seeded['posts'][0];
 
-        $this->assertEquals(2, Image::count());
-        $this->assertEquals(2, Post::count());
-
-        $this->assertEquals(1, $image->posts()->count());
-
-        $this->assertEquals(2, DB::table('imageables')->count());
+        $imageablesPivotCount = DB::table('imageables')->count();
+        $imageCount = Image::count();
+        $postCount = Post::count();
 
         $image->delete();
 
         // verify that pivot record has been removed
-        $this->assertEquals(1, DB::table('imageables')->count());
+        $this->assertEquals($imageablesPivotCount - 1, DB::table('imageables')->count());
 
         // verify image has been deleted
-        $this->assertEquals(1, Image::count());
+        $this->assertEquals($imageCount - 1, Image::count());
 
         // verify post still exists
-        $this->assertEquals(2, Post::count());
+        $this->assertEquals($postCount, Post::count());
 
         // test with relation "detach" flag set to false (default is true)
         Image::extend(function ($model) {
@@ -336,28 +329,37 @@ class ModelTest extends \DbTestCase
 
         $image = Image::find($this->seeded['images'][1]->id);
 
-        $this->assertEquals(1, $image->posts()->count());
+        $imageablesPivotCount = DB::table('imageables')->count();
+        $imageCount = Image::count();
+        $postCount = Post::count();
 
         $image->delete();
 
         // verify that pivot record has NOT been removed
-        $this->assertEquals(1, DB::table('imageables')->count());
+        $this->assertEquals($imageablesPivotCount, DB::table('imageables')->count());
 
-        $this->assertEquals(0, Image::count());
-        $this->assertEquals(2, Post::count());
+        // verify image has been deleted
+        $this->assertEquals($imageCount - 1, Image::count());
+
+        // verify post still exists
+        $this->assertEquals($postCount, Post::count());
     }
 
     // tests hasOne
-    public function testDeleteOnHasOneRelation()
+    public function testDeleteWithHasOneRelation()
     {
         $user = $this->seeded['users'][0];
 
-        $this->assertEquals(1, $user->phone()->count());
-        $this->assertEquals(2, Phone::count());
+        $userCount = User::count();
+        $phoneCount = Phone::count();
 
         $user->delete();
 
-        $this->assertEquals(2, Phone::count());
+        // verify user has been deleted
+        $this->assertEquals($userCount - 1, User::count());
+
+        // verify phone still exists
+        $this->assertEquals($phoneCount, Phone::count());
 
         // test with relation "delete" flag set to true
         User::extend(function ($model) {
@@ -366,25 +368,33 @@ class ModelTest extends \DbTestCase
 
         $user = User::find($this->seeded['users'][1]->id);
 
-        $this->assertEquals(1, $user->phone()->count());
-        $this->assertEquals(2, Phone::count());
+        $userCount = User::count();
+        $phoneCount = Phone::count();
 
         $user->delete();
 
-        $this->assertEquals(1, Phone::count());
+        // verify user has been deleted
+        $this->assertEquals($userCount - 1, User::count());
+
+        // verify phone has been deleted
+        $this->assertEquals($phoneCount - 1, Phone::count());
     }
 
     // tests morphOne
-    public function testDeleteOnMorphOneRelation()
+    public function testDeleteWithMorphOneRelation()
     {
         $post = $this->seeded['posts'][0];
 
-        $this->assertEquals(1, $post->tag()->count());
-        $this->assertEquals(2, Tag::count());
+        $postCount = Post::count();
+        $tagCount = Tag::count();
 
         $post->delete();
 
-        $this->assertEquals(2, Tag::count());
+        // verify post has been deleted
+        $this->assertEquals($postCount - 1, Post::count());
+
+        // verify tag still exists
+        $this->assertEquals($tagCount, Tag::count());
 
         // test with relation "delete" flag set to true
         Post::extend(function ($model) {
@@ -393,44 +403,48 @@ class ModelTest extends \DbTestCase
 
         $post = Post::find($this->seeded['posts'][1]->id);
 
-        $this->assertEquals(1, $post->tag()->count());
-        $this->assertEquals(2, Tag::count());
+        $postCount = Post::count();
+        $tagCount = Tag::count();
 
         $post->delete();
 
-        $this->assertEquals(1, Tag::count());
+        // verify post has been deleted
+        $this->assertEquals($postCount - 1, Post::count());
+
+        // verify tag has been deleted
+        $this->assertEquals($tagCount - 1, Tag::count());
     }
 
     // tests belongsTo
-    public function testDeleteOnBelongsToRelation()
+    public function testDeleteWithBelongsToRelation()
     {
         $phone = $this->seeded['phones'][0];
-        $this->assertEquals(2, User::count());
-        $this->assertEquals(2, Phone::count());
+        $phoneCount = Phone::count();
+        $userCount = User::count();
 
         $phone->delete();
 
         // verify phone has been deleted
-        $this->assertEquals(1, Phone::count());
+        $this->assertEquals($phoneCount - 1, Phone::count());
 
         // verify user has NOT been deleted
-        $this->assertEquals(2, User::count());
+        $this->assertEquals($userCount, User::count());
     }
 
     // tests morphTo
-    public function testDeleteOnMorphToRelation()
+    public function testDeleteWithMorphToRelation()
     {
         $comment = $this->seeded['comments'][0];
-        $this->assertEquals(2, Comment::count());
-        $this->assertEquals(2, Post::count());
+        $commentCount = Comment::count();
+        $postCount =  Post::count();
 
         $comment->delete();
 
         // verify comment has been deleted
-        $this->assertEquals(1, Comment::count());
+        $this->assertEquals($commentCount - 1, Comment::count());
 
         // verify post has NOT been deleted
-        $this->assertEquals(2, Post::count());
+        $this->assertEquals($postCount, Post::count());
     }
 
     public function testAddCasts()
