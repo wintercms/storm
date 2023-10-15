@@ -306,6 +306,47 @@ class ModelTest extends \DbTestCase
         $this->assertEquals(2, Image::count());
     }
 
+    // tests morphedByMany
+    public function testDeleteOnMorphedByManyRelation()
+    {
+        $image = $this->seeded['images'][0];
+
+        $this->assertEquals(2, Image::count());
+        $this->assertEquals(2, Post::count());
+
+        $this->assertEquals(1, $image->posts()->count());
+
+        $this->assertEquals(2, DB::table('imageables')->count());
+
+        $image->delete();
+
+        // verify that pivot record has been removed
+        $this->assertEquals(1, DB::table('imageables')->count());
+
+        // verify image has been deleted
+        $this->assertEquals(1, Image::count());
+
+        // verify post still exists
+        $this->assertEquals(2, Post::count());
+
+        // test with relation "detach" flag set to false (default is true)
+        Image::extend(function ($model) {
+            $model->morphedByMany['posts']['detach'] = false;
+        });
+
+        $image = Image::find($this->seeded['images'][1]->id);
+
+        $this->assertEquals(1, $image->posts()->count());
+
+        $image->delete();
+
+        // verify that pivot record has NOT been removed
+        $this->assertEquals(1, DB::table('imageables')->count());
+
+        $this->assertEquals(0, Image::count());
+        $this->assertEquals(2, Post::count());
+    }
+
     // tests hasOne
     public function testDeleteOnHasOneRelation()
     {
