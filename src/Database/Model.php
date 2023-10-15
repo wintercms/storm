@@ -1,13 +1,15 @@
 <?php namespace Winter\Storm\Database;
 
+use Cache;
 use Closure;
-use Exception;
 use DateTimeInterface;
+use Exception;
+use Illuminate\Database\Eloquent\Collection as CollectionBase;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Throwable;
+use Winter\Storm\Argon\Argon;
 use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Str;
-use Winter\Storm\Argon\Argon;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Illuminate\Database\Eloquent\Collection as CollectionBase;
 
 /**
  * Active Record base class.
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Collection as CollectionBase;
  * @author Alexey Bobkov, Samuel Georges
  *
  * @phpstan-property \Illuminate\Contracts\Events\Dispatcher|null $dispatcher
+ * @method static mixed extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
  */
 class Model extends EloquentModel implements ModelInterface
 {
@@ -85,6 +88,54 @@ class Model extends EloquentModel implements ModelInterface
     }
 
     /**
+     * Static helper for isDatabaseReady()
+     */
+    public static function hasDatabaseTable(): bool
+    {
+        return (new static)->isDatabaseReady();
+    }
+
+    /**
+     * Check if the model's database connection is ready
+     */
+    public function isDatabaseReady(): bool
+    {
+        $cacheKey = sprintf('winter.storm::model.%s.isDatabaseReady.%s.%s', get_class($this), $this->getConnectionName() ?? '', $this->getTable());
+        if ($result = Cache::get($cacheKey)) {
+            return $result;
+        }
+
+        // Resolver hasn't been set yet
+        /** @phpstan-ignore-next-line */
+        if (!static::getConnectionResolver()) {
+            return false;
+        }
+
+        // Connection hasn't been set yet or the database doesn't exist
+        try {
+            $connection = $this->getConnection();
+            $connection->getPdo();
+        } catch (Throwable $ex) {
+            return false;
+        }
+
+        // Database exists but table doesn't
+        try {
+            $schema = $connection->getSchemaBuilder();
+            $table = $this->getTable();
+            if (!$schema->hasTable($table)) {
+                return false;
+            }
+        } catch (Throwable $ex) {
+            return false;
+        }
+
+        Cache::forever($cacheKey, true);
+
+        return true;
+    }
+
+    /**
      * Create a new model and return the instance.
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model|static
@@ -145,14 +196,6 @@ class Model extends EloquentModel implements ModelInterface
     }
 
     /**
-     * Extend this object properties upon construction.
-     */
-    public static function extend(Closure $callback)
-    {
-        self::extendableExtendCallback($callback);
-    }
-
-    /**
      * Bind some nicer events to this model, in the format of method overrides.
      */
     protected function bootNicerEvents()
@@ -183,11 +226,15 @@ class Model extends EloquentModel implements ModelInterface
                 }
 
                 self::$eventMethod(function ($model) use ($method) {
-                    $model->fireEvent('model.' . $method);
-
                     if ($model->methodExists($method)) {
-                        return $model->$method();
+                        // Register the method as a listener with default priority
+                        // to allow for complete control over the execution order
+                        $model->bindEvent('model.' . $method, [$model, $method]);
                     }
+                    // First listener that returns a non-null result will cancel the
+                    // further propagation of the event; If that result is false, the
+                    // underlying action will get cancelled (e.g. creating, saving, deleting)
+                    return $model->fireEvent('model.' . $method, halt: true);
                 });
             }
         }
@@ -710,6 +757,16 @@ class Model extends EloquentModel implements ModelInterface
 
     public function __call($name, $params)
     {
+        if ($name === 'extend') {
+            if (empty($params[0]) || !is_callable($params[0])) {
+                throw new \InvalidArgumentException('The extend() method requires a callback parameter or closure.');
+            }
+            if ($params[0] instanceof \Closure) {
+                return $params[0]->call($this, $params[1] ?? $this);
+            }
+            return \Closure::fromCallable($params[0])->call($this, $params[1] ?? $this);
+        }
+
         /*
          * Never call handleRelation() anywhere else as it could
          * break getRelationCaller(), use $this->{$name}() instead
@@ -719,6 +776,19 @@ class Model extends EloquentModel implements ModelInterface
         }
 
         return $this->extendableCall($name, $params);
+    }
+
+    public static function __callStatic($name, $params)
+    {
+        if ($name === 'extend') {
+            if (empty($params[0])) {
+                throw new \InvalidArgumentException('The extend() method requires a callback parameter or closure.');
+            }
+            self::extendableExtendCallback($params[0], $params[1] ?? false, $params[2] ?? null);
+            return;
+        }
+
+        return parent::__callStatic($name, $params);
     }
 
     /**
@@ -1029,6 +1099,20 @@ class Model extends EloquentModel implements ModelInterface
     //
 
     /**
+     * Determine if the given attribute will be processed by getAttributeValue().
+     */
+    public function hasAttribute(string $key): bool
+    {
+        return (
+            array_key_exists($key, $this->attributes)
+            || array_key_exists($key, $this->casts)
+            || $this->hasGetMutator($key)
+            || $this->hasAttributeMutator($key)
+            || $this->isClassCastable($key)
+        );
+    }
+
+    /**
      * Get an attribute from the model.
      * Overrides {@link Eloquent} to support loading from property-defined relations.
      *
@@ -1044,13 +1128,7 @@ class Model extends EloquentModel implements ModelInterface
         // If the attribute exists in the attribute array or has a "get" mutator we will
         // get the attribute's value. Otherwise, we will proceed as if the developers
         // are asking for a relationship's value. This covers both types of values.
-        if (
-            array_key_exists($key, $this->attributes)
-            || array_key_exists($key, $this->casts)
-            || $this->hasGetMutator($key)
-            || $this->hasAttributeMutator($key)
-            || $this->isClassCastable($key)
-        ) {
+        if ($this->hasAttribute($key)) {
             return $this->getAttributeValue($key);
         }
 

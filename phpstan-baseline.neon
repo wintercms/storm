@@ -11,16 +11,6 @@ parameters:
 			path: src/Auth/Models/Group.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\Group\\:\\:afterValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/Group.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\Group\\:\\:beforeValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/Group.php
-
-		-
 			message: "#^Call to an undefined method \\$this\\(Winter\\\\Storm\\\\Auth\\\\Models\\\\Role\\)\\:\\:getOriginalEncryptableValues\\(\\)\\.$#"
 			count: 1
 			path: src/Auth/Models/Role.php
@@ -31,27 +21,7 @@ parameters:
 			path: src/Auth/Models/Role.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\Role\\:\\:afterValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/Role.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\Role\\:\\:beforeValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/Role.php
-
-		-
 			message: "#^Call to an undefined method \\$this\\(Winter\\\\Storm\\\\Auth\\\\Models\\\\User\\)\\:\\:getOriginalEncryptableValues\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/User.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\User\\:\\:afterValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/User.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\User\\:\\:beforeValidate\\(\\)\\.$#"
 			count: 1
 			path: src/Auth/Models/User.php
 
@@ -754,11 +724,6 @@ parameters:
 			message: "#^Winter\\\\Storm\\\\Extension\\\\Extendable\\:\\:extendableSet\\(\\) calls parent\\:\\:__set\\(\\) but Winter\\\\Storm\\\\Extension\\\\Extendable does not extend any class\\.$#"
 			count: 1
 			path: src/Extension/Extendable.php
-
-		-
-			message: "#^Conditional return type uses subject type TCacheValue which is not part of PHPDoc @template tags\\.$#"
-			count: 1
-			path: src/Halcyon/MemoryRepository.php
 
 		-
 			message: "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer\\:\\:queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue\\:\\:queue\\(\\)$#"

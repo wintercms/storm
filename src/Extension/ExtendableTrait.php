@@ -4,6 +4,7 @@ use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
+use Closure;
 use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Serialization;
 use Illuminate\Support\Facades\App;
@@ -63,7 +64,14 @@ trait ExtendableTrait
         foreach ($classes as $class) {
             if (isset(self::$extendableCallbacks[$class]) && is_array(self::$extendableCallbacks[$class])) {
                 foreach (self::$extendableCallbacks[$class] as $callback) {
-                    call_user_func(Serialization::unwrapClosure($callback), $this);
+                    if ($callback['scoped']) {
+                        $closure = Closure::bind(Serialization::unwrapClosure($callback['closure']), $this, $this);
+                        $object = $callback['outer'] ?? null;
+                    } else {
+                        $closure = Serialization::unwrapClosure($callback['closure']);
+                        $object = $this;
+                    }
+                    call_user_func($closure, $object);
                 }
             }
         }
@@ -97,11 +105,9 @@ trait ExtendableTrait
     }
 
     /**
-     * Helper method for `::extend()` static method
-     * @param  callable $callback
-     * @return void
+     * Helper method for `::extend()` static method.
      */
-    public static function extendableExtendCallback($callback)
+    public static function extendableExtendCallback(callable $callback, bool $scoped = false, ?object $outerScope = null): void
     {
         $class = get_called_class();
         if (
@@ -110,7 +116,11 @@ trait ExtendableTrait
         ) {
             self::$extendableCallbacks[$class] = [];
         }
-        self::$extendableCallbacks[$class][] = Serialization::wrapClosure($callback);
+        self::$extendableCallbacks[$class][] = [
+            'closure' => Serialization::wrapClosure($callback),
+            'scoped' => $scoped,
+            'outer' => $outerScope,
+        ];
     }
 
     /**
