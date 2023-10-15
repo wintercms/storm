@@ -148,6 +148,7 @@ class ModelTest extends \DbTestCase
 
         $website->delete();
 
+        // verify nothing has been deleted
         $this->assertEquals($phoneRelationCount, $user->phone()->count());
         $this->assertEquals($postsRelationCount, $user->posts()->count());
 
@@ -161,14 +162,15 @@ class ModelTest extends \DbTestCase
         $website = $this->seeded['websites'][0];
         $user = $this->seeded['users'][0];
 
-        $usersRelationCount = $website->users()->count();
         $websiteCount = Website::count();
         $userCount = User::count();
 
         $website->delete();
 
-        $this->assertEquals($usersRelationCount, $website->users()->count());
+        // verify website has been deleted
         $this->assertEquals($websiteCount - 1, Website::count());
+
+        // verify user still exists
         $this->assertEquals($userCount, User::count());
 
         // test with relation "delete" flag set to true
@@ -183,7 +185,10 @@ class ModelTest extends \DbTestCase
 
         $website->delete();
 
+        // verify website has been deleted
         $this->assertEquals($websiteCount - 1, Website::count());
+
+        // verify user has been deleted
         $this->assertEquals($userCount - 1, User::count());
     }
 
@@ -192,13 +197,15 @@ class ModelTest extends \DbTestCase
     {
         $post = $this->seeded['posts'][0];
 
-        $commentsRelationCount = $post->comments()->count();
         $postCount =  Post::count();
         $commentCount = Comment::count();
 
         $post->delete();
 
+        // verify post has been deleted
         $this->assertEquals($postCount - 1, Post::count());
+
+        // verify comment still exists
         $this->assertEquals($commentCount, Comment::count());
 
         // test with relation "delete" flag set to true
@@ -213,7 +220,10 @@ class ModelTest extends \DbTestCase
 
         $post->delete();
 
+        // verify post has been deleted
         $this->assertEquals($postCount - 1, Post::count());
+
+        // verify comment has been deleted
         $this->assertEquals($commentCount - 1, Comment::count());
     }
 
@@ -228,11 +238,11 @@ class ModelTest extends \DbTestCase
 
         $user->delete();
 
-        // verify that pivot record has been removed
-        $this->assertEquals($userRolePivotCount - 1, DB::table('role_user')->count());
-
         // verify user has been deleted
         $this->assertEquals($userCount - 1, User::count());
+
+        // verify that pivot record has been removed
+        $this->assertEquals($userRolePivotCount - 1, DB::table('role_user')->count());
 
         // verify both roles still exist
         $this->assertEquals($roleCount, Role::count());
