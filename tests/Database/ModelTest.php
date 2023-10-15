@@ -1,9 +1,11 @@
 <?php
 
+namespace Tests\Database;
+
 use Illuminate\Support\Facades\DB;
 use Winter\Storm\Database\Model;
 
-class ModelTest extends DbTestCase
+class ModelTest extends \DbTestCase
 {
     protected $seeded = [];
 
