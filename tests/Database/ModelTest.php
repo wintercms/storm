@@ -567,7 +567,6 @@ class ModelTest extends DbTestCase
 
         $this->assertEquals('2', $modelMiddleRow->value);
     }
-
 }
 
 class TestModelGuarded extends Model
