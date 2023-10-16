@@ -155,6 +155,7 @@ trait Validation
     protected function getValidationAttributes()
     {
         $attributes = $this->getAttributes();
+        
         /**
          * @event model.getValidationAttributes
          * Called when fetching the model attributes to validate the model
