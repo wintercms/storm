@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Database;
 
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Closure;
 use DateTimeInterface;
 use Exception;
@@ -18,7 +18,6 @@ use Winter\Storm\Support\Str;
  *
  * @author Alexey Bobkov, Samuel Georges
  *
- * @phpstan-property \Illuminate\Contracts\Events\Dispatcher|null $dispatcher
  * @method static mixed extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
  */
 class Model extends EloquentModel implements ModelInterface

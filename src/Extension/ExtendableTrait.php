@@ -416,7 +416,7 @@ trait ExtendableTrait
          */
         $parent = $this->extensionGetParentClass();
         if ($parent !== false && $this->extensionMethodExists($parent, '__set')) {
-            return $this->extensionCallMethod($parent, '__set', [$name, $value]);
+            $this->extensionCallMethod($parent, '__set', [$name, $value]);
         }
 
         /*
