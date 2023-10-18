@@ -115,10 +115,10 @@ trait SoftDelete
         $definitions = $this->getRelationDefinitions();
         foreach ($definitions as $type => $relations) {
             foreach ($relations as $name => $options) {
-                if (!$relation = $this->{$name}) {
+                if (!array_get($options, 'softDelete', false)) {
                     continue;
                 }
-                if (!array_get($options, 'softDelete', false)) {
+                if (!$relation = $this->{$name}) {
                     continue;
                 }
                 if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
