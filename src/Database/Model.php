@@ -1008,10 +1008,6 @@ class Model extends EloquentModel implements ModelInterface
              * Hard 'delete' definition
              */
             foreach ($relations as $name => $options) {
-                if (!$relation = $this->{$name}) {
-                    continue;
-                }
-
                 if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
                     // we want to remove the pivot record, not the actual relation record
                     if (Arr::get($options, 'detach', true)) {
@@ -1022,6 +1018,11 @@ class Model extends EloquentModel implements ModelInterface
                     continue;
                 } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
                     if (!Arr::get($options, 'delete', false)) {
+                        continue;
+                    }
+
+                    // Attempt to load the related record(s)
+                    if (!$relation = $this->{$name}) {
                         continue;
                     }
 
