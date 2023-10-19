@@ -1022,6 +1022,7 @@ class Model extends EloquentModel implements ModelInterface
                         continue;
                     }
 
+                    // Attempt to load the related record(s)
                     if (!$relation = $this->{$name}) {
                         continue;
                     }
