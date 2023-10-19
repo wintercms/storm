@@ -118,6 +118,7 @@ trait SoftDelete
                 if (!array_get($options, 'softDelete', false)) {
                     continue;
                 }
+                // Attempt to load the related record(s)
                 if (!$relation = $this->{$name}) {
                     continue;
                 }
