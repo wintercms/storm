@@ -4,6 +4,8 @@ use Winter\Storm\Database\Updater;
 
 class UpdaterTest extends TestCase
 {
+    protected Updater $updater;
+
     public function setUp(): void
     {
         include_once __DIR__.'/../fixtures/database/SampleClass.php';
