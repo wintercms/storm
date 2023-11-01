@@ -26,7 +26,7 @@ class CheckForMaintenanceMode extends Middleware
         } catch (\Symfony\Component\HttpKernel\Exception\HttpException $ex) {
             if ($ex->getStatusCode() === 503) {
             // Smoothly handle AJAX requests
-            if (request()->ajax()) {
+                if (request()->ajax()) {
                     return Response::make(Lang::get('system::lang.page.maintenance.help') . "\r\n" . $ex->getMessage(), 503);
                 }
 
