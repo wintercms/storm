@@ -56,17 +56,17 @@ class FileLoader extends FileLoaderBase
     protected function loadPaths($paths, $locale, $group)
     {
         return collect($paths)
-        ->reduce(function ($output, $path) use ($locale, $group) {
-            $loc = str_replace('_', '-', strtolower($locale));
-            $full1 = "{$path}/{$locale}/{$group}.php";
-            foreach ($loc === $locale ? [$full1] : [$full1, "{$path}/{$loc}/{$group}.php"] as $full) {
-                if ($this->files->exists($full)) {
-                    $output = array_replace_recursive($output, $this->files->getRequire($full));
-                    break;
+            ->reduce(function ($output, $path) use ($locale, $group) {
+                $loc = str_replace('_', '-', strtolower($locale));
+                $full1 = "{$path}/{$locale}/{$group}.php";
+                foreach ($loc === $locale ? [$full1] : [$full1, "{$path}/{$loc}/{$group}.php"] as $full) {
+                    if ($this->files->exists($full)) {
+                        $output = array_replace_recursive($output, $this->files->getRequire($full));
+                        break;
+                    }
                 }
-            }
 
-            return $output;
-        }, []);
+                return $output;
+            }, []);
     }
 }
