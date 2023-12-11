@@ -4,6 +4,8 @@ use Winter\Storm\Html\BlockBuilder;
 
 class BlockBuilderTest extends TestCase
 {
+    protected BlockBuilder $Block;
+
     public function setUp(): void
     {
         $this->Block = new BlockBuilder();

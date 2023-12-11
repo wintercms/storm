@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Database;
 
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Closure;
 use DateTimeInterface;
 use Exception;
@@ -18,8 +18,7 @@ use Winter\Storm\Support\Str;
  *
  * @author Alexey Bobkov, Samuel Georges
  *
- * @phpstan-property \Illuminate\Contracts\Events\Dispatcher|null $dispatcher
- * @method static void extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
+ * @method static mixed extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
  */
 class Model extends EloquentModel implements ModelInterface
 {
@@ -998,6 +997,7 @@ class Model extends EloquentModel implements ModelInterface
 
     /**
      * Locates relations with delete flag and cascades the delete event.
+     * For pivot relations, detach the pivot record unless the detach flag is false.
      * @return void
      */
     protected function performDeleteOnRelations()
@@ -1008,31 +1008,30 @@ class Model extends EloquentModel implements ModelInterface
              * Hard 'delete' definition
              */
             foreach ($relations as $name => $options) {
-                if (!Arr::get($options, 'delete', false)) {
-                    continue;
-                }
-
-                if (!$relation = $this->{$name}) {
-                    continue;
-                }
-
-                if ($relation instanceof EloquentModel) {
-                    $relation->forceDelete();
-                }
-                elseif ($relation instanceof CollectionBase) {
-                    $relation->each(function ($model) {
-                        $model->forceDelete();
-                    });
-                }
-            }
-
-            /*
-             * Belongs-To-Many should clean up after itself always
-             */
-            if ($type == 'belongsToMany') {
-                foreach ($relations as $name => $options) {
+                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
+                    // we want to remove the pivot record, not the actual relation record
                     if (Arr::get($options, 'detach', true)) {
                         $this->{$name}()->detach();
+                    }
+                } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
+                    // the model does not own the related record, we should not remove it.
+                    continue;
+                } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
+                    if (!Arr::get($options, 'delete', false)) {
+                        continue;
+                    }
+
+                    // Attempt to load the related record(s)
+                    if (!$relation = $this->{$name}) {
+                        continue;
+                    }
+
+                    if ($relation instanceof EloquentModel) {
+                        $relation->forceDelete();
+                    } elseif ($relation instanceof CollectionBase) {
+                        $relation->each(function ($model) {
+                            $model->forceDelete();
+                        });
                     }
                 }
             }

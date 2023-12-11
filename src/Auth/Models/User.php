@@ -39,7 +39,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
      * @var array Relations
      */
     public $belongsToMany = [
-        'groups' => [Group::class, 'table' => 'users_groups']
+        'groups' => [Group::class, 'table' => 'users_groups'],
     ];
 
     public $belongsTo = [
@@ -152,17 +152,6 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     {
         $this->last_login = $this->freshTimestamp();
         $this->forceSave();
-    }
-
-    /**
-     * Delete the user groups
-     * @return void
-     */
-    public function afterDelete()
-    {
-        if ($this->hasRelation('groups')) {
-            $this->groups()->detach();
-        }
     }
 
     //
