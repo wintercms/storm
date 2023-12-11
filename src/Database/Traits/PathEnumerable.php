@@ -7,6 +7,7 @@ use Winter\Storm\Database\Builder;
 use Winter\Storm\Database\Collection;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\TreeCollection;
+use Winter\Storm\Exception\ApplicationException;
 
 /**
  * "Enumerable path" model trait
@@ -47,6 +48,24 @@ trait PathEnumerable
      * Stores the new parent ID on update. If set to `false`, no change is pending.
      */
     protected int|null|false $newParentId = false;
+
+    /**
+     * Defines the column name that will be used for the path segments. By default, the ID of the record will be used.
+     *
+     * protected string $segmentColumn = 'id';
+     */
+
+    /**
+     * Defines the column used for storing the parent ID. By default, this will be `parent_id`.
+     *
+     * const PARENT_ID = 'parent_id';
+     */
+
+    /**
+     * Defines the column used for storing the path. By default, this will be `path`.
+     *
+     * const PATH_COLUMN = 'path';
+     */
 
     public static function bootPathEnumerable(): void
     {
@@ -149,7 +168,8 @@ trait PathEnumerable
     public function scopeDescendants(Builder $query): void
     {
         if (!$this->exists()) {
-            return;
+            // Nullify the query, as this record does not yet exist within the hierarchy
+            $query->whereRaw('0 = 1');
         }
 
         $query->where($this->getPathColumnName(), 'LIKE', $this->getPath() . '/%');
@@ -163,10 +183,18 @@ trait PathEnumerable
     public function scopeAncestors(Builder $query): void
     {
         if (!$this->exists()) {
-            return;
+            // Nullify the query, as this record does not yet exist within the hierarchy
+            $query->whereRaw('0 = 1');
         }
 
-        $query->whereIn($this->getKeyName(), $this->getAncestorIds());
+        $ancestorPaths = $this->getAncestorPaths();
+
+        if (!count($ancestorPaths)) {
+            // Nullify the query, as this record has no ancestors.
+            $query->whereRaw('0 = 1');
+        }
+
+        $query->whereIn($this->getPathColumnName(), $this->getAncestorPaths());
     }
 
     /**
@@ -177,10 +205,42 @@ trait PathEnumerable
     public function getEnumerablePath(): string
     {
         if ($this->parent()->exists()) {
-            return $this->parent->{$this->getPathColumnName()} . '/' . $this->id;
+            return $this->parent->{$this->getPathColumnName()} . '/' . $this->getEnumerableSegment();
         }
 
-        return '/' . $this->id;
+        return '/' . $this->getEnumerableSegment();
+    }
+
+    public function getSegmentColumn(): string
+    {
+        if (!property_exists($this, 'segmentColumn')) {
+            return $this->primaryKey;
+        }
+
+        return $this->segmentColumn;
+    }
+
+    /**
+     * Gets the enumerable segment of this record.
+     *
+     * By default, this will return the ID of the record to make up each segment of the path. You can change the column
+     * that makes up the path segments by defining another column name in the `$segmentColumn` property.
+     *
+     * @return string
+     */
+    public function getEnumerableSegment(): string
+    {
+        if (!array_key_exists($this->getSegmentColumn(), $this->attributes)) {
+            throw new ApplicationException(
+                sprintf(
+                    'The segment column "%s" does not exist on the model "%s".',
+                    $this->segmentColumn,
+                    get_class($this)
+                )
+            );
+        }
+
+        return (string) $this->getAttribute($this->getSegmentColumn());
     }
 
     /**
@@ -273,7 +333,7 @@ trait PathEnumerable
     }
 
     /**
-     * Gets the parent column name.
+     * Gets the path column name.
      */
     public function getPathColumnName(): string
     {
@@ -291,15 +351,27 @@ trait PathEnumerable
     }
 
     /**
-     * Gets the ID of all direct ancestors of the current record.
+     * Gets the paths of all direct ancestors of the current record.
      *
      * @return int[]
      */
-    public function getAncestorIds(): array
+    public function getAncestorPaths(): array
     {
         $ids = explode('/', $this->getPath());
+        array_shift($ids);
         array_pop($ids);
-        return $ids;
+
+        if (!count($ids)) {
+            return [];
+        }
+
+        $paths = [];
+
+        for ($i = 1; $i <= count($ids); $i++) {
+            $paths[] = '/' . implode('/', array_slice($ids, 0, $i));
+        }
+
+        return $paths;
     }
 
     /**

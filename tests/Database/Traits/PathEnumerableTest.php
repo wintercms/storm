@@ -179,6 +179,55 @@ class PathEnumerableTest extends DbTestCase
         $this->assertEquals($child->name, $nested->get(1)->children->get(0)->children->get(0)->children->get(0)->name);
     }
 
+    public function testPathsEnumeratedOnCreateWithDifferentSegmentColumn()
+    {
+        $grandparents = new TestModelEnumerablePathNameSegment([
+            'name' => 'Grandparents',
+        ]);
+        $parents = new TestModelEnumerablePathNameSegment([
+            'name' => 'Parents',
+        ]);
+        $daughter = new TestModelEnumerablePathNameSegment([
+            'name' => 'Daughter',
+        ]);
+        $child = new TestModelEnumerablePathNameSegment([
+            'name' => 'Child',
+        ]);
+
+        $grandparents->save();
+        $this->assertEquals('/Grandparents', $grandparents->path);
+        $this->assertEquals(0, $grandparents->getDepth());
+        $this->assertEquals(0, $grandparents->getParents()->count());
+
+        $parents->parent = $grandparents;
+        $parents->save();
+        $this->assertEquals('/Grandparents/Parents', $parents->path);
+        $this->assertEquals(1, $parents->getDepth());
+        $this->assertEquals(1, $parents->getParents()->count());
+
+        $daughter->parent = $parents;
+        $daughter->save();
+        $this->assertEquals('/Grandparents/Parents/Daughter', $daughter->path);
+        $this->assertEquals(2, $daughter->getDepth());
+        $this->assertEquals(2, $daughter->getParents()->count());
+
+        $child->parent = $daughter;
+        $child->save();
+        $this->assertEquals('/Grandparents/Parents/Daughter/Child', $child->path);
+        $this->assertEquals(3, $child->getDepth());
+        $this->assertEquals(3, $child->getParents()->count());
+
+        // Check hierarchy
+        $hierarchy = $child->getParents();
+        $this->assertEquals($grandparents->name, $hierarchy->get(0)->name);
+        $this->assertEquals($parents->name, $hierarchy->get(1)->name);
+        $this->assertEquals($daughter->name, $hierarchy->get(2)->name);
+
+        $root = TestModelEnumerablePathNameSegment::root()->get();
+        $this->assertCount(1, $root);
+        $this->assertEquals($grandparents->name, $root->first()->name);
+    }
+
     protected function createTable()
     {
         $this->getBuilder()->create('path_enumerable', function ($table) {
@@ -199,4 +248,16 @@ class TestModelEnumerablePath extends \Winter\Storm\Database\Model
     public $fillable = [
         'name',
     ];
+}
+
+class TestModelEnumerablePathNameSegment extends \Winter\Storm\Database\Model
+{
+    use \Winter\Storm\Database\Traits\PathEnumerable;
+
+    public $table = 'path_enumerable';
+    public $fillable = [
+        'name',
+    ];
+
+    protected string $segmentColumn = 'name';
 }
