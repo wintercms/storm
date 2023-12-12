@@ -190,8 +190,8 @@ class PathEnumerableTest extends DbTestCase
         $daughter = new TestModelEnumerablePathNameSegment([
             'name' => 'Daughter',
         ]);
-        $child = new TestModelEnumerablePathNameSegment([
-            'name' => 'Child',
+        $grandchild = new TestModelEnumerablePathNameSegment([
+            'name' => 'Grandaughter / Grandson',
         ]);
 
         $grandparents->save();
@@ -211,14 +211,14 @@ class PathEnumerableTest extends DbTestCase
         $this->assertEquals(2, $daughter->getDepth());
         $this->assertEquals(2, $daughter->getParents()->count());
 
-        $child->parent = $daughter;
-        $child->save();
-        $this->assertEquals('/Grandparents/Parents/Daughter/Child', $child->path);
-        $this->assertEquals(3, $child->getDepth());
-        $this->assertEquals(3, $child->getParents()->count());
+        $grandchild->parent = $daughter;
+        $grandchild->save();
+        $this->assertEquals('/Grandparents/Parents/Daughter/Grandaughter \/ Grandson', $grandchild->path);
+        $this->assertEquals(3, $grandchild->getDepth());
+        $this->assertEquals(3, $grandchild->getParents()->count());
 
         // Check hierarchy
-        $hierarchy = $child->getParents();
+        $hierarchy = $grandchild->getParents();
         $this->assertEquals($grandparents->name, $hierarchy->get(0)->name);
         $this->assertEquals($parents->name, $hierarchy->get(1)->name);
         $this->assertEquals($daughter->name, $hierarchy->get(2)->name);

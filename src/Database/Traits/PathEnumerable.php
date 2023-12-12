@@ -240,7 +240,7 @@ trait PathEnumerable
             );
         }
 
-        return (string) $this->getAttribute($this->getSegmentColumn());
+        return preg_replace('/(?<!\\\\)\//', '\\/', (string) $this->getAttribute($this->getSegmentColumn()));
     }
 
     /**
@@ -321,7 +321,7 @@ trait PathEnumerable
      */
     public function getDepth(): int
     {
-        return substr_count($this->getPath(), '/') - 1;
+        return count(preg_split('/(?<!\\\\)\//', $this->getPath())) - 2;
     }
 
     /**
@@ -357,7 +357,7 @@ trait PathEnumerable
      */
     public function getAncestorPaths(): array
     {
-        $ids = explode('/', $this->getPath());
+        $ids = preg_split('/(?<!\\\\)\//', $this->getPath());
         array_shift($ids);
         array_pop($ids);
 
