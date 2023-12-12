@@ -211,6 +211,14 @@ trait PathEnumerable
         return '/' . $this->getEnumerableSegment();
     }
 
+    /**
+     * Gets the column that determines each segment of the path.
+     *
+     * You can change the column that makes up the path segments by defining another column name in the `$segmentColumn`
+     * property.
+     *
+     * @return string
+     */
     public function getSegmentColumn(): string
     {
         if (!property_exists($this, 'segmentColumn')) {
@@ -272,7 +280,7 @@ trait PathEnumerable
     /**
      * Moves a record, and all of its children, to a new parent.
      *
-     * This will update the enumerated paths of all records.
+     * This will update the enumerated paths of all records affected.
      */
     public function moveToNewParent(): void
     {
@@ -307,7 +315,7 @@ trait PathEnumerable
     }
 
     /**
-     * Deletes all descendants.
+     * Restores all descendants.
      */
     public function restoreDescendants(): void
     {
