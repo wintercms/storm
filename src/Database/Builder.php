@@ -222,6 +222,8 @@ class Builder extends BuilderModel
             return 0;
         }
 
+        $this->clearDuplicateCache();
+
         if (!is_array(reset($values))) {
             $values = [$values];
         }
