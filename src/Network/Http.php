@@ -462,7 +462,7 @@ class Http
     /**
      * Add a data to the request.
      */
-    public function data(array|string $key, string $value = null): self
+    public function data(array|string $key, array|string $value = null): self
     {
         if (is_array($key)) {
             foreach ($key as $_key => $_value) {
