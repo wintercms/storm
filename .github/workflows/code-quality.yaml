@@ -4,8 +4,6 @@ on:
   pull_request:
   push:
     branches:
-      - 1.0
-      - 1.1
       - develop
 
 jobs:
@@ -20,7 +18,7 @@ jobs:
       - name: Install PHP and PHP Code Sniffer
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.3'
+          php-version: '8.2'
           tools: phpcs
           coverage: none
       - name: Run code quality checks (on push)

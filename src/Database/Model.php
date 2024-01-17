@@ -105,7 +105,6 @@ class Model extends EloquentModel implements ModelInterface
         }
 
         // Resolver hasn't been set yet
-        /** @phpstan-ignore-next-line */
         if (!static::getConnectionResolver()) {
             return false;
         }

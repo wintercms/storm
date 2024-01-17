@@ -340,7 +340,7 @@ trait HasRelationships
 
             case 'morphToMany':
                 $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
-                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], false, $relationName);
+                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], $relationName, false);
 
                 if (isset($relation['pivotModel'])) {
                     $relationObj->using($relation['pivotModel']);
@@ -667,9 +667,18 @@ trait HasRelationships
     /**
      * Define a polymorphic many-to-many relationship.
      * This code is almost a duplicate of Eloquent but uses a Storm relation class.
+     * @param  string  $related
+     * @param  string  $name
+     * @param  string|null  $table
+     * @param  string|null  $primaryKey
+     * @param  string|null  $foreignKey
+     * @param  string|null  $parentKey
+     * @param  string|null  $relatedKey
+     * @param  string|null  $relationName
+     * @param  bool  $inverse
      * @return \Winter\Storm\Database\Relations\MorphToMany
      */
-    public function morphToMany($related, $name, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $inverse = false, $relationName = null)
+    public function morphToMany($related, $name, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $relationName = null, $inverse = false)
     {
         if (is_null($relationName)) {
             $relationName = $this->getRelationCaller();
@@ -720,8 +729,8 @@ trait HasRelationships
             $foreignKey,
             $parentKey,
             $relatedKey,
-            true,
-            $relationName
+            $relationName,
+            true
         );
     }
 
