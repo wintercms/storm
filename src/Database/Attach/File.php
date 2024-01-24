@@ -120,7 +120,7 @@ class File extends Model
             : $uploadedFile->getRealPath();
 
         if (!$this->putFile($realPath, $this->disk_name)) {
-            throw new SystemException('The file failed to be stored');
+            throw new ApplicationException('The file failed to be stored');
         }
 
         return $this;
