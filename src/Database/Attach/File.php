@@ -1013,7 +1013,7 @@ class File extends Model
         return $this->getDisk()->put(
             $storagePath,
             FileHelper::get($localPath),
-            $this->isPublic() ? ($this->getDisk()?->getConfig()['visibility'] ?? 'public') : null
+            $this->isPublic() ? ($this->getDisk()->getConfig()['visibility'] ?? 'public') : null
         );
     }
 
