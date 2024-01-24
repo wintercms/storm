@@ -119,7 +119,9 @@ class File extends Model
             ? $uploadedFile->getPath() . DIRECTORY_SEPARATOR . $uploadedFile->getFileName()
             : $uploadedFile->getRealPath();
 
-        $this->putFile($realPath, $this->disk_name);
+        if (!$this->putFile($realPath, $this->disk_name)) {
+            throw new SystemException('The file failed to be stored');
+        }
 
         return $this;
     }
@@ -1008,7 +1010,11 @@ class File extends Model
      */
     protected function copyLocalToStorage($localPath, $storagePath)
     {
-        return $this->getDisk()->put($storagePath, FileHelper::get($localPath), $this->isPublic() ? 'public' : null);
+        return $this->getDisk()->put(
+            $storagePath,
+            FileHelper::get($localPath),
+            $this->isPublic() ? ($this->getDisk()?->getConfig()['visibility'] ?? 'public') : null
+        );
     }
 
     //
