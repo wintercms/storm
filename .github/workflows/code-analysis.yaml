@@ -9,7 +9,7 @@ on:
       - develop
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: phpstan-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
