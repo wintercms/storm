@@ -44,7 +44,7 @@ class Helper
         }
 
         $result = array_filter($result, function ($val) {
-            return strlen($val);
+            return strlen($val) > 0;
         });
 
         return $result;
