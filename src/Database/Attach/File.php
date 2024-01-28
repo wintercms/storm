@@ -70,7 +70,7 @@ class File extends Model
     protected $hidden = ['attachment_type', 'attachment_id', 'is_public'];
 
     /**
-     * @var array Add fields to array/json access
+     * @var array<int, string> Add fields to array/json access
      */
     protected $appends = ['path', 'extension'];
 

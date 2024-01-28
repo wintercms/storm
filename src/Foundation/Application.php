@@ -6,7 +6,6 @@ use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
-use Illuminate\Support\Collection;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
@@ -15,6 +14,7 @@ use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
 use Winter\Storm\Foundation\Providers\MakerServiceProvider;
 use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Support\Collection;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Support\Facades\Config;
 
