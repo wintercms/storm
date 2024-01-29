@@ -1608,10 +1608,10 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
         if (isset($this->attributes[$dynamicName])) {
             return;
         }
-
-        parent::addDynamicProperty($dynamicName, $value);
-
         $this->setAttribute($dynamicName, $value);
+
+        // only need to be set to exclude those attributes from getSettingsAttribute()
+        array_set($this->extensionData['dynamicProperties'], $dynamicName, null);
     }
 
     /**
