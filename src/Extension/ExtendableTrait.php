@@ -209,11 +209,7 @@ trait ExtendableTrait
         }
         self::$extendableGuardProperties = false;
 
-        if (!property_exists($this, $dynamicName)) {
-            $this->{$dynamicName} = $value;
-        }
-
-        $this->extensionData['dynamicProperties'][] = $dynamicName;
+        array_set($this->extensionData['dynamicProperties'], $dynamicName, $value);
 
         self::$extendableGuardProperties = true;
     }
@@ -327,12 +323,7 @@ trait ExtendableTrait
      */
     public function getDynamicProperties()
     {
-        $result = [];
-        $propertyNames = $this->extensionData['dynamicProperties'];
-        foreach ($propertyNames as $propName) {
-            $result[$propName] = $this->{$propName};
-        }
-        return $result;
+        return $this->extensionData['dynamicProperties'];
     }
 
     /**
@@ -378,6 +369,10 @@ trait ExtendableTrait
      */
     public function extendableGet($name)
     {
+        if (isset($this->extensionData['dynamicProperties'][$name])) {
+            return $this->extensionData['dynamicProperties'][$name];
+        }
+
         foreach ($this->extensionData['extensions'] as $extensionObject) {
             if (
                 property_exists($extensionObject, $name) &&
