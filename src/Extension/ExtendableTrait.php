@@ -210,6 +210,7 @@ trait ExtendableTrait
         self::$extendableGuardProperties = false;
 
         array_set($this->extensionData['dynamicProperties'], $dynamicName, $value);
+        $this->extendableSet($dynamicName, $value);
 
         self::$extendableGuardProperties = true;
     }
