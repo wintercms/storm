@@ -1603,6 +1603,15 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
         static::$mutatorCache[$class] = $mutatedAttributes;
     }
 
+    public function addDynamicProperty($dynamicName, $value = null)
+    {
+        if (isset($this->attributes[$dynamicName])) {
+            return;
+        }
+
+        $this->setAttribute($dynamicName, $value);
+    }
+
     /**
      * Dynamically retrieve attributes on the model.
      *
