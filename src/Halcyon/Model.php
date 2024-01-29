@@ -1609,6 +1609,8 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
             return;
         }
 
+        parent::addDynamicProperty($dynamicName, $value);
+
         $this->setAttribute($dynamicName, $value);
     }
 
