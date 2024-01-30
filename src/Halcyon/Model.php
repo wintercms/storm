@@ -1603,17 +1603,6 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
         static::$mutatorCache[$class] = $mutatedAttributes;
     }
 
-    public function addDynamicProperty($dynamicName, $value = null)
-    {
-        if (isset($this->attributes[$dynamicName])) {
-            return;
-        }
-        $this->setAttribute($dynamicName, $value);
-
-        // only need to be set to exclude those attributes from getSettingsAttribute()
-        array_set($this->extensionData['dynamicProperties'], $dynamicName, null);
-    }
-
     /**
      * Dynamically retrieve attributes on the model.
      *
