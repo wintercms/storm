@@ -348,6 +348,17 @@ ESC;
         $this->assertEquals(['about.htm', 'home.htm'], $files);
     }
 
+    public function testAddDynamicPoperty()
+    {
+        $page = HalcyonTestPage::find('home');
+
+        $page->addDynamicProperty('myDynamicProperty', 'myDynamicPropertyValue');
+        $this->assertEquals('myDynamicPropertyValue', $page->myDynamicProperty);
+
+        // Dynamic properties should not be saved to DB layer
+        $this->assertArrayNotHasKey('myDynamicProperty', $page->attributes);
+    }
+
     //
     // House keeping
     //
