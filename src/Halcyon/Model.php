@@ -1611,6 +1611,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      */
     public function __get($key)
     {
+        // try the dynamic properties first, then the local attributes array
         return $this->extendableGet($key) ?? $this->getAttribute($key);
     }
 
