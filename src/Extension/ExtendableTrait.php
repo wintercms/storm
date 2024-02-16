@@ -403,10 +403,13 @@ trait ExtendableTrait
         $parent = $this->extensionGetParentClass();
         if ($parent !== false && $this->extensionMethodExists($parent, '__set')) {
             $this->extensionCallMethod($parent, '__set', [$name, $value]);
+            return;
         }
 
         // local dynamic property
-        array_set($this->extensionData['dynamicProperties'], $name, $value);
+        if (array_key_exists($name, $this->getDynamicProperties())) {
+            array_set($this->extensionData['dynamicProperties'], $name, $value);
+        }
     }
 
     /**
