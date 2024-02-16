@@ -44,11 +44,6 @@ trait ExtendableTrait
     protected static $extendableStaticMethods = [];
 
     /**
-     * @var bool Indicates if dynamic properties can be created.
-     */
-    protected static $extendableGuardProperties = true;
-
-    /**
      * @var ClassLoader|null Class loader instance.
      */
     protected static $extendableClassLoader = null;
@@ -207,11 +202,7 @@ trait ExtendableTrait
         if (array_key_exists($dynamicName, $this->getDynamicProperties())) {
             return;
         }
-        self::$extendableGuardProperties = false;
-
         array_set($this->extensionData['dynamicProperties'], $dynamicName, $value);
-
-        self::$extendableGuardProperties = true;
     }
 
     /**
@@ -414,12 +405,8 @@ trait ExtendableTrait
             $this->extensionCallMethod($parent, '__set', [$name, $value]);
         }
 
-        /*
-         * Setting an undefined property
-         */
-        if (!self::$extendableGuardProperties) {
-            array_set($this->extensionData['dynamicProperties'], $name, $value);
-        }
+        // local dynamic property
+        array_set($this->extensionData['dynamicProperties'], $name, $value);
     }
 
     /**
