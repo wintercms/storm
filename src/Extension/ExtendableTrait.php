@@ -406,7 +406,8 @@ trait ExtendableTrait
             return;
         }
 
-        // local dynamic property
+        // Don't allow automatic creation of dynamic properties through the setter magic method,
+        // addDynamicProperty() must be used instead.
         if (array_key_exists($name, $this->getDynamicProperties())) {
             array_set($this->extensionData['dynamicProperties'], $name, $value);
         }
