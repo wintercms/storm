@@ -85,6 +85,15 @@ class Post extends Model
             $table->softDeletes();
             $table->timestamps();
         });
+
+        $builder->create('database_tester_categories_posts', function ($table) {
+            $table->engine = 'InnoDB';
+            $table->integer('category_id')->unsigned();
+            $table->integer('post_id')->unsigned();
+            $table->primary(['category_id', 'post_id']);
+            $table->string('category_name')->nullable();
+            $table->string('post_name')->nullable();
+        });
     }
 
     public static function migrateDown(Builder $builder): void
@@ -93,6 +102,7 @@ class Post extends Model
             return;
         }
 
+        $builder->dropIfExists('database_tester_categories_posts');
         $builder->dropIfExists('database_tester_posts');
     }
 }

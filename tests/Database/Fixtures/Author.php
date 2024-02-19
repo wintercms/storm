@@ -4,6 +4,9 @@ namespace Winter\Storm\Tests\Database\Fixtures;
 
 use Illuminate\Database\Schema\Builder;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Database\Relations\BelongsToMany;
+use Winter\Storm\Database\Relations\HasMany;
+use Winter\Storm\Database\Relations\HasOne;
 
 class Author extends Model
 {
@@ -33,23 +36,18 @@ class Author extends Model
     ];
 
     public $hasOne = [
-        'phone' => 'Database\Tester\Models\Phone',
+        'phone' => Phone::class,
     ];
 
     public $belongsToMany = [
         'roles' => [
-            'Database\Tester\Models\Role',
+            'Winter\Storm\Tests\Database\Fixtures\Role',
             'table' => 'database_tester_authors_roles'
-        ],
-        'executive_authors' => [
-            'Database\Tester\Models\Role',
-            'table' => 'database_tester_authors_roles',
-            'conditions' => 'is_executive = 1'
         ],
     ];
 
     public $morphMany = [
-        'event_log' => ['Database\Tester\Models\EventLog', 'name' => 'related', 'delete' => true, 'softDelete' => true],
+        'event_log' => [EventLog::class, 'name' => 'related', 'delete' => true, 'softDelete' => true],
     ];
 
     public $morphOne = [
@@ -58,12 +56,32 @@ class Author extends Model
 
     public $morphToMany = [
         'tags' => [
-            'Database\Tester\Models\Tag',
+            Tag::class,
             'name'  => 'taggable',
             'table' => 'database_tester_taggables',
             'pivot' => ['added_by']
         ],
     ];
+
+    public function contactNumber(): HasOne
+    {
+        return $this->hasOne(Phone::class);
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function scopes(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'database_tester_authors_roles');
+    }
+
+    public function executiveAuthors(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'database_tester_authors_roles')->wherePivot('is_executive', 1);
+    }
 
     public static function migrateUp(Builder $builder): void
     {
