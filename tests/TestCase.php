@@ -1,5 +1,8 @@
 <?php
 
+namespace Winter\Storm\Tests;
+
+use ReflectionClass;
 use Orchestra\Testbench\Foundation\PackageManifest;
 use Orchestra\Testbench\TestCase as TestbenchTestCase;
 use PHPUnit\Framework\Assert;

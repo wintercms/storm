@@ -120,20 +120,25 @@ trait HasRelationships
      * @var array Excepted relationship types, used to cycle and verify relationships.
      */
     protected static $relationTypes = [
-        'hasOne',
-        'hasMany',
-        'belongsTo',
-        'belongsToMany',
-        'morphTo',
-        'morphOne',
-        'morphMany',
-        'morphToMany',
-        'morphedByMany',
-        'attachOne',
-        'attachMany',
-        'hasOneThrough',
-        'hasManyThrough',
+        'hasOne' => HasOne::class,
+        'hasMany' => HasMany::class,
+        'belongsTo' => BelongsTo::class,
+        'belongsToMany' => BelongsToMany::class,
+        'morphTo' => MorphTo::class,
+        'morphOne' => MorphOne::class,
+        'morphMany' => MorphMany::class,
+        'morphToMany' => MorphToMany::class,
+        'morphedByMany' => MorphToMany::class,
+        'attachOne' => AttachOne::class,
+        'attachMany' => AttachMany::class,
+        'hasOneThrough' => HasOneThrough::class,
+        'hasManyThrough' => HasManyThrough::class,
     ];
+
+    /**
+     * @var array<string, string> Stores relations that have resolved to Laravel-style relation objects.
+     */
+    protected static array $resolvedRelations = [];
 
     //
     // Relations
@@ -145,6 +150,15 @@ trait HasRelationships
      */
     public function hasRelation($name): bool
     {
+        if (method_exists($this, $name)) {
+            if (array_key_exists($name, static::$resolvedRelations)) {
+                return static::$resolvedRelations[$name] !== null;
+            }
+
+            static::$resolvedRelations[$name] = $this->returnsRelation(new \ReflectionMethod($this, $name));
+            return static::$resolvedRelations[$name] !== null;
+        }
+
         return $this->getRelationDefinition($name) !== null;
     }
 
@@ -168,7 +182,7 @@ trait HasRelationships
      */
     public function getRelationTypeDefinitions($type)
     {
-        if (in_array($type, static::$relationTypes)) {
+        if (in_array($type, array_keys(static::$relationTypes))) {
             return $this->{$type};
         }
 
@@ -199,7 +213,7 @@ trait HasRelationships
     {
         $result = [];
 
-        foreach (static::$relationTypes as $type) {
+        foreach (array_keys(static::$relationTypes) as $type) {
             $result[$type] = $this->getRelationTypeDefinitions($type);
 
             /*
@@ -220,7 +234,21 @@ trait HasRelationships
      */
     public function getRelationType(string $name): ?string
     {
-        foreach (static::$relationTypes as $type) {
+        if (method_exists($this, $name)) {
+            if (array_key_exists($name, static::$resolvedRelations)) {
+                return array_search(static::$resolvedRelations[$name], static::$relationTypes) ?: null;
+            }
+
+            static::$resolvedRelations[$name] = $this->returnsRelation(new \ReflectionMethod($this, $name));
+
+            if (static::$resolvedRelations[$name] !== null) {
+                return array_search(static::$resolvedRelations[$name], static::$relationTypes) ?: null;
+            }
+
+            return null;
+        }
+
+        foreach (array_keys(static::$relationTypes) as $type) {
             if ($this->getRelationTypeDefinition($type, $name) !== null) {
                 return $type;
             }
@@ -802,7 +830,7 @@ trait HasRelationships
      */
     protected function addRelation(string $type, string $name, array $config): void
     {
-        if (!in_array($type, static::$relationTypes)) {
+        if (!in_array($type, array_keys(static::$relationTypes))) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Cannot add the "%s" relation to %s, %s is not a valid relationship type.',
@@ -967,5 +995,27 @@ trait HasRelationships
     protected function getMorphs($name, $type = null, $id = null)
     {
         return [$type ?: $name.'_type', $id ?: $name.'_id'];
+    }
+
+    /**
+     * Determines if a method returns a relation class.
+     *
+     * This is used to determine Laravel-style relation methods in a way that won't cause issues with current Winter
+     * code that may be defining attributes with the same name as a relation method, as the method must specifically
+     * define a return type of a Relation class in order to qualify as a relation.
+     */
+    protected function returnsRelation(\ReflectionMethod $method): ?string
+    {
+        $returnType = $method->getReturnType();
+
+        if ($returnType === null || $returnType instanceof \ReflectionNamedType === false) {
+            return null;
+        }
+
+        if (!is_subclass_of($returnType->getName(), 'Illuminate\Database\Eloquent\Relations\Relation')) {
+            return null;
+        }
+
+        return $returnType->getName();
     }
 }
