@@ -57,12 +57,8 @@ class Helper
      * country[city][0][nestedform] turns into country when reduced by 2 level;
      * country[city][0][street][0] turns into country when reduced by 2 levels;
      * etc.
-     *
-     * @param string $fieldName
-     * @param int $level
-     * @return string
      */
-    public static function reduceNameHierarchy($fieldName, $level)
+    public static function reduceNameHierarchy(string $fieldName, int $level) : string
     {
         $formName = self::nameToArray($fieldName);
 
