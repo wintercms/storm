@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 class HasOne extends HasOneBase implements Relation
 {
     use Concerns\HasOneOrMany;
+    use Concerns\CanBeDependent;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -74,5 +75,13 @@ class HasOne extends HasOneBase implements Relation
         }
 
         return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [];
     }
 }

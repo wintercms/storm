@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 class MorphOne extends MorphOneBase implements Relation
 {
     use Concerns\MorphOneOrMany;
+    use Concerns\CanBeDependent;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -87,5 +88,13 @@ class MorphOne extends MorphOneBase implements Relation
         }
 
         return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [];
     }
 }

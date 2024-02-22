@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany as MorphManyBase;
 class MorphMany extends MorphManyBase implements Relation
 {
     use Concerns\MorphOneOrMany;
+    use Concerns\CanBeDependent;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -83,5 +84,13 @@ class MorphMany extends MorphManyBase implements Relation
         }
 
         return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [];
     }
 }

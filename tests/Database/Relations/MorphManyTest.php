@@ -10,7 +10,7 @@ use Winter\Storm\Tests\Database\Fixtures\Post;
 use Winter\Storm\Tests\Database\Fixtures\EventLog;
 use Winter\Storm\Tests\DbTestCase;
 
-class MorphManyModelTest extends DbTestCase
+class MorphManyTest extends DbTestCase
 {
     public function testSetRelationValue()
     {

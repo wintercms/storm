@@ -8,7 +8,7 @@ use Winter\Storm\Tests\Database\Fixtures\Post;
 use Winter\Storm\Tests\Database\Fixtures\Meta;
 use Winter\Storm\Tests\DbTestCase;
 
-class MorphOneModelTest extends DbTestCase
+class MorphOneTest extends DbTestCase
 {
     public function testSetRelationValue()
     {

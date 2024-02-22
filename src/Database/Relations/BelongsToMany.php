@@ -91,4 +91,12 @@ class BelongsToMany extends BelongsToManyBase implements Relation
 
         return $value;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [];
+    }
 }

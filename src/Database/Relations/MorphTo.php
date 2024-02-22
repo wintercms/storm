@@ -61,4 +61,12 @@ class MorphTo extends MorphToBase implements Relation
             $this->parent->getAttribute($this->morphType)
         ];
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [];
+    }
 }

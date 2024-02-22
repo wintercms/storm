@@ -134,4 +134,12 @@ class MorphToMany extends BaseMorphToMany implements Relation
 
         return $value;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [];
+    }
 }

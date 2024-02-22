@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany as HasManyBase;
 class HasMany extends HasManyBase implements Relation
 {
     use Concerns\HasOneOrMany;
+    use Concerns\CanBeDependent;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -75,5 +76,13 @@ class HasMany extends HasManyBase implements Relation
         }
 
         return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [];
     }
 }

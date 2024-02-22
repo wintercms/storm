@@ -85,4 +85,12 @@ class BelongsTo extends BelongsToBase implements Relation
     {
         return $this->ownerKey;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [];
+    }
 }

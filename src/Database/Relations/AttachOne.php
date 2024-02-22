@@ -13,6 +13,7 @@ use Winter\Storm\Database\Attach\File as FileModel;
 class AttachOne extends MorphOneBase implements Relation
 {
     use Concerns\AttachOneOrMany;
+    use Concerns\CanBeDependent;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -106,5 +107,16 @@ class AttachOne extends MorphOneBase implements Relation
         }
 
         return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [
+            get_class($this->query->getModel()),
+            'delete' => $this->isDependent(),
+        ];
     }
 }

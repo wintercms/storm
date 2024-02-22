@@ -32,4 +32,9 @@ interface Relation
      * Creates or modifies the relation using its simple value format.
      */
     public function setSimpleValue($value): void;
+
+    /**
+     * Returns the relation definition in a simple array format.
+     */
+    public function getArrayDefinition(): array;
 }

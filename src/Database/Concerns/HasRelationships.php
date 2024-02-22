@@ -4,6 +4,7 @@ use InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
 use Illuminate\Database\Eloquent\Model;
+use Winter\Storm\Database\Attributes\Relation;
 use Winter\Storm\Database\Relations\AttachMany;
 use Winter\Storm\Database\Relations\AttachOne;
 use Winter\Storm\Database\Relations\BelongsTo;
@@ -152,13 +153,8 @@ trait HasRelationships
      */
     public function hasRelation($name): bool
     {
-        if (method_exists($this, $name)) {
-            if (array_key_exists($name, static::$resolvedRelations)) {
-                return static::$resolvedRelations[$name] !== null;
-            }
-
-            static::$resolvedRelations[$name] = $this->returnsRelation(new \ReflectionMethod($this, $name));
-            return static::$resolvedRelations[$name] !== null;
+        if (method_exists($this, $name) && $this->isRelationMethod($name)) {
+            return true;
         }
 
         return $this->getRelationDefinition($name) !== null;
@@ -170,6 +166,10 @@ trait HasRelationships
      */
     public function getRelationDefinition($name): ?array
     {
+        if (method_exists($this, $name) && $this->isRelationMethod($name)) {
+            return $this->relationMethodDefinition($name);
+        }
+
         if (($type = $this->getRelationType($name)) !== null) {
             return (array) $this->getRelationTypeDefinition($type, $name) + $this->getRelationDefaults($type);
         }
@@ -237,17 +237,7 @@ trait HasRelationships
     public function getRelationType(string $name): ?string
     {
         if (method_exists($this, $name)) {
-            if (array_key_exists($name, static::$resolvedRelations)) {
-                return array_search(static::$resolvedRelations[$name], static::$relationTypes) ?: null;
-            }
-
-            static::$resolvedRelations[$name] = $this->returnsRelation(new \ReflectionMethod($this, $name));
-
-            if (static::$resolvedRelations[$name] !== null) {
-                return array_search(static::$resolvedRelations[$name], static::$relationTypes) ?: null;
-            }
-
-            return null;
+            return array_search(get_class($this->{$name}()), static::$relationTypes) ?: null;
         }
 
         foreach (array_keys(static::$relationTypes) as $type) {
@@ -339,7 +329,13 @@ trait HasRelationships
             case 'hasOne':
             case 'hasMany':
                 $relation = $this->validateRelationArgs($relationName, ['key', 'otherKey']);
+                /** @var HasOne|HasMany */
                 $relationObj = $this->$relationType($relation[0], $relation['key'], $relation['otherKey'], $relationName);
+
+                if ($relation['delete'] ?? false) {
+                    $relationObj->dependent();
+                }
+
                 break;
 
             case 'belongsTo':
@@ -365,7 +361,13 @@ trait HasRelationships
             case 'morphOne':
             case 'morphMany':
                 $relation = $this->validateRelationArgs($relationName, ['type', 'id', 'key'], ['name']);
+                /** @var MorphOne|MorphMany */
                 $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['type'], $relation['id'], $relation['key'], $relationName);
+
+                if ($relation['delete'] ?? false) {
+                    $relationObj->dependent();
+                }
+
                 break;
 
             case 'morphToMany':
@@ -386,7 +388,13 @@ trait HasRelationships
             case 'attachOne':
             case 'attachMany':
                 $relation = $this->validateRelationArgs($relationName, ['public', 'key']);
+                /** @var AttachOne|AttachMany */
                 $relationObj = $this->$relationType($relation[0], $relation['public'], $relation['key'], $relationName);
+
+                if ($relation['delete'] ?? false) {
+                    $relationObj->dependent();
+                }
+
                 break;
 
             case 'hasOneThrough':
@@ -502,28 +510,6 @@ trait HasRelationships
     }
 
     /**
-     * Determines if a method returns a relation class.
-     *
-     * This is used to determine Laravel-style relation methods in a way that won't cause issues with current Winter
-     * code that may be defining attributes with the same name as a relation method, as the method must specifically
-     * define a return type of a Relation class in order to qualify as a relation.
-     */
-    protected function returnsRelation(\ReflectionMethod $method): ?string
-    {
-        $returnType = $method->getReturnType();
-
-        if ($returnType === null || $returnType instanceof \ReflectionNamedType === false) {
-            return null;
-        }
-
-        if (!is_subclass_of($returnType->getName(), 'Illuminate\Database\Eloquent\Relations\Relation')) {
-            return null;
-        }
-
-        return $returnType->getName();
-    }
-
-    /**
      * Locates relations with delete flag and cascades the delete event.
      * For pivot relations, detach the pivot record unless the detach flag is false.
      * @return void
@@ -564,6 +550,78 @@ trait HasRelationships
                 }
             }
         }
+
+        // Find relation methods
+        foreach ($this->getRelationMethods() as $relation) {
+            $relationObj = $this->{$relation}();
+
+            if (method_exists($relationObj, 'isDependent')) {
+                if ($relationObj->isDependent()) {
+                    $relationObj->forceDelete();
+                }
+            }
+        }
+    }
+
+    /**
+     * Retrieves all methods that either contain the `Relation` attribute or have a return type that matches a relation.
+     */
+    public function getRelationMethods(): array
+    {
+        $relationMethods = [];
+
+        foreach (get_class_methods($this) as $method) {
+            if ($this->isRelationMethod($method)) {
+                $relationMethods[] = $method;
+            }
+        }
+
+        return $relationMethods;
+    }
+
+    /**
+     * Determines if the provided method name is a relation method.
+     *
+     * A relation method either specifies the `Relation` attribute or has a return type that matches a relation.
+     */
+    public function isRelationMethod(string $name): bool
+    {
+        if (!method_exists($this, $name)) {
+            return false;
+        }
+
+        $method = new \ReflectionMethod($this, $name);
+
+        if (count($method->getAttributes(Relation::class))) {
+            return true;
+        }
+
+        $returnType = $method->getReturnType();
+
+        if (is_null($returnType)) {
+            return false;
+        }
+
+        if (
+            $returnType instanceof \ReflectionNamedType
+             && in_array($returnType->getName(), array_values(static::$relationTypes))
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Generates a definition array for a relation method.
+     */
+    protected function relationMethodDefinition(string $name): array
+    {
+        if (!$this->isRelationMethod($name)) {
+            return [];
+        }
+
+        return $this->{$name}()->getArrayDefinition();
     }
 
     /**

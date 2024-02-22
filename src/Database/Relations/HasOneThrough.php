@@ -25,4 +25,12 @@ class HasOneThrough extends HasOneThroughBase
         return in_array('Winter\Storm\Database\Traits\SoftDelete', $uses) ||
             in_array('Illuminate\Database\Eloquent\SoftDeletes', $uses);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [];
+    }
 }
