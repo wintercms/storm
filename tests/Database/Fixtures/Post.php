@@ -5,6 +5,7 @@ namespace Winter\Storm\Tests\Database\Fixtures;
 use Illuminate\Database\Schema\Builder;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Relations\BelongsTo;
+use Winter\Storm\Database\Relations\MorphOne;
 
 class Post extends Model
 {
@@ -34,35 +35,37 @@ class Post extends Model
 
     public $belongsToMany = [
         'categories' => [
-            'Database\Tester\Models\Category',
+            Category::class,
             'table' => 'database_tester_categories_posts',
             'pivot' => ['category_name', 'post_name']
         ]
     ];
 
     public $morphMany = [
-        'event_log' => ['Database\Tester\Models\EventLog', 'name' => 'related', 'delete' => true, 'softDelete' => true],
+        'event_log' => [EventLog::class, 'name' => 'related', 'delete' => true, 'softDelete' => true],
     ];
 
     public $morphOne = [
-        'meta' => ['Database\Tester\Models\Meta', 'name' => 'taggable'],
+        'meta' => [Meta::class, 'name' => 'taggable'],
     ];
 
     public $morphToMany = [
         'tags' => [
-            'Database\Tester\Models\Tag',
+            Tag::class,
             'name'  => 'taggable',
             'table' => 'database_tester_taggables',
             'pivot' => ['added_by']
         ],
     ];
 
-    /**
-     * @return \Winter\Storm\Database\Relations\BelongsTo
-     */
     public function writer(): BelongsTo
     {
         return $this->belongsTo(Author::class, 'author_id');
+    }
+
+    public function info(): MorphOne
+    {
+        return $this->morphOne(Meta::class, 'taggable');
     }
 
     public static function migrateUp(Builder $builder): void

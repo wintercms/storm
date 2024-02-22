@@ -4,6 +4,7 @@ namespace Winter\Storm\Tests\Database\Fixtures;
 
 use Illuminate\Database\Schema\Builder;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Database\Relations\HasOneThrough;
 
 class User extends Model
 {
@@ -42,6 +43,11 @@ class User extends Model
     public $attachMany = [
         'photos' => 'System\Models\File'
     ];
+
+    public function contactNumber(): HasOneThrough
+    {
+        return $this->hasOneThrough(Phone::class, Author::class);
+    }
 
     public static function migrateUp(Builder $builder): void
     {

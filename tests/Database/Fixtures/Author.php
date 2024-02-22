@@ -7,6 +7,8 @@ use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Relations\BelongsToMany;
 use Winter\Storm\Database\Relations\HasMany;
 use Winter\Storm\Database\Relations\HasOne;
+use Winter\Storm\Database\Relations\MorphMany;
+use Winter\Storm\Database\Relations\MorphOne;
 
 class Author extends Model
 {
@@ -26,9 +28,9 @@ class Author extends Model
      * @var array Relations
      */
     public $belongsTo = [
-        'user' => ['Database\Tester\Models\User', 'delete' => true],
-        'country' => ['Database\Tester\Models\Country'],
-        'user_soft' => ['Database\Tester\Models\SoftDeleteUser', 'key' => 'user_id', 'softDelete' => true],
+        'user' => [User::class, 'delete' => true],
+        'country' => Country::class,
+        'user_soft' => [SoftDeleteUser::class, 'key' => 'user_id', 'softDelete' => true],
     ];
 
     public $hasMany = [
@@ -51,7 +53,7 @@ class Author extends Model
     ];
 
     public $morphOne = [
-        'meta' => ['Database\Tester\Models\Meta', 'name' => 'taggable'],
+        'meta' => [Meta::class, 'name' => 'taggable'],
     ];
 
     public $morphToMany = [
@@ -81,6 +83,16 @@ class Author extends Model
     public function executiveAuthors(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'database_tester_authors_roles')->wherePivot('is_executive', 1);
+    }
+
+    public function info(): MorphOne
+    {
+        return $this->morphOne(Meta::class, 'taggable');
+    }
+
+    public function auditLogs(): MorphMany
+    {
+        return $this->morphMany(EventLog::class, 'related');
     }
 
     public static function migrateUp(Builder $builder): void
