@@ -1,9 +1,12 @@
-<?php namespace Winter\Storm\Database\Concerns;
+<?php
+
+namespace Winter\Storm\Database\Concerns;
 
 use InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation as EloquentRelation;
 use Winter\Storm\Database\Attributes\Relation;
 use Winter\Storm\Database\Relations\AttachMany;
 use Winter\Storm\Database\Relations\AttachOne;
@@ -553,11 +556,14 @@ trait HasRelationships
 
         // Find relation methods
         foreach ($this->getRelationMethods() as $relation) {
+            /** @var EloquentRelation */
             $relationObj = $this->{$relation}();
 
             if (method_exists($relationObj, 'isDependent')) {
                 if ($relationObj->isDependent()) {
-                    $relationObj->forceDelete();
+                    $relationObj->get()->each(function ($model) {
+                        $model->forceDelete();
+                    });
                 }
             }
         }
