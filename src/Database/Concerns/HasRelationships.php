@@ -412,7 +412,7 @@ trait HasRelationships
             case 'attachMany':
                 $relation = $this->validateRelationArgs($relationName, ['public', 'key']);
                 /** @var AttachOne|AttachMany */
-                $relationObj = $this->$relationType($relation[0], $relation['public'], $relation['key'], $relationName);
+                $relationObj = $this->$relationType($relation[0], $relation['public'], $relation['key']);
 
                 if ($relation['delete'] ?? false) {
                     $relationObj->dependent();
@@ -819,12 +819,8 @@ trait HasRelationships
      * This code is a duplicate of Eloquent but uses a Storm relation class.
      * @return \Winter\Storm\Database\Relations\AttachOne
      */
-    public function attachOne($related, $isPublic = true, $localKey = null, $relationName = null)
+    public function attachOne($related, $isPublic = true, $localKey = null)
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
-        }
-
         $instance = $this->newRelatedInstance($related);
 
         list($type, $id) = $this->getMorphs('attachment', null, null);
@@ -834,7 +830,11 @@ trait HasRelationships
         $localKey = $localKey ?: $this->getKeyName();
 
         $relation = new AttachOne($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey);
-        $relation->setRelationName($this->getRelationCaller());
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
+        }
+
         return $relation;
     }
 
@@ -843,12 +843,8 @@ trait HasRelationships
      * This code is a duplicate of Eloquent but uses a Storm relation class.
      * @return \Winter\Storm\Database\Relations\AttachMany
      */
-    public function attachMany($related, $isPublic = null, $localKey = null, $relationName = null)
+    public function attachMany($related, $isPublic = null, $localKey = null)
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
-        }
-
         $instance = $this->newRelatedInstance($related);
 
         list($type, $id) = $this->getMorphs('attachment', null, null);
@@ -858,7 +854,11 @@ trait HasRelationships
         $localKey = $localKey ?: $this->getKeyName();
 
         $relation = new AttachMany($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey);
-        $relation->setRelationName($this->getRelationCaller());
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
+        }
+
         return $relation;
     }
 
