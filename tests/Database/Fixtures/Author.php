@@ -94,7 +94,7 @@ class Author extends Model
     #[Relation]
     public function auditLogs()
     {
-        return $this->morphMany(EventLog::class, 'related');
+        return $this->morphMany(EventLog::class, 'related')->dependent();
     }
 
     public static function migrateUp(Builder $builder): void

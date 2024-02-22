@@ -116,7 +116,9 @@ class AttachOne extends MorphOneBase implements Relation
     {
         return [
             get_class($this->query->getModel()),
+            'key' => $this->localKey,
             'delete' => $this->isDependent(),
+            'public' => $this->public,
         ];
     }
 }

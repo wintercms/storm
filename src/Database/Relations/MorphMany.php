@@ -91,6 +91,10 @@ class MorphMany extends MorphManyBase implements Relation
      */
     public function getArrayDefinition(): array
     {
-        return [];
+        return [
+            get_class($this->query->getModel()),
+            'name' => $this->morphType,
+            'delete' => $this->isDependent(),
+        ];
     }
 }

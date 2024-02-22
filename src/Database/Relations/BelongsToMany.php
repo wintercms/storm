@@ -97,6 +97,11 @@ class BelongsToMany extends BelongsToManyBase implements Relation
      */
     public function getArrayDefinition(): array
     {
-        return [];
+        return [
+            get_class($this->getRelated()),
+            'table' => $this->getTable(),
+            'key' => $this->getForeignPivotKeyName(),
+            'otherKey' => $this->getRelatedKeyName(),
+        ];
     }
 }

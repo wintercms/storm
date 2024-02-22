@@ -22,6 +22,26 @@ use Winter\Storm\Database\Relations\MorphTo;
 use Winter\Storm\Database\Relations\MorphToMany;
 use Winter\Storm\Support\Arr;
 
+/**
+ * Model relationship methods.
+ *
+ * The following functionality handles custom relationship functionality for Winter CMS models, extending the base
+ * Laravel Eloquent relationship functionality.
+ *
+ * @method \Winter\Storm\Database\Relations\HasOne hasOne(string $related, string $foreignKey = null, string $localKey = null, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\HasOneThrough hasOneThrough(string $related, string $through, string $firstKey = null, string $secondKey = null, string $localKey = null, string $secondLocalKey = null)
+ * @method \Winter\Storm\Database\Relations\MorphOne morphOne(string $related, string $name, string $type = null, string $id = null, string $localKey = null, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\BelongsTo belongsTo(string $related, string $foreignKey = null, string $ownerKey = null, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\MorphTo morphTo(string $name = null, string $type = null, string $id = null, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\HasMany hasMany(string $related, string $foreignKey = null, string $localKey = null, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\HasManyThrough hasManyThrough(string $related, string $through, string $firstKey = null, string $secondKey = null, string $localKey = null, string $secondLocalKey = null)
+ * @method \Winter\Storm\Database\Relations\MorphMany morphMany(string $related, string $name, string $type = null, string $id = null, string $localKey = null, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\BelongsToMany belongsToMany(string $related, string $table = null, string $foreignPivotKey = null, string $relatedPivotKey = null, string $parentKey = null, string $relatedKey = null, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\MorphToMany morphToMany(string $related, string $name, string $table = null, string $foreignPivotKey = null, string $relatedPivotKey = null, string $parentKey = null, string $relatedKey = null, bool $inverse = false, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\MorphToMany morphedByMany(string $related, string $name, string $table = null, string $foreignPivotKey = null, string $relatedPivotKey = null, string $parentKey = null, string $relatedKey = null, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\AttachOne attachOne(string $related, bool $isPublic = true, string $localKey = null, string $relationName = null)
+ * @method \Winter\Storm\Database\Relations\AttachMany attachMany(string $related, bool $isPublic = null, string $localKey = null, string $relationName = null)
+ */
 trait HasRelationships
 {
     /**

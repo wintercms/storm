@@ -1,76 +1,112 @@
 <?php
 
-use Winter\Storm\Database\Model;
+namespace Winter\Storm\Tests\Database\Concerns;
 
-class HasRelationshipsTest extends TestCase
+use Winter\Storm\Tests\Database\Fixtures\Author;
+use Winter\Storm\Tests\Database\Fixtures\Country;
+use Winter\Storm\Tests\Database\Fixtures\EventLog;
+use Winter\Storm\Tests\Database\Fixtures\Meta;
+use Winter\Storm\Tests\Database\Fixtures\Phone;
+use Winter\Storm\Tests\Database\Fixtures\Post;
+use Winter\Storm\Tests\Database\Fixtures\Role;
+use Winter\Storm\Tests\Database\Fixtures\Tag;
+use Winter\Storm\Tests\Database\Fixtures\User;
+use Winter\Storm\Tests\DbTestCase;
+
+class HasRelationshipsTest extends DbTestCase
 {
-    public function testGetRelationTypeDefinitions()
+    public function testHasRelation()
     {
-        $model = new TestModelBelongsTo();
-        $this->assertEquals([], $model->getRelationTypeDefinitions('belongsToMany'));
+        $author = new Author();
+
+        // Array style
+        $this->assertTrue($author->hasRelation('user'));
+        $this->assertTrue($author->hasRelation('country'));
+        $this->assertTrue($author->hasRelation('posts'));
+        $this->assertTrue($author->hasRelation('phone'));
+        $this->assertTrue($author->hasRelation('roles'));
+        $this->assertTrue($author->hasRelation('event_log'));
+        $this->assertTrue($author->hasRelation('meta'));
+        $this->assertTrue($author->hasRelation('tags'));
+
+        // Laravel style
+        $this->assertTrue($author->hasRelation('contactNumber'));
+        $this->assertTrue($author->hasRelation('messages'));
+        $this->assertTrue($author->hasRelation('scopes'));
+        $this->assertTrue($author->hasRelation('executiveAuthors'));
+        $this->assertTrue($author->hasRelation('info'));
+        $this->assertTrue($author->hasRelation('auditLogs'));
+
+        $this->assertFalse($author->hasRelation('invalid'));
+    }
+
+    public function testGetRelationType()
+    {
+        $author = new Author();
+
+        // Array style
+        $this->assertEquals('belongsTo', $author->getRelationType('user'));
+        $this->assertEquals('belongsTo', $author->getRelationType('country'));
+        $this->assertEquals('hasMany', $author->getRelationType('posts'));
+        $this->assertEquals('hasOne', $author->getRelationType('phone'));
+        $this->assertEquals('belongsToMany', $author->getRelationType('roles'));
+        $this->assertEquals('morphMany', $author->getRelationType('event_log'));
+        $this->assertEquals('morphOne', $author->getRelationType('meta'));
+        $this->assertEquals('morphToMany', $author->getRelationType('tags'));
+
+        // Laravel style
+        $this->assertEquals('hasOne', $author->getRelationType('contactNumber'));
+        $this->assertEquals('hasMany', $author->getRelationType('messages'));
+        $this->assertEquals('belongsToMany', $author->getRelationType('scopes'));
+        $this->assertEquals('belongsToMany', $author->getRelationType('executiveAuthors'));
+        $this->assertEquals('morphOne', $author->getRelationType('info'));
+        $this->assertEquals('morphMany', $author->getRelationType('auditLogs'));
+
+        $this->assertNull($author->getRelationType('invalid'));
+    }
+
+    public function testGetRelationDefinition()
+    {
+        $author = new Author();
+
+        // Array style
+        $this->assertEquals([User::class, 'delete' => true], $author->getRelationDefinition('user'));
+        $this->assertEquals([Country::class], $author->getRelationDefinition('country'));
+        $this->assertEquals([Post::class], $author->getRelationDefinition('posts'));
+        $this->assertEquals([Phone::class], $author->getRelationDefinition('phone'));
         $this->assertEquals([
-            'relatedModel' => 'TestModelNoRelation',
-            'anotherRelatedModel' => [
-                'TestModelNoRelation',
-                'order' => 'name desc',
-            ],
-        ], $model->getRelationTypeDefinitions('belongsTo'));
-    }
-
-    public function testDynamicGetRelationTypeDefinitions()
-    {
-        TestModelBelongsTo::extend(function ($model) {
-            $model->belongsTo['dynamicRelatedModel'] = 'TestModelNoRelation';
-        });
-        $model = new TestModelBelongsTo();
+            Role::class,
+            'table' => 'database_tester_authors_roles'
+        ], $author->getRelationDefinition('roles'));
+        $this->assertEquals([EventLog::class, 'name' => 'related', 'delete' => true, 'softDelete' => true], $author->getRelationDefinition('event_log'));
+        $this->assertEquals([Meta::class, 'name' => 'taggable'], $author->getRelationDefinition('meta'));
         $this->assertEquals([
-            'relatedModel' => 'TestModelNoRelation',
-            'anotherRelatedModel' => [
-                'TestModelNoRelation',
-                'order' => 'name desc',
-            ],
-            'dynamicRelatedModel' => 'TestModelNoRelation'
-        ], $model->getRelationTypeDefinitions('belongsTo'));
+            Tag::class,
+            'name'  => 'taggable',
+            'table' => 'database_tester_taggables',
+            'pivot' => ['added_by']
+        ], $author->getRelationDefinition('tags'));
+
+        // Laravel style
+        $this->assertEquals([
+            Phone::class,
+            'key' => 'author_id',
+            'otherKey' => 'id',
+            'delete' => false,
+        ], $author->getRelationDefinition('contactNumber'));
+        $this->assertEquals([
+            Post::class,
+            'key' => 'author_id',
+            'otherKey' => 'id',
+            'delete' => false,
+        ], $author->getRelationDefinition('messages'));
+        $this->assertEquals([
+            Role::class,
+            'table' => 'database_tester_authors_roles',
+            'key' => 'author_id',
+            'otherKey' => 'id'
+        ], $author->getRelationDefinition('scopes'));
+
+        $this->assertNull($author->getRelationDefinition('invalid'));
     }
-
-    public function testGetRelationTypeDefinition()
-    {
-        $model = new TestModelBelongsTo();
-        $this->assertEquals(null, $model->getRelationTypeDefinition('belongsTo', 'nonExistantRelation'));
-        $this->assertEquals('TestModelNoRelation', $model->getRelationTypeDefinition('belongsTo', 'relatedModel'));
-        $this->assertEquals(['TestModelNoRelation', 'order' => 'name desc'], $model->getRelationTypeDefinition('belongsTo', 'anotherRelatedModel'));
-        $this->assertEquals(null, $model->getRelationTypeDefinition('belongsToMany', 'nonExistantRelation'));
-        $this->assertEquals(null, $model->getRelationTypeDefinition('belongsToMany', 'relatedModel'));
-    }
-
-    public function testDynamicGetRelationTypeDefinition()
-    {
-        TestModelBelongsTo::extend(function ($model) {
-            $model->belongsTo['dynamicRelatedModel'] = 'TestModelNoRelation';
-        });
-        $model = new TestModelBelongsTo();
-        $this->assertEquals('TestModelNoRelation', $model->getRelationTypeDefinition('belongsTo', 'dynamicRelatedModel'));
-    }
-}
-
-/*
- * Class with belongsTo relation
- */
-class TestModelBelongsTo extends Model
-{
-    public $belongsTo = [
-        'relatedModel' => 'TestModelNoRelation',
-        'anotherRelatedModel' => [
-            'TestModelNoRelation',
-            'order' => 'name desc',
-        ]
-    ];
-}
-
-/*
- * Class with no belongsTo relation
- */
-class TestModelNoRelation extends Model
-{
-
 }

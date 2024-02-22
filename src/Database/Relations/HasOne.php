@@ -82,6 +82,11 @@ class HasOne extends HasOneBase implements Relation
      */
     public function getArrayDefinition(): array
     {
-        return [];
+        return [
+            get_class($this->query->getModel()),
+            'key' => $this->getForeignKeyName(),
+            'otherKey' => $this->getOtherKey(),
+            'delete' => $this->isDependent(),
+        ];
     }
 }
