@@ -1,6 +1,8 @@
 <?php namespace Winter\Storm\Database\Concerns;
 
 use InvalidArgumentException;
+use Illuminate\Database\Eloquent\Collection as CollectionBase;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Relations\AttachMany;
 use Winter\Storm\Database\Relations\AttachOne;
@@ -14,6 +16,7 @@ use Winter\Storm\Database\Relations\MorphMany;
 use Winter\Storm\Database\Relations\MorphOne;
 use Winter\Storm\Database\Relations\MorphTo;
 use Winter\Storm\Database\Relations\MorphToMany;
+use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Str;
 
 trait HasRelationships
@@ -1017,5 +1020,48 @@ trait HasRelationships
         }
 
         return $returnType->getName();
+    }
+
+    /**
+     * Locates relations with delete flag and cascades the delete event.
+     * For pivot relations, detach the pivot record unless the detach flag is false.
+     * @return void
+     */
+    protected function performDeleteOnRelations()
+    {
+        $definitions = $this->getRelationDefinitions();
+        foreach ($definitions as $type => $relations) {
+            /*
+             * Hard 'delete' definition
+             */
+            foreach ($relations as $name => $options) {
+                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
+                    // we want to remove the pivot record, not the actual relation record
+                    if (Arr::get($options, 'detach', true)) {
+                        $this->{$name}()->detach();
+                    }
+                } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
+                    // the model does not own the related record, we should not remove it.
+                    continue;
+                } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
+                    if (!Arr::get($options, 'delete', false)) {
+                        continue;
+                    }
+
+                    // Attempt to load the related record(s)
+                    if (!$relation = $this->{$name}) {
+                        continue;
+                    }
+
+                    if ($relation instanceof EloquentModel) {
+                        $relation->forceDelete();
+                    } elseif ($relation instanceof CollectionBase) {
+                        $relation->each(function ($model) {
+                            $model->forceDelete();
+                        });
+                    }
+                }
+            }
+        }
     }
 }
