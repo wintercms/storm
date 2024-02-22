@@ -12,11 +12,6 @@ trait AttachOneOrMany
     use DeferOneOrMany;
 
     /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
-
-    /**
      * @var ?boolean Default value for file public or protected state.
      */
     protected $public;

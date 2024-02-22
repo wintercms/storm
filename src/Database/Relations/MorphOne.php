@@ -1,35 +1,23 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
+
+namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphOne extends MorphOneBase
+class MorphOne extends MorphOneBase implements Relation
 {
     use Concerns\MorphOneOrMany;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * Create a new has many relationship instance.
-     * @return void
+     * {@inheritDoc}
      */
-    public function __construct(Builder $query, Model $parent, $type, $id, $localKey, $relationName = null)
-    {
-        $this->relationName = $relationName;
-
-        parent::__construct($query, $parent, $type, $id, $localKey);
-
-        $this->addDefinedConstraints();
-    }
-
-    /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
-     */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         if (is_array($value)) {
             return;
@@ -86,8 +74,7 @@ class MorphOne extends MorphOneBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {

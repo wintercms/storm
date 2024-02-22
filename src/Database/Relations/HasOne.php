@@ -1,35 +1,21 @@
 <?php namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class HasOne extends HasOneBase
+class HasOne extends HasOneBase implements Relation
 {
     use Concerns\HasOneOrMany;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * Create a new "hasOne" relationship.
-     * @return void
+     * {@inheritDoc}
      */
-    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey, $relationName = null)
-    {
-        $this->relationName = $relationName;
-
-        parent::__construct($query, $parent, $foreignKey, $localKey);
-
-        $this->addDefinedConstraints();
-    }
-
-    /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
-     */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         if (is_array($value)) {
             return;
@@ -75,8 +61,7 @@ class HasOne extends HasOneBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {

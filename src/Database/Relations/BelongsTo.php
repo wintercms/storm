@@ -1,32 +1,20 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
+
+namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $child
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class BelongsTo extends BelongsToBase
+class BelongsTo extends BelongsToBase implements Relation
 {
     use Concerns\BelongsOrMorphsTo;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
-
-    /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
-
-    public function __construct(Builder $query, Model $child, $foreignKey, $ownerKey, $relationName)
-    {
-        $this->relationName = $relationName;
-
-        parent::__construct($query, $child, $foreignKey, $ownerKey, $relationName);
-
-        $this->addDefinedConstraints();
-    }
+    use Concerns\HasRelationName;
 
     /**
      * Adds a model to this relationship type.
@@ -53,10 +41,9 @@ class BelongsTo extends BelongsToBase
     }
 
     /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
+     * {@inheritDoc}
      */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         // Nulling the relationship
         if (!$value) {
@@ -83,8 +70,7 @@ class BelongsTo extends BelongsToBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {

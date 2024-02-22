@@ -1,9 +1,9 @@
 <?php namespace Winter\Storm\Database\Concerns;
 
 use InvalidArgumentException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Winter\Storm\Database\Model;
+use Illuminate\Database\Eloquent\Model;
 use Winter\Storm\Database\Relations\AttachMany;
 use Winter\Storm\Database\Relations\AttachOne;
 use Winter\Storm\Database\Relations\BelongsTo;
@@ -17,7 +17,6 @@ use Winter\Storm\Database\Relations\MorphOne;
 use Winter\Storm\Database\Relations\MorphTo;
 use Winter\Storm\Database\Relations\MorphToMany;
 use Winter\Storm\Support\Arr;
-use Winter\Storm\Support\Str;
 
 trait HasRelationships
 {
@@ -400,6 +399,12 @@ trait HasRelationships
                 throw new InvalidArgumentException(sprintf("There is no such relation type known as '%s' on model '%s'.", $relationType, get_called_class()));
         }
 
+        // Add relation name
+        $relationObj->setRelationName($relationName);
+
+        // Add defined constraints
+        $relationObj->addDefinedConstraints();
+
         return $relationObj;
     }
 
@@ -438,322 +443,291 @@ trait HasRelationships
         return $relation;
     }
 
+
     /**
-     * Define a one-to-one relationship.
-     * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\HasOne
+     * Finds the calling function name from the stack trace.
      */
-    public function hasOne($related, $primaryKey = null, $localKey = null, $relationName = null)
+    protected function getRelationCaller()
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+
+        $handled = Arr::first($trace, function ($trace) {
+            return $trace['function'] === 'handleRelation';
+        });
+
+        if (!is_null($handled)) {
+            return null;
         }
 
-        $instance = $this->newRelatedInstance($related);
+        $caller = Arr::first($trace, function ($trace) {
+            return !in_array(
+                $trace['class'],
+                [
+                    \Illuminate\Database\Eloquent\Model::class,
+                    \Winter\Storm\Database\Model::class,
+                ]
+            );
+        });
 
-        $primaryKey = $primaryKey ?: $this->getForeignKey();
-
-        $localKey = $localKey ?: $this->getKeyName();
-
-        return new HasOne($instance->newQuery(), $this, $instance->getTable().'.'.$primaryKey, $localKey, $relationName);
+        return !is_null($caller) ? $caller['function'] : null;
     }
 
     /**
-     * Define a polymorphic one-to-one relationship.
-     * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphOne
+     * Returns a relation key value(s), not as an object.
      */
-    public function morphOne($related, $name, $type = null, $id = null, $localKey = null, $relationName = null)
+    public function getRelationValue($relationName)
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
-        }
-
-        $instance = $this->newRelatedInstance($related);
-
-        list($type, $id) = $this->getMorphs($name, $type, $id);
-
-        $table = $instance->getTable();
-
-        $localKey = $localKey ?: $this->getKeyName();
-
-        return new MorphOne($instance->newQuery(), $this, $table.'.'.$type, $table.'.'.$id, $localKey, $relationName);
+        return $this->$relationName()->getSimpleValue();
     }
 
     /**
-     * Define an inverse one-to-one or many relationship.
-     * Overridden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the {@link
-     * $relationsData} array.
-     * @return \Winter\Storm\Database\Relations\BelongsTo
+     * Sets a relation value directly from its attribute.
      */
-    public function belongsTo($related, $foreignKey = null, $parentKey = null, $relationName = null)
+    protected function setRelationValue($relationName, $value)
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
-        }
-
-        $instance = $this->newRelatedInstance($related);
-
-        if (is_null($foreignKey)) {
-            $foreignKey = snake_case($relationName).'_id';
-        }
-
-        $parentKey = $parentKey ?: $instance->getKeyName();
-
-        return new BelongsTo($instance->newQuery(), $this, $foreignKey, $parentKey, $relationName);
+        $this->$relationName()->setSimpleValue($value);
     }
 
     /**
-     * Define an polymorphic, inverse one-to-one or many relationship.
-     * Overridden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the relation.
-     * @return \Winter\Storm\Database\Relations\MorphTo
-     */
-    public function morphTo($name = null, $type = null, $id = null, $ownerKey = null)
-    {
-        if (is_null($name)) {
-            $name = $this->getRelationCaller();
-        }
-
-        list($type, $id) = $this->getMorphs(Str::snake($name), $type, $id);
-
-        return empty($class = $this->{$type})
-                    ? $this->morphEagerTo($name, $type, $id, $ownerKey)
-                    : $this->morphInstanceTo($class, $name, $type, $id, $ownerKey);
-    }
-
-    /**
-     * Define a polymorphic, inverse one-to-one or many relationship.
+     * Get the polymorphic relationship columns.
      *
      * @param  string  $name
-     * @param  string  $type
-     * @param  string  $id
-     * @param  string  $ownerKey
-     * @return \Winter\Storm\Database\Relations\MorphTo
+     * @param  string|null  $type
+     * @param  string|null  $id
+     * @return array
      */
-    protected function morphEagerTo($name, $type, $id, $ownerKey)
+    protected function getMorphs($name, $type = null, $id = null)
     {
-        return new MorphTo(
-            $this->newQuery()->setEagerLoads([]),
-            $this,
-            $id,
-            $ownerKey,
-            $type,
-            $name
-        );
+        return [$type ?: $name.'_type', $id ?: $name.'_id'];
     }
 
     /**
-     * Define a polymorphic, inverse one-to-one or many relationship.
+     * Determines if a method returns a relation class.
      *
-     * @param  string  $target
-     * @param  string  $name
-     * @param  string  $type
-     * @param  string  $id
-     * @param  string|null  $ownerKey
-     * @return \Winter\Storm\Database\Relations\MorphTo
+     * This is used to determine Laravel-style relation methods in a way that won't cause issues with current Winter
+     * code that may be defining attributes with the same name as a relation method, as the method must specifically
+     * define a return type of a Relation class in order to qualify as a relation.
      */
-    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey = null)
+    protected function returnsRelation(\ReflectionMethod $method): ?string
     {
-        $instance = $this->newRelatedInstance(
-            static::getActualClassNameForMorph($target)
-        );
+        $returnType = $method->getReturnType();
 
-        return new MorphTo(
-            $instance->newQuery(),
-            $this,
-            $id,
-            $ownerKey ?? $instance->getKeyName(),
-            $type,
-            $name
-        );
+        if ($returnType === null || $returnType instanceof \ReflectionNamedType === false) {
+            return null;
+        }
+
+        if (!is_subclass_of($returnType->getName(), 'Illuminate\Database\Eloquent\Relations\Relation')) {
+            return null;
+        }
+
+        return $returnType->getName();
     }
 
     /**
-     * Define a one-to-many relationship.
-     * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\HasMany
+     * Locates relations with delete flag and cascades the delete event.
+     * For pivot relations, detach the pivot record unless the detach flag is false.
+     * @return void
      */
-    public function hasMany($related, $primaryKey = null, $localKey = null, $relationName = null)
+    protected function performDeleteOnRelations()
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
+        $definitions = $this->getRelationDefinitions();
+        foreach ($definitions as $type => $relations) {
+            /*
+             * Hard 'delete' definition
+             */
+            foreach ($relations as $name => $options) {
+                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
+                    // we want to remove the pivot record, not the actual relation record
+                    if (Arr::get($options, 'detach', true)) {
+                        $this->{$name}()->detach();
+                    }
+                } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
+                    // the model does not own the related record, we should not remove it.
+                    continue;
+                } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
+                    if (!Arr::get($options, 'delete', false)) {
+                        continue;
+                    }
+
+                    // Attempt to load the related record(s)
+                    if (!$relation = $this->{$name}) {
+                        continue;
+                    }
+
+                    if ($relation instanceof Model) {
+                        $relation->forceDelete();
+                    } elseif ($relation instanceof CollectionBase) {
+                        $relation->each(function ($model) {
+                            $model->forceDelete();
+                        });
+                    }
+                }
+            }
         }
-
-        $instance = $this->newRelatedInstance($related);
-
-        $primaryKey = $primaryKey ?: $this->getForeignKey();
-
-        $localKey = $localKey ?: $this->getKeyName();
-
-        return new HasMany($instance->newQuery(), $this, $instance->getTable().'.'.$primaryKey, $localKey, $relationName);
     }
 
     /**
-     * Define a has-many-through relationship.
-     * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\HasManyThrough
+     * {@inheritDoc}
      */
-    public function hasManyThrough($related, $through, $primaryKey = null, $throughKey = null, $localKey = null, $secondLocalKey = null, $relationName = null)
+    protected function newHasOne(Builder $query, Model $parent, $foreignKey, $localKey)
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
+        $relation = new HasOne($query, $parent, $foreignKey, $localKey);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
         }
-
-        $throughInstance = new $through;
-
-        $primaryKey = $primaryKey ?: $this->getForeignKey();
-
-        $throughKey = $throughKey ?: $throughInstance->getForeignKey();
-
-        $localKey = $localKey ?: $this->getKeyName();
-
-        $secondLocalKey = $secondLocalKey ?: $throughInstance->getKeyName();
-
-        $instance = $this->newRelatedInstance($related);
-
-        return new HasManyThrough($instance->newQuery(), $this, $throughInstance, $primaryKey, $throughKey, $localKey, $secondLocalKey, $relationName);
+        return $relation;
     }
 
     /**
-     * Define a has-one-through relationship.
-     * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\HasOneThrough
+     * {@inheritDoc}
      */
-    public function hasOneThrough($related, $through, $primaryKey = null, $throughKey = null, $localKey = null, $secondLocalKey = null, $relationName = null)
+    protected function newHasOneThrough(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
+        $relation = new HasOneThrough($query, $farParent, $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
         }
-
-        $throughInstance = new $through;
-
-        $primaryKey = $primaryKey ?: $this->getForeignKey();
-
-        $throughKey = $throughKey ?: $throughInstance->getForeignKey();
-
-        $localKey = $localKey ?: $this->getKeyName();
-
-        $secondLocalKey = $secondLocalKey ?: $throughInstance->getKeyName();
-
-        $instance = $this->newRelatedInstance($related);
-
-        return new HasOneThrough($instance->newQuery(), $this, $throughInstance, $primaryKey, $throughKey, $localKey, $secondLocalKey, $relationName);
+        return $relation;
     }
 
     /**
-     * Define a polymorphic one-to-many relationship.
-     * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphMany
+     * {@inheritDoc}
      */
-    public function morphMany($related, $name, $type = null, $id = null, $localKey = null, $relationName = null)
+    protected function newMorphOne(Builder $query, Model $parent, $type, $id, $localKey)
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
+        $relation = new MorphOne($query, $parent, $type, $id, $localKey);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
         }
-
-        $instance = $this->newRelatedInstance($related);
-
-        list($type, $id) = $this->getMorphs($name, $type, $id);
-
-        $table = $instance->getTable();
-
-        $localKey = $localKey ?: $this->getKeyName();
-
-        return new MorphMany($instance->newQuery(), $this, $table.'.'.$type, $table.'.'.$id, $localKey, $relationName);
+        return $relation;
     }
 
     /**
-     * Define a many-to-many relationship.
-     * This code is almost a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\BelongsToMany
+     * {@inheritDoc}
      */
-    public function belongsToMany($related, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $relationName = null)
+    public function guessBelongsToRelation()
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
-        }
-
-        $instance = $this->newRelatedInstance($related);
-
-        $primaryKey = $primaryKey ?: $this->getForeignKey();
-
-        $foreignKey = $foreignKey ?: $instance->getForeignKey();
-
-        if (is_null($table)) {
-            $table = $this->joiningTable($related);
-        }
-
-        return new BelongsToMany(
-            $instance->newQuery(),
-            $this,
-            $table,
-            $primaryKey,
-            $foreignKey,
-            $parentKey ?: $this->getKeyName(),
-            $relatedKey ?: $instance->getKeyName(),
-            $relationName
-        );
+        return $this->getRelationCaller();
     }
 
     /**
-     * Define a polymorphic many-to-many relationship.
-     * This code is almost a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphToMany
+     * {@inheritDoc}
      */
-    public function morphToMany($related, $name, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $inverse = false, $relationName = null)
+    public function guessBelongsToManyRelation()
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
-        }
-
-        $instance = $this->newRelatedInstance($related);
-
-        $primaryKey = $primaryKey ?: $name.'_id';
-
-        $foreignKey = $foreignKey ?: $instance->getForeignKey();
-
-        $table = $table ?: Str::plural($name);
-
-        return new MorphToMany(
-            $instance->newQuery(),
-            $this,
-            $name,
-            $table,
-            $primaryKey,
-            $foreignKey,
-            $parentKey ?: $this->getKeyName(),
-            $relatedKey ?: $instance->getKeyName(),
-            $relationName,
-            $inverse
-        );
+        return $this->getRelationCaller();
     }
 
     /**
-     * Define a polymorphic many-to-many inverse relationship.
-     * This code is almost a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphToMany
+     * {@inheritDoc}
      */
-    public function morphedByMany($related, $name, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $relationName = null)
+    protected function newBelongsTo(Builder $query, Model $child, $foreignKey, $ownerKey, $relation)
     {
-        if (is_null($relationName)) {
-            $relationName = $this->getRelationCaller();
+        $relation = new BelongsTo($query, $child, $foreignKey, $ownerKey, $relation);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
         }
+        return $relation;
+    }
 
-        $primaryKey = $primaryKey ?: $this->getForeignKey();
+    /**
+     * {@inheritDoc}
+     */
+    protected function newMorphTo(Builder $query, Model $parent, $foreignKey, $ownerKey, $type, $relation)
+    {
+        $relation = new MorphTo($query, $parent, $foreignKey, $ownerKey, $type, $relation);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
+        }
+        return $relation;
+    }
 
-        $foreignKey = $foreignKey ?: $name.'_id';
+    /**
+     * {@inheritDoc}
+     */
+    protected function newHasMany(Builder $query, Model $parent, $foreignKey, $localKey)
+    {
+        $relation = new HasMany($query, $parent, $foreignKey, $localKey);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
+        }
+        return $relation;
+    }
 
-        return $this->morphToMany(
-            $related,
-            $name,
-            $table,
-            $primaryKey,
-            $foreignKey,
-            $parentKey,
-            $relatedKey,
-            true,
-            $relationName
-        );
+    /**
+     * {@inheritDoc}
+     */
+    protected function newHasManyThrough(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
+    {
+        $relation = new HasManyThrough($query, $farParent, $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
+        }
+        return $relation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function newMorphMany(Builder $query, Model $parent, $type, $id, $localKey)
+    {
+        $relation = new MorphMany($query, $parent, $type, $id, $localKey);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
+        }
+        return $relation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function newBelongsToMany(
+        Builder $query,
+        Model $parent,
+        $table,
+        $foreignPivotKey,
+        $relatedPivotKey,
+        $parentKey,
+        $relatedKey,
+        $relationName = null
+    ) {
+        $relation = new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
+        }
+        return $relation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function newMorphToMany(
+        Builder $query,
+        Model $parent,
+        $name,
+        $table,
+        $foreignPivotKey,
+        $relatedPivotKey,
+        $parentKey,
+        $relatedKey,
+        $relationName = null,
+        $inverse = false
+    ) {
+        $relation = new MorphToMany($query, $parent, $name, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName, $inverse);
+        $caller = $this->getRelationCaller();
+        if (!is_null($caller)) {
+            $relation->setRelationName($caller);
+        }
+        return $relation;
     }
 
     /**
@@ -775,7 +749,9 @@ trait HasRelationships
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        return new AttachOne($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey, $relationName);
+        $relation = new AttachOne($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey);
+        $relation->setRelationName($this->getRelationCaller());
+        return $relation;
     }
 
     /**
@@ -797,33 +773,9 @@ trait HasRelationships
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        return new AttachMany($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey, $relationName);
-    }
-
-    /**
-     * Finds the calling function name from the stack trace.
-     */
-    protected function getRelationCaller()
-    {
-        $backtrace = debug_backtrace(0);
-        $caller = ($backtrace[2]['function'] == 'handleRelation') ? $backtrace[4] : $backtrace[2];
-        return $caller['function'];
-    }
-
-    /**
-     * Returns a relation key value(s), not as an object.
-     */
-    public function getRelationValue($relationName)
-    {
-        return $this->$relationName()->getSimpleValue();
-    }
-
-    /**
-     * Sets a relation value directly from its attribute.
-     */
-    protected function setRelationValue($relationName, $value)
-    {
-        $this->$relationName()->setSimpleValue($value);
+        $relation = new AttachMany($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey);
+        $relation->setRelationName($this->getRelationCaller());
+        return $relation;
     }
 
      /**
@@ -985,83 +937,5 @@ trait HasRelationships
     public function addHasManyThroughRelation(string $name, array $config): void
     {
         $this->addRelation('hasManyThrough', $name, $config);
-    }
-
-    /**
-     * Get the polymorphic relationship columns.
-     *
-     * @param  string  $name
-     * @param  string|null  $type
-     * @param  string|null  $id
-     * @return array
-     */
-    protected function getMorphs($name, $type = null, $id = null)
-    {
-        return [$type ?: $name.'_type', $id ?: $name.'_id'];
-    }
-
-    /**
-     * Determines if a method returns a relation class.
-     *
-     * This is used to determine Laravel-style relation methods in a way that won't cause issues with current Winter
-     * code that may be defining attributes with the same name as a relation method, as the method must specifically
-     * define a return type of a Relation class in order to qualify as a relation.
-     */
-    protected function returnsRelation(\ReflectionMethod $method): ?string
-    {
-        $returnType = $method->getReturnType();
-
-        if ($returnType === null || $returnType instanceof \ReflectionNamedType === false) {
-            return null;
-        }
-
-        if (!is_subclass_of($returnType->getName(), 'Illuminate\Database\Eloquent\Relations\Relation')) {
-            return null;
-        }
-
-        return $returnType->getName();
-    }
-
-    /**
-     * Locates relations with delete flag and cascades the delete event.
-     * For pivot relations, detach the pivot record unless the detach flag is false.
-     * @return void
-     */
-    protected function performDeleteOnRelations()
-    {
-        $definitions = $this->getRelationDefinitions();
-        foreach ($definitions as $type => $relations) {
-            /*
-             * Hard 'delete' definition
-             */
-            foreach ($relations as $name => $options) {
-                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
-                    // we want to remove the pivot record, not the actual relation record
-                    if (Arr::get($options, 'detach', true)) {
-                        $this->{$name}()->detach();
-                    }
-                } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
-                    // the model does not own the related record, we should not remove it.
-                    continue;
-                } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
-                    if (!Arr::get($options, 'delete', false)) {
-                        continue;
-                    }
-
-                    // Attempt to load the related record(s)
-                    if (!$relation = $this->{$name}) {
-                        continue;
-                    }
-
-                    if ($relation instanceof EloquentModel) {
-                        $relation->forceDelete();
-                    } elseif ($relation instanceof CollectionBase) {
-                        $relation->each(function ($model) {
-                            $model->forceDelete();
-                        });
-                    }
-                }
-            }
-        }
     }
 }

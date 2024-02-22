@@ -1,37 +1,24 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
+
+namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphTo extends MorphToBase
+class MorphTo extends MorphToBase implements Relation
 {
     use Concerns\BelongsOrMorphsTo;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * @var string The "name" of the relationship.
+     * {@inheritDoc}
      */
-    protected $relationName;
-
-    public function __construct(Builder $query, Model $parent, $foreignKey, $otherKey, $type, $relationName)
-    {
-        $this->relationName = $relationName;
-
-        parent::__construct($query, $parent, $foreignKey, $otherKey, $type, $relationName);
-
-        $this->addDefinedConstraints();
-    }
-
-    /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
-     */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         // Nulling the relationship
         if (!$value) {
@@ -65,8 +52,7 @@ class MorphTo extends MorphToBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {

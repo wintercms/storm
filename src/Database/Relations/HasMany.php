@@ -1,37 +1,25 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
+
+namespace Winter\Storm\Database\Relations;
 
 use Winter\Storm\Database\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
 use Illuminate\Database\Eloquent\Relations\HasMany as HasManyBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class HasMany extends HasManyBase
+class HasMany extends HasManyBase implements Relation
 {
     use Concerns\HasOneOrMany;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * Create a new has many relationship instance.
-     * @return void
+     * {@inheritDoc}
      */
-    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey, $relationName = null)
-    {
-        $this->relationName = $relationName;
-
-        parent::__construct($query, $parent, $foreignKey, $localKey);
-
-        $this->addDefinedConstraints();
-    }
-
-    /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
-     */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         // Nulling the relationship
         if (!$value) {
@@ -75,8 +63,7 @@ class HasMany extends HasManyBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {

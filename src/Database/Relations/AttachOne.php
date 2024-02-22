@@ -1,4 +1,6 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
+
+namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -8,37 +10,33 @@ use Winter\Storm\Database\Attach\File as FileModel;
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class AttachOne extends MorphOneBase
+class AttachOne extends MorphOneBase implements Relation
 {
     use Concerns\AttachOneOrMany;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * Create a new has many relationship instance.
-     * @param Builder $query
-     * @param Model $parent
-     * @param string $type
-     * @param string $id
-     * @param bool $isPublic
-     * @param string $localKey
-     * @param null|string $relationName
+     * Create a new attach one relationship instance.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  string  $type
+     * @param  string  $id
+     * @param  bool  $isPublic
+     * @param  string  $localKey
+     * @return void
      */
-    public function __construct(Builder $query, Model $parent, $type, $id, $isPublic, $localKey, $relationName = null)
+    public function __construct(Builder $query, Model $parent, $type, $id, $isPublic, $localKey)
     {
-        $this->relationName = $relationName;
-
-        $this->public = $isPublic;
-
         parent::__construct($query, $parent, $type, $id, $localKey);
-
-        $this->addDefinedConstraints();
+        $this->public = $isPublic;
     }
 
     /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
+     * {@inheritDoc}
      */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         if (is_array($value)) {
             $value = reset($value);
@@ -69,8 +67,7 @@ class AttachOne extends MorphOneBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {

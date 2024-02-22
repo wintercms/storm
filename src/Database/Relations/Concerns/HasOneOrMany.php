@@ -8,11 +8,6 @@ trait HasOneOrMany
     use DeferOneOrMany;
 
     /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
-
-    /**
      * Save the supplied related model with deferred binding support.
      */
     public function save(Model $model, $sessionKey = null)

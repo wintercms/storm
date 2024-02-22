@@ -1,8 +1,10 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
+
+namespace Winter\Storm\Database\Relations;
 
 use Winter\Storm\Database\MorphPivot;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
 
 /**
@@ -14,52 +16,12 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
  *
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphToMany extends BaseMorphToMany
+class MorphToMany extends BaseMorphToMany implements Relation
 {
     use Concerns\BelongsOrMorphsToMany;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
-
-    /**
-     * Create a new morph to many relationship instance.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Model  $parent
-     * @param  string  $name
-     * @param  string  $table
-     * @param  string  $foreignKey
-     * @param  string  $otherKey
-     * @param  string  $relationName
-     * @param  bool  $inverse
-     * @return void
-     */
-    public function __construct(
-        Builder $query,
-        Model $parent,
-        $name,
-        $table,
-        $foreignKey,
-        $otherKey,
-        $parentKey,
-        $relatedKey,
-        $relationName = null,
-        $inverse = false
-    ) {
-        parent::__construct(
-            $query,
-            $parent,
-            $name,
-            $table,
-            $foreignKey,
-            $otherKey,
-            $parentKey,
-            $relatedKey,
-            $relationName,
-            $inverse
-        );
-
-        $this->addDefinedConstraints();
-    }
+    use Concerns\HasRelationName;
 
     /**
      * Create a new query builder for the pivot table.
@@ -90,5 +52,86 @@ class MorphToMany extends BaseMorphToMany
               ->setMorphClass($this->morphClass);
 
         return $pivot;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSimpleValue($value): void
+    {
+        $relationModel = $this->getRelated();
+
+        /*
+         * Nulling the relationship
+         */
+        if (!$value) {
+            // Disassociate in memory immediately
+            $this->parent->setRelation($this->relationName, $relationModel->newCollection());
+
+            // Perform sync when the model is saved
+            $this->parent->bindEventOnce('model.afterSave', function () {
+                $this->detach();
+            });
+            return;
+        }
+
+        /*
+         * Convert models to keys
+         */
+        if ($value instanceof Model) {
+            $value = $value->getKey();
+        }
+        elseif (is_array($value)) {
+            foreach ($value as $_key => $_value) {
+                if ($_value instanceof Model) {
+                    $value[$_key] = $_value->getKey();
+                }
+            }
+        }
+
+        /*
+         * Convert scalar to array
+         */
+        if (!is_array($value) && !$value instanceof Collection) {
+            $value = [$value];
+        }
+
+        /*
+         * Setting the relationship
+         */
+        $relationCollection = $value instanceof Collection
+            ? $value
+            : $relationModel->whereIn($relationModel->getKeyName(), $value)->get();
+
+        // Associate in memory immediately
+        $this->parent->setRelation($this->relationName, $relationCollection);
+
+        // Perform sync when the model is saved
+        $this->parent->bindEventOnce('model.afterSave', function () use ($value) {
+            $this->sync($value);
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSimpleValue()
+    {
+        $value = [];
+
+        $relationName = $this->relationName;
+
+        $sessionKey = $this->parent->sessionKey;
+
+        if ($this->parent->relationLoaded($relationName)) {
+            $related = $this->getRelated();
+
+            $value = $this->parent->getRelation($relationName)->pluck($related->getKeyName())->all();
+        }
+        else {
+            $value = $this->allRelatedIds($sessionKey)->all();
+        }
+
+        return $value;
     }
 }
