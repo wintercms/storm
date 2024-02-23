@@ -605,6 +605,7 @@ trait HasRelationships
         /** @var EloquentRelation */
         foreach (array_values($relations) as $relationObj) {
             if (method_exists($relationObj, 'isDetachable') && $relationObj->isDetachable()) {
+                /** @var BelongsToMany|MorphToMany $relationObj */
                 $relationObj->detach();
             }
             if (method_exists($relationObj, 'isDependent') && $relationObj->isDependent()) {
