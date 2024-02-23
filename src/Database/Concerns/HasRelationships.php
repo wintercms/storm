@@ -463,7 +463,7 @@ trait HasRelationships
                     $definition['field'] ?? $relationName,
                 );
                 if (isset($definition['delete']) && $definition['delete'] === false) {
-                    $relation = $relation->notDeletable();
+                    $relation = $relation->notDependent();
                 }
                 break;
             case 'attachMany':
@@ -474,7 +474,7 @@ trait HasRelationships
                     $definition['field'] ?? $relationName,
                 );
                 if (isset($definition['delete']) && $definition['delete'] === false) {
-                    $relation = $relation->notDeletable();
+                    $relation = $relation->notDependent();
                 }
                 break;
             case 'hasOneThrough':
