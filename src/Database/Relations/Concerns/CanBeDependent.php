@@ -54,6 +54,16 @@ trait CanBeDependent
     }
 
     /**
+     * Mark the relationship as independent of the primary model.
+     */
+    public function notDependent(): static
+    {
+        $this->dependent = false;
+
+        return $this;
+    }
+
+    /**
      * Determine if the relationship is dependent on the primary model.
      */
     public function isDependent(): bool
