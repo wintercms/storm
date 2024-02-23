@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class BelongsToMany extends BelongsToManyBase implements Relation
 {
     use Concerns\BelongsOrMorphsToMany;
+    use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
@@ -97,11 +98,18 @@ class BelongsToMany extends BelongsToManyBase implements Relation
      */
     public function getArrayDefinition(): array
     {
-        return [
+        $definition = [
             get_class($this->getRelated()),
             'table' => $this->getTable(),
             'key' => $this->getForeignPivotKeyName(),
             'otherKey' => $this->getRelatedKeyName(),
+            'push' => $this->isPushable(),
         ];
+
+        if (count($this->pivotColumns)) {
+            $definition['pivot'] = $this->pivotColumns;
+        }
+
+        return $definition;
     }
 }

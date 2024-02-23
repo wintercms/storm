@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
 class MorphTo extends MorphToBase implements Relation
 {
     use Concerns\BelongsOrMorphsTo;
+    use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
@@ -67,6 +68,11 @@ class MorphTo extends MorphToBase implements Relation
      */
     public function getArrayDefinition(): array
     {
-        return [];
+        return [
+            get_class($this->query->getModel()),
+            'key' => $this->getForeignKeyName(),
+            'otherKey' => $this->getOwnerKeyName(),
+            'push' => $this->isPushable(),
+        ];
     }
 }

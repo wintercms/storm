@@ -7,6 +7,7 @@ use Winter\Storm\Database\Attributes\Relation;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Relations\HasMany;
 use Winter\Storm\Database\Relations\HasOne;
+use Winter\Storm\Database\Relations\MorphToMany;
 
 class Author extends Model
 {
@@ -89,6 +90,11 @@ class Author extends Model
     public function info()
     {
         return $this->morphOne(Meta::class, 'taggable');
+    }
+
+    public function labels(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable', 'database_tester_taggables')->withPivot('added_by');
     }
 
     #[Relation]

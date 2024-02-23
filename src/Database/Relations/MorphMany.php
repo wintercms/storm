@@ -14,6 +14,7 @@ class MorphMany extends MorphManyBase implements Relation
 {
     use Concerns\MorphOneOrMany;
     use Concerns\CanBeDependent;
+    use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -91,10 +92,13 @@ class MorphMany extends MorphManyBase implements Relation
      */
     public function getArrayDefinition(): array
     {
+
         return [
             get_class($this->query->getModel()),
-            'name' => $this->morphType,
+            'type' => $this->getMorphType(),
+            'id' => $this->getForeignKeyName(),
             'delete' => $this->isDependent(),
+            'push' => $this->isPushable(),
         ];
     }
 }

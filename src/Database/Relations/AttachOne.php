@@ -14,6 +14,7 @@ class AttachOne extends MorphOneBase implements Relation
 {
     use Concerns\AttachOneOrMany;
     use Concerns\CanBeDependent;
+    use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -119,6 +120,7 @@ class AttachOne extends MorphOneBase implements Relation
             'key' => $this->localKey,
             'delete' => $this->isDependent(),
             'public' => $this->public,
+            'push' => $this->isPushable(),
         ];
     }
 }

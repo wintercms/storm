@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough as HasOneThroughBase;
  */
 class HasOneThrough extends HasOneThroughBase
 {
+    use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -31,6 +32,14 @@ class HasOneThrough extends HasOneThroughBase
      */
     public function getArrayDefinition(): array
     {
-        return [];
+        return [
+            get_class($this->query->getModel()),
+            'through' => get_class($this->throughParent),
+            'key' => $this->getForeignKeyName(),
+            'throughKey' => $this->getFirstKeyName(),
+            'otherKey' => $this->getLocalKeyName(),
+            'secondOtherKey' => $this->getSecondLocalKeyName(),
+            'push' => $this->isPushable(),
+        ];
     }
 }

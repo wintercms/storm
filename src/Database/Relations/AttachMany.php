@@ -14,6 +14,7 @@ class AttachMany extends MorphManyBase implements Relation
 {
     use Concerns\AttachOneOrMany;
     use Concerns\CanBeDependent;
+    use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -137,6 +138,7 @@ class AttachMany extends MorphManyBase implements Relation
             'key' => $this->localKey,
             'delete' => $this->isDependent(),
             'public' => $this->public,
+            'push' => $this->isPushable(),
         ];
     }
 }

@@ -12,6 +12,7 @@ class MorphOne extends MorphOneBase implements Relation
 {
     use Concerns\MorphOneOrMany;
     use Concerns\CanBeDependent;
+    use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -95,6 +96,12 @@ class MorphOne extends MorphOneBase implements Relation
      */
     public function getArrayDefinition(): array
     {
-        return [];
+        return [
+            get_class($this->query->getModel()),
+            'type' => $this->getMorphType(),
+            'id' => $this->getForeignKeyName(),
+            'delete' => $this->isDependent(),
+            'push' => $this->isPushable(),
+        ];
     }
 }

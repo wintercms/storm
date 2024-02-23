@@ -14,6 +14,7 @@ class HasMany extends HasManyBase implements Relation
 {
     use Concerns\HasOneOrMany;
     use Concerns\CanBeDependent;
+    use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
@@ -88,6 +89,7 @@ class HasMany extends HasManyBase implements Relation
             'key' => $this->getForeignKeyName(),
             'otherKey' => $this->getOtherKey(),
             'delete' => $this->isDependent(),
+            'push' => $this->isPushable(),
         ];
     }
 }

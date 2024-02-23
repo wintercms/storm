@@ -93,19 +93,47 @@ class HasRelationshipsTest extends DbTestCase
             'key' => 'author_id',
             'otherKey' => 'id',
             'delete' => false,
+            'push' => true,
         ], $author->getRelationDefinition('contactNumber'));
         $this->assertEquals([
             Post::class,
             'key' => 'author_id',
             'otherKey' => 'id',
             'delete' => false,
+            'push' => true,
         ], $author->getRelationDefinition('messages'));
         $this->assertEquals([
             Role::class,
             'table' => 'database_tester_authors_roles',
             'key' => 'author_id',
-            'otherKey' => 'id'
+            'otherKey' => 'id',
+            'push' => true,
         ], $author->getRelationDefinition('scopes'));
+        $this->assertEquals([
+            Meta::class,
+            'type' => 'taggable_type',
+            'id' => 'taggable_id',
+            'delete' => false,
+            'push' => true,
+        ], $author->getRelationDefinition('info'));
+        $this->assertEquals([
+            EventLog::class,
+            'type' => 'related_type',
+            'id' => 'related_id',
+            'delete' => true,
+            'push' => true,
+        ], $author->getRelationDefinition('auditLogs'));
+        $this->assertEquals([
+            Tag::class,
+            'table' => 'database_tester_taggables',
+            'key' => 'taggable_id',
+            'otherKey' => 'tag_id',
+            'parentKey' => 'id',
+            'relatedKey' => 'id',
+            'inverse' => false,
+            'push' => true,
+            'pivot' => ['added_by']
+        ], $author->getRelationDefinition('labels'));
 
         $this->assertNull($author->getRelationDefinition('invalid'));
     }

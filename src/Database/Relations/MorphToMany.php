@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
 class MorphToMany extends BaseMorphToMany implements Relation
 {
     use Concerns\BelongsOrMorphsToMany;
+    use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
@@ -140,6 +141,21 @@ class MorphToMany extends BaseMorphToMany implements Relation
      */
     public function getArrayDefinition(): array
     {
-        return [];
+        $definition = [
+            get_class($this->query->getModel()),
+            'table' => $this->getTable(),
+            'key' => $this->getForeignPivotKeyName(),
+            'otherKey' => $this->getRelatedPivotKeyName(),
+            'parentKey' => $this->getParentKeyName(),
+            'relatedKey' => $this->getRelatedKeyName(),
+            'inverse' => $this->getInverse(),
+            'push' => $this->isPushable(),
+        ];
+
+        if (count($this->pivotColumns)) {
+            $definition['pivot'] = $this->pivotColumns;
+        }
+
+        return $definition;
     }
 }

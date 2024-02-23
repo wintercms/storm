@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 class BelongsTo extends BelongsToBase implements Relation
 {
     use Concerns\BelongsOrMorphsTo;
+    use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
@@ -91,6 +92,11 @@ class BelongsTo extends BelongsToBase implements Relation
      */
     public function getArrayDefinition(): array
     {
-        return [];
+        return [
+            get_class($this->query->getModel()),
+            'key' => $this->getForeignKeyName(),
+            'otherKey' => $this->getOtherKey(),
+            'push' => $this->isPushable(),
+        ];
     }
 }
