@@ -2,6 +2,13 @@
 
 namespace Winter\Storm\Tests\Database\Concerns;
 
+use Winter\Storm\Database\Relations\BelongsTo;
+use Winter\Storm\Database\Relations\BelongsToMany;
+use Winter\Storm\Database\Relations\HasMany;
+use Winter\Storm\Database\Relations\HasOne;
+use Winter\Storm\Database\Relations\MorphMany;
+use Winter\Storm\Database\Relations\MorphOne;
+use Winter\Storm\Database\Relations\MorphToMany;
 use Winter\Storm\Tests\Database\Fixtures\Author;
 use Winter\Storm\Tests\Database\Fixtures\Country;
 use Winter\Storm\Tests\Database\Fixtures\EventLog;
@@ -65,6 +72,51 @@ class HasRelationshipsTest extends DbTestCase
         $this->assertNull($author->getRelationType('invalid'));
     }
 
+    public function testGetDefinedRelations()
+    {
+        $author = new Author();
+        $defined = $author->getDefinedRelations();
+
+        $this->assertCount(16, $defined);
+        foreach ([
+            'user',
+            'country',
+            'user_soft',
+            'posts',
+            'phone',
+            'roles',
+            'event_log',
+            'meta',
+            'tags',
+            'contactNumber',
+            'messages',
+            'scopes',
+            'executiveAuthors',
+            'info',
+            'labels',
+            'auditLogs',
+        ] as $expected) {
+            $this->assertArrayHasKey($expected, $defined);
+        }
+
+        $this->assertInstanceOf(BelongsTo::class, $defined['user']);
+        $this->assertInstanceOf(BelongsTo::class, $defined['country']);
+        $this->assertInstanceOf(BelongsTo::class, $defined['user_soft']);
+        $this->assertInstanceOf(HasMany::class, $defined['posts']);
+        $this->assertInstanceOf(HasOne::class, $defined['phone']);
+        $this->assertInstanceOf(BelongsToMany::class, $defined['roles']);
+        $this->assertInstanceOf(MorphMany::class, $defined['event_log']);
+        $this->assertInstanceOf(MorphOne::class, $defined['meta']);
+        $this->assertInstanceOf(MorphToMany::class, $defined['tags']);
+        $this->assertInstanceOf(HasOne::class, $defined['contactNumber']);
+        $this->assertInstanceOf(HasMany::class, $defined['messages']);
+        $this->assertInstanceOf(BelongsToMany::class, $defined['scopes']);
+        $this->assertInstanceOf(BelongsToMany::class, $defined['executiveAuthors']);
+        $this->assertInstanceOf(MorphOne::class, $defined['info']);
+        $this->assertInstanceOf(MorphToMany::class, $defined['labels']);
+        $this->assertInstanceOf(MorphMany::class, $defined['auditLogs']);
+    }
+
     public function testGetRelationDefinition()
     {
         $author = new Author();
@@ -108,6 +160,7 @@ class HasRelationshipsTest extends DbTestCase
             'key' => 'author_id',
             'otherKey' => 'id',
             'push' => true,
+            'detach' => true,
         ], $author->getRelationDefinition('scopes'));
         $this->assertEquals([
             Meta::class,
@@ -132,7 +185,8 @@ class HasRelationshipsTest extends DbTestCase
             'relatedKey' => 'id',
             'inverse' => false,
             'push' => true,
-            'pivot' => ['added_by']
+            'pivot' => ['added_by'],
+            'detach' => true,
         ], $author->getRelationDefinition('labels'));
 
         $this->assertNull($author->getRelationDefinition('invalid'));

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class BelongsToMany extends BelongsToManyBase implements Relation
 {
     use Concerns\BelongsOrMorphsToMany;
+    use Concerns\CanBeDetachable;
     use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
@@ -104,6 +105,7 @@ class BelongsToMany extends BelongsToManyBase implements Relation
             'key' => $this->getForeignPivotKeyName(),
             'otherKey' => $this->getRelatedKeyName(),
             'push' => $this->isPushable(),
+            'detach' => $this->isDetachable(),
         ];
 
         if (count($this->pivotColumns)) {

@@ -39,8 +39,6 @@ use Winter\Storm\Support\Arr;
  * @method \Winter\Storm\Database\Relations\BelongsToMany belongsToMany(string $related, string|null $table = null, string|null $foreignPivotKey = null, string|null $relatedPivotKey = null, string|null $parentKey = null, string|null $relatedKey = null, string|null $relation = null)
  * @method \Winter\Storm\Database\Relations\MorphToMany morphToMany(string $related, string $name, string|null $table = null, string|null $foreignPivotKey = null, string|null $relatedPivotKey = null, string|null $parentKey = null, string|null $relatedKey = null, bool $inverse = false)
  * @method \Winter\Storm\Database\Relations\MorphToMany morphedByMany(string $related, string $name, string|null $table = null, string|null $foreignPivotKey = null, string|null $relatedPivotKey = null, string|null $parentKey = null, string|null $relatedKey = null)
- * @method \Winter\Storm\Database\Relations\AttachOne attachOne(string $related, bool $isPublic = true, string|null $localKey = null)
- * @method \Winter\Storm\Database\Relations\AttachMany attachMany(string $related, bool $isPublic = null, string|null $localKey = null)
  */
 trait HasRelationships
 {
@@ -175,15 +173,38 @@ trait HasRelationships
      */
     public function hasRelation(string $name): bool
     {
-        if (method_exists($this, $name) && $this->isRelationMethod($name)) {
-            return true;
-        }
-
         return $this->getRelationDefinition($name) !== null;
     }
 
     /**
+     * Gets the name and relation object of all defined relations on the model.
+     *
+     * This differs from the `getRelations()` method provided by Laravel, which only returns the loaded relations. It
+     * also contains the Relation object as a value, rather than the result of the relation as per Laravel's
+     * implementation.
+     */
+    public function getDefinedRelations(): array
+    {
+        $relations = [];
+
+        foreach (array_keys(static::$relationTypes) as $type) {
+            foreach (array_keys($this->getRelationTypeDefinitions($type)) as $name) {
+                $relations[$name] = $this->handleRelation($name, false);
+            }
+        }
+
+        foreach ($this->getRelationMethods() as $relation) {
+            $relations[$relation] = $this->{$relation}();
+        }
+
+        return $relations;
+    }
+
+    /**
      * Returns relationship details from a supplied name.
+     *
+     * If the name resolves to a relation method, the method's returned relation object will be converted back to an
+     * array definition.
      */
     public function getRelationDefinition(string $name): ?array
     {
@@ -322,7 +343,7 @@ trait HasRelationships
      * Winter has traditionally used array properties in the model to configure relationships. This method converts
      * these to the applicable Laravel relation object.
      */
-    protected function handleRelation(string $relationName): EloquentRelation
+    protected function handleRelation(string $relationName, bool $addConstraints = true): EloquentRelation
     {
         $relationType = $this->getRelationType($relationName);
         $definition = $this->getRelationDefinition($relationName);
@@ -481,8 +502,43 @@ trait HasRelationships
         // Add relation name
         $relation->setRelationName($relationName);
 
-        // Add defined constraints
-        $relation->addDefinedConstraints();
+        // Add dependency, if required
+        if (
+            in_array(
+                \Winter\Storm\Database\Relations\Concerns\CanBeDependent::class,
+                class_uses_recursive($relation)
+            )
+            && (($definition['delete'] ?? false) === true)
+        ) {
+            $relation = $relation->dependent();
+        }
+
+        // Remove detachable, if required
+        if (
+            in_array(
+                \Winter\Storm\Database\Relations\Concerns\CanBeDetachable::class,
+                class_uses_recursive($relation)
+            )
+            && (($definition['detach'] ?? true) === false)
+        ) {
+            $relation = $relation->notDetachable();
+        }
+
+        // Remove pushable flag, if required
+        if (
+            in_array(
+                \Winter\Storm\Database\Relations\Concerns\CanBePushed::class,
+                class_uses_recursive($relation)
+            )
+            && (($definition['push'] ?? true) === false)
+        ) {
+            $relation = $relation->noPush();
+        }
+
+        if ($addConstraints) {
+            // Add defined constraints
+            $relation->addDefinedConstraints();
+        }
 
         return $relation;
     }
@@ -536,52 +592,17 @@ trait HasRelationships
      */
     protected function performDeleteOnRelations(): void
     {
-        $definitions = $this->getRelationDefinitions();
-        foreach ($definitions as $type => $relations) {
-            /*
-             * Hard 'delete' definition
-             */
-            foreach ($relations as $name => $options) {
-                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
-                    // we want to remove the pivot record, not the actual relation record
-                    if (Arr::get($options, 'detach', true)) {
-                        $this->{$name}()->detach();
-                    }
-                } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
-                    // the model does not own the related record, we should not remove it.
-                    continue;
-                } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
-                    if (!Arr::get($options, 'delete', false)) {
-                        continue;
-                    }
+        $relations = $this->getDefinedRelations();
 
-                    // Attempt to load the related record(s)
-                    if (!$relation = $this->{$name}) {
-                        continue;
-                    }
-
-                    if ($relation instanceof Model) {
-                        $relation->forceDelete();
-                    } elseif ($relation instanceof CollectionBase) {
-                        $relation->each(function ($model) {
-                            $model->forceDelete();
-                        });
-                    }
-                }
+        /** @var EloquentRelation */
+        foreach (array_values($relations) as $relationObj) {
+            if (method_exists($relationObj, 'isDetachable') && $relationObj->isDetachable()) {
+                $relationObj->detach();
             }
-        }
-
-        // Find relation methods
-        foreach ($this->getRelationMethods() as $relation) {
-            /** @var EloquentRelation */
-            $relationObj = $this->{$relation}();
-
-            if (method_exists($relationObj, 'isDependent')) {
-                if ($relationObj->isDependent()) {
-                    $relationObj->get()->each(function ($model) {
-                        $model->forceDelete();
-                    });
-                }
+            if (method_exists($relationObj, 'isDependent') && $relationObj->isDependent()) {
+                $relationObj->get()->each(function ($model) {
+                    $model->forceDelete();
+                });
             }
         }
     }
