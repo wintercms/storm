@@ -3,6 +3,7 @@
 namespace Winter\Storm\Tests\Database\Fixtures;
 
 use Illuminate\Database\Schema\Builder;
+use Winter\Storm\Database\Attach\File;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Relations\HasOneThrough;
 
@@ -37,11 +38,11 @@ class User extends Model
     ];
 
     public $attachOne = [
-        'avatar' => 'System\Models\File'
+        'avatar' => File::class,
     ];
 
     public $attachMany = [
-        'photos' => 'System\Models\File'
+        'photos' => File::class,
     ];
 
     public function contactNumber(): HasOneThrough
