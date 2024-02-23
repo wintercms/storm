@@ -17,6 +17,11 @@ trait AttachOneOrMany
     protected $public;
 
     /**
+     * The field name (relation) to associate this attachment with.
+     */
+    protected string $fieldName;
+
+    /**
      * Determines if the file should be flagged "public" or not.
      */
     public function isPublic()
@@ -39,10 +44,18 @@ trait AttachOneOrMany
 
             $this->query->where($this->foreignKey, '=', $this->getParentKey());
 
-            $this->query->where('field', $this->relationName);
+            $this->query->where('field', $this->getFieldName());
 
             $this->query->whereNotNull($this->foreignKey);
         }
+    }
+
+    /**
+     * Get the field name (relation) to associate this attachment with.
+     */
+    public function getFieldName()
+    {
+        return $this->fieldName;
     }
 
     /**
@@ -66,7 +79,7 @@ trait AttachOneOrMany
 
         $query = $query->where($this->morphType, $this->morphClass);
 
-        return $query->where('field', $this->relationName);
+        return $query->where('field', $this->fieldName);
     }
 
     /**
@@ -100,7 +113,7 @@ trait AttachOneOrMany
     {
         parent::addEagerConstraints($models);
 
-        $this->query->where('field', $this->relationName);
+        $this->query->where('field', $this->fieldName);
     }
 
     /**
@@ -117,7 +130,7 @@ trait AttachOneOrMany
             $model->setAttribute('is_public', $this->isPublic());
         }
 
-        $model->setAttribute('field', $this->relationName);
+        $model->setAttribute('field', $this->fieldName);
 
         if ($sessionKey === null) {
             return parent::save($model);
@@ -141,7 +154,7 @@ trait AttachOneOrMany
             $attributes = array_merge(['is_public' => $this->isPublic()], $attributes);
         }
 
-        $attributes['field'] = $this->relationName;
+        $attributes['field'] = $this->fieldName;
 
         $model = parent::create($attributes);
 
@@ -184,7 +197,7 @@ trait AttachOneOrMany
 
             $model->setAttribute($this->getForeignKeyName(), $this->parent->getKey());
             $model->setAttribute($this->getMorphType(), $this->morphClass);
-            $model->setAttribute('field', $this->relationName);
+            $model->setAttribute('field', $this->fieldName);
             $model->save();
 
             /*

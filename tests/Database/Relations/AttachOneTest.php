@@ -53,6 +53,48 @@ class AttachOneTest extends DbTestCase
         $this->assertEquals('avatar.png', $user2->avatar->file_name);
     }
 
+    public function testSetRelationValueLaravelRelation()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $user2 = User::create(['name' => 'Joe', 'email' => 'joe@example.com']);
+        Model::reguard();
+
+        // Set by string
+        $user->displayPicture = dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png';
+
+        // @todo $user->displayPicture currently sits as a string, not good for validation
+        // this should really assert as an UploadedFile instead.
+
+        // Commit the file and it should snap to a File model
+        $user->save();
+
+        $this->assertNotNull($user->displayPicture);
+        $this->assertEquals('avatar.png', $user->displayPicture->file_name);
+
+        // Set by Uploaded file
+        $sample = $user->displayPicture;
+        $upload = new UploadedFile(
+            dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png',
+            $sample->file_name,
+            $sample->content_type,
+            null,
+            true
+        );
+
+        $user2->displayPicture = $upload;
+
+        // The file is prepped but not yet commited, this is for validation
+        $this->assertNotNull($user2->displayPicture);
+        $this->assertEquals($upload, $user2->displayPicture);
+
+        // Commit the file and it should snap to a File model
+        $user2->save();
+
+        $this->assertNotNull($user2->displayPicture);
+        $this->assertEquals('avatar.png', $user2->displayPicture->file_name);
+    }
+
     public function testDeleteFlagDestroyRelationship()
     {
         Model::unguard();
@@ -71,6 +113,24 @@ class AttachOneTest extends DbTestCase
         $this->assertNull(File::find($avatarId));
     }
 
+    public function testDeleteFlagDestroyRelationshipLaravelRelation()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        Model::reguard();
+
+        $this->assertNull($user->displayPicture);
+        $user->displayPicture()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+        $user->reloadRelations();
+        $this->assertNotNull($user->displayPicture);
+
+        $avatar = $user->displayPicture;
+        $avatarId = $avatar->id;
+
+        $user->displayPicture()->remove($avatar);
+        $this->assertNull(File::find($avatarId));
+    }
+
     public function testDeleteFlagDeleteModel()
     {
         Model::unguard();
@@ -83,6 +143,22 @@ class AttachOneTest extends DbTestCase
         $this->assertNotNull($user->avatar);
 
         $avatarId = $user->avatar->id;
+        $user->delete();
+        $this->assertNull(File::find($avatarId));
+    }
+
+    public function testDeleteFlagDeleteModelLaravelRelation()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        Model::reguard();
+
+        $this->assertNull($user->displayPicture);
+        $user->displayPicture()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+        $user->reloadRelations();
+        $this->assertNotNull($user->displayPicture);
+
+        $avatarId = $user->displayPicture->id;
         $user->delete();
         $this->assertNull(File::find($avatarId));
     }

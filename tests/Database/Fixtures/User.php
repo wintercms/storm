@@ -5,6 +5,8 @@ namespace Winter\Storm\Tests\Database\Fixtures;
 use Illuminate\Database\Schema\Builder;
 use Winter\Storm\Database\Attach\File;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Database\Relations\AttachMany;
+use Winter\Storm\Database\Relations\AttachOne;
 use Winter\Storm\Database\Relations\HasOneThrough;
 
 class User extends Model
@@ -48,6 +50,16 @@ class User extends Model
     public function contactNumber(): HasOneThrough
     {
         return $this->hasOneThrough(Phone::class, Author::class);
+    }
+
+    public function displayPicture(): AttachOne
+    {
+        return $this->attachOne(File::class, true, null, 'avatar');
+    }
+
+    public function images(): AttachMany
+    {
+        return $this->attachMany(File::class, true, null, 'photos');
     }
 
     public static function migrateUp(Builder $builder): void

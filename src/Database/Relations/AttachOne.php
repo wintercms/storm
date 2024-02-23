@@ -27,10 +27,12 @@ class AttachOne extends MorphOneBase implements Relation
      * @param  string  $id
      * @param  bool  $isPublic
      * @param  string  $localKey
+     * @param  string  $fieldName
      * @return void
      */
-    public function __construct(Builder $query, Model $parent, $type, $id, $isPublic, $localKey)
+    public function __construct(Builder $query, Model $parent, $type, $id, $isPublic, $localKey, $fieldName)
     {
+        $this->fieldName = $fieldName;
         parent::__construct($query, $parent, $type, $id, $localKey);
         $this->public = $isPublic;
     }

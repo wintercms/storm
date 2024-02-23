@@ -27,6 +27,24 @@ class AttachManyTest extends DbTestCase
         $this->assertNull(File::find($photoId));
     }
 
+    public function testDeleteFlagDestroyRelationshipLaravelRelation()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        Model::reguard();
+
+        $this->assertEmpty($user->images);
+        $user->images()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+        $user->reloadRelations();
+        $this->assertNotEmpty($user->images);
+
+        $photo = $user->images->first();
+        $photoId = $photo->id;
+
+        $user->images()->remove($photo);
+        $this->assertNull(File::find($photoId));
+    }
+
     public function testDeleteFlagDeleteModel()
     {
         Model::unguard();
@@ -39,6 +57,25 @@ class AttachManyTest extends DbTestCase
         $this->assertNotEmpty($user->photos);
 
         $photo = $user->photos->first();
+        $this->assertNotNull($photo);
+        $photoId = $photo->id;
+
+        $user->delete();
+        $this->assertNull(File::find($photoId));
+    }
+
+    public function testDeleteFlagDeleteModelLaravelRelation()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        Model::reguard();
+
+        $this->assertEmpty($user->images);
+        $user->images()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+        $user->reloadRelations();
+        $this->assertNotEmpty($user->images);
+
+        $photo = $user->images->first();
         $this->assertNotNull($photo);
         $photoId = $photo->id;
 

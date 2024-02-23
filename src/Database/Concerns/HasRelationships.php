@@ -460,14 +460,22 @@ trait HasRelationships
                     $relatedClass,
                     $definition['public'] ?? true,
                     $definition['key'] ?? null,
+                    $definition['field'] ?? $relationName,
                 );
+                if (isset($definition['delete']) && $definition['delete'] === false) {
+                    $relation = $relation->notDeletable();
+                }
                 break;
             case 'attachMany':
                 $relation = $this->attachMany(
                     $relatedClass,
                     $definition['public'] ?? true,
                     $definition['key'] ?? null,
+                    $definition['field'] ?? $relationName,
                 );
+                if (isset($definition['delete']) && $definition['delete'] === false) {
+                    $relation = $relation->notDeletable();
+                }
                 break;
             case 'hasOneThrough':
                 $relation = $this->hasOneThrough(
@@ -835,7 +843,7 @@ trait HasRelationships
     /**
      * Define an attachment one-to-one (morphOne) relationship.
      */
-    public function attachOne($related, $isPublic = true, $localKey = null): AttachOne
+    public function attachOne($related, $isPublic = true, $localKey = null, $fieldName = null): AttachOne
     {
         $instance = $this->newRelatedInstance($related);
 
@@ -843,7 +851,12 @@ trait HasRelationships
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        $relation = new AttachOne($instance->newQuery(), $this, $table . '.attachment_type', $table . '.attachment_id', $isPublic, $localKey);
+        $fieldName = $fieldName ?? $this->getRelationCaller();
+
+        $relation = new AttachOne($instance->newQuery(), $this, $table . '.attachment_type', $table . '.attachment_id', $isPublic, $localKey, $fieldName);
+
+        // By default, attachments are dependent on primary models.
+        $relation->dependent();
 
         $caller = $this->getRelationCaller();
         if (!is_null($caller)) {
@@ -856,7 +869,7 @@ trait HasRelationships
     /**
      * Define an attachment one-to-many (morphMany) relationship.
      */
-    public function attachMany($related, $isPublic = null, $localKey = null): AttachMany
+    public function attachMany($related, $isPublic = null, $localKey = null, $fieldName = null): AttachMany
     {
         $instance = $this->newRelatedInstance($related);
 
@@ -864,7 +877,12 @@ trait HasRelationships
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        $relation = new AttachMany($instance->newQuery(), $this, $table . '.attachment_type', $table . '.attachment_id', $isPublic, $localKey);
+        $fieldName = $fieldName ?? $this->getRelationCaller();
+
+        $relation = new AttachMany($instance->newQuery(), $this, $table . '.attachment_type', $table . '.attachment_id', $isPublic, $localKey, $fieldName);
+
+        // By default, attachments are dependent on primary models.
+        $relation->dependent();
 
         $caller = $this->getRelationCaller();
         if (!is_null($caller)) {
