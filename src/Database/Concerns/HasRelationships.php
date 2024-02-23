@@ -818,13 +818,12 @@ trait HasRelationships
     {
         $instance = $this->newRelatedInstance($related);
 
-        list($type, $id) = $this->getMorphs('attachment', null, null);
-
         $table = $instance->getTable();
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        $relation = new AttachOne($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey);
+        $relation = new AttachOne($instance->newQuery(), $this, $table . '.attachment_type', $table . '.attachment_id', $isPublic, $localKey);
+
         $caller = $this->getRelationCaller();
         if (!is_null($caller)) {
             $relation->setRelationName($caller);
@@ -840,13 +839,12 @@ trait HasRelationships
     {
         $instance = $this->newRelatedInstance($related);
 
-        list($type, $id) = $this->getMorphs('attachment', null, null);
-
         $table = $instance->getTable();
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        $relation = new AttachMany($instance->newQuery(), $this, $table . '.' . $type, $table . '.' . $id, $isPublic, $localKey);
+        $relation = new AttachMany($instance->newQuery(), $this, $table . '.attachment_type', $table . '.attachment_id', $isPublic, $localKey);
+
         $caller = $this->getRelationCaller();
         if (!is_null($caller)) {
             $relation->setRelationName($caller);
