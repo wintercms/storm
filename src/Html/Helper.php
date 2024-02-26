@@ -54,7 +54,7 @@ class Helper
      * Reduces the field name hierarchy depth by $level levels.
      * country[city][0][nestedform] turns into country[city][0] when reduced by 1 level;
      * country[city][0][street][0] turns into country[city][0] when reduced by 1 level;
-     * country[city][0][nestedform] turns into country when reduced by 2 level;
+     * country[city][0][nestedform] turns into country when reduced by 2 levels;
      * country[city][0][street][0] turns into country when reduced by 2 levels;
      * etc.
      */
