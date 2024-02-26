@@ -2,6 +2,8 @@
 
 namespace Winter\Storm\Database\Relations;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThroughBase;
 
 /**
@@ -10,9 +12,19 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThroughBase;
  */
 class HasManyThrough extends HasManyThroughBase
 {
+    use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
+    {
+        parent::__construct($query, $farParent, $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey);
+        $this->extendableRelationConstruct();
+    }
 
     /**
      * Determine whether close parent of the relation uses Soft Deletes.

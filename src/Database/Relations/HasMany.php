@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Database\Relations;
 
+use Illuminate\Database\Eloquent\Builder;
 use Winter\Storm\Database\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
@@ -14,9 +15,19 @@ class HasMany extends HasManyBase implements Relation
 {
     use Concerns\HasOneOrMany;
     use Concerns\CanBeDependent;
+    use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey)
+    {
+        parent::__construct($query, $parent, $foreignKey, $localKey);
+        $this->extendableRelationConstruct();
+    }
 
     /**
      * {@inheritDoc}

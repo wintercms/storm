@@ -2,6 +2,8 @@
 
 namespace Winter\Storm\Database\Relations;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough as HasOneThroughBase;
 
 /**
@@ -10,9 +12,19 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough as HasOneThroughBase;
  */
 class HasOneThrough extends HasOneThroughBase
 {
+    use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
+    {
+        parent::__construct($query, $farParent, $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey);
+        $this->extendableRelationConstruct();
+    }
 
     /**
      * Determine whether close parent of the relation uses Soft Deletes.

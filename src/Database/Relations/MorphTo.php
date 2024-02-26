@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Database\Relations;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
 
@@ -11,10 +12,20 @@ use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
 class MorphTo extends MorphToBase implements Relation
 {
     use Concerns\BelongsOrMorphsTo;
+    use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct(Builder $query, Model $parent, $foreignKey, $ownerKey, $type, $relation)
+    {
+        parent::__construct($query, $parent, $foreignKey, $ownerKey, $type, $relation);
+        $this->extendableRelationConstruct();
+    }
 
     /**
      * {@inheritDoc}

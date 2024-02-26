@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Database\Relations;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 
@@ -12,10 +13,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 class BelongsTo extends BelongsToBase implements Relation
 {
     use Concerns\BelongsOrMorphsTo;
+    use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct(Builder $query, Model $child, $foreignKey, $ownerKey, $relationName)
+    {
+        parent::__construct($query, $child, $foreignKey, $ownerKey, $relationName);
+        $this->extendableRelationConstruct();
+    }
 
     /**
      * Adds a model to this relationship type.

@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Database\Relations;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 
@@ -12,9 +13,26 @@ class MorphOne extends MorphOneBase implements Relation
 {
     use Concerns\MorphOneOrMany;
     use Concerns\CanBeDependent;
+    use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
+
+    /**
+     * Create a new morph one or many relationship instance.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  string  $type
+     * @param  string  $id
+     * @param  string  $localKey
+     * @return void
+     */
+    public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
+    {
+        parent::__construct($query, $parent, $type, $id, $localKey);
+        $this->extendableRelationConstruct();
+    }
 
     /**
      * {@inheritDoc}

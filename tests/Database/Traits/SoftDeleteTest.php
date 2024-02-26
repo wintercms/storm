@@ -2,7 +2,10 @@
 
 namespace Winter\Storm\Tests\Database\Traits;
 
-class SoftDeleteTest extends \DbTestCase
+use Winter\Storm\Database\Relations\BelongsToMany;
+use Winter\Storm\Tests\DbTestCase;
+
+class SoftDeleteTest extends DbTestCase
 {
     protected $seeded = [];
 
@@ -82,6 +85,24 @@ class SoftDeleteTest extends \DbTestCase
         $this->assertTrue($post->deleted_at === null);
         $this->assertTrue($post->categories()->where('deleted_at', null)->count() === 2);
     }
+
+    public function testDeleteAndRestoreLaravelRelations()
+    {
+        $post = Post::first();
+        $this->assertTrue($post->deleted_at === null);
+        $this->assertTrue($post->labels()->where('deleted_at', null)->count() === 2);
+
+        $post->delete();
+
+        $post = Post::withTrashed()->first();
+        $this->assertTrue($post->deleted_at != null);
+        $this->assertTrue($post->labels()->where('deleted_at', '!=', null)->count() === 2);
+        $post->restore();
+
+        $post = Post::first();
+        $this->assertTrue($post->deleted_at === null);
+        $this->assertTrue($post->labels()->where('deleted_at', null)->count() === 2);
+    }
 }
 
 class Post extends \Winter\Storm\Database\Model
@@ -107,6 +128,11 @@ class Post extends \Winter\Storm\Database\Model
             'softDelete' => true,
         ],
     ];
+
+    public function labels(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'categories_posts', 'post_id', 'category_id')->softDeletable();
+    }
 }
 
 class Category extends \Winter\Storm\Database\Model

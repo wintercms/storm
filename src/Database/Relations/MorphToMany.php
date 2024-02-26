@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Database\Relations;
 
+use Illuminate\Database\Eloquent\Builder;
 use Winter\Storm\Database\MorphPivot;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -20,10 +21,30 @@ class MorphToMany extends BaseMorphToMany implements Relation
 {
     use Concerns\BelongsOrMorphsToMany;
     use Concerns\CanBeDetachable;
+    use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct(
+        Builder $query,
+        Model $parent,
+        $name,
+        $table,
+        $foreignPivotKey,
+        $relatedPivotKey,
+        $parentKey,
+        $relatedKey,
+        $relationName = null,
+        $inverse = false
+    ) {
+        parent::__construct($query, $parent, $name, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName, $inverse);
+        $this->extendableRelationConstruct();
+    }
 
     /**
      * Create a new query builder for the pivot table.

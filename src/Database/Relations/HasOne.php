@@ -1,5 +1,8 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
 
+namespace Winter\Storm\Database\Relations;
+
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 
@@ -10,9 +13,19 @@ class HasOne extends HasOneBase implements Relation
 {
     use Concerns\HasOneOrMany;
     use Concerns\CanBeDependent;
+    use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey)
+    {
+        parent::__construct($query, $parent, $foreignKey, $localKey);
+        $this->extendableRelationConstruct();
+    }
 
     /**
      * {@inheritDoc}

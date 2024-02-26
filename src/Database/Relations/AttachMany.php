@@ -14,6 +14,7 @@ class AttachMany extends MorphManyBase implements Relation
 {
     use Concerns\AttachOneOrMany;
     use Concerns\CanBeDependent;
+    use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
@@ -35,6 +36,7 @@ class AttachMany extends MorphManyBase implements Relation
         $this->fieldName = $fieldName;
         parent::__construct($query, $parent, $type, $id, $localKey);
         $this->public = $isPublic;
+        $this->extendableRelationConstruct();
     }
 
     /**
