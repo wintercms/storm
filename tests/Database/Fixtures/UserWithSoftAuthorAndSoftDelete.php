@@ -2,7 +2,7 @@
 
 namespace Winter\Storm\Tests\Database\Fixtures;
 
-class SoftDeleteAuthor extends Author
+class UserWithSoftAuthorAndSoftDelete extends UserWithSoftAuthor
 {
     use \Winter\Storm\Database\Traits\SoftDelete;
 }
