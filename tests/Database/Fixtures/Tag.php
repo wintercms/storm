@@ -7,7 +7,7 @@ use Winter\Storm\Database\Model;
 
 class Tag extends Model
 {
-    use MigratesForTest;
+    use MigratesForTesting;
 
     /**
      * @var string The database table used by the model.

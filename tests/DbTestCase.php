@@ -67,7 +67,7 @@ class DbTestCase extends TestCase
 
             $model = $params[0];
 
-            if (!in_array('Winter\Storm\Tests\Database\Fixtures\MigratesForTest', class_uses_recursive($model))) {
+            if (!in_array('Winter\Storm\Tests\Database\Fixtures\MigratesForTesting', class_uses_recursive($model))) {
                 return;
             }
 

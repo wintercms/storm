@@ -7,7 +7,7 @@ use Winter\Storm\Database\Model;
 
 class EventLog extends Model
 {
-    use MigratesForTest;
+    use MigratesForTesting;
     use \Winter\Storm\Database\Traits\SoftDelete;
 
     /**

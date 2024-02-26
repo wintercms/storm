@@ -8,7 +8,7 @@ use Winter\Storm\Database\Relations\HasManyThrough;
 
 class Country extends Model
 {
-    use MigratesForTest;
+    use MigratesForTesting;
 
     /**
      * @var string The database table used by the model.

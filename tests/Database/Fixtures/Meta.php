@@ -7,7 +7,7 @@ use Winter\Storm\Database\Model;
 
 class Meta extends Model
 {
-    use MigratesForTest;
+    use MigratesForTesting;
 
     public $table = 'database_tester_meta';
 

@@ -10,7 +10,7 @@ use Illuminate\Database\Schema\Builder;
  * @author Ben Thomson <git@alfreido.com>
  * @copyright Winter CMS
  */
-trait MigratesForTest
+trait MigratesForTesting
 {
     /**
      * Store the models that have been migrated.

@@ -7,7 +7,7 @@ use Illuminate\Database\Schema\Builder;
 
 class Phone extends Model
 {
-    use MigratesForTest;
+    use MigratesForTesting;
 
     /**
      * @var string The database table used by the model.
