@@ -182,10 +182,12 @@ trait SoftDelete
                 return;
             }
 
-            if ($relation instanceof EloquentModel) {
-                $relation->delete();
-            } elseif ($relation instanceof CollectionBase) {
-                $relation->each(function ($model) {
+            $records = $relation->getResults();
+
+            if ($records instanceof EloquentModel) {
+                $records->delete();
+            } elseif ($records instanceof CollectionBase) {
+                $records->each(function ($model) {
                     $model->delete();
                 });
             }
