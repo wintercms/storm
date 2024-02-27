@@ -9,6 +9,10 @@ use Winter\Storm\Tests\Database\Fixtures\UserWithSoftAuthor;
 use Winter\Storm\Tests\Database\Fixtures\UserWithAuthorAndSoftDelete;
 use Winter\Storm\Tests\Database\Fixtures\UserWithSoftAuthorAndSoftDelete;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Tests\Database\Fixtures\UserLaravel;
+use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftAuthor;
+use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftAuthorAndSoftDelete;
+use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftDelete;
 use Winter\Storm\Tests\DbTestCase;
 
 class SoftDeleteTest extends DbTestCase
@@ -17,6 +21,18 @@ class SoftDeleteTest extends DbTestCase
     {
         Model::unguard();
         $user = UserWithAuthor::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
+
+        $authorId = $author->id;
+        $user->delete(); // Hard
+        $this->assertNull(Author::find($authorId));
+    }
+
+    public function testDeleteOptionOnHardModelLaravelRelation()
+    {
+        Model::unguard();
+        $user = UserLaravel::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
         $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
         Model::reguard();
 
@@ -37,10 +53,35 @@ class SoftDeleteTest extends DbTestCase
         $this->assertNotNull(Author::find($authorId)); // Do nothing
     }
 
+    public function testSoftDeleteOptionOnHardModelLaravelRelation()
+    {
+        Model::unguard();
+        $user = UserLaravelWithSoftAuthor::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
+
+        $authorId = $author->id;
+        $user->delete(); // Hard
+        $this->assertNotNull(Author::find($authorId)); // Do nothing
+    }
+
     public function testSoftDeleteOptionOnSoftModel()
     {
         Model::unguard();
         $user = UserWithSoftAuthorAndSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = SoftDeleteAuthor::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
+
+        $authorId = $author->id;
+        $user->delete(); // Soft
+        $this->assertNull(SoftDeleteAuthor::find($authorId));
+        $this->assertNotNull(SoftDeleteAuthor::withTrashed()->find($authorId));
+    }
+
+    public function testSoftDeleteOptionOnSoftModelLaravelRelation()
+    {
+        Model::unguard();
+        $user = UserLaravelWithSoftAuthorAndSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
         $author = SoftDeleteAuthor::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
         Model::reguard();
 
@@ -69,6 +110,25 @@ class SoftDeleteTest extends DbTestCase
         $this->assertNull(Author::find($authorId));
     }
 
+    public function testDeleteOptionOnSoftModelLaravelRelation()
+    {
+        Model::unguard();
+        $user = UserLaravelWithSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
+
+        $authorId = $author->id;
+        $user->delete(); // Soft
+        $this->assertNotNull(Author::find($authorId)); // Do nothing
+
+        $userId = $user->id;
+        $user = UserLaravelWithSoftDelete::withTrashed()->find($userId);
+        $user->restore();
+
+        $user->forceDelete(); // Hard
+        $this->assertNull(Author::find($authorId));
+    }
+
     public function testRestoreSoftDeleteRelation()
     {
         Model::unguard();
@@ -83,6 +143,25 @@ class SoftDeleteTest extends DbTestCase
 
         $userId = $user->id;
         $user = UserWithSoftAuthorAndSoftDelete::withTrashed()->find($userId);
+        $user->restore();
+
+        $this->assertNotNull(SoftDeleteAuthor::find($authorId));
+    }
+
+    public function testRestoreSoftDeleteRelationLaravelRelation()
+    {
+        Model::unguard();
+        $user = UserLaravelWithSoftAuthorAndSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = SoftDeleteAuthor::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
+
+        $authorId = $author->id;
+        $user->delete(); // Soft
+        $this->assertNull(SoftDeleteAuthor::find($authorId));
+        $this->assertNotNull(SoftDeleteAuthor::withTrashed()->find($authorId));
+
+        $userId = $user->id;
+        $user = UserLaravelWithSoftAuthorAndSoftDelete::withTrashed()->find($userId);
         $user->restore();
 
         $this->assertNotNull(SoftDeleteAuthor::find($authorId));
