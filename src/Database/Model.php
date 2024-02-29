@@ -1392,7 +1392,7 @@ class Model extends EloquentModel implements ModelInterface
          *     });
          *
          */
-        $this->fireEvent('model.setAttribute', [$key, $value]);
+        $this->fireEvent('model.setAttribute', [$key, $this->getAttribute($key)]);
 
         return $result;
     }

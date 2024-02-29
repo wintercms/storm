@@ -795,7 +795,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
          * @see Winter\Storm\Database\Model::setAttributeValue
          */
         // After Event
-        $this->fireEvent('model.setAttribute', [$key, $value]);
+        $this->fireEvent('model.setAttribute', [$key, $this->getAttribute($key)]);
 
         return $this;
     }
