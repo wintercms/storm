@@ -9,7 +9,6 @@ use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Serialization;
 use Illuminate\Support\Facades\App;
 use ReflectionException;
-
 use October\Rain\Extension\ExtendableTrait as OctoberExtendableTrait;
 
 /**
@@ -568,7 +567,8 @@ trait ExtendableTrait
             return false;
         }
 
-        while (!in_array(ExtendableTrait::class, $parent->getTraitNames())
+        while (
+            !in_array(ExtendableTrait::class, $parent->getTraitNames())
             && !in_array(OctoberExtendableTrait::class, $parent->getTraitNames())
         ) {
             $parent = $parent->getParentClass();
