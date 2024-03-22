@@ -15,7 +15,7 @@ trait DefinedConstraints
      */
     public function addDefinedConstraints()
     {
-        if ($this->farParent) {
+        if (isset($this->farParent)) {
             // get relation config for has{One,Many}Through relations
             $args = $this->farParent->getRelationDefinition($this->relationName);
         } else {
