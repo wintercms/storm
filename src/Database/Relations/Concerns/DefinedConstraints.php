@@ -67,7 +67,17 @@ trait DefinedConstraints
             if ($relation instanceof BelongsToManyBase) {
                 $relation->countMode = true;
             }
-            $relation->selectRaw('count(*) as count');
+            if (isset($relation->farParent)) {
+                $foreighKey = $relation->getQualifiedFirstKeyName();
+            } else {
+                $foreighKey = $relation->getForeignKey();
+            }
+            $countSql = $this->parent->getConnection()->raw('count(*) as count');
+            $relation
+                ->select($foreighKey, $countSql)
+                ->groupBy($foreighKey)
+                ->orderBy($foreighKey)
+            ;
         }
     }
 
