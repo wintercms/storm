@@ -16,11 +16,12 @@ trait DefinedConstraints
     public function addDefinedConstraints()
     {
         if (isset($this->farParent)) {
-            // get relation config for has{One,Many}Through relations
-            $args = $this->farParent->getRelationDefinition($this->relationName);
+            // hasOneThrough / hasManyThrough relations
+            $parent = $this->farParent;
         } else {
-            $args = $this->parent->getRelationDefinition($this->relationName);
+            $parent = $this->parent;
         }
+        $args = $parent->getRelationDefinition($this->relationName);
 
         $this->addDefinedConstraintsToRelation($this, $args);
 
