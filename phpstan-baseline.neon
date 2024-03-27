@@ -426,6 +426,11 @@ parameters:
 			path: src/Database/Relations/HasManyThrough.php
 
 		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getQualifiedFirstKeyName\\(\\)\\.$#"
+			count: 1
+			path: src/Database/Relations/Concerns/DefinedConstraints.php
+
+		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/HasOne.php

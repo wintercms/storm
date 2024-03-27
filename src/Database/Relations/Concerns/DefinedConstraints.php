@@ -70,7 +70,7 @@ trait DefinedConstraints
                 $relation->countMode = true;
             }
             if (isset($relation->farParent)) {
-                $foreighKey = ((HasManyThroughBase)$relation)->getQualifiedFirstKeyName();
+                $foreighKey = $relation->getQualifiedFirstKeyName();
             } else {
                 $foreighKey = $relation->getForeignKey();
             }
