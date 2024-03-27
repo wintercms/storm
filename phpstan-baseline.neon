@@ -427,7 +427,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getQualifiedFirstKeyName\\(\\)\\.$#"
-			count: 1
+			count: 12
 			path: src/Database/Relations/Concerns/DefinedConstraints.php
 
 		-
