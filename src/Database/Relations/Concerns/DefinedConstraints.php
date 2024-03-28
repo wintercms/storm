@@ -1,6 +1,8 @@
 <?php namespace Winter\Storm\Database\Relations\Concerns;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
+use Winter\Storm\Database\Relations\HasManyThrough;
+use Winter\Storm\Database\Relations\HasOneThrough;
 
 /*
  * Handles the constraints and filters defined by a relation.
@@ -15,10 +17,13 @@ trait DefinedConstraints
      */
     public function addDefinedConstraints()
     {
-        $args = $this->parent->getRelationDefinition($this->relationName);
+        if ($this instanceof HasOneThrough || $this instanceof HasManyThrough) {
+            $args = $this->farParent->getRelationDefinition($this->relationName);
+        } else {
+            $args = $this->parent->getRelationDefinition($this->relationName);
+        }
 
         $this->addDefinedConstraintsToRelation($this, $args);
-
         $this->addDefinedConstraintsToQuery($this, $args);
     }
 
@@ -63,12 +68,18 @@ trait DefinedConstraints
                 $relation->countMode = true;
             }
 
+            if ($relation instanceof HasOneThrough || $relation instanceof HasManyThrough) {
+                $foreignKey = $relation->getQualifiedFirstKeyName();
+            } else {
+                $foreignKey = $relation->getForeignKey();
+            }
+
             $countSql = $this->parent->getConnection()->raw('count(*) as count');
 
             $relation
-                ->select($relation->getForeignKey(), $countSql)
-                ->groupBy($relation->getForeignKey())
-                ->orderBy($relation->getForeignKey())
+                ->select($foreignKey, $countSql)
+                ->groupBy($foreignKey)
+                ->orderBy($foreignKey)
             ;
         }
     }

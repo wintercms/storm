@@ -1,31 +1,32 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
+namespace Winter\Storm\Database\Relations;
+
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $child
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class BelongsTo extends BelongsToBase
+class BelongsTo extends BelongsToBase implements Relation
 {
     use Concerns\BelongsOrMorphsTo;
+    use Concerns\CanBeCounted;
+    use Concerns\CanBeExtended;
+    use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * @var string The "name" of the relationship.
+     * {@inheritDoc}
      */
-    protected $relationName;
-
     public function __construct(Builder $query, Model $child, $foreignKey, $ownerKey, $relationName)
     {
-        $this->relationName = $relationName;
-
         parent::__construct($query, $child, $foreignKey, $ownerKey, $relationName);
-
-        $this->addDefinedConstraints();
+        $this->extendableRelationConstruct();
     }
 
     /**
@@ -53,10 +54,9 @@ class BelongsTo extends BelongsToBase
     }
 
     /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
+     * {@inheritDoc}
      */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         // Nulling the relationship
         if (!$value) {
@@ -83,8 +83,7 @@ class BelongsTo extends BelongsToBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {
@@ -98,5 +97,19 @@ class BelongsTo extends BelongsToBase
     public function getOtherKey()
     {
         return $this->ownerKey;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [
+            get_class($this->query->getModel()),
+            'key' => $this->getForeignKeyName(),
+            'otherKey' => $this->getOtherKey(),
+            'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
+        ];
     }
 }

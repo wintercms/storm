@@ -536,21 +536,6 @@ parameters:
 			path: src/Database/Relations/MorphMany.php
 
 		-
-			message: "#^Parameter \\#1 \\$query of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOneOrMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:__construct\\(\\) expects Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>, Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\> given\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphMany.php
-
-		-
-			message: "#^Parameter \\$parent of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphMany\\:\\:__construct\\(\\) has invalid type Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphMany.php
-
-		-
-			message: "#^Parameter \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphMany\\:\\:__construct\\(\\) has invalid type Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphMany.php
-
-		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/MorphOne.php
@@ -583,21 +568,6 @@ parameters:
 		-
 			message: "#^Call to private method update\\(\\) of parent class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOne\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\.$#"
 			count: 2
-			path: src/Database/Relations/MorphOne.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOneOrMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:__construct\\(\\) expects Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>, Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\> given\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphOne.php
-
-		-
-			message: "#^Parameter \\$parent of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphOne\\:\\:__construct\\(\\) has invalid type Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphOne.php
-
-		-
-			message: "#^Parameter \\$query of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphOne\\:\\:__construct\\(\\) has invalid type Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\TRelatedModel\\.$#"
-			count: 1
 			path: src/Database/Relations/MorphOne.php
 
 		-

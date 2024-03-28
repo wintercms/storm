@@ -1,5 +1,9 @@
 <?php
 
+namespace Winter\Storm\Tests\Database\Traits;
+
+use Winter\Storm\Tests\DbTestCase;
+
 class SortableTest extends DbTestCase
 {
     public function testOrderByIsAutomaticallyAdded()
