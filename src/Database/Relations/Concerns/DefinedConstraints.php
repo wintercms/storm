@@ -70,15 +70,15 @@ trait DefinedConstraints
                 $relation->countMode = true;
             }
             if (isset($relation->farParent)) {
-                $foreighKey = $relation->getQualifiedFirstKeyName();
+                $foreignKey = $relation->getQualifiedFirstKeyName();
             } else {
-                $foreighKey = $relation->getForeignKey();
+                $foreignKey = $relation->getForeignKey();
             }
             $countSql = $this->parent->getConnection()->raw('count(*) as count');
             $relation
-                ->select($foreighKey, $countSql)
-                ->groupBy($foreighKey)
-                ->orderBy($foreighKey)
+                ->select($foreignKey, $countSql)
+                ->groupBy($foreignKey)
+                ->orderBy($foreignKey)
             ;
         }
     }
