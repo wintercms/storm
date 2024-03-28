@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough as HasOneThroughBase;
  */
 class HasOneThrough extends HasOneThroughBase
 {
+    use Concerns\CanBeCounted;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
@@ -52,6 +53,7 @@ class HasOneThrough extends HasOneThroughBase
             'otherKey' => $this->getLocalKeyName(),
             'secondOtherKey' => $this->getSecondLocalKeyName(),
             'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }

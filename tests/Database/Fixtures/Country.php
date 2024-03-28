@@ -3,6 +3,7 @@
 namespace Winter\Storm\Tests\Database\Fixtures;
 
 use Illuminate\Database\Schema\Builder;
+use Winter\Storm\Database\Attributes\Relation;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Relations\HasManyThrough;
 
@@ -30,12 +31,22 @@ class Country extends Model
         'posts' => [
             Post::class,
             'through' => Author::class,
+        ],
+        'posts_count' => [
+            Post::class,
+            'through' => Author::class,
+            'count' => true,
         ]
     ];
 
     public function messages(): HasManyThrough
     {
         return $this->hasManyThrough(Post::class, Author::class);
+    }
+
+    public function messagesCount(): HasManyThrough
+    {
+        return $this->hasManyThrough(Post::class, Author::class)->countOnly();
     }
 
     public static function migrateUp(Builder $builder): void

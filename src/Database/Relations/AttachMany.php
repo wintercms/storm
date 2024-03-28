@@ -13,6 +13,7 @@ use Winter\Storm\Database\Attach\File as FileModel;
 class AttachMany extends MorphManyBase implements Relation
 {
     use Concerns\AttachOneOrMany;
+    use Concerns\CanBeCounted;
     use Concerns\CanBeDependent;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
@@ -143,6 +144,7 @@ class AttachMany extends MorphManyBase implements Relation
             'delete' => $this->isDependent(),
             'public' => $this->public,
             'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany as MorphManyBase;
 class MorphMany extends MorphManyBase implements Relation
 {
     use Concerns\MorphOneOrMany;
+    use Concerns\CanBeCounted;
     use Concerns\CanBeDependent;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
@@ -117,6 +118,7 @@ class MorphMany extends MorphManyBase implements Relation
             'id' => $this->getForeignKeyName(),
             'delete' => $this->isDependent(),
             'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }

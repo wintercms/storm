@@ -543,6 +543,17 @@ trait HasRelationships
             $relation = $relation->noPush();
         }
 
+        // Add count only flag, if required
+        if (
+            in_array(
+                \Winter\Storm\Database\Relations\Concerns\CanBeCounted::class,
+                class_uses_recursive($relation)
+            )
+            && (($definition['count'] ?? false) === true)
+        ) {
+            $relation = $relation->countOnly();
+        }
+
         if ($addConstraints) {
             // Add defined constraints
             $relation->addDefinedConstraints();

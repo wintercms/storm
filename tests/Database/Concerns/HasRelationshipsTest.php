@@ -146,6 +146,7 @@ class HasRelationshipsTest extends DbTestCase
             'otherKey' => 'id',
             'delete' => false,
             'push' => true,
+            'count' => false,
         ], $author->getRelationDefinition('contactNumber'));
         $this->assertEquals([
             Post::class,
@@ -153,6 +154,7 @@ class HasRelationshipsTest extends DbTestCase
             'otherKey' => 'id',
             'delete' => false,
             'push' => true,
+            'count' => false,
         ], $author->getRelationDefinition('messages'));
         $this->assertEquals([
             Role::class,
@@ -161,6 +163,7 @@ class HasRelationshipsTest extends DbTestCase
             'otherKey' => 'id',
             'push' => true,
             'detach' => true,
+            'count' => false,
         ], $author->getRelationDefinition('scopes'));
         $this->assertEquals([
             Meta::class,
@@ -168,6 +171,7 @@ class HasRelationshipsTest extends DbTestCase
             'id' => 'taggable_id',
             'delete' => false,
             'push' => true,
+            'count' => false,
         ], $author->getRelationDefinition('info'));
         $this->assertEquals([
             EventLog::class,
@@ -175,6 +179,7 @@ class HasRelationshipsTest extends DbTestCase
             'id' => 'related_id',
             'delete' => true,
             'push' => true,
+            'count' => false,
         ], $author->getRelationDefinition('auditLogs'));
         $this->assertEquals([
             Tag::class,
@@ -185,6 +190,7 @@ class HasRelationshipsTest extends DbTestCase
             'relatedKey' => 'id',
             'inverse' => false,
             'push' => true,
+            'count' => false,
             'pivot' => ['added_by'],
             'detach' => true,
         ], $author->getRelationDefinition('labels'));

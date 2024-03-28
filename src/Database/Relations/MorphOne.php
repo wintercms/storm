@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 class MorphOne extends MorphOneBase implements Relation
 {
     use Concerns\MorphOneOrMany;
+    use Concerns\CanBeCounted;
     use Concerns\CanBeDependent;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
@@ -120,6 +121,7 @@ class MorphOne extends MorphOneBase implements Relation
             'id' => $this->getForeignKeyName(),
             'delete' => $this->isDependent(),
             'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }

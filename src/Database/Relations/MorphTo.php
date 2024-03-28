@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
 class MorphTo extends MorphToBase implements Relation
 {
     use Concerns\BelongsOrMorphsTo;
+    use Concerns\CanBeCounted;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
@@ -84,6 +85,7 @@ class MorphTo extends MorphToBase implements Relation
             'key' => $this->getForeignKeyName(),
             'otherKey' => $this->getOwnerKeyName(),
             'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 class BelongsTo extends BelongsToBase implements Relation
 {
     use Concerns\BelongsOrMorphsTo;
+    use Concerns\CanBeCounted;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
@@ -108,6 +109,7 @@ class BelongsTo extends BelongsToBase implements Relation
             'key' => $this->getForeignKeyName(),
             'otherKey' => $this->getOtherKey(),
             'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }

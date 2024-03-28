@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
 class MorphToMany extends BaseMorphToMany implements Relation
 {
     use Concerns\BelongsOrMorphsToMany;
+    use Concerns\CanBeCounted;
     use Concerns\CanBeDetachable;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
@@ -173,6 +174,7 @@ class MorphToMany extends BaseMorphToMany implements Relation
             'inverse' => $this->getInverse(),
             'push' => $this->isPushable(),
             'detach' => $this->isDetachable(),
+            'count' => $this->isCountOnly(),
         ];
 
         if (count($this->pivotColumns)) {

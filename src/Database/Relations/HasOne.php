@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 class HasOne extends HasOneBase implements Relation
 {
     use Concerns\HasOneOrMany;
+    use Concerns\CanBeCounted;
     use Concerns\CanBeDependent;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
@@ -102,6 +103,7 @@ class HasOne extends HasOneBase implements Relation
             'otherKey' => $this->getOtherKey(),
             'delete' => $this->isDependent(),
             'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }

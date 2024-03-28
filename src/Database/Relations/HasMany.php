@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany as HasManyBase;
 class HasMany extends HasManyBase implements Relation
 {
     use Concerns\HasOneOrMany;
+    use Concerns\CanBeCounted;
     use Concerns\CanBeDependent;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
@@ -101,6 +102,7 @@ class HasMany extends HasManyBase implements Relation
             'otherKey' => $this->getOtherKey(),
             'delete' => $this->isDependent(),
             'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }

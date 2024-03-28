@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThroughBase;
  */
 class HasManyThrough extends HasManyThroughBase
 {
+    use Concerns\CanBeCounted;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
     use Concerns\DefinedConstraints;
@@ -52,6 +53,7 @@ class HasManyThrough extends HasManyThroughBase
             'otherKey' => $this->getLocalKeyName(),
             'secondOtherKey' => $this->getSecondLocalKeyName(),
             'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }
