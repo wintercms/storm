@@ -39,7 +39,7 @@ trait HandlesCleanup
     /**
      * Handle the provided Unix process signal
      */
-    public function handleSignal(int $signal): int|false
+    public function handleSignal(int $signal, int|false $previousExitCode = 0): int|false
     {
         // Handle the signal
         if (method_exists($this, 'handleCleanup')) {
