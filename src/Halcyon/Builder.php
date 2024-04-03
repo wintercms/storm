@@ -699,11 +699,11 @@ class Builder
     /**
      * Get the cache object with tags assigned, if applicable.
      *
-     * @return \Illuminate\Cache\Repository
+     * @return \Illuminate\Contracts\Cache\Repository
      */
     protected function getCache()
     {
-        $cache = $this->model->getCacheManager()->store($this->cacheDriver);
+        $cache = $this->model->getCacheManager()->driver($this->cacheDriver);
 
         return $this->cacheTags ? $cache->tags($this->cacheTags) : $cache;
     }
