@@ -5,7 +5,7 @@ use Winter\Storm\Support\Facade;
 /**
  * @method static \Doctrine\DBAL\Driver\PDOConnection getPdo()
  * @method static \Illuminate\Database\Connection connection(string $name = null)
- * @method static \Winter\Storm\Database\QueryBuilder table(string $table, string $as = null)
+ * @method static \Winter\Storm\Database\QueryBuilder table(\Closure|\Illuminate\Database\Query\Builder|\Illuminate\Contracts\Database\Query\Expression|string $table, string|null $as = null)
  * @method static \Illuminate\Database\Query\Expression raw($value)
  * @method static array getQueryLog()
  * @method static array prepareBindings(array $bindings)

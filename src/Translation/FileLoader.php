@@ -18,26 +18,31 @@ class FileLoader extends FileLoaderBase
      */
     protected function loadNamespaceOverrides(array $lines, $locale, $group, $namespace)
     {
-        $namespace = str_replace('.', '/', $namespace);
+        return collect($this->paths)
+            ->reduce(function ($output, $path) use ($lines, $locale, $group, $namespace) {
+                $winterNamespace = str_replace('.', '/', $namespace);
 
-        $file = "{$this->path}/{$locale}/{$namespace}/{$group}.php";
+                // Look for a Winter-managed namespace
+                $file = "{$path}/{$locale}/{$winterNamespace}/{$group}.php";
+                if ($this->files->exists($file)) {
+                    return array_replace_recursive($lines, $this->files->getRequire($file));
+                }
 
-        if ($this->files->exists($file)) {
-            return array_replace_recursive($lines, $this->files->getRequire($file));
-        }
+                // Look for a Winter-managed namespace with a Winter-formatted locale (xx-xx instead of xx_XX)
+                $dashLocale = str_replace('_', '-', strtolower($locale));
+                $dashFile = "{$path}/{$dashLocale}/{$winterNamespace}/{$group}.php";
+                if ($dashFile !== $file && $this->files->exists($dashFile)) {
+                    return array_replace_recursive($lines, $this->files->getRequire($dashFile));
+                }
 
-        // Try "xx-xx" format
-        $locale = str_replace('_', '-', strtolower($locale));
+                // Look for a vendor-managed namespace
+                $file = "{$path}/vendor/{$namespace}/{$locale}/{$group}.php";
+                if ($this->files->exists($file)) {
+                    return array_replace_recursive($lines, $this->files->getRequire($file));
+                }
 
-        if ("{$this->path}/{$locale}/{$namespace}/{$group}.php" !== $file) {
-            $file = "{$this->path}/{$locale}/{$namespace}/{$group}.php";
-
-            if ($this->files->exists($file)) {
-                return array_replace_recursive($lines, $this->files->getRequire($file));
-            }
-        }
-
-        return $lines;
+                return $lines;
+            }, []);
     }
 
     /**
@@ -46,26 +51,28 @@ class FileLoader extends FileLoaderBase
      * This is an override from the base Laravel functionality that allows "xx-xx" locale format
      * files as well as "xx_XX" locale format files. The "xx_XX" format is considered authorative.
      *
-     * @param  string  $path
+     * @param  array  $paths
      * @param  string  $locale
      * @param  string  $group
      * @return array
      */
-    protected function loadPath($path, $locale, $group)
+    protected function loadPaths(array $paths, $locale, $group)
     {
-        if ($this->files->exists($full = "{$path}/{$locale}/{$group}.php")) {
-            return $this->files->getRequire($full);
-        }
+        return collect($paths)
+            ->reduce(function ($output, $path) use ($locale, $group) {
+                $file = "{$path}/{$locale}/{$group}.php";
+                if ($this->files->exists($file)) {
+                    return array_replace_recursive($output, $this->files->getRequire($file));
+                }
 
-        // Try "xx-xx" format
-        $locale = str_replace('_', '-', strtolower($locale));
+                // Try "xx-xx" format
+                $dashLocale = str_replace('_', '-', strtolower($locale));
+                $dashFile = "{$path}/{$dashLocale}/{$group}.php";
+                if ($dashFile !== $file && $this->files->exists($dashFile)) {
+                    return $this->files->getRequire($dashFile);
+                }
 
-        if ("{$path}/{$locale}/{$group}.php" !== $full) {
-            if ($this->files->exists($full = "{$path}/{$locale}/{$group}.php")) {
-                return $this->files->getRequire($full);
-            }
-        }
-
-        return [];
+                return $output;
+            }, []);
     }
 }

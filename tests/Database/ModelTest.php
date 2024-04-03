@@ -471,7 +471,7 @@ class ModelTest extends \DbTestCase
     public function testStringIsTrimmed()
     {
         $name = "Name";
-        $nameWithSpace = "  ${name}  ";
+        $nameWithSpace = "  {$name}  ";
         $model = new TestModelGuarded();
 
         $model->name = $nameWithSpace;

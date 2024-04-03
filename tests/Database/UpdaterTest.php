@@ -4,7 +4,7 @@ use Winter\Storm\Database\Updater;
 
 class UpdaterTest extends TestCase
 {
-    protected Updater $updater;
+    protected ?Updater $updater = null;
 
     public function setUp(): void
     {
