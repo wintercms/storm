@@ -6,7 +6,6 @@ use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
-use Illuminate\Support\Collection;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
@@ -15,6 +14,7 @@ use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
 use Winter\Storm\Foundation\Providers\MakerServiceProvider;
 use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Support\Collection;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Support\Facades\Config;
 
@@ -68,6 +68,7 @@ class Application extends ApplicationBase
     /**
      * Get the path to the public / web directory.
      *
+     * @param string $path
      * @return string
      */
     public function publicPath($path = '')
@@ -479,7 +480,7 @@ class Application extends ApplicationBase
         $aliases = [
             'app'                  => [\Winter\Storm\Foundation\Application::class, \Illuminate\Contracts\Container\Container::class, \Illuminate\Contracts\Foundation\Application::class],
             'blade.compiler'       => [\Illuminate\View\Compilers\BladeCompiler::class],
-            'cache'                => [\Illuminate\Cache\CacheManager::class, \Illuminate\Contracts\Cache\Factory::class],
+            'cache'                => [\Winter\Storm\Cache\CacheManager::class, \Illuminate\Contracts\Cache\Factory::class],
             'cache.store'          => [\Illuminate\Cache\Repository::class, \Illuminate\Contracts\Cache\Repository::class],
             'config'               => [\Illuminate\Config\Repository::class, \Illuminate\Contracts\Config\Repository::class],
             'cookie'               => [\Illuminate\Cookie\CookieJar::class, \Illuminate\Contracts\Cookie\Factory::class, \Illuminate\Contracts\Cookie\QueueingFactory::class],

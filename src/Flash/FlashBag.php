@@ -166,6 +166,7 @@ class FlashBag extends MessageBag
 
     /**
      * Removes an object with a specified key or erases the flash data.
+     *
      * @param string $key Specifies a key to remove, optional
      * @return $this
      */
@@ -174,8 +175,7 @@ class FlashBag extends MessageBag
         if ($key === null) {
             $this->newMessages = $this->messages = [];
             $this->purge();
-        }
-        else {
+        } else {
             if (isset($this->messages[$key])) {
                 unset($this->messages[$key]);
             }
@@ -186,6 +186,7 @@ class FlashBag extends MessageBag
 
             $this->store();
         }
+
         return $this;
     }
 

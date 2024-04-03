@@ -70,7 +70,7 @@ class File extends Model
     protected $hidden = ['attachment_type', 'attachment_id', 'is_public'];
 
     /**
-     * @var array Add fields to array/json access
+     * @var array<int, string> Add fields to array/json access
      */
     protected $appends = ['path', 'extension'];
 
@@ -119,7 +119,9 @@ class File extends Model
             ? $uploadedFile->getPath() . DIRECTORY_SEPARATOR . $uploadedFile->getFileName()
             : $uploadedFile->getRealPath();
 
-        $this->putFile($realPath, $this->disk_name);
+        if (!$this->putFile($realPath, $this->disk_name)) {
+            throw new ApplicationException('The file failed to be stored');
+        }
 
         return $this;
     }
@@ -1008,7 +1010,11 @@ class File extends Model
      */
     protected function copyLocalToStorage($localPath, $storagePath)
     {
-        return $this->getDisk()->put($storagePath, FileHelper::get($localPath), $this->isPublic() ? 'public' : null);
+        return $this->getDisk()->put(
+            $storagePath,
+            FileHelper::get($localPath),
+            $this->isPublic() ? ($this->getDisk()->getConfig()['visibility'] ?? 'public') : null
+        );
     }
 
     //

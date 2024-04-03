@@ -4,7 +4,7 @@ use Winter\Storm\Html\BlockBuilder;
 
 class BlockBuilderTest extends TestCase
 {
-    protected BlockBuilder $Block;
+    protected ?BlockBuilder $Block = null;
 
     public function setUp(): void
     {

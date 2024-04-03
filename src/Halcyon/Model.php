@@ -109,7 +109,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
     /**
      * The cache manager instance.
      *
-     * @var \Illuminate\Cache\CacheManager|null
+     * @var \Winter\Storm\Cache\CacheManager|null
      */
     protected static $cache;
 
@@ -1512,7 +1512,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
     /**
      * Get the cache manager instance.
      *
-     * @return \Illuminate\Cache\CacheManager|null
+     * @return \Winter\Storm\Cache\CacheManager|null
      */
     public static function getCacheManager()
     {
@@ -1522,7 +1522,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
     /**
      * Set the cache manager instance.
      *
-     * @param  \Illuminate\Cache\CacheManager  $cache
+     * @param  \Winter\Storm\Cache\CacheManager  $cache
      * @return void
      */
     public static function setCacheManager($cache)
@@ -1611,7 +1611,8 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      */
     public function __get($key)
     {
-        return $this->getAttribute($key);
+        // try the dynamic properties first, then the local attributes array
+        return $this->extendableGet($key) ?? $this->getAttribute($key);
     }
 
     /**

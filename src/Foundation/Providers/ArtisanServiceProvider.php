@@ -54,7 +54,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'OptimizeClear' => OptimizeClearCommand::class,
         // 'QueueClear' => QueueClearCommand::class,
         // 'SchemaDump' => DumpCommand::class,
-        // 'ScheduleList' => ScheduleListCommand::class,
+        // 'ScheduleList' => \Illuminate\Console\Scheduling\ScheduleListCommand::class,
         // 'ScheduleClearCache' => ScheduleClearCacheCommand::class,
         // 'ScheduleTest' => ScheduleTestCommand::class,
         // 'ScheduleWork' => ScheduleWorkCommand::class,

@@ -95,8 +95,8 @@ trait DeferOneOrMany
                 ->where('master_type', get_class($this->parent))
                 ->where('session_key', $sessionKey)
                 ->where('is_bind', 0)
-                ->whereRaw(DbDongle::parse('id > ifnull((select max(id) from '.DbDongle::getTablePrefix().'deferred_bindings where
-                        slave_id = '.$this->getWithDeferredQualifiedKeyName()->getValue(new Grammar).' and
+                ->whereRaw(DbDongle::parse('id > ifnull((select max(id) from ' . DbDongle::getTablePrefix() . 'deferred_bindings where
+                        slave_id = ' . $this->getWithDeferredQualifiedKeyName()->getValue(new Grammar) . ' and
                         master_field = ? and
                         master_type = ? and
                         session_key = ? and
@@ -123,13 +123,12 @@ trait DeferOneOrMany
 
     /**
      * Returns the related "slave id" key in a database friendly format.
-     * @return \Illuminate\Contracts\Database\Query\Expression
      */
-    protected function getWithDeferredQualifiedKeyName()
+    protected function getWithDeferredQualifiedKeyName(): string
     {
         return $this->parent->getConnection()->raw(DbDongle::cast(
             DbDongle::getTablePrefix() . $this->related->getQualifiedKeyName(),
             'TEXT'
-        ));
+        ))->getValue($this->parent->getGrammar());
     }
 }
