@@ -96,7 +96,7 @@ trait DeferOneOrMany
                 ->where('session_key', $sessionKey)
                 ->where('is_bind', 0)
                 ->whereRaw(DbDongle::parse('id > ifnull((select max(id) from ' . DbDongle::getTablePrefix() . 'deferred_bindings where
-                        slave_id = ' . $this->getWithDeferredQualifiedKeyName()->getValue(new Grammar) . ' and
+                        slave_id = ' . $this->getWithDeferredQualifiedKeyName() . ' and
                         master_field = ? and
                         master_type = ? and
                         session_key = ? and
