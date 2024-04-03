@@ -35,7 +35,7 @@
         "ext-pdo": "*",
         "ext-zip": "*",
 
-        "assetic/framework": "dev-master",
+        "assetic/framework": "^3.1",
         "doctrine/dbal": "^3.6",
         "enshrined/svg-sanitize": "~0.16",
         "laravel/framework": "^11.0",
@@ -59,12 +59,6 @@
 	"orchestra/testbench": "^9.0",
         "larastan/larastan": "^2.8.1"
     },
-    "repositories": [
-	    {
-		    "type": "path",
-		    "url": "vendor/assetic/framework"
-	    }
-    ],
 
     "suggest": {
         "ext-pdo_dblib": "Required to use MS SQL Server databases",
