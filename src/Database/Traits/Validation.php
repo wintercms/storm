@@ -61,6 +61,49 @@ trait Validation
             ));
         }
 
+        static::validating(function ($model) {
+            if ($model->methodExists('beforeValidate')) {
+                // Register the method as a listener with default priority
+                // to allow for complete control over the execution order
+                $model->bindEvent('model.beforeValidate', [$model, 'beforeValidate']);
+            }
+
+            /**
+             * @event model.beforeValidate
+             * Called before the model is validated
+             *
+             * Example usage:
+             *
+             *     $model->bindEvent('model.beforeValidate', function () use (\Winter\Storm\Database\Model $model) {
+             *         // Prevent anything from validating ever!
+             *         return false;
+             *     });
+             *
+             */
+            return $model->fireEvent('model.beforeValidate', halt: true);
+        });
+
+        static::validated(function ($model) {
+            if ($model->methodExists('afterValidate')) {
+                // Register the method as a listener with default priority
+                // to allow for complete control over the execution order
+                $model->bindEvent('model.afterValidate', [$model, 'afterValidate']);
+            }
+
+            /**
+             * @event model.afterValidate
+             * Called after the model is validated
+             *
+             * Example usage:
+             *
+             *     $model->bindEvent('model.afterValidate', function () use (\Winter\Storm\Database\Model $model) {
+             *         \Log::info("{$model->name} successfully passed validation");
+             *     });
+             *
+             */
+            return $model->fireEvent('model.afterValidate', halt: true);
+        });
+
         static::extend(function ($model) {
             $model->bindEvent('model.saveInternal', function ($data, $options) use ($model) {
                 /*
@@ -111,7 +154,27 @@ trait Validation
      */
     protected function getValidationAttributes()
     {
-        return $this->getAttributes();
+        $attributes = $this->getAttributes();
+        
+        /**
+         * @event model.getValidationAttributes
+         * Called when fetching the model attributes to validate the model
+         *
+         * Example usage from TranslatableBehavior class:
+         *
+         *     $model->bindEvent('model.getValidationAttributes', function ($attributes) {
+         *         $locale = $this->translateContext();
+         *         if ($locale !== $this->translatableDefault) {
+         *             return array_merge($attributes, $this->getTranslateDirty($locale));
+         *         }
+         *     });
+         *
+         */
+        if (($validationAttributes = $this->fireEvent('model.getValidationAttributes', [$attributes], true)) !== null) {
+            return $validationAttributes;
+        }
+
+        return $attributes;
     }
 
     /**
@@ -174,28 +237,12 @@ trait Validation
             ? $this->throwOnValidation
             : true;
 
-        /**
-         * @event model.beforeValidate
-         * Called before the model is validated
-         *
-         * Example usage:
-         *
-         *     $model->bindEvent('model.beforeValidate', function () use (\Winter\Storm\Database\Model $model) {
-         *         // Prevent anything from validating ever!
-         *         return false;
-         *     });
-         *
-         */
-        if (($this->fireModelEvent('validating') === false) || ($this->fireEvent('model.beforeValidate', [], true) === false)) {
+        if ($this->fireModelEvent('validating') === false) {
             if ($throwOnValidation) {
                 throw new ModelException($this);
             }
 
             return false;
-        }
-
-        if ($this->methodExists('beforeValidate')) {
-            $this->beforeValidate();
         }
 
         /*
@@ -323,23 +370,7 @@ trait Validation
             }
         }
 
-        /**
-         * @event model.afterValidate
-         * Called after the model is validated
-         *
-         * Example usage:
-         *
-         *     $model->bindEvent('model.afterValidate', function () use (\Winter\Storm\Database\Model $model) {
-         *         \Log::info("{$model->name} successfully passed validation");
-         *     });
-         *
-         */
         $this->fireModelEvent('validated', false);
-        $this->fireEvent('model.afterValidate');
-
-        if ($this->methodExists('afterValidate')) {
-            $this->afterValidate();
-        }
 
         if (!$success && $throwOnValidation) {
             throw new ModelException($this);

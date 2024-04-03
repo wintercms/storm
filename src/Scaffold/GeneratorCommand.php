@@ -2,6 +2,7 @@
 
 use Exception;
 use Illuminate\Foundation\Inspiring;
+use InvalidArgumentException;
 use ReflectionClass;
 use Winter\Storm\Console\Command;
 use Winter\Storm\Filesystem\Filesystem;
@@ -132,7 +133,7 @@ abstract class GeneratorCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return bool|null
+     * @return int|bool|null
      */
     public function handle()
     {
@@ -145,13 +146,20 @@ abstract class GeneratorCommand extends Command
             return false;
         }
 
-        $this->vars = $this->processVars($this->prepareVars());
+        try {
+            $this->vars = $this->processVars($this->prepareVars());
+        } catch (InvalidArgumentException $e) {
+            $this->error($e->getMessage());
+            return 1;
+        }
 
         $this->makeStubs();
 
         $this->info($this->type . ' created successfully.');
 
-        $this->info(Inspiring::quote());
+        if (!$this->option('uninspiring')) {
+            $this->info(Inspiring::quote());
+        }
     }
 
     /**

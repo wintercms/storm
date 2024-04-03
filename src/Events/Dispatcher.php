@@ -168,6 +168,27 @@ class Dispatcher extends BaseDispatcher
     }
 
     /**
+     * Gets the raw, unprepared listeners.
+     *
+     * @return array
+     */
+    public function getRawListeners()
+    {
+        $listeners = [];
+
+        foreach ($this->listeners as $event => $eventListeners) {
+            foreach ($eventListeners as $priority => $listenersByPriority) {
+                krsort($listenersByPriority);
+                foreach ($listenersByPriority as $listener) {
+                    $listeners[$event][] = $listener;
+                }
+            }
+        }
+
+        return $listeners;
+    }
+
+    /**
      * Get all of the listeners for a given event name.
      *
      * @param  string  $eventName
@@ -291,5 +312,16 @@ class Dispatcher extends BaseDispatcher
         return $this->handlerShouldBeDispatchedAfterDatabaseTransactions($listener)
             ? $this->createCallbackForListenerRunningAfterCommits($listener, $method)
             : [$listener, $method];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function forget($event)
+    {
+        parent::forget($event);
+        if (isset($this->sorted[$event])) {
+            unset($this->sorted[$event]);
+        }
     }
 }

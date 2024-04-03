@@ -116,7 +116,7 @@ trait HasSortableRelations
             if ($id instanceof Model) {
                 $record = $id;
             } else {
-                $record = $relation->find($id);
+                $record = $relation->getRelated()->find($id);
             }
             $record->{$column} = (int)$order;
             $record->save();

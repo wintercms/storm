@@ -65,7 +65,17 @@ class ExtendableTest extends TestCase
         $this->assertFalse(property_exists($subject, 'newAttribute'));
         $subject->addDynamicProperty('dynamicAttribute', 'Test');
         $this->assertEquals('Test', $subject->dynamicAttribute);
-        $this->assertTrue(property_exists($subject, 'dynamicAttribute'));
+        $this->assertTrue($subject->propertyExists('dynamicAttribute'));
+    }
+
+    public function testModifyDynamicPropertyValueOnClass()
+    {
+        $subject = $this->mockClassLoader(ExtendableTestExampleExtendableClass::class);
+        $subject->dynamicAttribute = "Initial Value";
+        $subject->addDynamicProperty('dynamicAttribute', 'Test');
+        $this->assertEquals('Test', $subject->dynamicAttribute);
+        $subject->dynamicAttribute = "New value";
+        $this->assertEquals('New value', $subject->dynamicAttribute);
     }
 
     public function testDynamicallyExtendingClass()
@@ -392,6 +402,29 @@ class ExtendableTest extends TestCase
 
         // Should not contain the same dynamic method as it's declared locally
         $this->assertFalse($object->methodExists('changeFoo'));
+    }
+
+    /**
+     * This tests using a local extension to call a method from a behavior within a scoped extension on the constructor.
+     * It more or less tests the initialisation order of extensions, ie:
+     *
+     * - Scoped and constructor extensions are fired first
+     * - Behaviours are then loaded
+     * - Local extensions are then fired, if called within the construction process, or on request within the run-time.
+     */
+    public function testLocalExtensionWithinScopedExtension()
+    {
+        $result = null;
+
+        ExtendableTestExampleExtendableClassDotNotation::extend(function () use (&$result) {
+            $this->extend(function () use (&$result) {
+                $result = $this->getFoo();
+            });
+        }, true);
+
+        $class = new ExtendableTestExampleExtendableClassDotNotation;
+
+        $this->assertEquals('foo', $result);
     }
 }
 

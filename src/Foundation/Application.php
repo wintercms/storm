@@ -6,7 +6,6 @@ use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
-use Illuminate\Support\Collection;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
@@ -15,6 +14,7 @@ use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
 use Winter\Storm\Foundation\Providers\MakerServiceProvider;
 use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Support\Collection;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Support\Facades\Config;
 
@@ -283,6 +283,25 @@ class Application extends ApplicationBase
     }
 
     /**
+     * Normalize a relative or absolute path to a cache file.
+     *
+     * @param  string  $key
+     * @param  string  $default
+     * @return string
+     */
+    protected function normalizeCachePath($key, $default)
+    {
+        $path = parent::normalizeCachePath($key, $default);
+
+        $directory = pathinfo($path, PATHINFO_DIRNAME);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        return $path;
+    }
+
+    /**
      * Resolve the given type from the container.
      *
      * (Overriding Container::make)
@@ -363,18 +382,24 @@ class Application extends ApplicationBase
 
     /**
      * Returns true if a database connection is present.
-     * @return boolean
      */
-    public function hasDatabase()
+    public function hasDatabase(): bool
     {
         try {
             $this['db.connection']->getPdo();
-        }
-        catch (Throwable $ex) {
+        } catch (Throwable $ex) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the provided table is present on the default database connection.
+     */
+    public function hasDatabaseTable(string $table): bool
+    {
+        return $this->hasDatabase() && $this['db.connection']->getSchemaBuilder()->hasTable($table);
     }
 
     /**

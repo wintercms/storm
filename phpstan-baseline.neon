@@ -11,16 +11,6 @@ parameters:
 			path: src/Auth/Models/Group.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\Group\\:\\:afterValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/Group.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\Group\\:\\:beforeValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/Group.php
-
-		-
 			message: "#^Call to an undefined method \\$this\\(Winter\\\\Storm\\\\Auth\\\\Models\\\\Role\\)\\:\\:getOriginalEncryptableValues\\(\\)\\.$#"
 			count: 1
 			path: src/Auth/Models/Role.php
@@ -31,27 +21,7 @@ parameters:
 			path: src/Auth/Models/Role.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\Role\\:\\:afterValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/Role.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\Role\\:\\:beforeValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/Role.php
-
-		-
 			message: "#^Call to an undefined method \\$this\\(Winter\\\\Storm\\\\Auth\\\\Models\\\\User\\)\\:\\:getOriginalEncryptableValues\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/User.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\User\\:\\:afterValidate\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/Models/User.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Auth\\\\Models\\\\User\\:\\:beforeValidate\\(\\)\\.$#"
 			count: 1
 			path: src/Auth/Models/User.php
 
@@ -97,6 +67,11 @@ parameters:
 
 		-
 			message: "#^Return type \\(Winter\\\\Storm\\\\Database\\\\Pivot\\) of method Winter\\\\Storm\\\\Database\\\\Model\\:\\:newPivot\\(\\) should be compatible with return type \\(Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Pivot\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:newPivot\\(\\)$#"
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: "#^Static property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$dispatcher \\(Illuminate\\\\Contracts\\\\Events\\\\Dispatcher\\) in isset\\(\\) is not nullable\\.$#"
 			count: 1
 			path: src/Database/Model.php
 
@@ -739,21 +714,6 @@ parameters:
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:getParentId\\(\\)\\.$#"
 			count: 1
 			path: src/Database/TreeCollection.php
-
-		-
-			message: "#^Winter\\\\Storm\\\\Extension\\\\Extendable\\:\\:extendableCall\\(\\) calls parent\\:\\:__call\\(\\) but Winter\\\\Storm\\\\Extension\\\\Extendable does not extend any class\\.$#"
-			count: 1
-			path: src/Extension/Extendable.php
-
-		-
-			message: "#^Winter\\\\Storm\\\\Extension\\\\Extendable\\:\\:extendableGet\\(\\) calls parent\\:\\:__get\\(\\) but Winter\\\\Storm\\\\Extension\\\\Extendable does not extend any class\\.$#"
-			count: 1
-			path: src/Extension/Extendable.php
-
-		-
-			message: "#^Winter\\\\Storm\\\\Extension\\\\Extendable\\:\\:extendableSet\\(\\) calls parent\\:\\:__set\\(\\) but Winter\\\\Storm\\\\Extension\\\\Extendable does not extend any class\\.$#"
-			count: 1
-			path: src/Extension/Extendable.php
 
 		-
 			message: "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer\\:\\:queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue\\:\\:queue\\(\\)$#"
