@@ -43,11 +43,3 @@ jobs:
 
       - name: Run tests
         run: ./vendor/bin/phpunit ./tests
-
-      - name: Upload test artifacts on failure
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-            name: ResizerTest-${{ matrix.operatingSystem }}-PHP${{ matrix.phpVersion }}
-            path: tests/artifacts/ResizerTest/
-            if-no-files-found: error
