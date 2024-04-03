@@ -16,7 +16,7 @@ jobs:
       max-parallel: 4
       matrix:
         operatingSystem: [ubuntu-latest, windows-latest]
-        phpVersion: ['8.1', '8.2']
+        phpVersion: ['8.2', '8.3']
       fail-fast: false
     runs-on: ${{ matrix.operatingSystem }}
     name: ${{ matrix.operatingSystem }} / PHP ${{ matrix.phpVersion }}
@@ -36,10 +36,6 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --no-scripts
-
-      - name: Setup problem matchers for PHPUnit
-        if: matrix.phpVersion == '8.2'
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Run tests
         run: ./vendor/bin/phpunit ./tests
