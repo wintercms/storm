@@ -377,13 +377,16 @@ ESC;
 
     protected function setValidatorOnModel()
     {
-        $translator = $this->getMockBuilder('Illuminate\Contracts\Translation\Translator')->setMethods([
+        $translator = $this->getMockBuilder('Illuminate\Contracts\Translation\Translator')
+        ->onlyMethods([
             'get',
             'choice',
-            'trans',
-            'transChoice',
             'setLocale',
             'getLocale'
+        ])
+        ->addMethods([
+            'trans',
+            'transChoice',
         ])->getMock();
 
         $translator->expects($this->any())->method('get')->will($this->returnArgument(0));
