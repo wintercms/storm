@@ -128,12 +128,12 @@ class Builder extends BuilderModel
      * @param string|int|null $pageName
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page')
+    public function paginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page', $total = 0)
     {
         /*
          * Engage Laravel signature support
          *
-         * paginate($perPage, $columns, $pageName, $currentPage)
+         * paginate($perPage, $columns, $pageName, $currentPage, $total)
          */
         if (is_array($currentPage)) {
             $_columns = $columns;
