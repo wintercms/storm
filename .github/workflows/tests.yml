@@ -3,8 +3,6 @@ name: Tests
 on:
   push:
     branches:
-      - "1.0"
-      - "1.1"
       - develop
   pull_request:
 
@@ -15,7 +13,7 @@ concurrency:
 jobs:
   unitTests:
     strategy:
-      max-parallel: 6
+      max-parallel: 4
       matrix:
         operatingSystem: [ubuntu-latest, windows-latest]
         phpVersion: ['8.1', '8.2']

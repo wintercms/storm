@@ -36,9 +36,9 @@
         "ext-zip": "*",
 
         "assetic/framework": "~3.0",
-        "doctrine/dbal": "^3.0",
+        "doctrine/dbal": "^3.6",
         "enshrined/svg-sanitize": "~0.16",
-        "laravel/framework": "^10.0",
+        "laravel/framework": "^10.1",
         "laravel/tinker": "^2.8.1",
         "league/csv": "~9.1",
         "nesbot/carbon": "^2.0",
@@ -58,8 +58,8 @@
         "php-parallel-lint/php-parallel-lint": "^1.0",
         "meyfa/phpunit-assert-gd": "^2.0.0|^3.0.0",
         "dms/phpunit-arraysubset-asserts": "^0.1.0|^0.2.1",
-        "larastan/larastan": "^2.8.1",
-        "orchestra/testbench": "^8.0.0"
+        "nunomaduro/larastan": "2.x-dev",
+        "orchestra/testbench": "^8.4"
     },
     "suggest": {
         "ext-pdo_dblib": "Required to use MS SQL Server databases",
