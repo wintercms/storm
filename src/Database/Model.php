@@ -78,8 +78,6 @@ class Model extends EloquentModel implements ModelInterface
      */
     public function __construct(array $attributes = [])
     {
-        //$dates property has been removed in Laravel 11
-        //$this->casts = array_merge($this->casts ?? [], $this->dates);
         parent::__construct();
 
         $this->bootNicerEvents();
