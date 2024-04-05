@@ -3,6 +3,7 @@
 use Illuminate\Support\Arr;
 use Illuminate\Database\Connectors\ConnectionFactory as ConnectionFactoryBase;
 use Winter\Storm\Database\Connections\Connection;
+use Winter\Storm\Database\Connections\MariaDbConnection;
 use Winter\Storm\Database\Connections\MySqlConnection;
 use Winter\Storm\Database\Connections\SQLiteConnection;
 use Winter\Storm\Database\Connections\PostgresConnection;
@@ -57,6 +58,8 @@ class ConnectionFactory extends ConnectionFactoryBase
         }
 
         switch ($driver) {
+            case 'mariadb':
+                return new MariaDbConnection($connection, $database, $prefix, $config);
             case 'mysql':
                 return new MySqlConnection($connection, $database, $prefix, $config);
             case 'pgsql':

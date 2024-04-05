@@ -5,7 +5,8 @@ use Exception;
 use Throwable;
 use Illuminate\Database\Schema\SqlServerBuilder;
 use Illuminate\Database\Query\Processors\SqlServerProcessor;
-use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
+
+use Winter\Storm\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
 use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 
 /**

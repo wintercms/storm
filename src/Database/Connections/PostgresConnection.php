@@ -2,8 +2,9 @@
 
 use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
+
 use Winter\Storm\Database\Query\Grammars\PostgresGrammar as QueryGrammar;
-use Illuminate\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
+use Winter\Storm\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
