@@ -103,18 +103,35 @@ class SQLiteGrammar extends SQLiteGrammarBase
 
         $foreignKeyConstraintsEnabled = $connection->scalar('pragma foreign_keys');
 
-        return array_filter(array_merge(
-        [
-            $foreignKeyConstraintsEnabled ? $this->compileDisableForeignKeyConstraints() : null,
-            sprintf('create table %s (%s%s%s)',
-                $tempTable,
-                implode(', ', $columns),
-                $this->addForeignKeys($foreignKeys),
-                $autoIncrementColumn ? '' : $this->addPrimaryKeys($primary->first())
-            ),
-            sprintf('insert into %s (%s) select %s from %s', $tempTable, $columnNames, $columnNames, $table),
-            sprintf('drop table %s', $table),
-            sprintf('alter table %s rename to %s', $tempTable, $table),
-        ], $indexes, [$foreignKeyConstraintsEnabled ? $this->compileEnableForeignKeyConstraints() : null]));
+        return array_filter(
+            array_merge(
+                [
+                    $foreignKeyConstraintsEnabled ? $this->compileDisableForeignKeyConstraints() : null,
+                    sprintf('create table %s (%s%s%s)',
+                        $tempTable,
+                        implode(', ', $columns),
+                        $this->addForeignKeys($foreignKeys),
+                        $autoIncrementColumn ? '' : $this->addPrimaryKeys($primary->first())
+                    ),
+                    sprintf('insert into %s (%s) select %s from %s',
+                        $tempTable,
+                        $columnNames,
+                        $columnNames,
+                        $table
+                    ),
+                    sprintf('drop table %s',
+                        $table
+                    ),
+                    sprintf('alter table %s rename to %s',
+                        $tempTable,
+                        $table
+                    ),
+                ],
+                $indexes,
+                [
+                    $foreignKeyConstraintsEnabled ? $this->compileEnableForeignKeyConstraints() : null
+                ]
+            )
+        );
     }
 }
