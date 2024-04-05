@@ -32,7 +32,7 @@ class SqlServerGrammar extends SqlServerGrammarBase
                 $this->getType($column)
             );
 
-            $oldColum = new Fluent($prevColumns->where('name', $name)->first());
+            $oldColumn = new Fluent($oldColumns->where('name', $column->name)->first());
 
             foreach ($this->modifiers as $modifier) {
                 if (method_exists($this, $method = "modify{$modifier}")) {

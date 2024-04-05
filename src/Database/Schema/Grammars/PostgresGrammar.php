@@ -27,7 +27,7 @@ class PostgresGrammar extends PostgresGrammarBase
         foreach ($blueprint->getChangedColumns() as $column) {
             $changes = ['type '.$this->getType($column).$this->modifyCollate($blueprint, $column)];
 
-            $oldColum = new Fluent($prevColumns->where('name', $name)->first());
+            $oldColumn = new Fluent($oldColumns->where('name', $column->name)->first());
             foreach ($this->modifiers as $modifier) {
                 if ($modifier === 'Collate') {
                     continue;

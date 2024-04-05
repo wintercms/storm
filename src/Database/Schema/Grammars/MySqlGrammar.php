@@ -33,7 +33,7 @@ class MySqlGrammar extends MySqlGrammarBase
                 $this->getType($column)
             );
 
-            $oldColum = new Fluent($prevColumns->where('name', $name)->first());
+            $oldColumn = new Fluent($oldColumns->where('name', $column->name)->first());
             $columns[] = $this->addLegacyModifiers($sql, $blueprint, $column, $oldColumn);
         }
 

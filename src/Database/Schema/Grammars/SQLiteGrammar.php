@@ -107,22 +107,26 @@ class SQLiteGrammar extends SQLiteGrammarBase
             array_merge(
                 [
                     $foreignKeyConstraintsEnabled ? $this->compileDisableForeignKeyConstraints() : null,
-                    sprintf('create table %s (%s%s%s)',
+                    sprintf(
+                        'create table %s (%s%s%s)',
                         $tempTable,
                         implode(', ', $columns),
                         $this->addForeignKeys($foreignKeys),
                         $autoIncrementColumn ? '' : $this->addPrimaryKeys($primary->first())
                     ),
-                    sprintf('insert into %s (%s) select %s from %s',
+                    sprintf(
+                        'insert into %s (%s) select %s from %s',
                         $tempTable,
                         $columnNames,
                         $columnNames,
                         $table
                     ),
-                    sprintf('drop table %s',
+                    sprintf(
+                        'drop table %s',
                         $table
                     ),
-                    sprintf('alter table %s rename to %s',
+                    sprintf(
+                        'alter table %s rename to %s',
                         $tempTable,
                         $table
                     ),

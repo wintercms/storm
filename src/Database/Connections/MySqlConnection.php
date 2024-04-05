@@ -4,8 +4,8 @@ use PDO;
 use Illuminate\Database\Schema\MySqlBuilder;
 use Illuminate\Database\Query\Processors\MySqlProcessor;
 
-use Winter\Storm\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
+use Winter\Storm\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
