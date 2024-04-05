@@ -25,7 +25,8 @@ class MySqlGrammar extends MySqlGrammarBase
         $oldColumns = collect($connection->getSchemaBuilder()->getColumns($blueprint->getTable()));
 
         foreach ($blueprint->getChangedColumns() as $column) {
-            $sql = sprintf('%s %s%s %s',
+            $sql = sprintf(
+                '%s %s%s %s',
                 is_null($column->renameTo) ? 'modify' : 'change',
                 $this->wrap($column),
                 is_null($column->renameTo) ? '' : ' '.$this->wrap($column->renameTo),
@@ -51,5 +52,4 @@ class MySqlGrammar extends MySqlGrammarBase
 
         return $sql;
     }
-
 }

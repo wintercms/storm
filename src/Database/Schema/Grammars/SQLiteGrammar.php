@@ -55,7 +55,9 @@ class SQLiteGrammar extends SQLiteGrammarBase
                         $columnNames[] = $name;
                     }
 
-                    return $this->addModifiers($name.' '.$column['type'], $blueprint,
+                    return $this->addModifiers(
+                        $name.' '.$column['type'],
+                        $blueprint,
                         new ColumnDefinition([
                             'change' => true,
                             'type' => $column['type_name'],
@@ -101,7 +103,8 @@ class SQLiteGrammar extends SQLiteGrammarBase
 
         $foreignKeyConstraintsEnabled = $connection->scalar('pragma foreign_keys');
 
-        return array_filter(array_merge([
+        return array_filter(array_merge(
+        [
             $foreignKeyConstraintsEnabled ? $this->compileDisableForeignKeyConstraints() : null,
             sprintf('create table %s (%s%s%s)',
                 $tempTable,

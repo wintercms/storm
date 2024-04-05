@@ -49,5 +49,4 @@ class PostgresGrammar extends PostgresGrammarBase
 
         return 'alter table '.$this->wrapTable($blueprint).' '.implode(', ', $columns);
     }
-
 }

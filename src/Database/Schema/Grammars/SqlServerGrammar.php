@@ -25,7 +25,8 @@ class SqlServerGrammar extends SqlServerGrammarBase
         $oldColumns = collect($connection->getSchemaBuilder()->getColumns($blueprint->getTable()));
 
         foreach ($blueprint->getChangedColumns() as $column) {
-            $sql = sprintf('alter table %s alter column %s %s',
+            $sql = sprintf(
+                'alter table %s alter column %s %s',
                 $this->wrapTable($blueprint),
                 $this->wrap($column),
                 $this->getType($column)
