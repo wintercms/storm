@@ -5,9 +5,11 @@ namespace Winter\Storm\Tests\Database\Schema\Grammars;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\ForeignIdColumnDefinition;
 use Winter\Storm\Database\Schema\Grammars\MySqlGrammar;
 use Mockery as m;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class MySqlSchemaGrammarTest extends TestCase
@@ -1274,6 +1276,32 @@ class MySqlSchemaGrammarTest extends TestCase
 
         $this->assertCount(1, $statements);
         $this->assertSame("alter table `users` add `foo` varchar(255) not null comment 'Escape \\' when using words like it\\'s'", $statements[0]);
+    }
+
+    public function testChangingColumn()
+    {
+        $blueprint = new Blueprint('users');
+        $blueprint->string('name')->nullable();
+
+        $connection = $this->getConnection();
+        $grammar = $this->getGrammar();
+
+        $schemaBuilder = m::mock(Builder::class);
+        $schemaBuilder->shouldReceive('getColumns')->once()->andReturn($blueprint->getColumns());
+
+        $connection->shouldReceive('getSchemaBuilder')->once()->andReturn($schemaBuilder);
+
+        $statements = $blueprint->toSql($connection, $grammar);
+
+        $this->assertCount(1, $statements);
+        $this->assertSame('alter table `users` add `name` varchar(255) null', $statements[0]);
+
+        $changeBlueprint = new Blueprint('users');
+        $changeBlueprint->string('name')->default('admin')->change();
+        $statements = $changeBlueprint->toSql($connection, $grammar);
+
+        $this->assertCount(1, $statements);
+        $this->assertSame("alter table `users` modify `name` varchar(255) null default 'admin'", $statements[0]);
     }
 
     public function testCreateDatabase()
