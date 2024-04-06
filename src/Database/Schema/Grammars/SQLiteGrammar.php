@@ -16,6 +16,10 @@ class SQLiteGrammar extends SQLiteGrammarBase
     /**
      * Compile a change column command into a series of SQL statements.
      *
+     * Starting with Laravel 11, previous column attributes do not persist when changing a column.
+     * This restores Laravel previous behavior where existing column attributes are kept
+     * unless they get changed by the new Blueprint.
+     *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
      * @param  \Illuminate\Support\Fluent  $command
      * @param  \Illuminate\Database\Connection  $connection
@@ -32,47 +36,37 @@ class SQLiteGrammar extends SQLiteGrammarBase
         $columnNames = [];
         $autoIncrementColumn = null;
 
+        $oldColumns = collect($connection->getSchemaBuilder()->getColumns($blueprint->getTable()));
+
         $columns = collect($schema->getColumns($table))
-            ->map(function ($column) use ($blueprint, $changedColumns, &$columnNames, &$autoIncrementColumn) {
+            ->map(function ($column) use ($blueprint, $changedColumns, &$columnNames, &$autoIncrementColumn, $oldColumns) {
                 $column = $changedColumns->first(fn ($col) => $col->name === $column['name'], $column);
 
-                if ($column instanceof Fluent) {
-                    $name = $this->wrap($column);
-                    $autoIncrementColumn = $column->autoIncrement ? $column->name : $autoIncrementColumn;
-
-                    if (is_null($column->virtualAs) && is_null($column->virtualAsJson) &&
-                        is_null($column->storedAs) && is_null($column->storedAsJson)) {
-                        $columnNames[] = $name;
-                    }
-
-                    return $this->addModifiers($name.' '.$this->getType($column), $blueprint, $column);
-                } else {
-                    $name = $this->wrap($column['name']);
-                    $autoIncrementColumn = $column['auto_increment'] ? $column['name'] : $autoIncrementColumn;
-                    $isGenerated = ! is_null($column['generation']);
-
-                    if (! $isGenerated) {
-                        $columnNames[] = $name;
-                    }
-
-                    return $this->addModifiers(
-                        $name.' '.$column['type'],
-                        $blueprint,
-                        new ColumnDefinition([
-                            'change' => true,
-                            'type' => $column['type_name'],
-                            'nullable' => $column['nullable'],
-                            'default' => $column['default'] ? new Expression($column['default']) : null,
-                            'autoIncrement' => $column['auto_increment'],
-                            'collation' => $column['collation'],
-                            'comment' => $column['comment'],
-                            'virtualAs' => $isGenerated && $column['generation']['type'] === 'virtual'
-                                ? $column['generation']['expression'] : null,
-                            'storedAs' => $isGenerated && $column['generation']['type'] === 'stored'
-                                ? $column['generation']['expression'] : null,
-                        ])
-                    );
+                if (! $column instanceof Fluent) {
+                    $column = new Fluent($column);
                 }
+
+                $name = $this->wrap($column);
+                $autoIncrementColumn = $column->autoIncrement ? $column->name : $autoIncrementColumn;
+
+                if (is_null($column->virtualAs) && is_null($column->virtualAsJson) &&
+                    is_null($column->storedAs) && is_null($column->storedAsJson) &&
+                    is_null($column->generation)
+                ) {
+                    $columnNames[] = $name;
+                }
+
+                $oldColumn = $oldColumns->where('name', $column->name)->first();
+                $sql = $name.' '.$this->getType($column);
+
+                foreach ($this->modifiers as $modifier) {
+                    if (method_exists($this, $method = "modify{$modifier}")) {
+                        $mod = strtolower($modifier);
+                        $col = isset($oldColumn->{$mod}) ? $oldColumn : $column;
+                        $sql .= $this->{$method}($blueprint, $col);
+                    }
+                }
+                return $sql;
             })->all();
 
         $foreignKeys = collect($schema->getForeignKeys($table))->map(fn ($foreignKey) => new ForeignKeyDefinition([
