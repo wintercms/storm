@@ -78,14 +78,9 @@ parameters:
 				- "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation::(getForeignKey|select|with(Default|Pivot|Timestamps))\\(\\)\\.$#"
 				- "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model::((un)?bind(Deferred|EventOnce)|fireEvent|getRelationDefinition|newRelationPivot|reloadRelations)\\(\\)\\.$#"
 				- "#^Call to an undefined method Illuminate\\\\Database\\\\Query\\\\Builder::lists\\(\\)\\.$#"
-				- "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Attach(Many|One)::getRelationExistenceQueryForSelfJoin\\(\\)\\.$#"
+				- "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\(Attach|BelongsTo)(Many|One)::(flushDuplicateCache|getRelationExistenceQueryForSelfJoin)\\(\\)\\.$#"
 				- "#^Call to private method delete\\(\\) of parent class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOne\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\.$#"
 			path: src/Database/Relations/*.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany::flushDuplicateCache\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/BelongsToMany.php
 
 		-
 			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::paginate\\(\\) expects array, int\\|null given\\.$#"
