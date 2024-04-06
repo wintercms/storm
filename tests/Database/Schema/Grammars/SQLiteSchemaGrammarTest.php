@@ -832,6 +832,35 @@ class SQLiteSchemaGrammarTest extends TestCase
         $this->assertSame('create table "products" ("price" integer not null, "discounted_virtual" integer as ("price" - 5), "discounted_stored" integer as ("price" - 5) stored)', $statements[0]);
     }
 
+    public function testChangingColumn()
+    {
+        $blueprint = new Blueprint('users');
+        $blueprint->string('name')->nullable();
+
+        $connection = $this->getConnection();
+        $grammar = $this->getGrammar();
+
+        $schemaBuilder = m::mock(Builder::class);
+        $schemaBuilder->shouldReceive('getColumns')->andReturn($blueprint->getColumns());
+        $schemaBuilder->shouldReceive('getForeignKeys')->andReturn([]);
+        $schemaBuilder->shouldReceive('getIndexes')->andReturn([]);
+
+        $connection->shouldReceive('getSchemaBuilder')->andReturn($schemaBuilder);
+        $connection->shouldReceive('scalar')->andReturn('');
+
+        $statements = $blueprint->toSql($connection, $grammar);
+
+        $this->assertCount(1, $statements);
+        $this->assertSame('alter table "users" add column "name" varchar', $statements[0]);
+
+        $changeBlueprint = new Blueprint('users');
+        $changeBlueprint->string('name')->default('admin')->change();
+        $statements = $changeBlueprint->toSql($connection, $grammar);
+
+        $this->assertCount(4, $statements);
+        $this->assertStringContainsString("varchar default 'admin'", $statements[0]);
+    }
+
     public function testGrammarsAreMacroable()
     {
         // compileReplace macro.

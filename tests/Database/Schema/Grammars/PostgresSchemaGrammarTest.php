@@ -1164,9 +1164,9 @@ class PostgresSchemaGrammarTest extends TestCase
         $grammar = $this->getGrammar();
 
         $schemaBuilder = m::mock(Builder::class);
-        $schemaBuilder->shouldReceive('getColumns')->once()->andReturn($blueprint->getColumns());
+        $schemaBuilder->shouldReceive('getColumns')->andReturn($blueprint->getColumns());
 
-        $connection->shouldReceive('getSchemaBuilder')->once()->andReturn($schemaBuilder);
+        $connection->shouldReceive('getSchemaBuilder')->andReturn($schemaBuilder);
 
         $statements = $blueprint->toSql($connection, $grammar);
 
