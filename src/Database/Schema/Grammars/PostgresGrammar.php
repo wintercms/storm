@@ -11,7 +11,7 @@ class PostgresGrammar extends PostgresGrammarBase
 {
     /**
      * Compile a change column command into a series of SQL statements.
-     * 
+     *
      * Starting with Laravel 11, previous column attributes do not persist when changing a column.
      * This restores Laravel previous behavior where existing column attributes are kept
      * unless they get changed by the new Blueprint.
