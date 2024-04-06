@@ -43,15 +43,27 @@ class SQLiteGrammar extends SQLiteGrammarBase
                 $column = $changedColumns->first(fn ($col) => $col->name === $column['name'], $column);
 
                 if (! $column instanceof Fluent) {
-                    $column = new Fluent($column);
+                    $isGenerated = ! is_null($column['generation']);
+                    $column = new ColumnDefinition([
+                        'change' => true,
+                        'type' => $column['type_name'],
+                        'nullable' => $column['nullable'],
+                        'default' => $column['default'] ? new Expression($column['default']) : null,
+                        'autoIncrement' => $column['auto_increment'],
+                        'collation' => $column['collation'],
+                        'comment' => $column['comment'],
+                        'virtualAs' => $isGenerated && $column['generation']['type'] === 'virtual'
+                        ? $column['generation']['expression'] : null,
+                        'storedAs' => $isGenerated && $column['generation']['type'] === 'stored'
+                        ? $column['generation']['expression'] : null,
+                    ]);
                 }
 
                 $name = $this->wrap($column);
                 $autoIncrementColumn = $column->autoIncrement ? $column->name : $autoIncrementColumn;
 
                 if (is_null($column->virtualAs) && is_null($column->virtualAsJson) &&
-                    is_null($column->storedAs) && is_null($column->storedAsJson) &&
-                    is_null($column->generation)
+                    is_null($column->storedAs) && is_null($column->storedAsJson)
                 ) {
                     $columnNames[] = $name;
                 }
