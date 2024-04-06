@@ -1,17 +1,16 @@
 <?php
 
-namespace Winter\Storm\Database\Schema\Grammars;
+namespace Winter\Storm\Database\Schema\Grammars\Concerns;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Grammars\PostgresGrammar as PostgresGrammarBase;
 use Illuminate\Support\Fluent;
 
-class PostgresGrammar extends PostgresGrammarBase
+trait MySqlBasedGrammar
 {
     /**
      * Compile a change column command into a series of SQL statements.
-     * 
+     *
      * Starting with Laravel 11, previous column attributes do not persist when changing a column.
      * This restores Laravel previous behavior where existing column attributes are kept
      * unless they get changed by the new Blueprint.
@@ -29,26 +28,23 @@ class PostgresGrammar extends PostgresGrammarBase
         $oldColumns = collect($connection->getSchemaBuilder()->getColumns($blueprint->getTable()));
 
         foreach ($blueprint->getChangedColumns() as $column) {
-            $changes = ['type '.$this->getType($column).$this->modifyCollate($blueprint, $column)];
+            $sql = sprintf(
+                '%s %s%s %s',
+                is_null($column->renameTo) ? 'modify' : 'change',
+                $this->wrap($column),
+                is_null($column->renameTo) ? '' : ' '.$this->wrap($column->renameTo),
+                $this->getType($column)
+            );
 
             $oldColumn = $oldColumns->where('name', $column->name)->first();
             foreach ($this->modifiers as $modifier) {
-                if ($modifier === 'Collate') {
-                    continue;
-                }
-
                 if (method_exists($this, $method = "modify{$modifier}")) {
                     $mod = strtolower($modifier);
                     $col = isset($oldColumn->{$mod}) ? $oldColumn : $column;
-                    $constraints = (array) $this->{$method}($blueprint, $col);
-
-                    foreach ($constraints as $constraint) {
-                        $changes[] = $constraint;
-                    }
+                    $sql .= $this->{$method}($blueprint, $col);
                 }
             }
-
-            $columns[] = implode(', ', $this->prefixArray('alter column '.$this->wrap($column), $changes));
+            $columns[] = $sql;
         }
 
         return 'alter table '.$this->wrapTable($blueprint).' '.implode(', ', $columns);

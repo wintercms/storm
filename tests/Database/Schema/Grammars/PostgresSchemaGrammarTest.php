@@ -1155,6 +1155,36 @@ class PostgresSchemaGrammarTest extends TestCase
         $this->assertSame('alter table "geo" add column "coordinates" geometry(multipolygon) not null', $statements[0]);
     }
 
+    public function testChangingColumn()
+    {
+        $blueprint = new Blueprint('users');
+        $blueprint->string('name')->nullable();
+
+        $connection = $this->getConnection();
+        $grammar = $this->getGrammar();
+
+        $schemaBuilder = m::mock(Builder::class);
+        $schemaBuilder->shouldReceive('getColumns')->once()->andReturn($blueprint->getColumns());
+
+        $connection->shouldReceive('getSchemaBuilder')->once()->andReturn($schemaBuilder);
+
+        $statements = $blueprint->toSql($connection, $grammar);
+
+        $this->assertCount(1, $statements);
+        $this->assertSame('alter table "users" add column "name" varchar(255) null', $statements[0]);
+
+        $changeBlueprint = new Blueprint('users');
+        $changeBlueprint->string('name')->default('admin')->change();
+        $statements = $changeBlueprint->toSql($connection, $grammar);
+
+        $this->assertCount(2, $statements);
+
+        $parts = explode(', ', $statements[0]);
+        $this->assertSame('alter table "users" alter column "name" type varchar(255)', $parts[0]);
+        $this->assertSame('alter column "name"  null', $parts[1]);
+        $this->assertSame("alter column \"name\" set default 'admin'", $parts[2]);
+    }
+
     public function testCreateDatabase()
     {
         $connection = $this->getConnection();

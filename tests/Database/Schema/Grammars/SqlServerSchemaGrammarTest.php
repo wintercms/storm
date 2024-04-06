@@ -862,6 +862,33 @@ class SqlServerSchemaGrammarTest extends TestCase
         $this->assertSame('alter table "products" add "price" int not null, "discounted_virtual" as (price - 5), "discounted_stored" as (price - 5) persisted', $statements[0]);
     }
 
+    public function testChangingColumn()
+    {
+        $blueprint = new Blueprint('users');
+        $blueprint->string('name')->nullable();
+
+        $connection = $this->getConnection();
+        $grammar = $this->getGrammar();
+
+        $schemaBuilder = m::mock(Builder::class);
+        $schemaBuilder->shouldReceive('getColumns')->once()->andReturn($blueprint->getColumns());
+
+        $connection->shouldReceive('getSchemaBuilder')->once()->andReturn($schemaBuilder);
+
+        $statements = $blueprint->toSql($connection, $grammar);
+
+        $this->assertCount(1, $statements);
+        $this->assertSame('alter table "users" add "name" nvarchar(255) null', $statements[0]);
+
+        $changeBlueprint = new Blueprint('users');
+        $changeBlueprint->string('name')->default('admin')->change();
+        $statements = $changeBlueprint->toSql($connection, $grammar);
+
+        $this->assertCount(3, $statements);
+        $this->assertSame('alter table "users" alter column "name" nvarchar(255) null', $statements[1]);
+        $this->assertSame('alter table "users" add default \'admin\' for "name"', $statements[2]);
+    }
+
     public function testGrammarsAreMacroable()
     {
         // compileReplace macro.
