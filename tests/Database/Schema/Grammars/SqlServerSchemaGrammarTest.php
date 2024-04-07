@@ -887,6 +887,13 @@ class SqlServerSchemaGrammarTest extends TestCase
         $this->assertCount(3, $statements);
         $this->assertSame('alter table "users" alter column "name" nvarchar(255) null', $statements[1]);
         $this->assertSame('alter table "users" add default \'admin\' for "name"', $statements[2]);
+
+        $otherChangeBlueprint = new Blueprint('users');
+        $otherChangeBlueprint->string('name')->nullable(false)->change();
+        $statements = $otherChangeBlueprint->toSql($connection, $grammar);
+
+        $this->assertCount(2, $statements);
+        $this->assertSame('alter table "users" alter column "name" nvarchar(255) not null', $statements[1]);
     }
 
     public function testGrammarsAreMacroable()

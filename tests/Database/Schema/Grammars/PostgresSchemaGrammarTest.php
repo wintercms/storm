@@ -1183,6 +1183,16 @@ class PostgresSchemaGrammarTest extends TestCase
         $this->assertSame('alter table "users" alter column "name" type varchar(255)', $parts[0]);
         $this->assertSame('alter column "name"  null', $parts[1]);
         $this->assertSame("alter column \"name\" set default 'admin'", $parts[2]);
+
+        $otherChangeBlueprint = new Blueprint('users');
+        $otherChangeBlueprint->string('name')->nullable(false)->change();
+        $statements = $otherChangeBlueprint->toSql($connection, $grammar);
+
+        $this->assertCount(2, $statements);
+
+        $parts = explode(', ', $statements[0]);
+        $this->assertSame('alter table "users" alter column "name" type varchar(255)', $parts[0]);
+        $this->assertSame('alter column "name" set not null', $parts[1]);
     }
 
     public function testCreateDatabase()

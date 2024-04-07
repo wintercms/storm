@@ -1302,6 +1302,13 @@ class MySqlSchemaGrammarTest extends TestCase
 
         $this->assertCount(1, $statements);
         $this->assertSame("alter table `users` modify `name` varchar(255) null default 'admin'", $statements[0]);
+
+        $otherChangeBlueprint = new Blueprint('users');
+        $otherChangeBlueprint->string('name')->nullable(false)->change();
+        $statements = $otherChangeBlueprint->toSql($connection, $grammar);
+
+        $this->assertCount(1, $statements);
+        $this->assertSame("alter table `users` modify `name` varchar(255) not null", $statements[0]);
     }
 
     public function testCreateDatabase()

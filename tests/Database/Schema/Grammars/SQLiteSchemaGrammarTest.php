@@ -859,6 +859,13 @@ class SQLiteSchemaGrammarTest extends TestCase
 
         $this->assertCount(4, $statements);
         $this->assertStringContainsString("varchar default 'admin'", $statements[0]);
+
+        $otherChangeBlueprint = new Blueprint('users');
+        $otherChangeBlueprint->string('name')->nullable(false)->change();
+        $statements = $otherChangeBlueprint->toSql($connection, $grammar);
+
+        $this->assertCount(4, $statements);
+        $this->assertStringContainsString("varchar not null", $statements[0]);
     }
 
     public function testGrammarsAreMacroable()

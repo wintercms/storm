@@ -40,7 +40,7 @@ trait MySqlBasedGrammar
             foreach ($this->modifiers as $modifier) {
                 if (method_exists($this, $method = "modify{$modifier}")) {
                     $mod = strtolower($modifier);
-                    $col = isset($oldColumn->{$mod}) ? $oldColumn : $column;
+                    $col = isset($oldColumn->{$mod}) && !isset($column->{$mod}) ? $oldColumn : $column;
                     $sql .= $this->{$method}($blueprint, $col);
                 }
             }
