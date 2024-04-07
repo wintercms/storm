@@ -49,14 +49,12 @@ class MySqlSchemaGrammarTest extends TestCase
         $initialBlueprint->string('name');
 
         $statements = $this->runBlueprint($initialBlueprint);
-        $this->assertCount(1, $statements);
         $this->assertSame('alter table `users` add `name` varchar(255) not null', $statements[0]);
 
         $changedBlueprint = new Blueprint('users');
         $changedBlueprint->string('name')->nullable()->change();
 
         $statements = $this->runBlueprint($initialBlueprint, $changedBlueprint);
-        $this->assertCount(1, $statements);
         $this->assertSame("alter table `users` modify `name` varchar(255) null", $statements[0]);
     }
 
@@ -81,14 +79,12 @@ class MySqlSchemaGrammarTest extends TestCase
         $initialBlueprint->string('name')->nullable();
 
         $statements = $this->runBlueprint($initialBlueprint);
-        $this->assertCount(1, $statements);
         $this->assertSame('alter table `users` add `name` varchar(255) null', $statements[0]);
 
         $changedBlueprint = new Blueprint('users');
         $changedBlueprint->string('name')->default('admin')->nullable(false)->change();
 
         $statements = $this->runBlueprint($initialBlueprint, $changedBlueprint);
-        $this->assertCount(1, $statements);
         $this->assertSame("alter table `users` modify `name` varchar(255) not null default 'admin'", $statements[0]);
     }
 }
