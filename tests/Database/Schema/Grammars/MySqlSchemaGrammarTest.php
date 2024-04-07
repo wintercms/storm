@@ -1,52 +1,24 @@
 <?php
 
-namespace Winter\Storm\Tests\Database\Schema\Grammars;
+namespace Tests\Database\Schema\Grammars;
 
-use Illuminate\Database\Connection;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Builder;
-use Illuminate\Database\Schema\ForeignIdColumnDefinition;
 use Winter\Storm\Database\Schema\Grammars\MySqlGrammar;
-use Mockery as m;
-use PDO;
-use PHPUnit\Framework\TestCase;
 
-class MySqlSchemaGrammarTest extends TestCase
+class MySqlSchemaGrammarTest extends \GrammarTestCase
 {
-    protected function tearDown(): void
+    public function setUp(): void
     {
-        m::close();
-    }
+        parent::setUp();
 
-    protected function setupConnection(Blueprint $blueprint)
-    {
-        $connection = m::mock(Connection::class);
-        $connection->shouldReceive('getSchemaBuilder')->andReturn($this->getSchemaBuilder($blueprint));
-        return $connection;
-    }
-
-    protected function getSchemaBuilder(Blueprint $blueprint)
-    {
-        $schemaBuilder = m::mock(Builder::class);
-        $schemaBuilder->shouldReceive('getColumns')->andReturn($blueprint->getColumns());
-
-        return $schemaBuilder;
-    }
-
-    protected function runBlueprint(Blueprint $initialBlueprint, Blueprint $blueprint = null)
-    {
-        $connection = $this->setupConnection($initialBlueprint);
-        if (is_null($blueprint)) {
-            $blueprint = $initialBlueprint;
-        }
-        return $blueprint->toSql($connection, new MySqlGrammar);
+        $this->grammar = new MySqlGrammar;
     }
 
     public function testNoInitialModifiersAddNullable()
     {
         $initialBlueprint = new Blueprint('users');
         $initialBlueprint->string('name');
+        $this->setupConnection($initialBlueprint);
 
         $statements = $this->runBlueprint($initialBlueprint);
         $this->assertSame('alter table `users` add `name` varchar(255) not null', $statements[0]);
@@ -54,7 +26,7 @@ class MySqlSchemaGrammarTest extends TestCase
         $changedBlueprint = new Blueprint('users');
         $changedBlueprint->string('name')->nullable()->change();
 
-        $statements = $this->runBlueprint($initialBlueprint, $changedBlueprint);
+        $statements = $this->runBlueprint($changedBlueprint);
         $this->assertSame("alter table `users` modify `name` varchar(255) null", $statements[0]);
     }
 
@@ -62,6 +34,7 @@ class MySqlSchemaGrammarTest extends TestCase
     {
         $initialBlueprint = new Blueprint('users');
         $initialBlueprint->string('name')->nullable();
+        $this->setupConnection($initialBlueprint);
 
         $statements = $this->runBlueprint($initialBlueprint);
         $this->assertSame('alter table `users` add `name` varchar(255) null', $statements[0]);
@@ -69,7 +42,7 @@ class MySqlSchemaGrammarTest extends TestCase
         $changedBlueprint = new Blueprint('users');
         $changedBlueprint->string('name')->default('admin')->change();
 
-        $statements = $this->runBlueprint($initialBlueprint, $changedBlueprint);
+        $statements = $this->runBlueprint($changedBlueprint);
         $this->assertSame("alter table `users` modify `name` varchar(255) null default 'admin'", $statements[0]);
     }
 
@@ -77,6 +50,7 @@ class MySqlSchemaGrammarTest extends TestCase
     {
         $initialBlueprint = new Blueprint('users');
         $initialBlueprint->string('name')->nullable();
+        $this->setupConnection($initialBlueprint);
 
         $statements = $this->runBlueprint($initialBlueprint);
         $this->assertSame('alter table `users` add `name` varchar(255) null', $statements[0]);
@@ -84,7 +58,7 @@ class MySqlSchemaGrammarTest extends TestCase
         $changedBlueprint = new Blueprint('users');
         $changedBlueprint->string('name')->default('admin')->nullable(false)->change();
 
-        $statements = $this->runBlueprint($initialBlueprint, $changedBlueprint);
+        $statements = $this->runBlueprint($changedBlueprint);
         $this->assertSame("alter table `users` modify `name` varchar(255) not null default 'admin'", $statements[0]);
     }
 }
