@@ -2,7 +2,6 @@
 
 use Winter\Storm\Database\MemoryCache;
 use Winter\Storm\Database\QueryBuilder;
-use Illuminate\Database\Connection as ConnectionBase;
 
 trait Connection
 {

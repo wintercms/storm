@@ -10,7 +10,7 @@ use Winter\Storm\Database\Query\Grammars\MariaDbGrammar as QueryGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class MariaDbConnection extends Connection
+class MariaDbConnection extends \Illuminate\Database\MariaDbConnection
 {
     /**
      * Get the default query grammar instance.
