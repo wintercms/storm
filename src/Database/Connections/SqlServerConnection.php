@@ -12,8 +12,10 @@ use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class SqlServerConnection extends Connection
+class SqlServerConnection extends \Illuminate\Database\SqlServerConnection
 {
+    use Connection;
+
     /**
      * Execute a Closure within a transaction.
      *

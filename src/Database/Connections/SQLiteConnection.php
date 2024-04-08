@@ -9,8 +9,10 @@ use Winter\Storm\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class SQLiteConnection extends Connection
+class SQLiteConnection extends \Illuminate\Database\SQLiteConnection
 {
+    use Connection;
+
     /**
      * Get the default query grammar instance.
      *

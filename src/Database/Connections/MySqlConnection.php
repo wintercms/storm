@@ -10,8 +10,10 @@ use Winter\Storm\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class MySqlConnection extends Connection
+class MySqlConnection extends \Illuminate\Database\MySqlConnection
 {
+    use Connection;
+
     /**
      * Get the default query grammar instance.
      *

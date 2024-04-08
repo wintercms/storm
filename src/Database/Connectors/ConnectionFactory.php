@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Connectors\ConnectionFactory as ConnectionFactoryBase;
-use Winter\Storm\Database\Connections\Connection;
+use Illuminate\Database\Connection;
 use Winter\Storm\Database\Connections\MariaDbConnection;
 use Winter\Storm\Database\Connections\MySqlConnection;
 use Winter\Storm\Database\Connections\SQLiteConnection;

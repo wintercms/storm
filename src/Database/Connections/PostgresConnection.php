@@ -9,8 +9,10 @@ use Winter\Storm\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class PostgresConnection extends Connection
+class PostgresConnection extends \Illuminate\Database\PostgresConnection
 {
+    use Connection;
+
     /**
      * Get the default query grammar instance.
      *
