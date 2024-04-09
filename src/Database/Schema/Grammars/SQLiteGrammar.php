@@ -69,6 +69,9 @@ class SQLiteGrammar extends SQLiteGrammarBase
                 }
 
                 $oldColumn = $oldColumns->where('name', $column->name)->first();
+                if (!$oldColumn instanceof ColumnDefinition) {
+                    $oldColumn = new ColumnDefinition($oldColumn);
+                }
                 $sql = $name.' '.$this->getType($column);
 
                 foreach ($this->modifiers as $modifier) {

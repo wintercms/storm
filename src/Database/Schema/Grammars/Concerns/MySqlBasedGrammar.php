@@ -4,6 +4,7 @@ namespace Winter\Storm\Database\Schema\Grammars\Concerns;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Fluent;
 
 trait MySqlBasedGrammar
@@ -37,6 +38,10 @@ trait MySqlBasedGrammar
             );
 
             $oldColumn = $oldColumns->where('name', $column->name)->first();
+            if (!$oldColumn instanceof ColumnDefinition) {
+                $oldColumn = new ColumnDefinition($oldColumn);
+            }
+
             foreach ($this->modifiers as $modifier) {
                 if (method_exists($this, $method = "modify{$modifier}")) {
                     $mod = strtolower($modifier);

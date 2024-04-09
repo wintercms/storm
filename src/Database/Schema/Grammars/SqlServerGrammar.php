@@ -4,6 +4,7 @@ namespace Winter\Storm\Database\Schema\Grammars;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SqlServerGrammarBase;
 use Illuminate\Support\Fluent;
 
@@ -37,6 +38,9 @@ class SqlServerGrammar extends SqlServerGrammarBase
             );
 
             $oldColumn = $oldColumns->where('name', $column->name)->first();
+            if (!$oldColumn instanceof ColumnDefinition) {
+                $oldColumn = new ColumnDefinition($oldColumn);
+            }
 
             foreach ($this->modifiers as $modifier) {
                 if (method_exists($this, $method = "modify{$modifier}")) {
