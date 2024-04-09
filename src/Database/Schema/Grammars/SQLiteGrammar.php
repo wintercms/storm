@@ -147,4 +147,13 @@ class SQLiteGrammar extends SQLiteGrammarBase
             )
         );
     }
+
+    public function getDefaultValue($value)
+    {
+        if (is_string($value)) {
+            $value = preg_replace('#\'#', '', $value);
+        }
+
+        return parent::getDefaultValue($value);
+    }
 }

@@ -55,4 +55,13 @@ class SqlServerGrammar extends SqlServerGrammarBase
 
         return $changes;
     }
+
+    public function getDefaultValue($value)
+    {
+        if (is_string($value)) {
+            $value = preg_replace('#\'#', '', $value);
+        }
+
+        return parent::getDefaultValue($value);
+    }
 }

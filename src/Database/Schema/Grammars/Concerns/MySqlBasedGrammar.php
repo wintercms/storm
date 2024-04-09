@@ -54,4 +54,13 @@ trait MySqlBasedGrammar
 
         return 'alter table '.$this->wrapTable($blueprint).' '.implode(', ', $columns);
     }
+
+    public function getDefaultValue($value)
+    {
+        if (is_string($value)) {
+            $value = preg_replace('#\'#', '', $value);
+        }
+
+        return parent::getDefaultValue($value);
+    }
 }
