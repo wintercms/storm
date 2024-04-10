@@ -4,6 +4,7 @@ use PDO;
 use Illuminate\Database\Schema\MariaDbBuilder;
 use Illuminate\Database\Query\Processors\MariaDbProcessor;
 
+use Winter\Storm\Database\PDO\MySqlDriver;
 use Winter\Storm\Database\Schema\Grammars\MariaDbGrammar as SchemaGrammar;
 use Winter\Storm\Database\Query\Grammars\MariaDbGrammar as QueryGrammar;
 
@@ -72,5 +73,15 @@ class MariaDbConnection extends \Illuminate\Database\MariaDbConnection
                 is_int($value) || is_float($value) ? PDO::PARAM_INT : PDO::PARAM_STR
             );
         }
+    }
+
+    /**
+     * Get the Doctrine DBAL driver.
+     *
+     * @return \Winter\Storm\Database\PDO\MySqlDriver
+     */
+    protected function getDoctrineDriver()
+    {
+        return new MySqlDriver;
     }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Database\Query\Processors\SQLiteProcessor;
 
+use Winter\Storm\Database\PDO\SQLiteDriver;
 use Winter\Storm\Database\Query\Grammars\SQLiteGrammar as QueryGrammar;
 use Winter\Storm\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
 
@@ -55,5 +56,15 @@ class SQLiteConnection extends \Illuminate\Database\SQLiteConnection
     protected function getDefaultPostProcessor()
     {
         return new SQLiteProcessor;
+    }
+
+    /**
+     * Get the Doctrine DBAL driver.
+     *
+     * @return \Winter\Storm\Database\PDO\SQLiteDriver
+     */
+    protected function getDoctrineDriver()
+    {
+        return new SQLiteDriver;
     }
 }

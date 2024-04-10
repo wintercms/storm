@@ -3,6 +3,7 @@
 use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
 
+use Winter\Storm\Database\PDO\PostgresDriver;
 use Winter\Storm\Database\Query\Grammars\PostgresGrammar as QueryGrammar;
 use Winter\Storm\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
 
@@ -55,5 +56,15 @@ class PostgresConnection extends \Illuminate\Database\PostgresConnection
     protected function getDefaultPostProcessor()
     {
         return new PostgresProcessor;
+    }
+
+    /**
+     * Get the Doctrine DBAL driver.
+     *
+     * @return \Winter\Storm\Database\PDO\PostgresDriver
+     */
+    protected function getDoctrineDriver()
+    {
+        return new PostgresDriver;
     }
 }

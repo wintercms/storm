@@ -6,8 +6,9 @@ use Throwable;
 use Illuminate\Database\Schema\SqlServerBuilder;
 use Illuminate\Database\Query\Processors\SqlServerProcessor;
 
-use Winter\Storm\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
+use Winter\Storm\Database\PDO\SqlServerDriver;
 use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
+use Winter\Storm\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
@@ -101,5 +102,15 @@ class SqlServerConnection extends \Illuminate\Database\SqlServerConnection
     protected function getDefaultPostProcessor()
     {
         return new SqlServerProcessor;
+    }
+
+    /**
+     * Get the Doctrine DBAL driver.
+     *
+     * @return \Winter\Storm\Database\PDO\SqlServerDriver
+     */
+    protected function getDoctrineDriver()
+    {
+        return new SqlServerDriver;
     }
 }

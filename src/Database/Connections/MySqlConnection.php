@@ -4,6 +4,7 @@ use PDO;
 use Illuminate\Database\Schema\MySqlBuilder;
 use Illuminate\Database\Query\Processors\MySqlProcessor;
 
+use Winter\Storm\Database\PDO\MySqlDriver;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
 use Winter\Storm\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 
@@ -74,5 +75,15 @@ class MySqlConnection extends \Illuminate\Database\MySqlConnection
                 is_int($value) || is_float($value) ? PDO::PARAM_INT : PDO::PARAM_STR
             );
         }
+    }
+
+    /**
+     * Get the Doctrine DBAL driver.
+     *
+     * @return \Winter\Storm\Database\PDO\MySqlDriver
+     */
+    protected function getDoctrineDriver()
+    {
+        return new MySqlDriver;
     }
 }
