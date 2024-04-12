@@ -1,7 +1,6 @@
 <?php namespace Winter\Storm\Database\Relations\Concerns;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThroughBase;
 
 /*
  * Handles the constraints and filters defined by a relation.
