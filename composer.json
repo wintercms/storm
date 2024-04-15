@@ -60,7 +60,6 @@
         "orchestra/testbench": "^9.0",
         "larastan/larastan": "^2.8.1"
     },
-
     "suggest": {
         "ext-pdo_dblib": "Required to use MS SQL Server databases",
         "ext-pdo_mysql": "Required to use MySQL databases",
