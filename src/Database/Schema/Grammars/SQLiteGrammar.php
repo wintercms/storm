@@ -46,6 +46,7 @@ class SQLiteGrammar extends SQLiteGrammarBase
                     $isGenerated = ! is_null($column['generation']);
                     $column = new ColumnDefinition([
                         'change' => true,
+                        'name' => $column['name'],
                         'type' => $column['type_name'],
                         'nullable' => $column['nullable'],
                         'default' => $column['default'] ? new Expression($column['default']) : null,
