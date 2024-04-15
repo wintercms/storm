@@ -124,3 +124,4 @@ parameters:
 			paths:
 				- src/Validation/Factory.php
 				- src/Database/Connections/Connection.php
+				- src/Database/Traits/HasConnection.php

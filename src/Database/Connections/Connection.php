@@ -2,7 +2,9 @@
 
 use Winter\Storm\Database\Traits\HasConnection;
 
-class Connection
+abstract class Connection extends \Illuminate\Database\Connection
 {
     use HasConnection;
+
+    abstract protected function getDoctrineDriver();
 }
