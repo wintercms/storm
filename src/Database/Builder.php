@@ -120,15 +120,16 @@ class Builder extends BuilderModel
      *
      * This method also accepts the Laravel signature:
      *
-     * `paginate(int|null $perPage, array $columns, string $pageName, int|null $page)`
+     * `paginate(int|null $perPage, array $columns, string $pageName, int|null $page, \Closure|int|null $total)`
      *
      * @param int|null $perPage
      * @param array|int|null $currentPage
      * @param array|string $columns
      * @param string|int|null $pageName
+     * @param \Closure|int|null $total
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page', $total = 0)
+    public function paginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page', $total = null)
     {
         /*
          * Engage Laravel signature support
