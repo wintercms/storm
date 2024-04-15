@@ -153,7 +153,7 @@ class Builder extends BuilderModel
             $perPage = $this->model->getPerPage();
         }
 
-        $total = $this->toBase()->getCountForPagination();
+        $total = value($total) ?? $this->toBase()->getCountForPagination();
         $this->forPage((int) $currentPage, (int) $perPage);
 
         return $this->paginator($this->get($columns), $total, $perPage, $currentPage, [
