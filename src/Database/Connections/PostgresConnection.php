@@ -6,13 +6,14 @@ use Illuminate\Database\Query\Processors\PostgresProcessor;
 use Winter\Storm\Database\PDO\PostgresDriver;
 use Winter\Storm\Database\Query\Grammars\PostgresGrammar as QueryGrammar;
 use Winter\Storm\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
+use Winter\Storm\Database\Traits\HasConnection;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
 class PostgresConnection extends \Illuminate\Database\PostgresConnection
 {
-    use Connection;
+    use HasConnection;
 
     /**
      * Get the default query grammar instance.

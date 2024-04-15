@@ -6,13 +6,14 @@ use Illuminate\Database\Query\Processors\SQLiteProcessor;
 use Winter\Storm\Database\PDO\SQLiteDriver;
 use Winter\Storm\Database\Query\Grammars\SQLiteGrammar as QueryGrammar;
 use Winter\Storm\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
+use Winter\Storm\Database\Traits\HasConnection;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
 class SQLiteConnection extends \Illuminate\Database\SQLiteConnection
 {
-    use Connection;
+    use HasConnection;
 
     /**
      * Get the default query grammar instance.

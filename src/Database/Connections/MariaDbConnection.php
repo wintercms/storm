@@ -7,12 +7,15 @@ use Illuminate\Database\Query\Processors\MariaDbProcessor;
 use Winter\Storm\Database\PDO\MySqlDriver;
 use Winter\Storm\Database\Schema\Grammars\MariaDbGrammar as SchemaGrammar;
 use Winter\Storm\Database\Query\Grammars\MariaDbGrammar as QueryGrammar;
+use Winter\Storm\Database\Traits\HasConnection;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
 class MariaDbConnection extends \Illuminate\Database\MariaDbConnection
 {
+    use HasConnection;
+
     /**
      * Get the default query grammar instance.
      *
