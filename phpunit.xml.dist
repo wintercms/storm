@@ -2,7 +2,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     backupGlobals="false"
     backupStaticProperties="false"
-    cacheDirectory=".phpunit.cache"
+    cacheDirectory="tests/.phpunit.result.cache"
     colors="true"
     processIsolation="false"
     stopOnFailure="false"
