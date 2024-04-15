@@ -10,7 +10,8 @@ parameters:
         # Exclude PHP Parser files
         - src/Parse/PHP/ArrayFile.php
         - src/Parse/PHP/ArrayPrinter.php
-    disableSchemaScan: true
+        - src/Foundation/Console/KeyGenerateCommand.php
+        - src/Scaffold/GeneratorCommand.php
     databaseMigrationsPath:
         - src/Auth/Migrations
         - src/Database/Migrations
