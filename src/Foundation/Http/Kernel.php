@@ -25,6 +25,7 @@ class Kernel extends HttpKernel
     protected $middleware = [
         \Winter\Storm\Foundation\Http\Middleware\CheckForTrustedHost::class,
         \Winter\Storm\Foundation\Http\Middleware\CheckForTrustedProxies::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
         \Winter\Storm\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
     ];
 

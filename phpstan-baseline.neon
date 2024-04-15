@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getQualifiedFirstKeyName\\(\\)\\.$#"
+			count: 12
+			path: src/Database/Relations/Concerns/DefinedConstraints.php
+
+		-
 			message: "#^Call to an undefined method \\$this\\(Winter\\\\Storm\\\\Auth\\\\Models\\\\(Group|Role|User)\\)::getOriginal(Encryptable|Hash)Values\\(\\)\\.$#"
 			paths:
 				- src/Auth/Models/Group.php
