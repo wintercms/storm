@@ -157,4 +157,15 @@ class SQLiteGrammar extends SQLiteGrammarBase
 
         return parent::getDefaultValue($value);
     }
+
+    /**
+     * Create the column definition for a varchar type.
+     *
+     * @param  \Illuminate\Support\Fluent  $column
+     * @return string
+     */
+    protected function typeVarChar(Fluent $column)
+    {
+        return 'varchar';
+    }
 }
