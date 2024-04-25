@@ -123,6 +123,17 @@ class RelationsTest extends DbTestCase
         $this->assertEquals($data, $category->pivot->data);
     }
 
+    public function testAddWithPivotData()
+    {
+        $post = Post::first();
+        $this->assertEquals(1, count($post->categories));
+
+        $post->categories()->add($this->seeded['categories'][1], null, ['data'=>'Hello World!']);
+
+        $this->assertEquals(2, count($post->categories));
+        $this->assertEquals('Hello World!', $post->categories()->get()->last()->pivot->data);
+    }
+
     public function testTerms()
     {
         $post = Post::create([
@@ -189,7 +200,7 @@ class RelationsTest extends DbTestCase
 
     protected function createTables()
     {
-        $this->db->schema()->create('posts', function ($table) {
+        $this->getBuilder()->create('posts', function ($table) {
             $table->increments('id');
             $table->string('title')->default('');
             $table->boolean('published')->nullable();
@@ -197,14 +208,14 @@ class RelationsTest extends DbTestCase
             $table->timestamps();
         });
 
-        $this->db->schema()->create('terms', function ($table) {
+        $this->getBuilder()->create('terms', function ($table) {
             $table->increments('id');
             $table->string('type')->index();
             $table->string('name');
             $table->timestamps();
         });
 
-        $this->db->schema()->create('posts_terms', function ($table) {
+        $this->getBuilder()->create('posts_terms', function ($table) {
             $table->primary(['post_id', 'term_id']);
             $table->unsignedInteger('post_id');
             $table->unsignedInteger('term_id');
@@ -212,13 +223,13 @@ class RelationsTest extends DbTestCase
             $table->timestamps();
         });
 
-        $this->db->schema()->create('categories', function ($table) {
+        $this->getBuilder()->create('categories', function ($table) {
             $table->increments('id');
             $table->string('name');
             $table->timestamps();
         });
 
-        $this->db->schema()->create('posts_categories', function ($table) {
+        $this->getBuilder()->create('posts_categories', function ($table) {
             $table->primary(['post_id', 'category_id']);
             $table->unsignedInteger('post_id');
             $table->unsignedInteger('category_id');

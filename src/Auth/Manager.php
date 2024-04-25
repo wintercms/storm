@@ -1,9 +1,11 @@
 <?php namespace Winter\Storm\Auth;
 
-use Cookie;
-use Session;
-use Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Session\SessionManager;
 
 /**
  * Authentication manager
@@ -13,12 +15,12 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     use \Winter\Storm\Support\Traits\Singleton;
 
     /**
-     * @var Models\User The currently logged in user
+     * @var Models\User|null The currently logged in user
      */
     protected $user;
 
     /**
-     * @var Models\User The user that is impersonating the currently logged in user when applicable
+     * @var Models\User|null The user that is impersonating the currently logged in user when applicable
      */
     protected $impersonator;
 
@@ -73,11 +75,17 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     public $ipAddress = '0.0.0.0';
 
     /**
+     * Session manager instance.
+     */
+    protected SessionManager $sessionManager;
+
+    /**
      * Initializes the singleton
      */
     protected function init()
     {
         $this->ipAddress = Request::ip();
+        $this->sessionManager = App::make(SessionManager::class);
     }
 
     //
@@ -103,6 +111,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     protected function createUserModelQuery()
     {
         $model = $this->createUserModel();
+        /** @var \Winter\Storm\Database\Builder */
         $query = $model->newQuery();
         $this->extendUserQuery($query);
 
@@ -139,6 +148,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
 
         // Prevents revalidation of the password field
         // on subsequent saves to this model object
+        /** @phpstan-ignore-next-line */
         $user->password = null;
 
         if ($autoLogin) {
@@ -159,6 +169,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
 
     /**
      * Sets the user
+     * @phpstan-param Models\User $user
      */
     public function setUser(Authenticatable $user)
     {
@@ -244,6 +255,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
             }
         }
 
+        /** @var Models\User */
         $user = $query->first();
         if (!$this->validateUserModel($user)) {
             throw new AuthenticationException('A user was not found with the given credentials.');
@@ -338,7 +350,10 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
             });
         }
 
-        if (!$throttle = $query->first()) {
+        /** @var Models\Throttle|null */
+        $throttle = $query->first();
+
+        if (!$throttle) {
             $throttle = $this->createThrottleModel();
             $throttle->user_id = $userId;
             if ($ipAddress) {
@@ -361,7 +376,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      * @param array $credentials The user login details
      * @param bool $remember Store a non-expire cookie for the user
      * @throws AuthenticationException If authentication fails
-     * @return Models\User The successfully logged in user
+     * @return bool If authentication was successful
      */
     public function attempt(array $credentials = [], $remember = false)
     {
@@ -383,7 +398,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      * Validate a user's credentials, method used internally.
      *
      * @param  array  $credentials
-     * @return User
+     * @return Models\User|null
      */
     protected function validateInternal(array $credentials = [])
     {
@@ -413,7 +428,9 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         /*
          * If throttling is enabled, check they are not locked out first and foremost.
          */
-        if ($this->useThrottle) {
+        $useThrottle = $this->useThrottle;
+
+        if ($useThrottle) {
             $throttle = $this->findThrottleByLogin($credentials[$loginName], $this->ipAddress);
             $throttle->check();
         }
@@ -425,14 +442,15 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
             $user = $this->findUserByCredentials($credentials);
         }
         catch (AuthenticationException $ex) {
-            if ($this->useThrottle) {
+            if ($useThrottle) {
                 $throttle->addLoginAttempt();
             }
+            $user = null;
 
             throw $ex;
         }
 
-        if ($this->useThrottle) {
+        if ($useThrottle) {
             $throttle->clearLoginAttempts();
         }
 
@@ -469,7 +487,19 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
         Session::put($this->sessionKey, $toPersist);
 
         if ($remember) {
-            Cookie::queue(Cookie::forever($this->sessionKey, json_encode($toPersist)));
+            $config = $this->sessionManager->getSessionConfig();
+            Cookie::queue(
+                Cookie::forever(
+                    $this->sessionKey,
+                    json_encode($toPersist),
+                    $config['path'],
+                    $config['domain'],
+                    $config['secure'] ?? false,
+                    $config['http_only'] ?? true,
+                    false,
+                    $config['same_site'] ?? null
+                )
+            );
         }
     }
 
@@ -621,6 +651,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      * Logs in the given user and sets properties
      * in the session.
      * @throws AuthenticationException If the user is not activated and $this->requireActivation = true
+     * @phpstan-param Models\User $user
      */
     public function login(Authenticatable $user, $remember = true)
     {
@@ -656,7 +687,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      *
      * @param  mixed  $id
      * @param  bool   $remember
-     * @return \Illuminate\Contracts\Auth\Authenticatable
+     * @return \Illuminate\Contracts\Auth\Authenticatable|false
      */
     public function loginUsingId($id, $remember = false)
     {
@@ -714,7 +745,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      * Impersonates the given user and sets properties in the session but not the cookie.
      *
      * @param Models\User $impersonatee
-     * @throws Exception If the current user is not permitted to impersonate the provided user
+     * @throws AuthorizationException If the current user is not permitted to impersonate the provided user
      * @return void
      */
     public function impersonate($impersonatee)
@@ -828,7 +859,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
     /**
      * Get the original user doing the impersonation
      *
-     * @return mixed Returns the User model for the impersonator if able, false if not
+     * @return Models\User|false Returns the User model for the impersonator if able, `false` if not
      */
     public function getImpersonator()
     {
@@ -845,7 +876,10 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
             return $this->impersonator;
         }
 
-        return $this->impersonator = $this->createUserModel()->find($impersonatorId);
+        /** @var Models\User|false */
+        $impersonator = $this->createUserModel()->find($impersonatorId) ?? false;
+
+        return $this->impersonator = $impersonator;
     }
 
     /**

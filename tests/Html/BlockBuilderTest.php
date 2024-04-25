@@ -4,6 +4,8 @@ use Winter\Storm\Html\BlockBuilder;
 
 class BlockBuilderTest extends TestCase
 {
+    protected BlockBuilder $Block;
+
     public function setUp(): void
     {
         $this->Block = new BlockBuilder();
@@ -121,7 +123,7 @@ class BlockBuilderTest extends TestCase
             . '</div>',
             $this->Block->placeholder('test')
         );
-        $this->assertNull($this->Block->get('test'));
+        $this->assertEquals('', $this->Block->get('test'));
     }
 
     public function testResetBlocks()
@@ -137,7 +139,7 @@ class BlockBuilderTest extends TestCase
 
         $this->Block->reset();
 
-        $this->assertNull($this->Block->get('test'));
+        $this->assertEquals('', $this->Block->get('test'));
     }
 
     public function testNestedBlocks()
@@ -228,5 +230,14 @@ class BlockBuilderTest extends TestCase
             $this->Block->get('test2')
         );
         $this->assertEquals('In between', $content);
+    }
+
+    public function testGetBlock()
+    {
+        $result = $this->Block->get('non-existent-block');
+        $this->assertNull($result);
+
+        $result = $this->Block->get('non-existent-block', 'default value');
+        $this->assertEquals('default value', $result);
     }
 }

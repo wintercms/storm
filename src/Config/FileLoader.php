@@ -210,14 +210,15 @@ class FileLoader implements LoaderInterface
     /**
      * Get the configuration path for a namespace.
      *
-     * @param string $namespace
+     * @param string|null $namespace
      * @return string|null
      */
-    protected function getPath($namespace)
+    protected function getPath($namespace = null)
     {
         if (is_null($namespace)) {
             return $this->defaultPath;
-        } elseif (isset($this->hints[$namespace])) {
+        }
+        if (isset($this->hints[$namespace])) {
             return $this->hints[$namespace];
         }
 
@@ -237,10 +238,10 @@ class FileLoader implements LoaderInterface
     }
 
     /**
-     * Add a new namespace to the loader.
+     * Registers an alias for a given namespace.
      *
-     * @param  string  $namespace
-     * @param  string  $alias
+     * @param string $namespace
+     * @param string $alias
      * @return void
      */
     public function registerNamespaceAlias(string $namespace, string $alias)

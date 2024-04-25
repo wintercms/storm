@@ -1,13 +1,19 @@
 <?php namespace Winter\Storm\Auth\Models;
 
-use Str;
-use Hash;
-use Winter\Storm\Database\Model;
-use InvalidArgumentException;
 use Exception;
+use InvalidArgumentException;
+use Illuminate\Support\Facades\Hash;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Database\Model;
 
 /**
  * User model
+ *
+ * @property array|null $groups Related groups.
+ * @property \Winter\Storm\Auth\Models\Role|null $role Related role.
+ * @property array $permissions Permissions array.
+ * @method \Winter\Storm\Database\Relations\BelongsToMany groups() Group relation.
+ * @method \Winter\Storm\Database\Relations\BelongsTo role() Role relation.
  */
 class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 {
@@ -33,7 +39,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
      * @var array Relations
      */
     public $belongsToMany = [
-        'groups' => [Group::class, 'table' => 'users_groups']
+        'groups' => [Group::class, 'table' => 'users_groups'],
     ];
 
     public $belongsTo = [
@@ -48,12 +54,12 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     protected $dates = ['activated_at', 'last_login'];
 
     /**
-     * @var array The attributes that should be hidden for arrays.
+     * @var array<int, string> The attributes that should be hidden for arrays.
      */
     protected $hidden = ['password', 'reset_password_code', 'activation_code', 'persist_code'];
 
     /**
-     * @var array The attributes that aren't mass assignable.
+     * @var string[]|bool The attributes that aren't mass assignable.
      */
     protected $guarded = ['is_superuser', 'reset_password_code', 'activation_code', 'persist_code', 'role_id'];
 
@@ -146,17 +152,6 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     {
         $this->last_login = $this->freshTimestamp();
         $this->forceSave();
-    }
-
-    /**
-     * Delete the user groups
-     * @return bool
-     */
-    public function afterDelete()
-    {
-        if ($this->hasRelation('groups')) {
-            $this->groups()->detach();
-        }
     }
 
     //
@@ -341,7 +336,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     /**
      * Returns the role assigned to this user.
-     * @return Winter\Storm\Auth\Models\Role
+     * @return \Winter\Storm\Auth\Models\Role|null
      */
     public function getRole()
     {
@@ -404,8 +399,9 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     {
         if (!$this->mergedPermissions) {
             $permissions = [];
+            $role = $this->getRole();
 
-            if (($role = $this->getRole()) && is_array($role->permissions)) {
+            if ($role && is_array($role->permissions)) {
                 $permissions = array_merge($permissions, $role->permissions);
             }
 
@@ -558,12 +554,13 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     /**
      * Validate any set permissions.
-     * @param array $permissions
+     * @param string $permissions
      * @return void
      */
     public function setPermissionsAttribute($permissions)
     {
         $permissions = json_decode($permissions, true) ?: [];
+
         foreach ($permissions as $permission => &$value) {
             if (!in_array($value = (int) $value, $this->allowedPermissionsValues)) {
                 throw new InvalidArgumentException(sprintf(
@@ -632,7 +629,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     /**
      * Set the token value for the "remember me" session.
-     * @param  string $value
+     * @param  string|null $value
      * @return void
      */
     public function setRememberToken($value)

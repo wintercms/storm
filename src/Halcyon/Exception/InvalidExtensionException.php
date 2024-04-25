@@ -59,7 +59,7 @@ class InvalidExtensionException extends RuntimeException
     /**
      * Get the list of allowed extensions.
      *
-     * @return string
+     * @return array
      */
     public function getAllowedExtensions()
     {

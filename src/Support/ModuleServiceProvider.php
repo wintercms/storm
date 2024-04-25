@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Support;
 
+use Winter\Storm\Support\Str;
+use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Facades\File;
 use Illuminate\Support\ServiceProvider as ServiceProviderBase;
 
@@ -9,30 +11,37 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
      * @var \Winter\Storm\Foundation\Application The application instance.
      */
     protected $app;
-    
+
     /**
      * Bootstrap the application events.
      * @return void
      */
     public function boot()
     {
-        if ($module = $this->getModule(func_get_args())) {
-            /*
-             * Register paths for: config, translator, view
-             */
-            $modulePath = base_path() . '/modules/' . $module;
-            $this->loadViewsFrom($modulePath . '/views', $module);
-            $this->loadTranslationsFrom($modulePath . '/lang', $module);
-            $this->loadConfigFrom($modulePath . '/config', $module);
+        $module = strtolower($this->getModule());
+        $modulePath = base_path("modules/$module");
 
-            /*
-             * Add routes, if available
-             */
-            $routesFile = base_path() . '/modules/' . $module . '/routes.php';
-            if (File::isFile($routesFile)) {
-                $this->loadRoutesFrom($routesFile);
-            }
+        // Register paths for: config, translator, view
+        $this->loadViewsFrom($modulePath . '/views', $module);
+        $this->loadTranslationsFrom($modulePath . '/lang', $module);
+        $this->loadConfigFrom($modulePath . '/config', $module);
+
+        // Register routes if present
+        $routesFile = "$modulePath/routes.php";
+        if (File::isFile($routesFile)) {
+            $this->loadRoutesFrom($routesFile);
         }
+    }
+
+    /**
+     * Registers the Module service provider.
+     * @return void
+     */
+    public function register()
+    {
+        // Register this module with the application's ClassLoader for autoloading
+        $module = $this->getModule();
+        $this->app->make(ClassLoader::class)->autoloadPackage($module . '\\', "modules/" . strtolower($module) . '/');
     }
 
     /**
@@ -44,15 +53,18 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
         return [];
     }
 
-    public function getModule($args)
+    /**
+     * Gets the name of this module
+     */
+    public function getModule(): string
     {
-        return (isset($args[0]) and is_string($args[0])) ? $args[0] : null;
+        return Str::before(get_class($this), '\\');
     }
 
     /**
      * Registers a new console (artisan) command
-     * @param $key The command name
-     * @param $class The command class
+     * @param string $key The command name
+     * @param string $class The command class
      * @return void
      */
     public function registerConsoleCommand($key, $class)
@@ -74,6 +86,8 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
      */
     protected function loadConfigFrom($path, $namespace)
     {
-        $this->app['config']->package($namespace, $path);
+        /** @var \Winter\Storm\Config\Repository */
+        $config = $this->app['config'];
+        $config->package($namespace, $path);
     }
 }

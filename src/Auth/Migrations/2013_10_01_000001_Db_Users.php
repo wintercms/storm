@@ -23,6 +23,7 @@ class DbUsers extends Migration
             $table->timestamp('activated_at')->nullable();
             $table->timestamp('last_login')->nullable();
             $table->integer('role_id')->unsigned()->nullable()->index();
+            $table->boolean('is_superuser')->default(0);
             $table->timestamps();
         });
     }

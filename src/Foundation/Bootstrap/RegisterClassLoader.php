@@ -2,17 +2,14 @@
 
 use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Filesystem\Filesystem;
-use Illuminate\Contracts\Foundation\Application;
+use Winter\Storm\Foundation\Application;
 
 class RegisterClassLoader
 {
     /**
-     * Register The Winter Auto Loader
-     *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
-     * @return void
+     * Register the Winter class loader service.
      */
-    public function bootstrap(Application $app)
+    public function bootstrap(Application $app): void
     {
         $loader = new ClassLoader(
             new Filesystem,
@@ -23,11 +20,6 @@ class RegisterClassLoader
         $app->instance(ClassLoader::class, $loader);
 
         $loader->register();
-
-        $loader->addDirectories([
-            'modules',
-            'plugins'
-        ]);
 
         $app->after(function () use ($loader) {
             $loader->build();

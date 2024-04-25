@@ -1,22 +1,22 @@
 <?php namespace Winter\Storm\Foundation;
 
-use Str;
-use Config;
 use Closure;
 use Throwable;
+use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Collection;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
-use Illuminate\Foundation\ProviderRepository;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
-use Winter\Storm\Router\RoutingServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
+use Winter\Storm\Foundation\ProviderRepository;
+use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
 use Winter\Storm\Foundation\Providers\MakerServiceProvider;
-use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
-use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
+use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Support\Collection;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Support\Facades\Config;
 
 class Application extends ApplicationBase
 {
@@ -129,7 +129,7 @@ class Application extends ApplicationBase
 
         $exceptions = [];
         foreach ($bootstrappers as $bootstrapper) {
-            $this['events']->fire('bootstrapping: '.$bootstrapper, [$this]);
+            $this['events']->dispatch('bootstrapping: '.$bootstrapper, [$this]);
 
             // Defer any exceptions until after the application has been
             // bootstrapped so that the exception handler can run without issues
@@ -139,7 +139,7 @@ class Application extends ApplicationBase
                 $exceptions[] = $ex;
             }
 
-            $this['events']->fire('bootstrapped: '.$bootstrapper, [$this]);
+            $this['events']->dispatch('bootstrapped: '.$bootstrapper, [$this]);
         }
 
         if (!empty($exceptions)) {
@@ -161,6 +161,7 @@ class Application extends ApplicationBase
         $this->instance('path.temp', $this->tempPath());
         $this->instance('path.uploads', $this->uploadsPath());
         $this->instance('path.media', $this->mediaPath());
+        $this->instance('path.lang', $this->langPath());
     }
 
     /**
@@ -224,7 +225,7 @@ class Application extends ApplicationBase
     /**
      * Set the temp path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setTempPath($path)
     {
@@ -247,7 +248,7 @@ class Application extends ApplicationBase
     /**
      * Set the uploads path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setUploadsPath($path)
     {
@@ -270,7 +271,7 @@ class Application extends ApplicationBase
     /**
      * Set the media path for the application.
      *
-     * @return string
+     * @return static
      */
     public function setMediaPath($path)
     {
@@ -278,6 +279,25 @@ class Application extends ApplicationBase
         $this->mediaPath = $path;
         $this->instance('path.media', $path);
         return $this;
+    }
+
+    /**
+     * Normalize a relative or absolute path to a cache file.
+     *
+     * @param  string  $key
+     * @param  string  $default
+     * @return string
+     */
+    protected function normalizeCachePath($key, $default)
+    {
+        $path = parent::normalizeCachePath($key, $default);
+
+        $directory = pathinfo($path, PATHINFO_DIRNAME);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        return $path;
     }
 
     /**
@@ -311,7 +331,7 @@ class Application extends ApplicationBase
      */
     public function before($callback)
     {
-        return $this['router']->before($callback);
+        $this->make('router')->before($callback);
     }
 
     /**
@@ -322,7 +342,7 @@ class Application extends ApplicationBase
      */
     public function after($callback)
     {
-        return $this['router']->after($callback);
+        $this->make('router')->after($callback);
     }
 
     /**
@@ -361,18 +381,24 @@ class Application extends ApplicationBase
 
     /**
      * Returns true if a database connection is present.
-     * @return boolean
      */
-    public function hasDatabase()
+    public function hasDatabase(): bool
     {
         try {
             $this['db.connection']->getPdo();
-        }
-        catch (Throwable $ex) {
+        } catch (Throwable $ex) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the provided table is present on the default database connection.
+     */
+    public function hasDatabaseTable(string $table): bool
+    {
+        return $this->hasDatabase() && $this['db.connection']->getSchemaBuilder()->hasTable($table);
     }
 
     /**
@@ -384,18 +410,18 @@ class Application extends ApplicationBase
     {
         parent::setLocale($locale);
 
-        $this['events']->fire('locale.changed', [$locale]);
+        $this['events']->dispatch('locale.changed', [$locale]);
     }
 
     /**
      * Register all of the configured providers.
      *
-     * @var bool $isRetry If true, this is a second attempt without the cached packages.
+     * @param bool $isRetry If true, this is a second attempt without the cached packages.
      * @return void
      */
     public function registerConfiguredProviders($isRetry = false)
     {
-        $providers = Collection::make($this->config['app.providers'])
+        $providers = Collection::make($this->get('config')['app.providers'])
                         ->partition(function ($provider) {
                             return Str::startsWith($provider, 'Illuminate\\');
                         });
@@ -469,6 +495,7 @@ class Application extends ApplicationBase
             'hash'                 => [\Illuminate\Contracts\Hashing\Hasher::class],
             'translator'           => [\Illuminate\Translation\Translator::class, \Illuminate\Contracts\Translation\Translator::class],
             'log'                  => [\Illuminate\Log\Logger::class, \Psr\Log\LoggerInterface::class],
+            'mail.manager'         => [\Illuminate\Mail\MailManager::class, \Illuminate\Contracts\Mail\Factory::class],
             'mailer'               => [\Illuminate\Mail\Mailer::class, \Illuminate\Contracts\Mail\Mailer::class, \Illuminate\Contracts\Mail\MailQueue::class],
             'queue'                => [\Illuminate\Queue\QueueManager::class, \Illuminate\Contracts\Queue\Factory::class, \Illuminate\Contracts\Queue\Monitor::class],
             'queue.connection'     => [\Illuminate\Contracts\Queue\Queue::class],
@@ -569,5 +596,16 @@ class Application extends ApplicationBase
          * unnecessary paths but those tasks should be handled completely differently in Winter CMS.
          */
         return '';
+    }
+
+    /**
+     * This is a temporary fix for an issue with twig reflection.
+     * The full fix is here: https://github.com/twigphp/Twig/pull/3719
+     *
+     * @TODO: Remove this after Twig PR 3719 is merged.
+     */
+    public function __toString(): string
+    {
+        return get_called_class();
     }
 }

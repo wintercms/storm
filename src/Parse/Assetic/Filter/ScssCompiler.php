@@ -1,11 +1,11 @@
 <?php namespace Winter\Storm\Parse\Assetic\Filter;
 
-use Event;
 use Assetic\Filter\ScssphpFilter;
 use Assetic\Factory\AssetFactory;
 use Assetic\Contracts\Asset\AssetInterface;
 use Assetic\Contracts\Filter\HashableInterface;
 use Assetic\Contracts\Filter\DependencyExtractorInterface;
+use Winter\Storm\Support\Facades\Event;
 
 /**
  * SCSS Compiler Filter

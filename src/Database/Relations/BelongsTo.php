@@ -4,10 +4,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
 
+/**
+ * @phpstan-property \Winter\Storm\Database\Model $child
+ * @phpstan-property \Winter\Storm\Database\Model $parent
+ */
 class BelongsTo extends BelongsToBase
 {
-    use DeferOneOrMany;
-    use DefinedConstraints;
+    use Concerns\BelongsOrMorphsTo;
+    use Concerns\DeferOneOrMany;
+    use Concerns\DefinedConstraints;
 
     /**
      * @var string The "name" of the relationship.
@@ -30,8 +35,7 @@ class BelongsTo extends BelongsToBase
     {
         if ($sessionKey === null) {
             $this->associate($model);
-        }
-        else {
+        } else {
             $this->child->bindDeferred($this->relationName, $model, $sessionKey);
         }
     }
@@ -43,8 +47,7 @@ class BelongsTo extends BelongsToBase
     {
         if ($sessionKey === null) {
             $this->dissociate();
-        }
-        else {
+        } else {
             $this->child->unbindDeferred($this->relationName, $model, $sessionKey);
         }
     }
@@ -73,8 +76,7 @@ class BelongsTo extends BelongsToBase
 
             $this->associate($value);
             $this->child->setRelation($this->relationName, $value);
-        }
-        else {
+        } else {
             $this->child->setAttribute($this->getForeignKeyName(), $value);
             $this->child->reloadRelations($this->relationName);
         }

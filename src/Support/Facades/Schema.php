@@ -37,7 +37,7 @@ class Schema extends Facade
     {
         $builder = static::$app['db']->connection($name)->getSchemaBuilder();
 
-        static::$app['events']->fire('db.schema.getBuilder', [$builder]);
+        static::$app['events']->dispatch('db.schema.getBuilder', [$builder]);
 
         return $builder;
     }
@@ -45,7 +45,7 @@ class Schema extends Facade
     /**
      * Get a schema builder instance for the default connection.
      *
-     * @return \Illuminate\Database\Schema\Builder
+     * @return string
      */
     protected static function getFacadeAccessor()
     {

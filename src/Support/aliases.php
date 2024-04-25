@@ -99,7 +99,6 @@ class_alias(\Winter\Storm\Config\Repository::class, \October\Rain\Config\Reposit
 /**
  * Alias October\Rain\Cookie
  */
-class_alias(\Winter\Storm\Cookie\CookieValuePrefix::class, \October\Rain\Cookie\CookieValuePrefix::class);
 class_alias(\Winter\Storm\Cookie\Middleware\EncryptCookies::class, \October\Rain\Cookie\Middleware\EncryptCookies::class);
 
 /**
@@ -141,19 +140,19 @@ class_alias(\Winter\Storm\Database\Query\Grammars\SqlServerGrammar::class, \Octo
 class_alias(\Winter\Storm\Database\QueryBuilder::class, \October\Rain\Database\QueryBuilder::class);
 class_alias(\Winter\Storm\Database\Relations\AttachMany::class, \October\Rain\Database\Relations\AttachMany::class);
 class_alias(\Winter\Storm\Database\Relations\AttachOne::class, \October\Rain\Database\Relations\AttachOne::class);
-class_alias(\Winter\Storm\Database\Relations\AttachOneOrMany::class, \October\Rain\Database\Relations\AttachOneOrMany::class);
+class_alias(\Winter\Storm\Database\Relations\Concerns\AttachOneOrMany::class, \October\Rain\Database\Relations\AttachOneOrMany::class);
 class_alias(\Winter\Storm\Database\Relations\BelongsTo::class, \October\Rain\Database\Relations\BelongsTo::class);
 class_alias(\Winter\Storm\Database\Relations\BelongsToMany::class, \October\Rain\Database\Relations\BelongsToMany::class);
-class_alias(\Winter\Storm\Database\Relations\DeferOneOrMany::class, \October\Rain\Database\Relations\DeferOneOrMany::class);
-class_alias(\Winter\Storm\Database\Relations\DefinedConstraints::class, \October\Rain\Database\Relations\DefinedConstraints::class);
+class_alias(\Winter\Storm\Database\Relations\Concerns\DeferOneOrMany::class, \October\Rain\Database\Relations\DeferOneOrMany::class);
+class_alias(\Winter\Storm\Database\Relations\Concerns\DefinedConstraints::class, \October\Rain\Database\Relations\DefinedConstraints::class);
 class_alias(\Winter\Storm\Database\Relations\HasMany::class, \October\Rain\Database\Relations\HasMany::class);
 class_alias(\Winter\Storm\Database\Relations\HasManyThrough::class, \October\Rain\Database\Relations\HasManyThrough::class);
 class_alias(\Winter\Storm\Database\Relations\HasOne::class, \October\Rain\Database\Relations\HasOne::class);
-class_alias(\Winter\Storm\Database\Relations\HasOneOrMany::class, \October\Rain\Database\Relations\HasOneOrMany::class);
+class_alias(\Winter\Storm\Database\Relations\Concerns\HasOneOrMany::class, \October\Rain\Database\Relations\HasOneOrMany::class);
 class_alias(\Winter\Storm\Database\Relations\HasOneThrough::class, \October\Rain\Database\Relations\HasOneThrough::class);
 class_alias(\Winter\Storm\Database\Relations\MorphMany::class, \October\Rain\Database\Relations\MorphMany::class);
 class_alias(\Winter\Storm\Database\Relations\MorphOne::class, \October\Rain\Database\Relations\MorphOne::class);
-class_alias(\Winter\Storm\Database\Relations\MorphOneOrMany::class, \October\Rain\Database\Relations\MorphOneOrMany::class);
+class_alias(\Winter\Storm\Database\Relations\Concerns\MorphOneOrMany::class, \October\Rain\Database\Relations\MorphOneOrMany::class);
 class_alias(\Winter\Storm\Database\Relations\MorphTo::class, \October\Rain\Database\Relations\MorphTo::class);
 class_alias(\Winter\Storm\Database\Relations\MorphToMany::class, \October\Rain\Database\Relations\MorphToMany::class);
 class_alias(\Winter\Storm\Database\Relations\Relation::class, \October\Rain\Database\Relations\Relation::class);
@@ -305,7 +304,6 @@ class_alias(\Winter\Storm\Parse\Bracket::class, \October\Rain\Parse\Bracket::cla
 class_alias(\Winter\Storm\Parse\Ini::class, \October\Rain\Parse\Ini::class);
 class_alias(\Winter\Storm\Parse\Markdown::class, \October\Rain\Parse\Markdown::class);
 class_alias(\Winter\Storm\Parse\MarkdownData::class, \October\Rain\Parse\MarkdownData::class);
-class_alias(\Winter\Storm\Parse\Parsedown\Parsedown::class, \October\Rain\Parse\Parsedown\Parsedown::class);
 class_alias(\Winter\Storm\Parse\ParseServiceProvider::class, \October\Rain\Parse\ParseServiceProvider::class);
 class_alias(\Winter\Storm\Parse\Syntax\FieldParser::class, \October\Rain\Parse\Syntax\FieldParser::class);
 class_alias(\Winter\Storm\Parse\Syntax\Parser::class, \October\Rain\Parse\Syntax\Parser::class);

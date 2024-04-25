@@ -1,12 +1,19 @@
 <?php namespace Winter\Storm\Database\Models;
 
-use Db;
 use Carbon\Carbon;
-use Winter\Storm\Database\Model;
 use Exception;
+use Winter\Storm\Database\Model;
 
 /**
  * Deferred Binding Model
+ *
+ * @property string $master_type The class name of the master record.
+ * @property string $master_field The field name of the master record.
+ * @property string $slave_type The class name of the slave record.
+ * @property int $slave_id The ID of the slave record.
+ * @property array $pivot_data The pivot data recorded in the deferred binding data.
+ * @property string $session_key The session key that this deferred binding record belongs to.
+ * @property bool $is_bind If this record belonds to a bound record.
  *
  * @author Alexey Bobkov, Samuel Georges
  */
@@ -67,7 +74,7 @@ class DeferredBinding extends Model
     /**
      * Cancel all deferred bindings to this model.
      */
-    public static function cancelDeferredActions($masterType, $sessionKey)
+    public static function cancelDeferredActions(string $masterType, string $sessionKey): void
     {
         $records = self::where('master_type', $masterType)
             ->where('session_key', $sessionKey)
@@ -81,7 +88,7 @@ class DeferredBinding extends Model
     /**
      * Delete this binding and cancel is actions
      */
-    public function deleteCancel()
+    public function deleteCancel(): void
     {
         $this->deleteSlaveRecord();
         $this->delete();
@@ -90,7 +97,7 @@ class DeferredBinding extends Model
     /**
      * Clean up orphan bindings.
      */
-    public static function cleanUp($days = 5)
+    public static function cleanUp(int $days = 5): void
     {
         $records = self::where('created_at', '<', Carbon::now()->subDays($days)->toDateTimeString())->get();
 
@@ -102,7 +109,7 @@ class DeferredBinding extends Model
     /**
      * Logic to cancel a bindings action.
      */
-    protected function deleteSlaveRecord()
+    protected function deleteSlaveRecord(): void
     {
         /*
          * Try to delete unbound hasOne/hasMany records from the details table
@@ -137,8 +144,7 @@ class DeferredBinding extends Model
             if (!$relatedObj->$foreignKey) {
                 $relatedObj->delete();
             }
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             // Do nothing
         }
     }

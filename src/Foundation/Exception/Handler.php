@@ -1,21 +1,21 @@
 <?php namespace Winter\Storm\Foundation\Exception;
 
-use Log;
 use Closure;
-use Response;
 use Throwable;
 use ReflectionClass;
 use ReflectionFunction;
-use Winter\Storm\Exception\AjaxException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Winter\Storm\Exception\AjaxException;
 
 class Handler extends ExceptionHandler
 {
     /**
      * A list of the exception types that should not be reported.
      *
-     * @var array
+     * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
         \Winter\Storm\Exception\AjaxException::class,
@@ -54,7 +54,9 @@ class Handler extends ExceptionHandler
          *         }
          *     });
          */
-        if (app()->make('events')->fire('exception.beforeReport', [$throwable], true) === false) {
+        /** @var \Winter\Storm\Events\Dispatcher */
+        $events = app()->make('events');
+        if ($events->dispatch('exception.beforeReport', [$throwable], true) === false) {
             return;
         }
 
@@ -76,7 +78,7 @@ class Handler extends ExceptionHandler
          *         app('sentry')->captureException($throwable);
          *     });
          */
-        app()->make('events')->fire('exception.report', [$throwable]);
+        app()->make('events')->dispatch('exception.report', [$throwable]);
     }
 
     /**
@@ -84,7 +86,7 @@ class Handler extends ExceptionHandler
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Throwable  $throwable
-     * @return \Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Throwable  $throwable)
     {
@@ -99,7 +101,7 @@ class Handler extends ExceptionHandler
             return Response::make($response, $statusCode);
         }
 
-        if ($event = app()->make('events')->fire('exception.beforeRender', [$throwable, $statusCode, $request], true)) {
+        if ($event = app()->make('events')->dispatch('exception.beforeRender', [$throwable, $statusCode, $request], true)) {
             return Response::make($event, $statusCode);
         }
 
@@ -157,7 +159,7 @@ class Handler extends ExceptionHandler
      *
      * @param  \Throwable  $throwable
      * @param  bool  $fromConsole
-     * @return void
+     * @return mixed|null
      */
     protected function callCustomHandlers($throwable, $fromConsole = false)
     {
@@ -176,14 +178,14 @@ class Handler extends ExceptionHandler
             // at least some errors, and avoid errors with no data or not log writes.
             try {
                 $response = $handler($throwable, $code, $fromConsole);
+            } catch (Throwable $t) {
+                $response = $this->convertExceptionToResponse($t);
             }
-            catch (Throwable $t) {
-                $response = $this->convertThrowableToResponse($t);
-            }
+
             // If this handler returns a "non-null" response, we will return it so it will
             // get sent back to the browsers. Once the handler returns a valid response
             // we will cease iterating through them and calling these other handlers.
-            if (isset($response) && ! is_null($response)) {
+            if (isset($response)) {
                 return $response;
             }
         }
@@ -214,11 +216,24 @@ class Handler extends ExceptionHandler
         $parameters = $reflection->getParameters();
         $expected = $parameters[0];
 
-        try {
-            return (new ReflectionClass($expected->getType()->getName()))
-                ->isInstance($throwable);
-        } catch (\Throwable  $t) {
-            return false;
+        if ($expected->getType() instanceof \ReflectionNamedType) {
+            try {
+                return (new ReflectionClass($expected->getType()->getName()))
+                    ->isInstance($throwable);
+            } catch (\Throwable $t) {
+                return false;
+            }
+        } elseif ($expected->getType() instanceof \ReflectionUnionType) {
+            foreach ($expected->getType()->getTypes() as $type) {
+                try {
+                    return (new ReflectionClass($type->getName()))
+                        ->isInstance($throwable);
+                } catch (\Throwable $t) {
+                    return false;
+                }
+            }
         }
+
+        return false;
     }
 }

@@ -110,11 +110,11 @@ class Ini
      * Expands a single array property from traditional INI syntax.
      * If no key is given to the method, the entire array will be replaced.
      * @param  array   $array
-     * @param  string  $key
+     * @param  string|null  $key
      * @param  mixed   $value
      * @return array
      */
-    public function expandProperty(&$array, $key, $value)
+    public function expandProperty(array &$array, $key = null, $value = null)
     {
         if (is_null($key)) {
             return $array = $value;

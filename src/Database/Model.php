@@ -1,13 +1,15 @@
 <?php namespace Winter\Storm\Database;
 
+use Illuminate\Support\Facades\Cache;
 use Closure;
-use Winter\Storm\Support\Arr;
-use Winter\Storm\Support\Str;
-use Winter\Storm\Argon\Argon;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Illuminate\Database\Eloquent\Collection as CollectionBase;
 use DateTimeInterface;
 use Exception;
+use Illuminate\Database\Eloquent\Collection as CollectionBase;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Throwable;
+use Winter\Storm\Argon\Argon;
+use Winter\Storm\Support\Arr;
+use Winter\Storm\Support\Str;
 
 /**
  * Active Record base class.
@@ -15,19 +17,25 @@ use Exception;
  * Extends Eloquent with added extendability and deferred bindings.
  *
  * @author Alexey Bobkov, Samuel Georges
+ *
+ * @method static mixed extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
  */
-class Model extends EloquentModel
+class Model extends EloquentModel implements ModelInterface
 {
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
+    use Concerns\HidesAttributes;
+    use Traits\Purgeable;
     use \Winter\Storm\Support\Traits\Emitter;
-    use \Winter\Storm\Extension\ExtendableTrait;
+    use \Winter\Storm\Extension\ExtendableTrait {
+        addDynamicProperty as protected extendableAddDynamicProperty;
+    }
     use \Winter\Storm\Database\Traits\DeferredBinding;
 
     /**
-     * @var array Behaviors implemented by this model.
+     * @var string|array|null Extensions implemented by this class.
      */
-    public $implement;
+    public $implement = null;
 
     /**
      * @var array Make the model's attributes public so behaviors can modify them.
@@ -45,9 +53,19 @@ class Model extends EloquentModel
     protected $dates = [];
 
     /**
+     * @var array List of attributes which should not be saved to the database.
+     */
+    protected $purgeable = [];
+
+    /**
      * @var bool Indicates if duplicate queries from this model should be cached in memory.
      */
     public $duplicateCache = true;
+
+    /**
+     * @var bool Indicates if all string model attributes will be trimmed prior to saving.
+     */
+    public $trimStringAttributes = true;
 
     /**
      * @var array The array of models booted events.
@@ -66,6 +84,54 @@ class Model extends EloquentModel
         $this->extendableConstruct();
 
         $this->fill($attributes);
+    }
+
+    /**
+     * Static helper for isDatabaseReady()
+     */
+    public static function hasDatabaseTable(): bool
+    {
+        return (new static)->isDatabaseReady();
+    }
+
+    /**
+     * Check if the model's database connection is ready
+     */
+    public function isDatabaseReady(): bool
+    {
+        $cacheKey = sprintf('winter.storm::model.%s.isDatabaseReady.%s.%s', get_class($this), $this->getConnectionName() ?? '', $this->getTable());
+        if ($result = Cache::get($cacheKey)) {
+            return $result;
+        }
+
+        // Resolver hasn't been set yet
+        /** @phpstan-ignore-next-line */
+        if (!static::getConnectionResolver()) {
+            return false;
+        }
+
+        // Connection hasn't been set yet or the database doesn't exist
+        try {
+            $connection = $this->getConnection();
+            $connection->getPdo();
+        } catch (Throwable $ex) {
+            return false;
+        }
+
+        // Database exists but table doesn't
+        try {
+            $schema = $connection->getSchemaBuilder();
+            $table = $this->getTable();
+            if (!$schema->hasTable($table)) {
+                return false;
+            }
+        } catch (Throwable $ex) {
+            return false;
+        }
+
+        Cache::forever($cacheKey, true);
+
+        return true;
     }
 
     /**
@@ -88,7 +154,7 @@ class Model extends EloquentModel
     {
         $model = new static($attributes);
 
-        $model->save(null, $sessionKey);
+        $model->save([], $sessionKey);
 
         return $model;
     }
@@ -129,14 +195,6 @@ class Model extends EloquentModel
     }
 
     /**
-     * Extend this object properties upon construction.
-     */
-    public static function extend(Closure $callback)
-    {
-        self::extendableExtendCallback($callback);
-    }
-
-    /**
      * Bind some nicer events to this model, in the format of method overrides.
      */
     protected function bootNicerEvents()
@@ -167,11 +225,15 @@ class Model extends EloquentModel
                 }
 
                 self::$eventMethod(function ($model) use ($method) {
-                    $model->fireEvent('model.' . $method);
-
                     if ($model->methodExists($method)) {
-                        return $model->$method();
+                        // Register the method as a listener with default priority
+                        // to allow for complete control over the execution order
+                        $model->bindEvent('model.' . $method, [$model, $method]);
                     }
+                    // First listener that returns a non-null result will cancel the
+                    // further propagation of the event; If that result is false, the
+                    // underlying action will get cancelled (e.g. creating, saving, deleting)
+                    return $model->fireEvent('model.' . $method, halt: true);
                 });
             }
         }
@@ -476,7 +538,7 @@ class Model extends EloquentModel
     /**
      * Checks if an attribute is jsonable or not.
      *
-     * @return array
+     * @return bool
      */
     public function isJsonable($key)
     {
@@ -529,7 +591,7 @@ class Model extends EloquentModel
     /**
      * Get a fresh timestamp for the model.
      *
-     * @return \Winter\Storm\Argon\Argon
+     * @return \Illuminate\Support\Carbon
      */
     public function freshTimestamp()
     {
@@ -604,10 +666,10 @@ class Model extends EloquentModel
     /**
      * Convert a DateTime to a storable string.
      *
-     * @param  \DateTime|int  $value
-     * @return string
+     * @param  \DateTime|int|null  $value
+     * @return string|null
      */
-    public function fromDateTime($value)
+    public function fromDateTime($value = null)
     {
         if (is_null($value)) {
             return $value;
@@ -620,7 +682,7 @@ class Model extends EloquentModel
      * Create a new Eloquent query builder for the model.
      *
      * @param  \Winter\Storm\Database\QueryBuilder $query
-     * @return \Winter\Storm\Database\Builder|static
+     * @return \Winter\Storm\Database\Builder
      */
     public function newEloquentBuilder($query)
     {
@@ -662,6 +724,26 @@ class Model extends EloquentModel
     // Magic
     //
 
+    /**
+     * Programmatically adds a property to the extendable class
+     *
+     * @param string $dynamicName The name of the property to add
+     * @param mixed $value The value of the property
+     * @return void
+     */
+    public function addDynamicProperty($dynamicName, $value = null)
+    {
+        if (array_key_exists($dynamicName, $this->getDynamicProperties())) {
+            return;
+        }
+
+        // Ensure that dynamic properties are automatically purged
+        $this->addPurgeable($dynamicName);
+
+        // Add the dynamic property
+        $this->extendableAddDynamicProperty($dynamicName, $value);
+    }
+
     public function __get($name)
     {
         return $this->extendableGet($name);
@@ -669,11 +751,21 @@ class Model extends EloquentModel
 
     public function __set($name, $value)
     {
-        return $this->extendableSet($name, $value);
+        $this->extendableSet($name, $value);
     }
 
     public function __call($name, $params)
     {
+        if ($name === 'extend') {
+            if (empty($params[0]) || !is_callable($params[0])) {
+                throw new \InvalidArgumentException('The extend() method requires a callback parameter or closure.');
+            }
+            if ($params[0] instanceof \Closure) {
+                return $params[0]->call($this, $params[1] ?? $this);
+            }
+            return \Closure::fromCallable($params[0])->call($this, $params[1] ?? $this);
+        }
+
         /*
          * Never call handleRelation() anywhere else as it could
          * break getRelationCaller(), use $this->{$name}() instead
@@ -683,6 +775,19 @@ class Model extends EloquentModel
         }
 
         return $this->extendableCall($name, $params);
+    }
+
+    public static function __callStatic($name, $params)
+    {
+        if ($name === 'extend') {
+            if (empty($params[0])) {
+                throw new \InvalidArgumentException('The extend() method requires a callback parameter or closure.');
+            }
+            self::extendableExtendCallback($params[0], $params[1] ?? false, $params[2] ?? null);
+            return;
+        }
+
+        return parent::__callStatic($name, $params);
     }
 
     /**
@@ -730,7 +835,7 @@ class Model extends EloquentModel
     {
         return $using
             ? $using::fromRawAttributes($parent, $attributes, $table, $exists)
-            : new Pivot($parent, $attributes, $table, $exists);
+            : Pivot::fromAttributes($parent, $attributes, $table, $exists);
     }
 
     /**
@@ -740,7 +845,7 @@ class Model extends EloquentModel
      * @param  array   $attributes
      * @param  string  $table
      * @param  bool    $exists
-     * @return \Winter\Storm\Database\Pivot
+     * @return \Winter\Storm\Database\Pivot|null
      */
     public function newRelationPivot($relationName, $parent, $attributes, $table, $exists)
     {
@@ -748,7 +853,7 @@ class Model extends EloquentModel
 
         if (!is_null($definition) && array_key_exists('pivotModel', $definition)) {
             $pivotModel = $definition['pivotModel'];
-            return new $pivotModel($parent, $attributes, $table, $exists);
+            return $pivotModel::fromAttributes($parent, $attributes, $table, $exists);
         }
     }
 
@@ -761,7 +866,7 @@ class Model extends EloquentModel
      * @param array $options
      * @return bool
      */
-    protected function saveInternal($options = [])
+    protected function saveInternal(array $options = [])
     {
         /**
          * @event model.saveInternal
@@ -802,15 +907,6 @@ class Model extends EloquentModel
             return $result;
         }
 
-        /*
-         * If there is nothing to update, Eloquent will not fire afterSave(),
-         * events should still fire for consistency.
-         */
-        if ($result === null) {
-            $this->fireModelEvent('updated', false);
-            $this->fireModelEvent('saved', false);
-        }
-
         // Apply post deferred bindings
         if ($this->sessionKey !== null) {
             $this->commitDeferredAfter($this->sessionKey);
@@ -822,10 +918,10 @@ class Model extends EloquentModel
     /**
      * Save the model to the database.
      * @param array $options
-     * @param null $sessionKey
+     * @param string|null $sessionKey
      * @return bool
      */
-    public function save(array $options = null, $sessionKey = null)
+    public function save(?array $options = [], $sessionKey = null)
     {
         $this->sessionKey = $sessionKey;
         return $this->saveInternal(['force' => false] + (array) $options);
@@ -833,15 +929,16 @@ class Model extends EloquentModel
 
     /**
      * Save the model and all of its relationships.
+     *
      * @param array $options
-     * @param null $sessionKey
+     * @param string|null $sessionKey
      * @return bool
      */
-    public function push($options = null, $sessionKey = null)
+    public function push(?array $options = [], $sessionKey = null)
     {
         $always = Arr::get($options, 'always', false);
 
-        if (!$this->save(null, $sessionKey) && !$always) {
+        if (!$this->save([], $sessionKey) && !$always) {
             return false;
         }
 
@@ -873,11 +970,12 @@ class Model extends EloquentModel
     /**
      * Pushes the first level of relations even if the parent
      * model has no changes.
+     *
      * @param array $options
-     * @param string $sessionKey
+     * @param string|null $sessionKey
      * @return bool
      */
-    public function alwaysPush($options, $sessionKey)
+    public function alwaysPush(?array $options = [], $sessionKey = null)
     {
         return $this->push(['always' => true] + (array) $options, $sessionKey);
     }
@@ -899,6 +997,7 @@ class Model extends EloquentModel
 
     /**
      * Locates relations with delete flag and cascades the delete event.
+     * For pivot relations, detach the pivot record unless the detach flag is false.
      * @return void
      */
     protected function performDeleteOnRelations()
@@ -909,31 +1008,30 @@ class Model extends EloquentModel
              * Hard 'delete' definition
              */
             foreach ($relations as $name => $options) {
-                if (!Arr::get($options, 'delete', false)) {
-                    continue;
-                }
-
-                if (!$relation = $this->{$name}) {
-                    continue;
-                }
-
-                if ($relation instanceof EloquentModel) {
-                    $relation->forceDelete();
-                }
-                elseif ($relation instanceof CollectionBase) {
-                    $relation->each(function ($model) {
-                        $model->forceDelete();
-                    });
-                }
-            }
-
-            /*
-             * Belongs-To-Many should clean up after itself always
-             */
-            if ($type == 'belongsToMany') {
-                foreach ($relations as $name => $options) {
+                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
+                    // we want to remove the pivot record, not the actual relation record
                     if (Arr::get($options, 'detach', true)) {
                         $this->{$name}()->detach();
+                    }
+                } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
+                    // the model does not own the related record, we should not remove it.
+                    continue;
+                } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
+                    if (!Arr::get($options, 'delete', false)) {
+                        continue;
+                    }
+
+                    // Attempt to load the related record(s)
+                    if (!$relation = $this->{$name}) {
+                        continue;
+                    }
+
+                    if ($relation instanceof EloquentModel) {
+                        $relation->forceDelete();
+                    } elseif ($relation instanceof CollectionBase) {
+                        $relation->each(function ($model) {
+                            $model->forceDelete();
+                        });
                     }
                 }
             }
@@ -1000,13 +1098,36 @@ class Model extends EloquentModel
     //
 
     /**
+     * Determine if the given attribute will be processed by getAttributeValue().
+     */
+    public function hasAttribute(string $key): bool
+    {
+        return (
+            array_key_exists($key, $this->attributes)
+            || array_key_exists($key, $this->casts)
+            || $this->hasGetMutator($key)
+            || $this->hasAttributeMutator($key)
+            || $this->isClassCastable($key)
+        );
+    }
+
+    /**
      * Get an attribute from the model.
-     * Overrided from {@link Eloquent} to implement recognition of the relation.
+     * Overrides {@link Eloquent} to support loading from property-defined relations.
+     *
+     * @param string $key
      * @return mixed
      */
     public function getAttribute($key)
     {
-        if (array_key_exists($key, $this->attributes) || $this->hasGetMutator($key)) {
+        if (!$key) {
+            return;
+        }
+
+        // If the attribute exists in the attribute array or has a "get" mutator we will
+        // get the attribute's value. Otherwise, we will proceed as if the developers
+        // are asking for a relationship's value. This covers both types of values.
+        if ($this->hasAttribute($key)) {
             return $this->getAttributeValue($key);
         }
 
@@ -1015,6 +1136,10 @@ class Model extends EloquentModel
         }
 
         if ($this->hasRelation($key)) {
+            if ($this->preventsLazyLoading) {
+                $this->handleLazyLoadingViolation($key);
+            }
+
             return $this->getRelationshipFromMethod($key);
         }
     }
@@ -1200,7 +1325,7 @@ class Model extends EloquentModel
      * Set a given attribute on the model.
      * @param string $key
      * @param mixed $value
-     * @return void
+     * @return mixed|null
      */
     public function setAttribute($key, $value)
     {
@@ -1215,7 +1340,8 @@ class Model extends EloquentModel
          * Handle direct relation setting
          */
         if ($this->hasRelation($key) && !$this->hasSetMutator($key)) {
-            return $this->setRelationValue($key, $value);
+            $this->setRelationValue($key, $value);
+            return;
         }
 
         /**
@@ -1246,7 +1372,7 @@ class Model extends EloquentModel
         /*
          * Trim strings
          */
-        if (is_string($value)) {
+        if ($this->trimStringAttributes && is_string($value)) {
             $value = trim($value);
         }
 

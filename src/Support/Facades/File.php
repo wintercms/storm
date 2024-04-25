@@ -4,7 +4,7 @@ use Winter\Storm\Support\Facade;
 
 /**
  * @method static bool exists(string $path)
- * @method static string get(string $path, bool $lock)
+ * @method static string get(string $path, bool $lock = false)
  * @method static string sharedGet(string $path)
  * @method static mixed getRequire(string $path)
  * @method static mixed requireOnce(string $file)
@@ -39,19 +39,20 @@ use Winter\Storm\Support\Facade;
  * @method static bool copyDirectory(string $directory, string $destination, int $options = null)
  * @method static bool deleteDirectory(string $directory, bool $preserve = false)
  * @method static bool cleanDirectory(string $directory)
- * @method static bool isDirectoryEmpty(string $directory)
+ * @method static bool|null isDirectoryEmpty(string $directory)
  * @method static string sizeToString(int $bytes)
- * @method static string localToPublic(string $path)
+ * @method static string|null localToPublic(string $path)
  * @method static bool isLocalPath(string $path, bool $realpath = true)
- * @method static string fromClass($classname)
+ * @method static bool isLocalDisk(\Illuminate\Filesystem\FilesystemAdapter $disk)
+ * @method static string|null fromClass(string|object $classname)
  * @method static string|false existsInsensitive(string $path)
  * @method static string normalizePath(string $path)
- * @method static string symbolizePath(string $path, bool $default = false)
+ * @method static string symbolizePath(string $path, string|bool|null $default = null)
  * @method static bool isPathSymbol(string $path)
- * @method static bool|void chmodRecursive(string $path, $fileMask = null, $directoryMask = null)
- * @method static string|null getFilePermissions()
- * @method static string|null getFolderPermissions()
- * @method static bool fileNameMatch(string|array $fileName, string $pattern)
+ * @method static void chmodRecursive(string $path, int|float|null $fileMask = null, int|float|null $directoryMask = null)
+ * @method static int|float|null getFilePermissions()
+ * @method static int|float|null getFolderPermissions()
+ * @method static bool fileNameMatch(string $fileName, string $pattern)
  *
  * @see \Winter\Storm\Filesystem\Filesystem
  */

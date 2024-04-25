@@ -1,16 +1,16 @@
 <?php namespace Winter\Storm\Foundation\Bootstrap;
 
-use Illuminate\Contracts\Foundation\Application;
+use Winter\Storm\Foundation\Application;
 
 class RegisterWinter
 {
     /**
-     * Specific features for WinterCMS.
+     * Specific features for Winter.
      *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @param \Winter\Storm\Foundation\Application $app
      * @return void
      */
-    public function bootstrap(Application $app)
+    public function bootstrap(Application $app): void
     {
         /*
          * Workaround for CLI and URL based in subdirectory
@@ -25,6 +25,9 @@ class RegisterWinter
         $app->singleton('string', function () {
             return new \Winter\Storm\Support\Str;
         });
+        $app->singleton('svg', function () {
+            return new \Winter\Storm\Support\Svg;
+        });
 
         /*
          * Change paths based on config
@@ -35,6 +38,10 @@ class RegisterWinter
 
         if ($themesPath = $app['config']->get('cms.themesPathLocal')) {
             $app->setThemesPath($themesPath);
+        }
+
+        if ($tempPath = $app['config']->get('app.tempPath')) {
+            $app->setTempPath($tempPath);
         }
     }
 }

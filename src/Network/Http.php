@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Network;
 
 use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Support\Str;
 
 /**
  * HTTP Network Access
@@ -94,7 +95,7 @@ class Http
     public $rawBody = '';
 
     /**
-     * @var array The last returned HTTP code.
+     * @var int The last returned HTTP code.
      */
     public $code;
 
@@ -111,10 +112,10 @@ class Http
     /**
      * @var array cURL Options.
      */
-    public $requestOptions;
+    public $requestOptions = [];
 
     /**
-     * @var array Request data.
+     * @var array|string Request data.
      */
     public $requestData;
 
@@ -280,7 +281,7 @@ class Http
             curl_setopt($curl, CURLOPT_MAXREDIRS, $this->maxRedirects);
         }
 
-        if ($this->requestOptions && is_array($this->requestOptions)) {
+        if (count($this->requestOptions)) {
             curl_setopt_array($curl, $this->requestOptions);
         }
 
@@ -329,6 +330,18 @@ class Http
             $stream = fopen($this->streamFile, 'w');
             if ($this->streamFilter) {
                 stream_filter_append($stream, $this->streamFilter, STREAM_FILTER_WRITE);
+            }
+
+            if ($headerStream === false) {
+                throw new ApplicationException('Unable to create a temporary header stream');
+            }
+            if ($stream === false) {
+                throw new ApplicationException(
+                    sprintf(
+                        'Unable to stream file contents from HTTP response to "%s". Please check your permissions.',
+                        $this->streamFile
+                    )
+                );
             }
 
             curl_setopt($curl, CURLOPT_HEADER, false);
@@ -430,20 +443,34 @@ class Http
     }
 
     /**
-     * Add a data to the request.
-     * @param string $value
-     * @return self
+     * Add JSON encoded payload
      */
-    public function data($key, $value = null)
+    public function json(mixed $payload): self
+    {
+        if (!Str::isJson($payload)) {
+            if (!$payload = json_encode($payload)) {
+                throw new ApplicationException('The provided payload failed to be encoded as JSON');
+            }
+        }
+
+        $this->requestData = $payload;
+        $this->header('Content-Type', 'application/json');
+
+        return $this;
+    }
+
+    /**
+     * Add a data to the request.
+     */
+    public function data(array|string $key, array|string $value = null): self
     {
         if (is_array($key)) {
             foreach ($key as $_key => $_value) {
                 $this->data($_key, $_value);
             }
-            return $this;
+        } else {
+            $this->requestData[$key] = $value;
         }
-
-        $this->requestData[$key] = $value;
         return $this;
     }
 
@@ -556,9 +583,13 @@ class Http
     }
 
     /**
-     * Add a single option to the request.
-     * @param string $option
-     * @param string $value
+     * Add single or multiple CURL options to this request.
+     *
+     * You must either provide a constant or string that represents a CURL_* constant as the $option,
+     * and a $value to set a single option, or you may provide an array of CURL_* constants and values instead.
+     *
+     * @param array|string|int $option
+     * @param mixed $value
      * @return self
      */
     public function setOption($option, $value = null)

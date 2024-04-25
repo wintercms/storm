@@ -1,0 +1,37 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+concurrency:
+  group: phpstan-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  codeAnalysis:
+    runs-on: ubuntu-latest
+    name: Code Analysis
+    env:
+      extensions: curl, fileinfo, gd, mbstring, openssl, pdo, pdo_sqlite, sqlite3, xml, zip
+      key: winter-storm-cache-v1.2
+    steps:
+      - name: Checkout changes
+        uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ${{ env.extensions }}
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --no-scripts
+
+      - name: Analyse code
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G --no-progress

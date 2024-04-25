@@ -1,19 +1,20 @@
 <?php namespace Winter\Storm\Database\Concerns;
 
-use Winter\Storm\Support\Str;
+use InvalidArgumentException;
+use Winter\Storm\Database\Model;
+use Winter\Storm\Database\Relations\AttachMany;
+use Winter\Storm\Database\Relations\AttachOne;
 use Winter\Storm\Database\Relations\BelongsTo;
 use Winter\Storm\Database\Relations\BelongsToMany;
 use Winter\Storm\Database\Relations\HasMany;
-use Winter\Storm\Database\Relations\HasOne;
-use Winter\Storm\Database\Relations\MorphMany;
-use Winter\Storm\Database\Relations\MorphToMany;
-use Winter\Storm\Database\Relations\MorphTo;
-use Winter\Storm\Database\Relations\MorphOne;
-use Winter\Storm\Database\Relations\AttachMany;
-use Winter\Storm\Database\Relations\AttachOne;
 use Winter\Storm\Database\Relations\HasManyThrough;
+use Winter\Storm\Database\Relations\HasOne;
 use Winter\Storm\Database\Relations\HasOneThrough;
-use InvalidArgumentException;
+use Winter\Storm\Database\Relations\MorphMany;
+use Winter\Storm\Database\Relations\MorphOne;
+use Winter\Storm\Database\Relations\MorphTo;
+use Winter\Storm\Database\Relations\MorphToMany;
+use Winter\Storm\Support\Str;
 
 trait HasRelationships
 {
@@ -131,7 +132,7 @@ trait HasRelationships
         'attachOne',
         'attachMany',
         'hasOneThrough',
-        'hasManyThrough'
+        'hasManyThrough',
     ];
 
     //
@@ -141,9 +142,8 @@ trait HasRelationships
     /**
      * Checks if model has a relationship by supplied name.
      * @param string $name Relation name
-     * @return bool
      */
-    public function hasRelation($name)
+    public function hasRelation($name): bool
     {
         return $this->getRelationDefinition($name) !== null;
     }
@@ -151,13 +151,14 @@ trait HasRelationships
     /**
      * Returns relationship details from a supplied name.
      * @param string $name Relation name
-     * @return array
      */
-    public function getRelationDefinition($name)
+    public function getRelationDefinition($name): ?array
     {
         if (($type = $this->getRelationType($name)) !== null) {
             return (array) $this->getRelationTypeDefinition($type, $name) + $this->getRelationDefaults($type);
         }
+
+        return null;
     }
 
     /**
@@ -178,7 +179,7 @@ trait HasRelationships
      * Returns the given relation definition.
      * @param string $type Relation type
      * @param string $name Relation name
-     * @return array
+     * @return string|null
      */
     public function getRelationTypeDefinition($type, $name)
     {
@@ -187,13 +188,14 @@ trait HasRelationships
         if (isset($definitions[$name])) {
             return $definitions[$name];
         }
+
+        return null;
     }
 
     /**
      * Returns relationship details for all relations defined on this model.
-     * @return array
      */
-    public function getRelationDefinitions()
+    public function getRelationDefinitions(): array
     {
         $result = [];
 
@@ -215,24 +217,22 @@ trait HasRelationships
 
     /**
      * Returns a relationship type based on a supplied name.
-     * @param string $name Relation name
-     * @return string
      */
-    public function getRelationType($name)
+    public function getRelationType(string $name): ?string
     {
         foreach (static::$relationTypes as $type) {
             if ($this->getRelationTypeDefinition($type, $name) !== null) {
                 return $type;
             }
         }
+
+        return null;
     }
 
     /**
-     * Returns a relation class object
-     * @param string $name Relation name
-     * @return string
+     * Returns a new instance of a related model
      */
-    public function makeRelation($name)
+    public function makeRelation(string $name): ?Model
     {
         $relationType = $this->getRelationType($name);
         $relation = $this->getRelationDefinition($name);
@@ -242,7 +242,7 @@ trait HasRelationships
         }
 
         $relationClass = $relation[0];
-        return new $relationClass();
+        return $this->newRelatedInstance($relationClass);
     }
 
     /**
@@ -320,6 +320,11 @@ trait HasRelationships
             case 'belongsToMany':
                 $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps']);
                 $relationObj = $this->$relationType($relation[0], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
+
+                if (isset($relation['pivotModel'])) {
+                    $relationObj->using($relation['pivotModel']);
+                }
+
                 break;
 
             case 'morphTo':
@@ -336,6 +341,11 @@ trait HasRelationships
             case 'morphToMany':
                 $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
                 $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], false, $relationName);
+
+                if (isset($relation['pivotModel'])) {
+                    $relationObj->using($relation['pivotModel']);
+                }
+
                 break;
 
             case 'morphedByMany':
@@ -352,7 +362,7 @@ trait HasRelationships
             case 'hasOneThrough':
             case 'hasManyThrough':
                 $relation = $this->validateRelationArgs($relationName, ['key', 'throughKey', 'otherKey', 'secondOtherKey'], ['through']);
-                $relationObj = $this->$relationType($relation[0], $relation['through'], $relation['key'], $relation['throughKey'], $relation['otherKey'], $relation['secondOtherKey']);
+                $relationObj = $this->$relationType($relation[0], $relation['through'], $relation['key'], $relation['throughKey'], $relation['otherKey'], $relation['secondOtherKey'], $relationName);
                 break;
 
             default:
@@ -465,7 +475,7 @@ trait HasRelationships
     /**
      * Define an polymorphic, inverse one-to-one or many relationship.
      * Overridden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the relation.
-     * @return \Winter\Storm\Database\Relations\BelongsTo
+     * @return \Winter\Storm\Database\Relations\MorphTo
      */
     public function morphTo($name = null, $type = null, $id = null, $ownerKey = null)
     {
@@ -487,7 +497,7 @@ trait HasRelationships
      * @param  string  $type
      * @param  string  $id
      * @param  string  $ownerKey
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return \Winter\Storm\Database\Relations\MorphTo
      */
     protected function morphEagerTo($name, $type, $id, $ownerKey)
     {
@@ -508,10 +518,10 @@ trait HasRelationships
      * @param  string  $name
      * @param  string  $type
      * @param  string  $id
-     * @param  string  $ownerKey
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @param  string|null  $ownerKey
+     * @return \Winter\Storm\Database\Relations\MorphTo
      */
-    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey)
+    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey = null)
     {
         $instance = $this->newRelatedInstance(
             static::getActualClassNameForMorph($target)
@@ -718,7 +728,7 @@ trait HasRelationships
     /**
      * Define an attachment one-to-one relationship.
      * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphOne
+     * @return \Winter\Storm\Database\Relations\AttachOne
      */
     public function attachOne($related, $isPublic = true, $localKey = null, $relationName = null)
     {
@@ -740,7 +750,7 @@ trait HasRelationships
     /**
      * Define an attachment one-to-many relationship.
      * This code is a duplicate of Eloquent but uses a Storm relation class.
-     * @return \Winter\Storm\Database\Relations\MorphMany
+     * @return \Winter\Storm\Database\Relations\AttachMany
      */
     public function attachMany($related, $isPublic = null, $localKey = null, $relationName = null)
     {
@@ -764,7 +774,7 @@ trait HasRelationships
      */
     protected function getRelationCaller()
     {
-        $backtrace = debug_backtrace(false);
+        $backtrace = debug_backtrace(0);
         $caller = ($backtrace[2]['function'] == 'handleRelation') ? $backtrace[4] : $backtrace[2];
         return $caller['function'];
     }
@@ -808,8 +818,7 @@ trait HasRelationships
                 sprintf(
                     'Cannot add the "%s" relation to %s, it conflicts with an existing relation, attribute, or property.',
                     $name,
-                    get_class($this),
-                    $name
+                    get_class($this)
                 )
             );
         }
@@ -934,7 +943,7 @@ trait HasRelationships
      */
     public function addHasOneThroughRelation(string $name, array $config): void
     {
-        $this->addRelation('HasOneThrough', $name, $config);
+        $this->addRelation('hasOneThrough', $name, $config);
     }
 
     /**
@@ -944,6 +953,19 @@ trait HasRelationships
      */
     public function addHasManyThroughRelation(string $name, array $config): void
     {
-        $this->addRelation('HasManyThrough', $name, $config);
+        $this->addRelation('hasManyThrough', $name, $config);
+    }
+
+    /**
+     * Get the polymorphic relationship columns.
+     *
+     * @param  string  $name
+     * @param  string|null  $type
+     * @param  string|null  $id
+     * @return array
+     */
+    protected function getMorphs($name, $type = null, $id = null)
+    {
+        return [$type ?: $name.'_type', $id ?: $name.'_id'];
     }
 }

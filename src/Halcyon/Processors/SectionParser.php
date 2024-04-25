@@ -60,21 +60,10 @@ class SectionParser
     }
 
     /**
-     * Renders a CMS object as file content.
-     * @throws InvalidArgumentException if section separators are found in the settings or code sections
+     * Renders the provided settings data into a string that can be stored in the Settings section
      */
-    public static function render(array $data, array $options = []): string
+    public static function renderSettings(array $data): string
     {
-        extract(array_merge([
-            'wrapCodeInPhpTags' => true,
-            'isCompoundObject'  => true,
-        ], $options));
-
-        if (!$isCompoundObject) {
-            return array_get($data, 'content', '');
-        }
-
-        // Prepare settings section for saving
         $iniParser = new Ini;
         $trim = function (&$values) use (&$trim) {
             foreach ($values as &$value) {
@@ -88,12 +77,20 @@ class SectionParser
         };
         $settings = array_get($data, 'settings', []);
         $trim($settings);
-        $settings = $iniParser->render($settings);
 
-        // Prepare code section for saving
-        $code = trim(array_get($data, 'code', ''));
+        return $iniParser->render($settings);
+    }
+
+    /**
+     * Renders the provided string into a string that can be stored in the Code section
+     */
+    public static function renderCode(string $code, array $options = []): string
+    {
+        $wrapCodeInPhpTags = array_get($options, 'wrapCodeInPhpTags', true);
+
+        $code = trim($code);
         if ($code) {
-            if ($wrapCodeInPhpTags) {
+            if (isset($wrapCodeInPhpTags) && $wrapCodeInPhpTags === true) {
                 $code = preg_replace('/^\<\?php/', '', $code);
                 $code = preg_replace('/^\<\?/', '', $code);
                 $code = preg_replace('/\?>$/', '', $code);
@@ -104,8 +101,37 @@ class SectionParser
             }
         }
 
-        // Prepare markup section for saving
-        $markup = trim(array_get($data, 'markup', ''));
+        return $code;
+    }
+
+    /**
+     * Renders the provided string into a string that can be stored in the Markup section
+     */
+    public static function renderMarkup(string $markup): string
+    {
+        return trim($markup);
+    }
+
+    /**
+     * Renders a CMS object as file content.
+     * @throws InvalidArgumentException if section separators are found in the settings or code sections
+     */
+    public static function render(array $data, array $options = []): string
+    {
+        $sectionOptions = array_merge([
+            'wrapCodeInPhpTags' => true,
+            'isCompoundObject'  => true,
+        ], $options);
+        extract($sectionOptions);
+
+        if (!isset($isCompoundObject) || $isCompoundObject === false) {
+            return array_get($data, 'content', '');
+        }
+
+        // Prepare sections for saving
+        $settings = static::renderSettings($data);
+        $code = static::renderCode(array_get($data, 'code', '') ?? '', $sectionOptions);
+        $markup = static::renderMarkup(array_get($data, 'markup', ''));
 
         /*
          * Build content
@@ -172,6 +198,40 @@ class SectionParser
     }
 
     /**
+     * Parses the Settings section into an array
+     */
+    public static function parseSettings(string $settings): array
+    {
+        $iniParser = new Ini;
+        return @$iniParser->parse($settings)
+            ?: [self::ERROR_INI => $settings];
+    }
+
+    /**
+     * Processes the Code section into a usable form
+     */
+    public static function parseCode(string $code): string
+    {
+        $code = trim($code);
+        if ($code) {
+            $code = preg_replace('/^\s*\<\?php/', '', $code);
+            $code = preg_replace('/^\s*\<\?/', '', $code);
+            $code = preg_replace('/\?\>\s*$/', '', $code);
+            $code = trim($code, PHP_EOL);
+        }
+
+        return $code;
+    }
+
+    /**
+     * Processes the Markup section into a usable form
+     */
+    public static function parseMarkup(string $markup): string
+    {
+        return $markup;
+    }
+
+    /**
      * Parses Halcyon section content.
      * The expected file format is following:
      *
@@ -189,9 +249,10 @@ class SectionParser
      */
     public static function parse(string $content, array $options = []): array
     {
-        extract(array_merge([
-            'isCompoundObject' => true,
-        ], $options));
+        $sectionOptions = array_merge([
+            'isCompoundObject' => true
+        ], $options);
+        extract($sectionOptions);
 
         $result = [
             'settings' => [],
@@ -199,11 +260,10 @@ class SectionParser
             'markup'   => null,
         ];
 
-        if (!$isCompoundObject || !strlen($content)) {
+        if (!isset($isCompoundObject) || $isCompoundObject === false || !strlen($content)) {
             return $result;
         }
 
-        $iniParser = new Ini;
         $sections = static::parseIntoSections($content);
         $count = count($sections);
         foreach ($sections as &$section) {
@@ -211,23 +271,14 @@ class SectionParser
         }
 
         if ($count >= 3) {
-            $result['settings'] = @$iniParser->parse($sections[0], true)
-                ?: [self::ERROR_INI => $sections[0]];
-
-            $result['code'] = $sections[1];
-            $result['code'] = preg_replace('/^\s*\<\?php/', '', $result['code']);
-            $result['code'] = preg_replace('/^\s*\<\?/', '', $result['code']);
-            $result['code'] = preg_replace('/\?\>\s*$/', '', $result['code']);
-            $result['code'] = trim($result['code'], PHP_EOL);
-
-            $result['markup'] = $sections[2];
+            $result['settings'] = static::parseSettings($sections[0]);
+            $result['code'] = static::parseCode($sections[1]);
+            $result['markup'] = static::parseMarkup($sections[2]);
         } elseif ($count == 2) {
-            $result['settings'] = @$iniParser->parse($sections[0], true)
-                ?: [self::ERROR_INI => $sections[0]];
-
-            $result['markup'] = $sections[1];
+            $result['settings'] = static::parseSettings($sections[0]);
+            $result['markup'] = static::parseMarkup($sections[1]);
         } elseif ($count == 1) {
-            $result['markup'] = $sections[0];
+            $result['markup'] = static::parseMarkup($sections[0]);
         }
 
         return $result;
@@ -267,9 +318,12 @@ class SectionParser
     }
 
     /**
-     * Returns the line number of a found instance of a section separator (==).
+     * Returns the line number of a found instance of CMS object section separator (==).
+     * @param string $content Object content
+     * @param int $instance Which instance to look for
+     * @return int|null The line number the instance was found.
      */
-    private static function calculateLinePosition(string $content, int $instance = 1): int
+    protected static function calculateLinePosition(string $content, int $instance = 1): ?int
     {
         $count = 0;
         $lines = explode(PHP_EOL, $content);
@@ -278,7 +332,7 @@ class SectionParser
                 $count++;
             }
 
-            if ($count == $instance) {
+            if ($count === $instance) {
                 return static::adjustLinePosition($content, $number);
             }
         }
@@ -291,7 +345,7 @@ class SectionParser
      * after the separator (==). There can be an opening tag or white space in between
      * where the section really begins.
      */
-    private static function adjustLinePosition(string $content, int $startLine = -1): int
+    protected static function adjustLinePosition(string $content, int $startLine = -1): int
     {
         // Account for the separator itself.
         $startLine++;

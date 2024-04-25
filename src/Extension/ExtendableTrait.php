@@ -1,12 +1,15 @@
 <?php namespace Winter\Storm\Extension;
 
-use App;
 use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 use BadMethodCallException;
+use Closure;
 use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Serialization;
+use Illuminate\Support\Facades\App;
+use ReflectionException;
+use October\Rain\Extension\ExtendableTrait as OctoberExtendableTrait;
 
 /**
  * This extension trait is used when access to the underlying base class
@@ -16,7 +19,6 @@ use Winter\Storm\Support\Serialization;
  *
  * @author Alexey Bobkov, Samuel Georges
  */
-
 trait ExtendableTrait
 {
     /**
@@ -43,12 +45,7 @@ trait ExtendableTrait
     protected static $extendableStaticMethods = [];
 
     /**
-     * @var bool Indicates if dynamic properties can be created.
-     */
-    protected static $extendableGuardProperties = true;
-
-    /**
-     * @var ClassLoader Class loader instance.
+     * @var ClassLoader|null Class loader instance.
      */
     protected static $extendableClassLoader = null;
 
@@ -64,7 +61,14 @@ trait ExtendableTrait
         foreach ($classes as $class) {
             if (isset(self::$extendableCallbacks[$class]) && is_array(self::$extendableCallbacks[$class])) {
                 foreach (self::$extendableCallbacks[$class] as $callback) {
-                    call_user_func(Serialization::unwrapClosure($callback), $this);
+                    if ($callback['scoped']) {
+                        $closure = Closure::bind(Serialization::unwrapClosure($callback['closure']), $this, $this);
+                        $object = $callback['outer'] ?? null;
+                    } else {
+                        $closure = Serialization::unwrapClosure($callback['closure']);
+                        $object = $this;
+                    }
+                    call_user_func($closure, $object);
                 }
             }
         }
@@ -72,18 +76,12 @@ trait ExtendableTrait
         /*
          * Apply extensions
          */
-        if (!$this->implement) {
-            return;
-        }
-
         if (is_string($this->implement)) {
             $uses = explode(',', $this->implement);
-        }
-        elseif (is_array($this->implement)) {
+        } elseif (is_array($this->implement)) {
             $uses = $this->implement;
-        }
-        else {
-            throw new Exception(sprintf('Class %s contains an invalid $implement value', get_class($this)));
+        } else {
+            return;
         }
 
         foreach ($uses as $use) {
@@ -104,11 +102,9 @@ trait ExtendableTrait
     }
 
     /**
-     * Helper method for `::extend()` static method
-     * @param  callable $callback
-     * @return void
+     * Helper method for `::extend()` static method.
      */
-    public static function extendableExtendCallback($callback)
+    public static function extendableExtendCallback(callable $callback, bool $scoped = false, ?object $outerScope = null): void
     {
         $class = get_called_class();
         if (
@@ -117,7 +113,11 @@ trait ExtendableTrait
         ) {
             self::$extendableCallbacks[$class] = [];
         }
-        self::$extendableCallbacks[$class][] = Serialization::wrapClosure($callback);
+        self::$extendableCallbacks[$class][] = [
+            'closure' => Serialization::wrapClosure($callback),
+            'scoped' => $scoped,
+            'outer' => $outerScope,
+        ];
     }
 
     /**
@@ -193,34 +193,31 @@ trait ExtendableTrait
 
     /**
      * Programmatically adds a property to the extendable class
-     * @param string   $dynamicName
-     * @param string   $value
+     *
+     * @param string $dynamicName The name of the property to add
+     * @param mixed $value The value of the property
+     * @return void
      */
     public function addDynamicProperty($dynamicName, $value = null)
     {
         if (array_key_exists($dynamicName, $this->getDynamicProperties())) {
             return;
         }
-        self::$extendableGuardProperties = false;
-
-        if (!property_exists($this, $dynamicName)) {
-            $this->{$dynamicName} = $value;
-        }
-
-        $this->extensionData['dynamicProperties'][] = $dynamicName;
-
-        self::$extendableGuardProperties = true;
+        array_set($this->extensionData['dynamicProperties'], $dynamicName, $value);
     }
 
     /**
      * Dynamically extend a class with a specified behavior
-     * @param  string $extensionName
+     * @param string $extensionName
      * @return void
      */
     public function extendClassWith($extensionName)
     {
-        if (!strlen($extensionName)) {
-            return $this;
+        if (empty($extensionName)) {
+            throw new Exception(sprintf(
+                'You must provide an extension name to extend class %s with.',
+                get_class($this)
+            ));
         }
 
         $extensionName = $this->extensionNormalizeClassName($extensionName);
@@ -318,12 +315,7 @@ trait ExtendableTrait
      */
     public function getDynamicProperties()
     {
-        $result = [];
-        $propertyNames = $this->extensionData['dynamicProperties'];
-        foreach ($propertyNames as $propName) {
-            $result[$propName] = $this->{$propName};
-        }
-        return $result;
+        return $this->extensionData['dynamicProperties'];
     }
 
     /**
@@ -364,11 +356,15 @@ trait ExtendableTrait
 
     /**
      * Magic method for `__get()`
-     * @param  string $name
-     * @return string
+     * @param string $name
+     * @return mixed|null
      */
     public function extendableGet($name)
     {
+        if (isset($this->extensionData['dynamicProperties'][$name])) {
+            return $this->extensionData['dynamicProperties'][$name];
+        }
+
         foreach ($this->extensionData['extensions'] as $extensionObject) {
             if (
                 property_exists($extensionObject, $name) &&
@@ -378,17 +374,19 @@ trait ExtendableTrait
             }
         }
 
-        $parent = get_parent_class();
-        if ($parent !== false && method_exists($parent, '__get')) {
-            return parent::__get($name);
+        $parent = $this->extensionGetParentClass();
+        if ($parent !== false && $this->extensionMethodExists($parent, '__get')) {
+            return $this->extensionCallMethod($parent, '__get', [$name]);
         }
+
+        return null;
     }
 
     /**
      * Magic method for `__set()`
      * @param  string $name
-     * @param  string $value
-     * @return string
+     * @param  mixed $value
+     * @return void
      */
     public function extendableSet($name, $value)
     {
@@ -403,27 +401,41 @@ trait ExtendableTrait
         /*
          * This targets trait usage in particular
          */
-        $parent = get_parent_class();
-        if ($parent !== false && method_exists($parent, '__set')) {
-            parent::__set($name, $value);
+        $parent = $this->extensionGetParentClass();
+        if ($parent !== false && $this->extensionMethodExists($parent, '__set')) {
+            $this->extensionCallMethod($parent, '__set', [$name, $value]);
+            return;
         }
 
-        /*
-         * Setting an undefined property
-         */
-        if (!self::$extendableGuardProperties) {
-            $this->{$name} = $value;
+        // Don't allow automatic creation of dynamic properties through the setter magic method,
+        // addDynamicProperty() must be used instead.
+        if (array_key_exists($name, $this->getDynamicProperties())) {
+            array_set($this->extensionData['dynamicProperties'], $name, $value);
         }
     }
 
     /**
-     * Magic method for `__call()`
+     * Magic method for `__call()`.
+     *
+     * Callback priority is as follows:
+     * - "Dynamic Methods" added locally to the object via addDynamicMethod($name, $callable)
+     * - Methods available on Behaviors that have been implemented by the object
+     * - Pass it to the parent's __call() method if it defines one
+     *
      * @param  string $name
      * @param  array  $params
      * @return mixed
      */
     public function extendableCall($name, $params = null)
     {
+        if (isset($this->extensionData['dynamicMethods'][$name])) {
+            $dynamicCallable = $this->extensionData['dynamicMethods'][$name];
+
+            if (is_callable($dynamicCallable)) {
+                return call_user_func_array(Serialization::unwrapClosure($dynamicCallable), array_values($params));
+            }
+        }
+
         if (isset($this->extensionData['methods'][$name])) {
             $extension = $this->extensionData['methods'][$name];
             $extensionObject = $this->extensionData['extensions'][$extension];
@@ -433,17 +445,9 @@ trait ExtendableTrait
             }
         }
 
-        if (isset($this->extensionData['dynamicMethods'][$name])) {
-            $dynamicCallable = $this->extensionData['dynamicMethods'][$name];
-
-            if (is_callable($dynamicCallable)) {
-                return call_user_func_array(Serialization::unwrapClosure($dynamicCallable), array_values($params));
-            }
-        }
-
-        $parent = get_parent_class();
-        if ($parent !== false && method_exists($parent, '__call')) {
-            return parent::__call($name, $params);
+        $parent = $this->extensionGetParentClass();
+        if ($parent !== false && $this->extensionMethodExists($parent, '__call')) {
+            return $this->extensionCallMethod($parent, '__call', [$name, $params]);
         }
 
         throw new BadMethodCallException(sprintf(
@@ -533,5 +537,79 @@ trait ExtendableTrait
         }
 
         return self::$extendableClassLoader = App::make(ClassLoader::class);
+    }
+
+    /**
+     * Gets the parent class using reflection.
+     *
+     * The parent class must either not be the `Extendable` class, or must not be using the `ExtendableTrait` trait,
+     * in order to prevent infinite loops.
+     *
+     * @return ReflectionClass|false
+     */
+    protected function extensionGetParentClass(object $instance = null)
+    {
+        // Shortcut to prevent infinite loops if the class extends Extendable.
+        if ($this instanceof Extendable) {
+            return false;
+        }
+
+        // Find if any parent uses the Extendable trait
+        if (!is_null($instance)) {
+            $reflector = $instance;
+        } else {
+            $reflector = new ReflectionClass($this);
+        }
+        $parent = $reflector->getParentClass();
+
+        // If there's no parent, stop here.
+        if ($parent === false) {
+            return false;
+        }
+
+        while (
+            !in_array(ExtendableTrait::class, $parent->getTraitNames())
+            && !in_array(OctoberExtendableTrait::class, $parent->getTraitNames())
+        ) {
+            $parent = $parent->getParentClass();
+            if ($parent === false) {
+                break;
+            }
+        }
+
+        // If no parent uses the Extendable trait, then return the parent class
+        if ($parent === false) {
+            return $reflector->getParentClass();
+        }
+
+        // Otherwise, we need to loop through until we find the parent class that doesn't use the Extendable trait
+        return $this->extensionGetParentClass($parent);
+    }
+
+    /**
+     * Determines if the given class reflection contains the given method.
+     */
+    protected function extensionMethodExists(ReflectionClass $class, string $methodName): bool
+    {
+        try {
+            $method = $class->getMethod($methodName);
+
+            if (!$method->isPublic()) {
+                return false;
+            }
+        } catch (ReflectionException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Calls a method through reflection.
+     */
+    protected function extensionCallMethod(ReflectionClass $class, string $method, array $params)
+    {
+        $method = $class->getMethod($method);
+        return $method->invokeArgs($this, $params);
     }
 }

@@ -10,9 +10,24 @@ use Winter\Storm\Support\Facades\DbDongle;
  * Extends Eloquent builder class.
  *
  * @author Alexey Bobkov, Samuel Georges
+ * @mixin \Winter\Storm\Database\QueryBuilder
  */
 class Builder extends BuilderModel
 {
+    /**
+     * The base query builder instance.
+     *
+     * @var \Winter\Storm\Database\QueryBuilder
+     */
+    protected $query;
+
+    /**
+     * The model being queried.
+     *
+     * @var \Winter\Storm\Database\Model
+     */
+    protected $model;
+
     /**
      * Get an array with the values of a given column.
      *
@@ -103,10 +118,14 @@ class Builder extends BuilderModel
     /**
      * Paginate the given query.
      *
-     * @param int $perPage
-     * @param int $currentPage
-     * @param array $columns
-     * @param string $pageName
+     * This method also accepts the Laravel signature:
+     *
+     * `paginate(int|null $perPage, array $columns, string $pageName, int|null $page)`
+     *
+     * @param int|null $perPage
+     * @param array|int|null $currentPage
+     * @param array|string $columns
+     * @param string|int|null $pageName
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function paginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page')
@@ -146,9 +165,14 @@ class Builder extends BuilderModel
     /**
      * Paginate the given query into a simple paginator.
      *
-     * @param int $perPage
-     * @param int $currentPage
-     * @param array $columns
+     * This method also accepts the Laravel signature:
+     *
+     * `simplePaginate(int|null $perPage, array $columns, string $pageName, int|null $page)`
+     *
+     * @param int|null $perPage
+     * @param array|int|null $currentPage
+     * @param array|string $columns
+     * @param string|int|null $pageName
      * @return \Illuminate\Contracts\Pagination\Paginator
      */
     public function simplePaginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page')
@@ -197,6 +221,8 @@ class Builder extends BuilderModel
         if (empty($values)) {
             return 0;
         }
+
+        $this->clearDuplicateCache();
 
         if (!is_array(reset($values))) {
             $values = [$values];

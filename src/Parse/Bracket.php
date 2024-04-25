@@ -19,7 +19,7 @@ class Bracket
         'filters' => []
     ];
 
-    public function __construct($options = [])
+    final public function __construct($options = [])
     {
         $this->setOptions($options);
     }
@@ -34,7 +34,7 @@ class Bracket
      * @param  string $template
      * @param  array $vars
      * @param  array $options
-     * @return self
+     * @return string
      */
     public static function parse($template, $vars = [], $options = [])
     {
@@ -43,15 +43,16 @@ class Bracket
     }
 
     /**
-     * Parse a string against data
+     * Parse a string against data.
+     *
      * @param  string $string
      * @param  array $data
      * @return string
      */
     public function parseString($string, $data)
     {
-        if (!is_string($string) || !strlen(trim($string))) {
-            return false;
+        if (!strlen(trim($string))) {
+            return '';
         }
 
         foreach ($data as $key => $value) {
@@ -177,7 +178,7 @@ class Bracket
      * a looping tag.
      * @param  string $string
      * @param  string $key
-     * @return string
+     * @return string[]|false
      */
     protected function parseLoopRegex($string, $key)
     {

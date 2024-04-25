@@ -1,9 +1,8 @@
 <?php namespace Winter\Storm\Database;
 
-use Db;
-use File;
-use Eloquent;
 use Exception;
+use Winter\Storm\Support\Facades\File;
+use Winter\Storm\Database\Model;
 
 /**
  * Database updater
@@ -14,6 +13,11 @@ use Exception;
  */
 class Updater
 {
+    /**
+     * @var array Local cache of migration file paths to support anonymous migrations [$path => $anonInstance || $className]
+     */
+    protected static $migrationCache = [];
+
     /**
      * Sets up a migration or seed file.
      */
@@ -27,16 +31,16 @@ class Updater
 
         $this->isValidScript($object, $file);
 
-        Eloquent::unguard();
+        Model::unguard();
 
-        if ($object instanceof Updates\Migration) {
+        if ($object instanceof Updates\Migration && method_exists($object, 'up')) {
             $object->up();
         }
-        elseif ($object instanceof Updates\Seeder) {
+        elseif ($object instanceof Updates\Seeder && method_exists($object, 'run')) {
             $object->run();
         }
 
-        Eloquent::reguard();
+        Model::reguard();
 
         return true;
     }
@@ -54,13 +58,13 @@ class Updater
 
         $this->isValidScript($object, $file);
 
-        Eloquent::unguard();
+        Model::unguard();
 
-        if ($object instanceof Updates\Migration) {
+        if ($object instanceof Updates\Migration && method_exists($object, 'down')) {
             $object->down();
         }
 
-        Eloquent::reguard();
+        Model::reguard();
 
         return true;
     }
@@ -68,22 +72,31 @@ class Updater
     /**
      * Resolve a migration instance from a file.
      * @param  string  $file
-     * @return object
+     * @return object|null
      */
-    public function resolve($file)
+    public function resolve($file): ?object
     {
         if (!File::isFile($file)) {
-            return;
+            return null;
+        }
+
+        if (isset(static::$migrationCache[$file])) {
+            return is_object(static::$migrationCache[$file])
+                ? static::$migrationCache[$file]
+                : new static::$migrationCache[$file];
         }
 
         $instance = require_once $file;
 
         if (is_object($instance)) {
-            return $instance;
+            return static::$migrationCache[$file] = $instance;
         }
+
         if ($class = $this->getClassFromFile($file)) {
-            return new $class;
+            return new (static::$migrationCache[$file] = $class);
         }
+        
+        return null;
     }
 
     /**
@@ -107,7 +120,7 @@ class Updater
     /**
      * Extracts the namespace and class name from a file.
      * @param string $file
-     * @return string
+     * @return string|false
      */
     public function getClassFromFile($file)
     {

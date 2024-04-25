@@ -8,7 +8,7 @@ class Kernel extends ConsoleKernel
     /**
      * The bootstrap classes for the application.
      *
-     * @var array
+     * @var string[]
      */
     protected $bootstrappers = [
         \Winter\Storm\Foundation\Bootstrap\RegisterClassLoader::class,
@@ -42,6 +42,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $this->bootstrap();
-        $this->app['events']->fire('console.schedule', [$schedule]);
+        $this->app['events']->dispatch('console.schedule', [$schedule]);
     }
 }

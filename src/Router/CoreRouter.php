@@ -9,17 +9,17 @@ class CoreRouter extends RouterBase
      * Dispatch the request to the application.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function dispatch(Request $request)
     {
         $this->currentRequest = $request;
 
-        $this->events->fire('router.before', [$request]);
+        $this->events->dispatch('router.before', [$request]);
 
         $response = $this->dispatchToRoute($request);
 
-        $this->events->fire('router.after', [$request, $response]);
+        $this->events->dispatch('router.after', [$request, $response]);
 
         return $response;
     }

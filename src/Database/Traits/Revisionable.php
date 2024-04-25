@@ -1,9 +1,9 @@
 <?php namespace Winter\Storm\Database\Traits;
 
-use Db;
-use Exception;
 use DateTime;
+use Exception;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Winter\Storm\Support\Facades\DB;
 
 trait Revisionable
 {
@@ -90,7 +90,7 @@ trait Revisionable
             return;
         }
 
-        Db::table($revisionModel->getTable())->insert($toSave);
+        DB::table($revisionModel->getTable())->insert($toSave);
         $this->revisionableCleanUp();
     }
 

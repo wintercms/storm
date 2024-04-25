@@ -1,7 +1,6 @@
 <?php namespace Winter\Storm\Events;
 
 use Closure;
-use Laravel\SerializableClosure\SerializableClosure;
 use ReflectionClass;
 use Winter\Storm\Support\Serialization;
 use Winter\Storm\Support\Str;
@@ -42,9 +41,11 @@ class Dispatcher extends BaseDispatcher
             }
         }
         if ($events instanceof Closure) {
-            return $this->listen($this->firstClosureParameterType($events), $events, $priority);
+            $this->listen($this->firstClosureParameterType($events), $events, $priority);
+            return;
         } elseif ($events instanceof QueuedClosure) {
-            return $this->listen($this->firstClosureParameterType($events->closure), $events->resolve(), $priority);
+            $this->listen($this->firstClosureParameterType($events->closure), $events->resolve(), $priority);
+            return;
         } elseif ($listener instanceof QueuedClosure) {
             $listener = $listener->resolve();
         }
@@ -102,7 +103,7 @@ class Dispatcher extends BaseDispatcher
      * @param  string|object  $event
      * @param  mixed  $payload
      * @param  bool  $halt
-     * @return array|null
+     * @return array|mixed
      */
     public function fire($event, $payload = [], $halt = false)
     {
@@ -115,7 +116,7 @@ class Dispatcher extends BaseDispatcher
      * @param  string|object  $event
      * @param  mixed  $payload
      * @param  bool  $halt
-     * @return array|null
+     * @return array|mixed
      */
     public function dispatch($event, $payload = [], $halt = false)
     {
@@ -167,6 +168,27 @@ class Dispatcher extends BaseDispatcher
     }
 
     /**
+     * Gets the raw, unprepared listeners.
+     *
+     * @return array
+     */
+    public function getRawListeners()
+    {
+        $listeners = [];
+
+        foreach ($this->listeners as $event => $eventListeners) {
+            foreach ($eventListeners as $priority => $listenersByPriority) {
+                krsort($listenersByPriority);
+                foreach ($listenersByPriority as $listener) {
+                    $listeners[$event][] = $listener;
+                }
+            }
+        }
+
+        return $listeners;
+    }
+
+    /**
      * Get all of the listeners for a given event name.
      *
      * @param  string  $eventName
@@ -193,8 +215,8 @@ class Dispatcher extends BaseDispatcher
     /**
      * Sort the listeners for a given event by priority.
      *
-     * @param  string  $eventName
-     * @return array
+     * @param string $eventName
+     * @return void
      */
     protected function sortListeners($eventName)
     {
@@ -263,5 +285,43 @@ class Dispatcher extends BaseDispatcher
         $handler->queue($this->resolveQueue(), 'Winter\Storm\Events\CallQueuedHandler@call', [
             'class' => $class, 'method' => $method, 'data' => serialize($arguments),
         ]);
+    }
+
+    /**
+     * Create the class based event callable.
+     *
+     * @param  array|string  $listener
+     * @return callable
+     */
+    protected function createClassCallable($listener)
+    {
+        [$class, $method] = is_array($listener)
+            ? $listener
+            : $this->parseClassCallable($listener);
+
+        $listener = $this->container->make($class);
+
+        if (! method_exists($listener, $method)) {
+            $method = '__invoke';
+        }
+
+        if ($this->handlerShouldBeQueued($class)) {
+            return $this->createQueuedHandlerCallable($class, $method);
+        }
+
+        return $this->handlerShouldBeDispatchedAfterDatabaseTransactions($listener)
+            ? $this->createCallbackForListenerRunningAfterCommits($listener, $method)
+            : [$listener, $method];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function forget($event)
+    {
+        parent::forget($event);
+        if (isset($this->sorted[$event])) {
+            unset($this->sorted[$event]);
+        }
     }
 }

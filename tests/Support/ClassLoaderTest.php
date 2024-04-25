@@ -20,9 +20,7 @@ class ClassLoaderTest extends TestCase
 
         $this->classLoader->register();
 
-        $this->classLoader->addDirectories([
-            'plugins'
-        ]);
+        $this->classLoader->autoloadPackage('Winter\\Plugin', 'plugins/winter/plugin');
     }
 
     public function tearDown(): void
@@ -44,7 +42,7 @@ class ClassLoaderTest extends TestCase
         ]);
 
         // Check that class identifies as both original and alias
-        $newInstance = new Winter\Plugin\Classes\TestClass;
+        $newInstance = new \Winter\Plugin\Classes\TestClass;
         $this->assertTrue($newInstance instanceof Winter\Plugin\Classes\TestClass);
         $this->assertTrue($newInstance instanceof OldOrg\Plugin\Classes\TestClass);
 

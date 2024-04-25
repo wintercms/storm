@@ -20,6 +20,9 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'ConfigClear'           => \Illuminate\Foundation\Console\ConfigClearCommand::class,
         'Down'                  => \Illuminate\Foundation\Console\DownCommand::class,
         'Environment'           => \Illuminate\Foundation\Console\EnvironmentCommand::class,
+        'EventCache'            => \Illuminate\Foundation\Console\EventCacheCommand::class,
+        'EventClear'            => \Illuminate\Foundation\Console\EventClearCommand::class,
+        'EventList'             => \Winter\Storm\Foundation\Console\EventListCommand::class,
         'KeyGenerate'           => \Winter\Storm\Foundation\Console\KeyGenerateCommand::class,
         'Optimize'              => \Illuminate\Foundation\Console\OptimizeCommand::class,
         'PackageDiscover'       => \Illuminate\Foundation\Console\PackageDiscoverCommand::class,
@@ -48,13 +51,10 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'Db' => DbCommand::class,
         // 'DbPrune' => PruneCommand::class,
         // 'DbWipe' => WipeCommand::class,
-        // 'EventCache' => EventCacheCommand::class,
-        // 'EventClear' => EventClearCommand::class,
-        // 'EventList' => EventListCommand::class,
         // 'OptimizeClear' => OptimizeClearCommand::class,
         // 'QueueClear' => QueueClearCommand::class,
         // 'SchemaDump' => DumpCommand::class,
-        // 'ScheduleList' => ScheduleListCommand::class,
+        // 'ScheduleList' => \Illuminate\Console\Scheduling\ScheduleListCommand::class,
         // 'ScheduleClearCache' => ScheduleClearCacheCommand::class,
         // 'ScheduleTest' => ScheduleTestCommand::class,
         // 'ScheduleWork' => ScheduleWorkCommand::class,
@@ -80,7 +80,9 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'CastMake' => CastMakeCommand::class,
         // 'ChannelMake' => ChannelMakeCommand::class,
         // 'ComponentMake' => ComponentMakeCommand::class,
-        // 'ConsoleMake' => ConsoleMakeCommand::class,
+
+
+
         // 'ControllerMake' => ControllerMakeCommand::class,
         // 'EventGenerate' => EventGenerateCommand::class,
         // 'EventMake' => EventMakeCommand::class,
@@ -90,7 +92,20 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'ListenerMake' => ListenerMakeCommand::class,
         // 'MailMake' => MailMakeCommand::class,
         // 'MiddlewareMake' => MiddlewareMakeCommand::class,
+
         // 'ModelMake' => ModelMakeCommand::class,
+
+        // MigrationServiceProvider
+        // 'Migrate' => MigrateCommand::class,
+        // 'MigrateFresh' => FreshCommand::class,
+        // 'MigrateInstall' => InstallCommand::class,
+        // 'MigrateRefresh' => RefreshCommand::class,
+        // 'MigrateReset' => ResetCommand::class,
+        // 'MigrateRollback' => RollbackCommand::class,
+        // 'MigrateStatus' => StatusCommand::class,
+        // 'MigrateMake' => MigrateMakeCommand::class,
+
+
         // 'NotificationMake' => NotificationMakeCommand::class,
         // 'NotificationTable' => NotificationTableCommand::class,
         // 'ObserverMake' => ObserverMakeCommand::class,
@@ -126,9 +141,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
      */
     protected function registerKeyGenerateCommand()
     {
-        $this->app->singleton(KeyGenerateCommand::class, function ($app) {
-            return new KeyGenerateCommand($app['files']);
-        });
+        $this->app->singleton(KeyGenerateCommand::class);
     }
 
     /**

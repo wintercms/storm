@@ -11,7 +11,7 @@ class Helper
      * Converts a HTML array string to an identifier string.
      * HTML: user[location][city]
      * Result: user-location-city
-     * @param $string String to process
+     * @param string $string String to process
      * @return string
      */
     public static function nameToId($string)
@@ -23,7 +23,7 @@ class Helper
      * Converts a HTML named array string to a PHP array. Empty values are removed.
      * HTML: user[location][city]
      * PHP:  ['user', 'location', 'city']
-     * @param $string String to process
+     * @param string $string String to process
      * @return array
      */
     public static function nameToArray($string)
@@ -44,7 +44,7 @@ class Helper
         }
 
         $result = array_filter($result, function ($val) {
-            return strlen($val);
+            return strlen($val) > 0;
         });
 
         return $result;
@@ -52,26 +52,32 @@ class Helper
 
     /**
      * Reduces the field name hierarchy depth by $level levels.
+     * country[city][0][nestedform] turns into country[city][0] when reduced by 1 level;
      * country[city][0][street][0] turns into country[city][0] when reduced by 1 level;
+     * country[city][0][nestedform] turns into country when reduced by 2 levels;
      * country[city][0][street][0] turns into country when reduced by 2 levels;
      * etc.
-     *
-     * @param string $fieldName
-     * @param int $level
-     * @return string
      */
-    public static function reduceNameHierarchy($fieldName, $level)
+    public static function reduceNameHierarchy(string $fieldName, int $level) : string
     {
         $formName = self::nameToArray($fieldName);
-        $sliceLength = count($formName) - $level * 2;
 
-        if ($sliceLength <= 1) {
-            return $formName[0];
+        if (count($formName) <= $level) {
+            return "";
         }
 
-        $formName = array_slice($formName, 0, $sliceLength);
+        for ($i = 1; $i <= $level; $i++) {
+            $item = array_pop($formName);
+            if (is_numeric($item) && count($formName)) {
+                $item = array_pop($formName);
+            }
+        }
+        if (count($formName) < 2) {
+            return array_shift($formName) ?? "";
+        }
+
         $formNameFirst = array_shift($formName);
 
-        return $formNameFirst.'['.implode('][', $formName).']';
+        return $formNameFirst . '[' . implode('][', $formName) . ']';
     }
 }

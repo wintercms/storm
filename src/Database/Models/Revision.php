@@ -1,6 +1,5 @@
 <?php namespace Winter\Storm\Database\Models;
 
-use Db;
 use Winter\Storm\Database\Model;
 
 /**
@@ -21,7 +20,7 @@ class Revision extends Model
      */
     public function getNewValueAttribute($value)
     {
-        if ($this->cast == 'date' && !is_null($value)) {
+        if ($this->getAttribute('cast') === 'date' && !is_null($value)) {
             return $this->asDateTime($value);
         }
 
@@ -34,7 +33,7 @@ class Revision extends Model
      */
     public function getOldValueAttribute($value)
     {
-        if ($this->cast == 'date' && !is_null($value)) {
+        if ($this->getAttribute('cast') === 'date' && !is_null($value)) {
             return $this->asDateTime($value);
         }
 

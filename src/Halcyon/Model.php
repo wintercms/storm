@@ -15,19 +15,23 @@ use Exception;
 /**
  * This is a base template object. Equivalent to a Model in ORM.
  *
+ * @property string|null $fileName Halcyon models generally provide a filename of the model being manipulated.
+ * @property int|null $mtime Halcyon models generally provide a timestamp of last modification.
+ * @method \Illuminate\Support\MessageBag|null errors() If the Validation trait is attached to the model, this method will provide the validation errors.
+ *
  * @author Alexey Bobkov, Samuel Georges
  */
-class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
+class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
     use \Winter\Storm\Support\Traits\Emitter;
 
     /**
-     * @var string The data source for the model, a directory path.
+     * @var string|null The data source for the model, a directory path.
      */
     protected $datasource;
 
     /**
-     * @var string The container name associated with the model, eg: pages.
+     * @var string|null The container name associated with the model, eg: pages.
      */
     protected $dirName;
 
@@ -105,21 +109,21 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * The cache manager instance.
      *
-     * @var \Illuminate\Cache\CacheManager
+     * @var \Illuminate\Cache\CacheManager|null
      */
     protected static $cache;
 
     /**
      * The datasource resolver instance.
      *
-     * @var \Winter\Storm\Halcyon\Datasource\ResolverInterface
+     * @var \Winter\Storm\Halcyon\Datasource\ResolverInterface|null
      */
     protected static $resolver;
 
     /**
      * The event dispatcher instance.
      *
-     * @var \Illuminate\Contracts\Events\Dispatcher
+     * @var \Winter\Storm\Events\Dispatcher|null
      */
     protected static $dispatcher;
 
@@ -143,10 +147,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     protected static $booted = [];
 
     /**
-     * Create a new Halcyon model instance.
-     *
-     * @param  array  $attributes
-     * @return void
+     * @inheritDoc
      */
     public function __construct(array $attributes = [])
     {
@@ -238,11 +239,15 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
                 }
 
                 self::$eventMethod(function ($model) use ($method) {
-                    $model->fireEvent('model.' . $method);
-
                     if ($model->methodExists($method)) {
-                        return $model->$method();
+                        // Register the method as a listener with default priority
+                        // to allow for complete control over the execution order
+                        $model->bindEvent('model.' . $method, [$model, $method]);
                     }
+                    // First listener that returns a non-null result will cancel the
+                    // further propagation of the event; If that result is false, the
+                    // underlying action will get cancelled (e.g. creating, saving, deleting)
+                    return $model->fireEvent('model.' . $method, halt: true);
                 });
             }
         }
@@ -406,7 +411,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
 
     /**
      * Returns true if the object was loaded from the cache.
-     * @return boolean
+     * @return void
      */
     public function setLoadedFromCache($value)
     {
@@ -556,7 +561,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Get all of the models from the datasource.
      *
-     * @return \Winter\Storm\Halcyon\Collection|static[]
+     * @return \Winter\Storm\Halcyon\Collection
      */
     public static function all()
     {
@@ -679,7 +684,8 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
         /**
          * @see Winter\Storm\Database\Model::getAttributeValue
          */
-        if (($attr = $this->fireEvent('model.beforeGetAttribute', [$key], true)) !== null) {
+        $attr = $this->fireEvent('model.beforeGetAttribute', [$key], true);
+        if (!is_null($attr)) {
             return $attr;
         }
 
@@ -695,7 +701,8 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
         /**
          * @see Winter\Storm\Database\Model::getAttributeValue
          */
-        if (($_attr = $this->fireEvent('model.getAttribute', [$key, $value], true)) !== null) {
+        $_attr = $this->fireEvent('model.getAttribute', [$key, $value], true);
+        if (!is_null($_attr)) {
             return $_attr;
         }
 
@@ -978,12 +985,12 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      */
     protected function performDeleteOnModel()
     {
-        $this->newQuery()->delete($this->fileName);
+        $this->newQuery()->delete();
     }
 
     /**
      * Create a new native event for handling beforeFetch().
-     * @param Closure|string $callback
+     * @param \Closure|string $callback
      * @return void
      */
     public static function fetching($callback)
@@ -993,7 +1000,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
 
     /**
      * Create a new native event for handling afterFetch().
-     * @param Closure|string $callback
+     * @param \Closure|string $callback
      * @return void
      */
     public static function fetched($callback)
@@ -1211,7 +1218,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      * @param  array  $options
      * @return bool
      */
-    public function save(array $options = null)
+    public function save(?array $options = [])
     {
         return $this->saveInternal(['force' => false] + (array) $options);
     }
@@ -1241,14 +1248,14 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
         }
 
         if ($this->exists) {
-            $saved = $this->performUpdate($query, $options);
+            $saved = $this->performUpdate($query);
         }
         else {
-            $saved = $this->performInsert($query, $options);
+            $saved = $this->performInsert($query);
         }
 
         if ($saved) {
-            $this->finishSave($options);
+            $this->finishSave();
         }
 
         return $saved;
@@ -1257,10 +1264,9 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Finish processing on a successful save operation.
      *
-     * @param  array  $options
      * @return void
      */
-    protected function finishSave(array $options)
+    protected function finishSave()
     {
         $this->fireModelEvent('saved', false);
 
@@ -1272,11 +1278,10 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Perform a model update operation.
      *
-     * @param  Winter\Storm\Halcyon\Builder  $query
-     * @param  array  $options
+     * @param  \Winter\Storm\Halcyon\Builder  $query
      * @return bool
      */
-    protected function performUpdate(Builder $query, array $options = [])
+    protected function performUpdate(Builder $query)
     {
         $dirty = $this->getDirty();
 
@@ -1305,11 +1310,10 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Perform a model insert operation.
      *
-     * @param  Winter\Storm\Halcyon\Builder  $query
-     * @param  array  $options
+     * @param  \Winter\Storm\Halcyon\Builder  $query
      * @return bool
      */
-    protected function performInsert(Builder $query, array $options = [])
+    protected function performInsert(Builder $query)
     {
         if ($this->fireModelEvent('creating') === false) {
             return false;
@@ -1402,7 +1406,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Get the datasource for the model.
      *
-     * @return \Winter\Storm\Halcyon\Datasource
+     * @return \Winter\Storm\Halcyon\Datasource\DatasourceInterface
      */
     public function getDatasource()
     {
@@ -1436,7 +1440,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      * Resolve a datasource instance.
      *
      * @param  string|null  $datasource
-     * @return \Winter\Storm\Halcyon\Datasource
+     * @return \Winter\Storm\Halcyon\Datasource\DatasourceInterface
      */
     public static function resolveDatasource($datasource = null)
     {
@@ -1446,7 +1450,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Get the datasource resolver instance.
      *
-     * @return \Winter\Storm\Halcyon\DatasourceResolverInterface
+     * @return \Winter\Storm\Halcyon\Datasource\ResolverInterface
      */
     public static function getDatasourceResolver()
     {
@@ -1477,7 +1481,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Get the event dispatcher instance.
      *
-     * @return \Illuminate\Contracts\Events\Dispatcher
+     * @return \Winter\Storm\Events\Dispatcher
      */
     public static function getEventDispatcher()
     {
@@ -1487,7 +1491,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Set the event dispatcher instance.
      *
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $dispatcher
+     * @param  \Winter\Storm\Events\Dispatcher  $dispatcher
      * @return void
      */
     public static function setEventDispatcher(Dispatcher $dispatcher)
@@ -1508,7 +1512,7 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Get the cache manager instance.
      *
-     * @return \Illuminate\Cache\CacheManager
+     * @return \Illuminate\Cache\CacheManager|null
      */
     public static function getCacheManager()
     {
@@ -1539,7 +1543,8 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
     /**
      * Initializes the object properties from the cached data. The extra data
      * set here becomes available as attributes set on the model after fetch.
-     * @param array $cached The cached data array.
+     *
+     * @param mixed $item
      */
     public static function initCacheItem(&$item)
     {
@@ -1551,9 +1556,13 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      */
     public static function flushDuplicateCache()
     {
-        if (MemoryCacheManager::isEnabled() && self::getCacheManager() !== null) {
-            self::getCacheManager()->driver()->flushInternalCache();
+        if (!MemoryCacheManager::isEnabled() || is_null(self::getCacheManager())) {
+            return;
         }
+
+        /** @var \Winter\Storm\Halcyon\MemoryRepository */
+        $cacheDriver = self::getCacheManager()->driver();
+        $cacheDriver->flushInternalCache();
     }
 
     /**
@@ -1602,7 +1611,8 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      */
     public function __get($key)
     {
-        return $this->getAttribute($key);
+        // try the dynamic properties first, then the local attributes array
+        return $this->extendableGet($key) ?? $this->getAttribute($key);
     }
 
     /**
@@ -1715,6 +1725,10 @@ class Model extends Extendable implements ArrayAccess, Arrayable, Jsonable, Json
      */
     public static function __callStatic($method, $parameters)
     {
+        if ($method === 'extend') {
+            return parent::__callStatic($method, $parameters);
+        }
+
         $instance = new static;
 
         return call_user_func_array([$instance, $method], $parameters);

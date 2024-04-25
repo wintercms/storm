@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Exception;
 
-use Exception;
+use Throwable;
 use Winter\Storm\Html\HtmlBuilder;
 
 /**
@@ -17,9 +17,9 @@ class SystemException extends ExceptionBase
      *
      * @param string $message Error message.
      * @param int $code Error code.
-     * @param Exception $previous Previous exception.
+     * @param Throwable $previous Previous exception.
      */
-    public function __construct($message = "", $code = 0, Exception $previous = null)
+    public function __construct($message = "", $code = 0, Throwable $previous = null)
     {
         $message = HtmlBuilder::clean($message);
 

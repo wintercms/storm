@@ -5,6 +5,8 @@ use Winter\Storm\Support\Testing\Fakes\EventFake;
 
 class EventFakeTest extends TestCase
 {
+    protected EventFake $faker;
+
     public function setUp(): void
     {
         $this->faker = new EventFake(new Dispatcher);
@@ -14,7 +16,7 @@ class EventFakeTest extends TestCase
     {
         $event = 'event.fake.test';
 
-        $this->faker->fire($event);
+        $this->faker->dispatch($event);
         $this->faker->assertDispatched($event);
     }
 }
