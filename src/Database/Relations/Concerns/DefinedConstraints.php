@@ -15,7 +15,13 @@ trait DefinedConstraints
      */
     public function addDefinedConstraints()
     {
-        $args = $this->parent->getRelationDefinition($this->relationName);
+        if (isset($this->farParent)) {
+            // hasOneThrough / hasManyThrough relations
+            $parent = $this->farParent;
+        } else {
+            $parent = $this->parent;
+        }
+        $args = $parent->getRelationDefinition($this->relationName);
 
         $this->addDefinedConstraintsToRelation($this, $args);
 
@@ -62,13 +68,16 @@ trait DefinedConstraints
             if ($relation instanceof BelongsToManyBase) {
                 $relation->countMode = true;
             }
-
+            if (isset($relation->farParent)) {
+                $foreignKey = $relation->getQualifiedFirstKeyName();
+            } else {
+                $foreignKey = $relation->getForeignKey();
+            }
             $countSql = $this->parent->getConnection()->raw('count(*) as count');
-
             $relation
-                ->select($relation->getForeignKey(), $countSql)
-                ->groupBy($relation->getForeignKey())
-                ->orderBy($relation->getForeignKey())
+                ->select($foreignKey, $countSql)
+                ->groupBy($foreignKey)
+                ->orderBy($foreignKey)
             ;
         }
     }
