@@ -326,29 +326,35 @@ parameters:
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects array, int\\|null given\\.$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects array, int\\|null given\\.$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$currentPage \\(int\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$currentPage \\(int(\\|null)?\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#3 \\$columns \\(array\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$pageName \\(string\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#3 \\$columns \\(array\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$pageName \\(string\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#3 \\$pageName of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects string, array given\\.$#"
-			count: 1
+			message: "#^Parameter \\#3 \\$pageName of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects string, array given\\.$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#4 \\$pageName \\(string\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$page \\(int\\|null\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#4 \\$pageName \\(string\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$page \\(int\\|null\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: "#^Parameter \\#4 \\$page of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects int\\|null, string given.$#"
+			paths:
+				- src/Database/Relations/BelongsToMany.php
+				- src/Database/Relations/MorphToMany.php
 
 		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
@@ -681,28 +687,28 @@ parameters:
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects array, int\\|null given\\.$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects array, int\\|null given\\.$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$currentPage \\(int\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$currentPage \\(int(\\|null)?\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#3 \\$columns \\(array\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$pageName \\(string\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#3 \\$columns \\(array\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$pageName \\(string\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#3 \\$pageName of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects string, array given\\.$#"
-			count: 1
+			message: "#^Parameter \\#3 \\$pageName of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects string, array given\\.$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#4 \\$pageName \\(string\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$page \\(int\\|null\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#4 \\$pageName \\(string\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$page \\(int\\|null\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
