@@ -24,7 +24,7 @@ class Process extends BaseProcess
         $openBasedir = ini_get('open_basedir');
 
         if ($tty && $isUnix && !empty($openBasedir) && !@is_readable('/dev/tty')) {
-            throw new RuntimeException("\nYou have PHP open_basedir restrictions enabled.\nTTY mode has been disabled because access to /dev/tty is not allowed.\n");
+            throw new RuntimeException("You have PHP open_basedir restrictions enabled.\nTTY mode has been disabled because access to /dev/tty is not allowed.");
         }
 
         return parent::setTty($tty);
