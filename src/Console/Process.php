@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Console;
 
 use Symfony\Component\Process\Process as BaseProcess;
+use Winter\Storm\Exception\ApplicationException;
 
 /**
  * Process class
@@ -21,7 +22,7 @@ class Process extends BaseProcess
     public function setTty(bool $tty): static
     {
         if (($openBasedir = ini_get('open_basedir')) && !@is_readable('/dev/tty')) {
-            throw new \ApplicationException("\nYou have PHP open_basedir restricted for your environment.\nTTY mode has been disabled.\n");
+            throw new ApplicationException("\nYou have PHP open_basedir restricted for your environment.\nTTY mode has been disabled.\n");
         }
 
         return parent::setTty($tty);
