@@ -22,7 +22,7 @@ class Process extends BaseProcess
     {
         if ($tty && '/' === \DIRECTORY_SEPARATOR) {
             try {
-                is_readable('/dev/tty');
+                $readable = is_readable('/dev/tty');
             } catch (\Exception $e) {
                 throw new RuntimeException($e->getMessage());
             }
