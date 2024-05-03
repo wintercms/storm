@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Console;
 
 use Symfony\Component\Process\Process as BaseProcess;
+use Symfony\Component\Process\Exception\RuntimeException;
 
 /**
  * Process class
