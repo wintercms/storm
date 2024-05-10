@@ -12,7 +12,7 @@ use Symfony\Component\Process\Exception\RuntimeException;
 class Process extends BaseProcess
 {
     /**
-     * Enables or disables the TTY mode.
+     * Enables or disables TTY mode.
      *
      * @throws RuntimeException In case the TTY mode is not supported or /dev/tty is not accessible.
      */
@@ -20,7 +20,7 @@ class Process extends BaseProcess
     {
         if ($tty && '/' === \DIRECTORY_SEPARATOR) {
             try {
-                $readable = is_writable('/dev/tty');
+                $writable = is_writable('/dev/tty');
             } catch (\Throwable $e) {
                 throw new RuntimeException($e->getMessage());
             }
