@@ -20,7 +20,7 @@ class Process extends BaseProcess
     {
         if ($tty && '/' === \DIRECTORY_SEPARATOR) {
             try {
-                $readable = is_readable('/dev/tty');
+                $readable = is_writable('/dev/tty');
             } catch (\Throwable $e) {
                 throw new RuntimeException($e->getMessage());
             }
