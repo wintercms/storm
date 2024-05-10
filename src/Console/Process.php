@@ -26,7 +26,7 @@ class Process extends BaseProcess
         if ($tty && '/' === \DIRECTORY_SEPARATOR) {
             try {
                 // trigger exception if open_basedir restrictions prevent /dev/tty access
-                $exists = file_exists('/dev/tty');
+                $status = stat('/dev/tty');
             } catch (\Throwable $e) {
                 throw new RuntimeException($e->getMessage());
             }
