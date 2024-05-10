@@ -5,7 +5,12 @@ use Symfony\Component\Process\Exception\RuntimeException;
 
 /**
  * Process class
- * overrides Symfony Process
+ *
+ * Fixes this symfony issue:
+ *     https://github.com/symfony/symfony/issues/54874
+ *
+ * Not needed if the following PR gets merged:
+ *     https://github.com/symfony/symfony/pull/54863
  *
  * @author Marc Jauvin
  */
