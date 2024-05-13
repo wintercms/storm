@@ -5,12 +5,8 @@ use Winter\Storm\Database\Relations\HasOne;
 
 trait HasOneOrMany
 {
+    use Common;
     use DeferOneOrMany;
-
-    /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
 
     /**
      * Save the supplied related model with deferred binding support.
@@ -188,15 +184,5 @@ trait HasOneOrMany
     public function getOtherKey()
     {
         return $this->localKey;
-    }
-
-    /**
-     * Get the relationship name for the relationship.
-     *
-     * @return string
-     */
-    public function getRelationName()
-    {
-        return $this->relationName;
     }
 }

@@ -13,11 +13,6 @@ class MorphTo extends MorphToBase
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
 
-    /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
-
     public function __construct(Builder $query, Model $parent, $foreignKey, $otherKey, $type, $relationName)
     {
         $this->relationName = $relationName;

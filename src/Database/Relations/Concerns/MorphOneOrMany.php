@@ -5,12 +5,8 @@ use Winter\Storm\Database\Relations\MorphOne;
 
 trait MorphOneOrMany
 {
+    use Common;
     use DeferOneOrMany;
-
-    /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
 
     /**
      * Save the supplied related model with deferred binding support.
@@ -156,15 +152,5 @@ trait MorphOneOrMany
         else {
             $this->parent->unbindDeferred($this->relationName, $model, $sessionKey);
         }
-    }
-
-    /**
-     * Get the relationship name for the relationship.
-     *
-     * @return string
-     */
-    public function getRelationName()
-    {
-        return $this->relationName;
     }
 }

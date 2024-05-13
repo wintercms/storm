@@ -2,6 +2,8 @@
 
 trait BelongsOrMorphsTo
 {
+    use Common;
+
     /**
      * Associate the model instance to the given parent.
      *
@@ -84,15 +86,5 @@ trait BelongsOrMorphsTo
         $this->parent->fireEvent('model.relation.afterDissociate', [$this->relationName, $this->getRelated()]);
 
         return $result;
-    }
-
-    /**
-     * Get the relationship name for the relationship.
-     *
-     * @return string
-     */
-    public function getRelationName()
-    {
-        return $this->relationName;
     }
 }

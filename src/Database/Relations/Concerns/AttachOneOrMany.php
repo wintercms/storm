@@ -9,12 +9,8 @@ use Winter\Storm\Database\Relations\AttachOne;
 
 trait AttachOneOrMany
 {
+    use Common;
     use DeferOneOrMany;
-
-    /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
 
     /**
      * @var ?boolean Default value for file public or protected state.
@@ -358,15 +354,5 @@ trait AttachOneOrMany
     public function getOtherKey()
     {
         return $this->localKey;
-    }
-
-    /**
-     * Get the relationship name for the relationship.
-     *
-     * @return string
-     */
-    public function getRelationName()
-    {
-        return $this->relationName;
     }
 }

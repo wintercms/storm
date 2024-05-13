@@ -5,7 +5,9 @@ use Illuminate\Database\Eloquent\Model;
 
 trait BelongsOrMorphsToMany
 {
-        /**
+    use Common;
+
+    /**
      * @var boolean This relation object is a 'count' helper.
      */
     public $countMode = false;

@@ -14,11 +14,6 @@ class BelongsTo extends BelongsToBase
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
 
-    /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
-
     public function __construct(Builder $query, Model $child, $foreignKey, $ownerKey, $relationName)
     {
         $this->relationName = $relationName;

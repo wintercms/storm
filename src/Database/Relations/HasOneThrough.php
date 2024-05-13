@@ -10,12 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough as HasOneThroughBase;
  */
 class HasOneThrough extends HasOneThroughBase
 {
+    use Concerns/Common;
     use Concerns\DefinedConstraints;
-
-    /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
 
     /**
      * Create a new has many relationship instance.
@@ -41,15 +37,5 @@ class HasOneThrough extends HasOneThroughBase
 
         return in_array('Winter\Storm\Database\Traits\SoftDelete', $uses) ||
             in_array('Illuminate\Database\Eloquent\SoftDeletes', $uses);
-    }
-
-    /**
-     * Get the relationship name for the relationship.
-     *
-     * @return string
-     */
-    public function getRelationName()
-    {
-        return $this->relationName;
     }
 }
