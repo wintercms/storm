@@ -157,4 +157,14 @@ trait MorphOneOrMany
             $this->parent->unbindDeferred($this->relationName, $model, $sessionKey);
         }
     }
+
+    /**
+     * Get the relationship name for the relationship.
+     *
+     * @return string
+     */
+    public function getRelationName()
+    {
+        return $this->relationName;
+    }
 }
