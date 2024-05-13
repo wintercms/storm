@@ -85,4 +85,14 @@ trait BelongsOrMorphsTo
 
         return $result;
     }
+
+    /**
+     * Get the relationship name for the relationship.
+     *
+     * @return string
+     */
+    public function getRelationName()
+    {
+        return $this->relationName;
+    }
 }

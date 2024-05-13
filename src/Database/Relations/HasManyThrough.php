@@ -42,4 +42,14 @@ class HasManyThrough extends HasManyThroughBase
         return in_array('Winter\Storm\Database\Traits\SoftDelete', $uses) ||
             in_array('Illuminate\Database\Eloquent\SoftDeletes', $uses);
     }
+
+    /**
+     * Get the relationship name for the relationship.
+     *
+     * @return string
+     */
+    public function getRelationName()
+    {
+        return $this->relationName;
+    }
 }
