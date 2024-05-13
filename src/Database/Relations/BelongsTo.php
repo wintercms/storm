@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
  */
 class BelongsTo extends BelongsToBase
 {
-    use Concerns\BelongsOrMorphsTo;
+    use Concerns\BelongsOrMorphTo;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
 

@@ -1,6 +1,6 @@
 <?php namespace Winter\Storm\Database\Relations\Concerns;
 
-trait BelongsOrMorphsTo
+trait BelongsOrMorphTo
 {
     use Common;
 
