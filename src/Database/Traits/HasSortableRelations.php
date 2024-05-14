@@ -57,19 +57,18 @@ trait HasSortableRelations
         });
 
         foreach ($sortableRelations as $relationName => $column) {
-            $relation = $this->$relationName();
-            if (method_exists($relation, 'updateExistingPivot')) {
-                // Make sure all pivot-based defined sortable relations load the sort_order column as pivot data.
-                $definition = $this->getRelationDefinition($relationName);
-                $pivot = array_wrap(array_get($definition, 'pivot', []));
+            $realtionType = $this->getRelationType($relationName);
+            if (!in_array($realtionType, ['belongsToMany', 'morphToMany'])) {
+                continue;
+            }
+            $definition = $this->getRelationDefinition($relationName);
+            $pivot = array_wrap(array_get($definition, 'pivot', []));
 
-                if (!in_array($column, $pivot)) {
-                    $pivot[] = $column;
-                    $definition['pivot'] = $pivot;
-
-                    $relationType = $this->getRelationType($relationName);
-                    $this->$relationType[$relationName] = $definition;
-                }
+            if (!in_array($column, $pivot)) {
+                // Make sure the sort order column is available as pivot data.
+                $pivot[] = $column;
+                $definition['pivot'] = $pivot;
+                $this->$relationType[$relationName] = $definition;
             }
         }
     }
