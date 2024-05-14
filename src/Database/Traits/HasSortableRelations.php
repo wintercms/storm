@@ -57,8 +57,8 @@ trait HasSortableRelations
         });
 
         foreach ($sortableRelations as $relationName => $column) {
-            $realtionType = $this->getRelationType($relationName);
-            if (!in_array($realtionType, ['belongsToMany', 'morphToMany'])) {
+            $relationType = $this->getRelationType($relationName);
+            if (!in_array($relationType, ['belongsToMany', 'morphToMany'])) {
                 continue;
             }
             $definition = $this->getRelationDefinition($relationName);
