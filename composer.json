@@ -45,6 +45,7 @@
         "nikic/php-parser": "^4.10",
         "scssphp/scssphp": "~1.0",
         "symfony/console": "^6.4|^7.0",
+        "symfony/process": "^7.1",
         "symfony/yaml": "^6.4|^7.0",
         "twig/twig": "<3.9",
         "wikimedia/less.php": "~3.0",
