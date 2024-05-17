@@ -1,6 +1,6 @@
 <?php
 
-class HasSortableRelationsTest extends DbTestCase
+class HasSortableRelationsTest extends TestCase
 {
     public function testForInfiniteLoop()
     {
