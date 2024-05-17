@@ -48,5 +48,8 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --no-scripts
 
+      - name: Clear phpstan cache
+        run: ./vendor/bin/phpstan clear-result-cache
+
       - name: Analyse code
         run: ./vendor/bin/phpstan analyse --memory-limit=2G --no-progress
