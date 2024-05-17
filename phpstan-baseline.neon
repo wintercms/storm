@@ -133,9 +133,3 @@ parameters:
 				- src/Validation/Factory.php
 				- src/Database/Connections/Connection.php
 				- src/Database/Traits/HasConnection.php
-
-		-
-			message: "#^Call to an undefined method Illuminate\\\\Contracts\\\\Cache\\\\Repository::tags\\(\\)\\.$#"
-			count: 0
-			path: src/Halcyon/Builder.php
-
