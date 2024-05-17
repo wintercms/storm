@@ -703,6 +703,7 @@ class Builder
      */
     protected function getCache()
     {
+        $var = "value";
         $cache = $this->model->getCacheManager()->driver($this->cacheDriver);
 
         return $this->cacheTags ? $cache->tags($this->cacheTags) : $cache;
