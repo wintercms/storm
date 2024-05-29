@@ -800,7 +800,7 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the $type is invalid or if the $name is already in use
      */
-    protected function addRelation(string $type, string $name, array $config): void
+    protected function addRelation(string $type, string $name, array $config, bool $override = false): void
     {
         if (!in_array($type, static::$relationTypes)) {
             throw new InvalidArgumentException(
@@ -813,7 +813,7 @@ trait HasRelationships
             );
         }
 
-        if ($this->hasRelation($name) || isset($this->{$name})) {
+        if (!$override && ($this->hasRelation($name) || isset($this->{$name}))) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Cannot add the "%s" relation to %s, it conflicts with an existing relation, attribute, or property.',
@@ -831,9 +831,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addHasOneRelation(string $name, array $config): void
+    public function addHasOneRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('hasOne', $name, $config);
+        $this->addRelation('hasOne', $name, $config, $override);
     }
 
     /**
@@ -841,9 +841,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addHasManyRelation(string $name, array $config): void
+    public function addHasManyRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('hasMany', $name, $config);
+        $this->addRelation('hasMany', $name, $config, $override);
     }
 
     /**
@@ -851,9 +851,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addBelongsToRelation(string $name, array $config): void
+    public function addBelongsToRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('belongsTo', $name, $config);
+        $this->addRelation('belongsTo', $name, $config, $override);
     }
 
     /**
@@ -861,9 +861,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addBelongsToManyRelation(string $name, array $config): void
+    public function addBelongsToManyRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('belongsToMany', $name, $config);
+        $this->addRelation('belongsToMany', $name, $config, $override);
     }
 
     /**
@@ -871,9 +871,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addMorphToRelation(string $name, array $config): void
+    public function addMorphToRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('morphTo', $name, $config);
+        $this->addRelation('morphTo', $name, $config, $override);
     }
 
     /**
@@ -881,9 +881,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addMorphOneRelation(string $name, array $config): void
+    public function addMorphOneRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('morphOne', $name, $config);
+        $this->addRelation('morphOne', $name, $config, $override);
     }
 
     /**
@@ -891,9 +891,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addMorphManyRelation(string $name, array $config): void
+    public function addMorphManyRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('morphMany', $name, $config);
+        $this->addRelation('morphMany', $name, $config, $override);
     }
 
     /**
@@ -901,9 +901,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addMorphToManyRelation(string $name, array $config): void
+    public function addMorphToManyRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('morphToMany', $name, $config);
+        $this->addRelation('morphToMany', $name, $config, $override);
     }
 
     /**
@@ -911,9 +911,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addMorphedByManyRelation(string $name, array $config): void
+    public function addMorphedByManyRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('morphedByMany', $name, $config);
+        $this->addRelation('morphedByMany', $name, $config, $override);
     }
 
     /**
@@ -921,9 +921,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addAttachOneRelation(string $name, array $config): void
+    public function addAttachOneRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('attachOne', $name, $config);
+        $this->addRelation('attachOne', $name, $config, $override);
     }
 
     /**
@@ -931,9 +931,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addAttachManyRelation(string $name, array $config): void
+    public function addAttachManyRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('attachMany', $name, $config);
+        $this->addRelation('attachMany', $name, $config, $override);
     }
 
     /**
@@ -941,9 +941,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addHasOneThroughRelation(string $name, array $config): void
+    public function addHasOneThroughRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('hasOneThrough', $name, $config);
+        $this->addRelation('hasOneThrough', $name, $config, $override);
     }
 
     /**
@@ -951,9 +951,9 @@ trait HasRelationships
      *
      * @throws InvalidArgumentException if the provided relationship is already defined
      */
-    public function addHasManyThroughRelation(string $name, array $config): void
+    public function addHasManyThroughRelation(string $name, array $config, bool $override = false): void
     {
-        $this->addRelation('hasManyThrough', $name, $config);
+        $this->addRelation('hasManyThrough', $name, $config, $override);
     }
 
     /**
