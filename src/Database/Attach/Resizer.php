@@ -500,6 +500,8 @@ class Resizer
                 // The IMG_AVIF constant is available starting from PHP 8.1.0. It will need to be checked until the minimum system requirements are bumped.
                 if (defined('IMG_AVIF') && (imagetypes() & IMG_AVIF)) {
                     imageavif($image, $savePath, $imageQuality);
+                } else {
+                    throw new Exception('AVIF support is not enabled.');
                 }
                 break;
 
