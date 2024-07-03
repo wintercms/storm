@@ -73,7 +73,6 @@ parameters:
 				- "#^Call to an undefined method Illuminate\\\\Database\\\\Query\\\\Builder::lists\\(\\)\\.$#"
 				- "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\(Attach|(Belongs|Morph)To)(One|Many)::(flushDuplicateCache|getRelationExistenceQueryForSelfJoin)\\(\\)\\.$#"
 				- "#^Call to private method .+ of parent class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\(Has|Morph)(One|Many)\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\.$#"
-				- "#^If condition is always true\\.$#"
 			path: src/Database/Relations/*.php
 
 		-
@@ -126,11 +125,6 @@ parameters:
 				- "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Support\\\\Testing\\\\Fakes\\\\MailFake::queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Support\\\\Testing\\\\Fakes\\\\MailFake::queue\\(\\)$#"
 				- "#^Return type \\(void\\) of method Winter\\\\Storm\\\\Support\\\\Testing\\\\Fakes\\\\MailFake::send\\(\\) should be compatible with return type \\(Illuminate\\\\Mail\\\\SentMessage\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\Mailer::send\\(\\)$#"
 			path: src/Support/Testing/Fakes/MailFake.php
-
-		-
-			message: "#^Call to function is_null\\(\\) with Closure will always evaluate to false\\.$#"
-			count: 1
-			path: src/Validation/Factory.php
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Routing\\\\Router\\:\\:before\\(\\)\\.$#"
