@@ -12,7 +12,6 @@ use Winter\Storm\Filesystem\PathResolver;
 use Winter\Storm\Foundation\ProviderRepository;
 use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
-use Winter\Storm\Foundation\Providers\MakerServiceProvider;
 use Winter\Storm\Router\RoutingServiceProvider;
 use Winter\Storm\Support\Collection;
 use Winter\Storm\Support\Str;
@@ -110,8 +109,6 @@ class Application extends ApplicationBase
         $this->register(new LogServiceProvider($this));
 
         $this->register(new RoutingServiceProvider($this));
-
-        $this->register(new MakerServiceProvider($this));
 
         $this->register(new ExecutionContextProvider($this));
 
@@ -299,29 +296,6 @@ class Application extends ApplicationBase
         }
 
         return $path;
-    }
-
-    /**
-     * Resolve the given type from the container.
-     *
-     * (Overriding Container::make)
-     *
-     * @param  string  $abstract
-     * @return mixed
-     */
-    public function make($abstract, array $parameters = [])
-    {
-        $abstract = $this->getAlias($abstract);
-
-        if (isset($this->deferredServices[$abstract])) {
-            $this->loadDeferredProvider($abstract);
-        }
-
-        if ($parameters) {
-            return $this->make(Maker::class)->make($abstract, $parameters);
-        }
-
-        return parent::make($abstract);
     }
 
     /**
