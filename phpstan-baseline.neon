@@ -128,17 +128,6 @@ parameters:
 			path: src/Support/Testing/Fakes/MailFake.php
 
 		-
-			message: "#^Call to function is_null\\(\\) with (Closure|Doctrine\\\\DBAL\\\\Connection) will always evaluate to false\\.$#"
-			paths:
-				- src/Validation/Factory.php
-				- src/Database/Connections/Connection.php
-				- src/Database/Traits/HasConnection.php
-
-		-
-			message: "#^Call to an undefined method Illuminate\\\\Contracts\\\\Cache\\\\Repository::tags\\(\\)\\.$#"
-			path: src/Halcyon/Builder.php
-
-		-
 			message: "#^Call to function is_null\\(\\) with Closure will always evaluate to false\\.$#"
 			count: 1
 			path: src/Validation/Factory.php
