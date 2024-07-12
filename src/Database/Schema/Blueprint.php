@@ -18,7 +18,7 @@ class Blueprint extends BaseBlueprint
     {
         $columns = is_array($columns) ? $columns : func_get_args();
 
-        $columns = collect($columns)->filter(function($column) {
+        $columns = collect($columns)->filter(function ($column) {
             return Schema::hasColumn($this->getTable(), $column);
         })->values()->all();
 
