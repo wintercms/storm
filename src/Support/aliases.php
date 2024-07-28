@@ -233,12 +233,10 @@ class_alias(\Winter\Storm\Foundation\Exception\Handler::class, \October\Rain\Fou
 class_alias(\Winter\Storm\Foundation\Http\Kernel::class, \October\Rain\Foundation\Http\Kernel::class);
 class_alias(\Winter\Storm\Foundation\Http\Middleware\CheckForMaintenanceMode::class, \October\Rain\Foundation\Http\Middleware\CheckForMaintenanceMode::class);
 class_alias(\Winter\Storm\Foundation\Http\Middleware\CheckForTrustedHost::class, \October\Rain\Foundation\Http\Middleware\CheckForTrustedHost::class);
-class_alias(\Winter\Storm\Foundation\Maker::class, \October\Rain\Foundation\Maker::class);
 class_alias(\Winter\Storm\Foundation\Providers\ArtisanServiceProvider::class, \October\Rain\Foundation\Providers\ArtisanServiceProvider::class);
 class_alias(\Winter\Storm\Foundation\Providers\ConsoleSupportServiceProvider::class, \October\Rain\Foundation\Providers\ConsoleSupportServiceProvider::class);
 class_alias(\Winter\Storm\Foundation\Providers\ExecutionContextProvider::class, \October\Rain\Foundation\Providers\ExecutionContextProvider::class);
 class_alias(\Winter\Storm\Foundation\Providers\LogServiceProvider::class, \October\Rain\Foundation\Providers\LogServiceProvider::class);
-class_alias(\Winter\Storm\Foundation\Providers\MakerServiceProvider::class, \October\Rain\Foundation\Providers\MakerServiceProvider::class);
 
 /**
  * Alias October\Rain\Halcyon

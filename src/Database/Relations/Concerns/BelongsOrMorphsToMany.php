@@ -242,7 +242,27 @@ trait BelongsOrMorphsToMany
     {
         $this->query->addSelect($this->shouldSelect($columns));
 
-        $paginator = $this->query->paginate($perPage, $currentPage, $columns);
+        $paginator = $this->query->paginate($perPage, $currentPage, $columns, $pageName);
+
+        $this->hydratePivotRelation($paginator->items());
+
+        return $paginator;
+    }
+
+    /**
+     * Paginate the given query into a simple paginator.
+     *
+     * @param  int|null  $perPage
+     * @param  int|null  $currentPage
+     * @param  array  $columns
+     * @param  string  $pageName
+     * @return \Illuminate\Contracts\Pagination\Paginator
+     */
+    public function simplePaginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page')
+    {
+        $this->query->addSelect($this->shouldSelect($columns));
+
+        $paginator = $this->query->simplePaginate($perPage, $currentPage, $columns, $pageName);
 
         $this->hydratePivotRelation($paginator->items());
 

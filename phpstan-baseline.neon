@@ -142,7 +142,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/AttachMany.php
 
 		-
@@ -177,7 +177,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/AttachOne.php
 
 		-
@@ -222,7 +222,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/BelongsTo.php
 
 		-
@@ -272,7 +272,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:getRelationDefinition\\(\\)\\.$#"
-			count: 3
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
@@ -292,7 +292,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
@@ -326,29 +326,35 @@ parameters:
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects array, int\\|null given\\.$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects array, int\\|null given\\.$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$currentPage \\(int\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$currentPage \\(int(\\|null)?\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#3 \\$columns \\(array\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$pageName \\(string\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#3 \\$columns \\(array\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$pageName \\(string\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#3 \\$pageName of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects string, array given\\.$#"
-			count: 1
+			message: "#^Parameter \\#3 \\$pageName of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects string, array given\\.$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
 
 		-
-			message: "#^Parameter \\#4 \\$pageName \\(string\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$page \\(int\\|null\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#4 \\$pageName \\(string\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$page \\(int\\|null\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: "#^Parameter \\#4 \\$page of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects int\\|null, string given.$#"
+			paths:
+				- src/Database/Relations/BelongsToMany.php
+				- src/Database/Relations/MorphToMany.php
 
 		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
@@ -357,7 +363,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/HasMany.php
 
 		-
@@ -402,7 +408,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/HasManyThrough.php
 
 		-
@@ -426,13 +432,18 @@ parameters:
 			path: src/Database/Relations/HasManyThrough.php
 
 		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getQualifiedFirstKeyName\\(\\)\\.$#"
+			count: 12
+			path: src/Database/Relations/Concerns/DefinedConstraints.php
+
+		-
 			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\:\\:\\$countMode\\.$#"
 			count: 1
 			path: src/Database/Relations/HasOne.php
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/HasOne.php
 
 		-
@@ -467,7 +478,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/HasOneThrough.php
 
 		-
@@ -497,7 +508,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/MorphMany.php
 
 		-
@@ -542,7 +553,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/MorphOne.php
 
 		-
@@ -582,7 +593,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/MorphTo.php
 
 		-
@@ -612,7 +623,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 3
+			count: 1
 			path: src/Database/Relations/MorphToMany.php
 
 		-
@@ -646,28 +657,28 @@ parameters:
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects array, int\\|null given\\.$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$columns of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects array, int\\|null given\\.$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#2 \\$currentPage \\(int\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$currentPage \\(int(\\|null)?\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$columns \\(array\\<int, mixed\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#3 \\$columns \\(array\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$pageName \\(string\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#3 \\$columns \\(array\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$pageName \\(string\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#3 \\$pageName of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\) expects string, array given\\.$#"
-			count: 1
+			message: "#^Parameter \\#3 \\$pageName of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects string, array given\\.$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: "#^Parameter \\#4 \\$pageName \\(string\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:paginate\\(\\) should be compatible with parameter \\$page \\(int\\|null\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:paginate\\(\\)$#"
-			count: 1
+			message: "#^Parameter \\#4 \\$pageName \\(string\\) of method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany::(simpleP|p)aginate\\(\\) should be compatible with parameter \\$page \\(int\\|null\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\)$#"
+			count: 2
 			path: src/Database/Relations/MorphToMany.php
 
 		-
@@ -734,3 +745,13 @@ parameters:
 			message: "#^Call to function is_null\\(\\) with Closure will always evaluate to false\\.$#"
 			count: 1
 			path: src/Validation/Factory.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Routing\\\\Router\\:\\:before\\(\\)\\.$#"
+			count: 1
+			path: src/Foundation/Application.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Routing\\\\Router\\:\\:after\\(\\)\\.$#"
+			count: 1
+			path: src/Foundation/Application.php

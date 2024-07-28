@@ -40,7 +40,7 @@ class File extends Model
     ];
 
     /**
-     * @var string[] The attributes that are mass assignable.
+     * @var array<int, string> The attributes that are mass assignable.
      */
     protected $fillable = [
         'file_name',
@@ -62,7 +62,7 @@ class File extends Model
     /**
      * @var string[] Known image extensions.
      */
-    public static $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    public static $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
 
     /**
      * @var array<int, string> Hidden fields from array/json access
@@ -91,6 +91,7 @@ class File extends Model
         'jpg'  => 'image/jpeg',
         'jpeg' => 'image/jpeg',
         'webp' => 'image/webp',
+        'avif' => 'image/avif',
         'pdf'  => 'application/pdf',
         'svg'  => 'image/svg+xml',
     ];

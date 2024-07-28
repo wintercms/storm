@@ -17,11 +17,9 @@ trait DefinedConstraints
      */
     public function addDefinedConstraints()
     {
-        if ($this instanceof HasOneThrough || $this instanceof HasManyThrough) {
-            $args = $this->farParent->getRelationDefinition($this->relationName);
-        } else {
-            $args = $this->parent->getRelationDefinition($this->relationName);
-        }
+        $args = ($this instanceof HasOneThrough || $this instanceof HasManyThrough)
+            ? $this->farParent->getRelationDefinition($this->relationName)
+            : $this->parent->getRelationDefinition($this->relationName);
 
         $this->addDefinedConstraintsToRelation($this, $args);
         $this->addDefinedConstraintsToQuery($this, $args);
@@ -68,14 +66,11 @@ trait DefinedConstraints
                 $relation->countMode = true;
             }
 
-            if ($relation instanceof HasOneThrough || $relation instanceof HasManyThrough) {
-                $foreignKey = $relation->getQualifiedFirstKeyName();
-            } else {
-                $foreignKey = $relation->getForeignKey();
-            }
+            $foreignKey = ($relation instanceof HasOneThrough || $relation instanceof HasManyThrough)
+                ? $relation->getQualifiedFirstKeyName()
+                : $relation->getForeignKey();
 
             $countSql = $this->parent->getConnection()->raw('count(*) as count');
-
             $relation
                 ->select($foreignKey, $countSql)
                 ->groupBy($foreignKey)

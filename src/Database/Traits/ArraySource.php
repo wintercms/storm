@@ -1,4 +1,6 @@
-<?php namespace Winter\Storm\Database\Traits;
+<?php
+
+namespace Winter\Storm\Database\Traits;
 
 use ReflectionClass;
 use Illuminate\Database\QueryException;
@@ -54,8 +56,10 @@ trait ArraySource
      *
      * This method may be overwritten to specify a custom data provider. It should always return an array of
      * associative arrays, with column names for keys and a singular value for each column.
+     *
+     * @return \Traversable|array
      */
-    public function getRecords(): array
+    public function getRecords()
     {
         if ($this->propertyExists('records')) {
             if (!is_array($this->records)) {
@@ -108,12 +112,21 @@ trait ArraySource
             File::put($this->arraySourceGetDbPath(), '');
         }
 
-        $records = $this->getRecords();
-
         $this->arraySourceCreateTable();
 
-        foreach (array_chunk($records, $this->arraySourceGetChunkSize()) as $inserts) {
-            static::insert($inserts);
+        $chunk = [];
+
+        foreach ($this->getRecords() as $insert) {
+            $chunk[] = $insert;
+
+            if (count($chunk) >= $this->arraySourceGetChunkSize()) {
+                static::insert($chunk);
+                $chunk = [];
+            }
+        }
+
+        if (count($chunk)) {
+            static::insert($chunk);
         }
     }
 
@@ -130,12 +143,22 @@ trait ArraySource
                 $schema = ($this->propertyExists('recordSchema'))
                     ? $this->recordSchema
                     : [];
-                $firstRecord = $this->getRecords()[0] ?? [];
 
-                if (empty($schema) && empty($firstRecord)) {
-                    throw new ApplicationException(
-                        'A model using the ArraySource trait must either provide "$records" or "$recordSchema" as an array.'
-                    );
+                $firstRecord = [];
+
+                // Otherwise, detect the schema from the first record
+                if (empty($schema)) {
+                    foreach ($this->getRecords() as $record) {
+                        $firstRecord = $record;
+                        break;
+                    }
+
+                    if (empty($schema) && empty($firstRecord)) {
+                        throw new ApplicationException(
+                            'A model using the ArraySource trait must either provide "$records" or "$recordSchema"
+                            as an array.'
+                        );
+                    }
                 }
 
                 // Add incrementing field based on the primary key if the key is not found in the first record or schema
@@ -222,6 +245,10 @@ trait ArraySource
             return 'dateTime';
         }
 
+        if (is_array($value) || is_object($value)) {
+            return 'text';
+        }
+
         return 'string';
     }
 
@@ -303,6 +330,6 @@ trait ArraySource
      */
     protected function arraySourceGetChunkSize(): int
     {
-        return 100;
+        return 50;
     }
 }

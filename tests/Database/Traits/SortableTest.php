@@ -11,7 +11,7 @@ class SortableTest extends DbTestCase
         $model = new TestSortableModel();
         $query = $model->newQuery()->toSql();
 
-        $this->assertEquals('select * from "test" order by "sort_order" asc', $query);
+        $this->assertEquals('select * from "test" order by "test"."sort_order" asc', $query);
     }
 
     public function testCustomSortOrderByIsAutomaticallyAdded()
@@ -19,7 +19,7 @@ class SortableTest extends DbTestCase
         $model = new TestCustomSortableModel();
         $query = $model->newQuery()->toSql();
 
-        $this->assertEquals('select * from "test" order by "rank" asc', $query);
+        $this->assertEquals('select * from "test" order by "test"."rank" asc', $query);
     }
 
     public function testOrderByCanBeOverridden()
