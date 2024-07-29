@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Winter\Storm\Database\Pivot;
 
 class BelongsToMany extends BelongsToManyBase implements Relation
 {
@@ -33,6 +34,14 @@ class BelongsToMany extends BelongsToManyBase implements Relation
     ) {
         parent::__construct($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName);
         $this->extendableRelationConstruct();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPivotClass()
+    {
+        return $this->using ?? Pivot::class;
     }
 
     /**

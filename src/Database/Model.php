@@ -849,12 +849,10 @@ class Model extends EloquentModel implements ModelInterface
      */
     public function newRelationPivot($relationName, $parent, $attributes, $table, $exists)
     {
-        $definition = $this->getRelationDefinition($relationName);
+        $relation = $this->{$relationName}();
+        $pivotModel = $relation->getPivotClass();
 
-        if (!is_null($definition) && array_key_exists('pivotModel', $definition)) {
-            $pivotModel = $definition['pivotModel'];
-            return $pivotModel::fromAttributes($parent, $attributes, $table, $exists);
-        }
+        return $pivotModel::fromAttributes($parent, $attributes, $table, $exists);
     }
 
     //
