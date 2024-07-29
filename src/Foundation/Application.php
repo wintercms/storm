@@ -327,7 +327,7 @@ class Application extends ApplicationBase
      */
     public function error(Closure $callback)
     {
-        $this->make('Illuminate\Contracts\Debug\ExceptionHandler')->error($callback);
+        $this->make('Illuminate\Contracts\Debug\ExceptionHandler')->error($callback); // @phpstan-ignore-line
     }
 
     /**
