@@ -47,7 +47,7 @@ trait CanBeCounted
     /**
      * Mark the relationship as a count-only relationship.
      */
-    public function countOnly(): Builder
+    public function countOnly(): static
     {
         $this->countOnly = true;
 
@@ -65,7 +65,6 @@ trait CanBeCounted
         $countSql = $parent->getConnection()->raw('count(*) as count');
 
         return $this
-            ->getBaseQuery()
             ->select($foreignKey, $countSql)
             ->groupBy($foreignKey)
             ->orderBy($foreignKey);
@@ -87,23 +86,5 @@ trait CanBeCounted
     public function isCountOnly(): bool
     {
         return $this->countOnly;
-    }
-
-    public function applyCountQueryToRelation(Relation $relation)
-    {
-        if ($relation instanceof BelongsToMany) {
-            $relation->countMode = true;
-        }
-
-        $foreignKey = ($relation instanceof HasOneThrough || $relation instanceof HasManyThrough)
-            ? $relation->getQualifiedFirstKeyName()
-            : $relation->getForeignKey();
-
-        $countSql = $this->parent->getConnection()->raw('count(*) as count');
-        $relation
-            ->select($foreignKey, $countSql)
-            ->groupBy($foreignKey)
-            ->orderBy($foreignKey)
-        ;
     }
 }
