@@ -853,7 +853,7 @@ class Model extends EloquentModel implements ModelInterface
 
         if (!is_null($definition) && array_key_exists('pivotModel', $definition)) {
             $pivotModel = $definition['pivotModel'];
-            return $pivotModel::fromAttributes($parent, $attributes, $table, $exists);
+            return $pivotModel::fromRawAttributes($parent, $attributes, $table, $exists);
         }
     }
 
