@@ -156,16 +156,6 @@ parameters:
 			path: src/Database/Relations/AttachMany.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/AttachMany.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/AttachMany.php
-
-		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:withDefault\\(\\)\\.$#"
 			count: 1
 			path: src/Database/Relations/AttachOne.php
@@ -182,16 +172,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\AttachOne\\:\\:getRelationExistenceQueryForSelfJoin\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/AttachOne.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/AttachOne.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
 			count: 1
 			path: src/Database/Relations/AttachOne.php
 
@@ -222,16 +202,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsTo\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/BelongsTo.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/BelongsTo.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
 			count: 1
 			path: src/Database/Relations/BelongsTo.php
 
@@ -297,16 +267,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\BelongsToMany\\:\\:flushDuplicateCache\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/BelongsToMany.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/BelongsToMany.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
 			count: 1
 			path: src/Database/Relations/BelongsToMany.php
 
@@ -386,16 +346,6 @@ parameters:
 			path: src/Database/Relations/HasMany.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasMany.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasMany.php
-
-		-
 			message: "#^Call to private method update\\(\\) of parent class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\HasMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\.$#"
 			count: 1
 			path: src/Database/Relations/HasMany.php
@@ -426,16 +376,6 @@ parameters:
 			path: src/Database/Relations/HasManyThrough.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasManyThrough.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasManyThrough.php
-
-		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:withDefault\\(\\)\\.$#"
 			count: 1
 			path: src/Database/Relations/HasOne.php
@@ -447,16 +387,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:withTimestamps\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasOne.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasOne.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
 			count: 1
 			path: src/Database/Relations/HasOne.php
 
@@ -477,16 +407,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:withTimestamps\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasOneThrough.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/HasOneThrough.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
 			count: 1
 			path: src/Database/Relations/HasOneThrough.php
 
@@ -515,15 +435,6 @@ parameters:
 			count: 1
 			path: src/Database/Relations/MorphMany.php
 
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphMany.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphMany.php
 
 		-
 			message: "#^Call to private method update\\(\\) of parent class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphMany\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\.$#"
@@ -561,16 +472,6 @@ parameters:
 			path: src/Database/Relations/MorphOne.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphOne.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphOne.php
-
-		-
 			message: "#^Call to private method update\\(\\) of parent class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOne\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\.$#"
 			count: 2
 			path: src/Database/Relations/MorphOne.php
@@ -601,16 +502,6 @@ parameters:
 			path: src/Database/Relations/MorphTo.php
 
 		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphTo.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphTo.php
-
-		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation\\:\\:withDefault\\(\\)\\.$#"
 			count: 1
 			path: src/Database/Relations/MorphToMany.php
@@ -632,16 +523,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\MorphToMany\\:\\:flushDuplicateCache\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphToMany.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:getForeignKey\\(\\)\\.$#"
-			count: 1
-			path: src/Database/Relations/MorphToMany.php
-
-		-
-			message: "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\Relation\\:\\:select\\(\\)\\.$#"
 			count: 1
 			path: src/Database/Relations/MorphToMany.php
 
