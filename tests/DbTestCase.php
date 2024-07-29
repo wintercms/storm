@@ -4,11 +4,8 @@ namespace Winter\Storm\Tests;
 
 use ReflectionClass;
 use Illuminate\Database\Schema\Builder;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\Console\Output\BufferedOutput;
-use Winter\Storm\Database\Connectors\ConnectionFactory;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Pivot;
 use Winter\Storm\Events\Dispatcher;
@@ -24,6 +21,8 @@ use Winter\Storm\Events\Dispatcher;
  */
 class DbTestCase extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @var string[] Stores models that have been automatically migrated.
      */
@@ -32,15 +31,6 @@ class DbTestCase extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-
-        $config = [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-        ];
-        App::make(ConnectionFactory::class)->make($config, 'testing');
-        DB::setDefaultConnection('testing');
-        Artisan::call('migrate', ['--database' => 'testing', '--path' => '../../../../src/Database/Migrations']);
-
         Model::setEventDispatcher($this->modelDispatcher());
     }
 
@@ -48,7 +38,6 @@ class DbTestCase extends TestCase
     {
         $this->flushModelEventListeners();
         $this->rollbackModels();
-        Artisan::call('migrate:rollback', ['--database' => 'testing', '--path' => '../../../../src/Database/Migrations']);
 
         parent::tearDown();
     }
@@ -134,5 +123,10 @@ class DbTestCase extends TestCase
         }
 
         Model::flushEventListeners();
+    }
+
+    protected function defineDatabaseMigrations()
+    {
+        $this->loadMigrationsFrom(dirname(__DIR__) . '/src/Database/Migrations');
     }
 }
