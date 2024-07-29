@@ -550,13 +550,16 @@ trait HasRelationships
                 class_uses_recursive($relation)
             )
             && (($definition['count'] ?? false) === true)
+            && $addConstraints
         ) {
             $relation = $relation->countOnly();
         }
 
+        $relation->addDefinedConstraintsToRelation();
+
         if ($addConstraints) {
             // Add defined constraints
-            $relation->addDefinedConstraints();
+            $relation->addDefinedConstraintsToQuery();
         }
 
         return $relation;

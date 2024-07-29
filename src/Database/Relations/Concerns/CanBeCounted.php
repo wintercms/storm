@@ -2,6 +2,11 @@
 
 namespace Winter\Storm\Database\Relations\Concerns;
 
+use Winter\Storm\Database\Relations\BelongsToMany;
+use Winter\Storm\Database\Relations\HasManyThrough;
+use Winter\Storm\Database\Relations\HasOneThrough;
+use Winter\Storm\Database\Relations\Relation;
+
 /**
  * This trait is used to mark certain relationships as being a counter only.
  *
@@ -45,6 +50,23 @@ trait CanBeCounted
     {
         $this->countOnly = true;
 
+        if ($this instanceof BelongsToMany) {
+            $this->countMode = true;
+        }
+
+        $foreignKey = ($this instanceof HasOneThrough || $this instanceof HasManyThrough)
+            ? $this->getQualifiedFirstKeyName()
+            : $this->getForeignKey();
+        $parent = ($this instanceof HasOneThrough || $this instanceof HasManyThrough)
+            ? $this->farParent
+            : $this->parent;
+
+        $countSql = $this->parent->getConnection()->raw('count(*) as count');
+        $this
+            ->select($foreignKey, $countSql)
+            ->groupBy($foreignKey)
+            ->orderBy($foreignKey);
+
         return $this;
     }
 
@@ -64,5 +86,23 @@ trait CanBeCounted
     public function isCountOnly(): bool
     {
         return $this->countOnly;
+    }
+
+    public function applyCountQueryToRelation(Relation $relation)
+    {
+        if ($relation instanceof BelongsToMany) {
+            $relation->countMode = true;
+        }
+
+        $foreignKey = ($relation instanceof HasOneThrough || $relation instanceof HasManyThrough)
+            ? $relation->getQualifiedFirstKeyName()
+            : $relation->getForeignKey();
+
+        $countSql = $this->parent->getConnection()->raw('count(*) as count');
+        $relation
+            ->select($foreignKey, $countSql)
+            ->groupBy($foreignKey)
+            ->orderBy($foreignKey)
+        ;
     }
 }

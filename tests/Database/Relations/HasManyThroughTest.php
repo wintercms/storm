@@ -101,12 +101,8 @@ class HasManyThroughTest extends DbTestCase
         $author1->save();
         $author2->save();
 
-        $country1 = Country::with([
-            'posts_count'
-        ])->find($country1->id);
-        $country2 = Country::with([
-            'posts_count'
-        ])->find($country2->id);
+        $country1 = Country::find($country1->id);
+        $country2 = Country::find($country2->id);
 
         $this->assertEquals(2, $country1->posts_count->first()->count);
         $this->assertEquals(1, $country2->posts_count()->first()->count);
