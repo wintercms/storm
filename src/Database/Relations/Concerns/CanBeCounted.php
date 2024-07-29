@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Database\Relations\Concerns;
 
+use Illuminate\Database\Query\Builder;
 use Winter\Storm\Database\Relations\BelongsToMany;
 use Winter\Storm\Database\Relations\HasManyThrough;
 use Winter\Storm\Database\Relations\HasOneThrough;
@@ -46,7 +47,7 @@ trait CanBeCounted
     /**
      * Mark the relationship as a count-only relationship.
      */
-    public function countOnly(): static
+    public function countOnly(): Builder
     {
         $this->countOnly = true;
 
@@ -61,13 +62,13 @@ trait CanBeCounted
             ? $this->farParent
             : $this->parent;
 
-        $countSql = $this->parent->getConnection()->raw('count(*) as count');
-        $this
+        $countSql = $parent->getConnection()->raw('count(*) as count');
+
+        return $this
+            ->getBaseQuery()
             ->select($foreignKey, $countSql)
             ->groupBy($foreignKey)
             ->orderBy($foreignKey);
-
-        return $this;
     }
 
     /**
