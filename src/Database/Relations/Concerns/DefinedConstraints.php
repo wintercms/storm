@@ -120,8 +120,6 @@ trait DefinedConstraints
 
     /**
      * Get the relation definition for the related model.
-     *
-     * @return array
      */
     protected function getRelationArgs(): array
     {
