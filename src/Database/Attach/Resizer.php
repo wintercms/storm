@@ -29,56 +29,56 @@ use Symfony\Component\HttpFoundation\File\File as FileObj;
 class Resizer
 {
     /**
-     * @var Resource The symfony uploaded file object.
+     * @var FileObj The symfony uploaded file object.
      */
-    protected $file;
+    protected FileObj $file;
 
     /**
      * @var string The extension of the uploaded file.
      */
-    protected $extension;
+    protected string $extension;
 
     /**
      * @var string The mime type of the uploaded file.
      */
-    protected $mime;
+    protected string $mime;
 
     /**
      * @var GdImage The image (on disk) that's being resized.
      */
-    protected $image;
+    protected GdImage $image;
 
     /**
      * @var GdImage The cached, original image.
      */
-    protected $originalImage;
+    protected GdImage $originalImage;
 
     /**
      * @var int Original width of the image being resized.
      */
-    protected $width;
+    protected int $width;
 
     /**
      * @var int Original height of the image being resized.
      */
-    protected $height;
+    protected int $height;
 
     /**
      * @var int|null Exif orientation of image
      */
-    protected $orientation;
+    protected ?int $orientation;
 
     /**
      * @var array Array of options used for resizing.
      */
-    protected $options = [];
+    protected array $options = [];
 
     /**
      * Instantiates the Resizer and receives the path to an image we're working with
-     * @param mixed $file The file array provided by Laravel's Input::file('field_name') or a path to a file
+     * @param FileObj|string $file The file array provided by Laravel's Input::file('field_name') or a path to a file
      * @throws Exception
      */
-    public function __construct($file)
+    public function __construct(FileObj|string $file)
     {
         if (!extension_loaded('gd')) {
             throw new Exception('The GD PHP extension is required to resize images.');
@@ -109,21 +109,19 @@ class Resizer
     /**
      * Static call, Laravel style.
      * Returns a new Resizer object, allowing for chainable calls
-     * @param  mixed $file The file array provided by Laravel's Input::file('field_name') or a path to a file
+     * @param  FileObj|string $file The file array provided by Laravel's Input::file('field_name') or a path to a file
      * @return Resizer
      * @throws Exception
      */
-    public static function open($file)
+    public static function open(FileObj|string $file): static
     {
         return new Resizer($file);
     }
 
     /**
      * Manipulate an image resource in order to keep transparency for PNG and GIF files.
-     * @param GdImage $img
-     * @return void
      */
-    protected function retainImageTransparency($img)
+    protected function retainImageTransparency(GdImage $img): void
     {
         if ($this->mime === 'image/gif') {
             $alphaIndex = imagecolortransparent($this->image);
@@ -145,7 +143,7 @@ class Resizer
      * Resets the image back to the original.
      * @return self
      */
-    public function reset()
+    public function reset(): static
     {
         $this->image = $this->originalImage;
 
@@ -162,7 +160,7 @@ class Resizer
      * @param array $options Set of resizing option
      * @return self
      */
-    public function setOptions($options)
+    public function setOptions(array $options): static
     {
         $this->options = array_merge([
             'mode'      => 'auto',
@@ -181,7 +179,7 @@ class Resizer
      * @param mixed $value Option value to set
      * @return self
      */
-    protected function setOption($option, $value)
+    protected function setOption(string $option, mixed $value): static
     {
         $this->options[$option] = $value;
 
@@ -193,7 +191,7 @@ class Resizer
      * @param string $option Option name to get
      * @return mixed Depends on the option
      */
-    protected function getOption($option)
+    protected function getOption(string $option): mixed
     {
         return array_get($this->options, $option);
     }
@@ -203,7 +201,7 @@ class Resizer
      * @param \Symfony\Component\HttpFoundation\File\File $file
      * @return int|null
      */
-    protected function getOrientation($file)
+    protected function getOrientation(FileObj $file): ?int
     {
         $filePath = $file->getPathname();
 
@@ -233,7 +231,7 @@ class Resizer
      * the exif orientation
      * @return int
      */
-    protected function getWidth()
+    protected function getWidth(): int
     {
         switch ($this->orientation) {
             case 6:
@@ -252,7 +250,7 @@ class Resizer
      * the exif orientation
      * @return int
      */
-    protected function getHeight()
+    protected function getHeight(): int
     {
         switch ($this->orientation) {
             case 6:
@@ -267,11 +265,9 @@ class Resizer
     }
 
     /**
-     * Receives the original but rotated image
-     * according to exif orientation
-     * @return GdImage|false
+     * Receives the original but rotated image according to exif orientation
      */
-    protected function getRotatedOriginal()
+    protected function getRotatedOriginal(): GdImage|false
     {
         switch ($this->orientation) {
             case 6:
@@ -303,15 +299,9 @@ class Resizer
      * @return self
      * @throws Exception
      */
-    public function resize($newWidth, $newHeight, $options = [])
+    public function resize(int $newWidth, int $newHeight, array $options = []): static
     {
         $this->setOptions($options);
-
-        /*
-         * Sanitize input
-         */
-        $newWidth = (int) $newWidth;
-        $newHeight = (int) $newHeight;
 
         if (!$newWidth && !$newHeight) {
             $newWidth = $this->width;
@@ -381,7 +371,7 @@ class Resizer
      * @param int $sharpness
      * @return self
      */
-    public function sharpen($sharpness)
+    public function sharpen(int $sharpness): static
     {
         if ($sharpness <= 0 || $sharpness > 100) {
             return $this;
@@ -417,8 +407,14 @@ class Resizer
      * @param int $srcHeight Source area height.
      * @return self
      */
-    public function crop($cropStartX, $cropStartY, $newWidth, $newHeight, $srcWidth = null, $srcHeight = null)
-    {
+    public function crop(
+        int $cropStartX,
+        int $cropStartY,
+        int $newWidth,
+        int $newHeight,
+        int $srcWidth = null,
+        int $srcHeight = null
+    ): static {
         $image = $this->image;
 
         if ($srcWidth === null) {
@@ -445,7 +441,7 @@ class Resizer
      * @param string $savePath Where to save the image
      * @throws Exception Thrown for invalid extension
      */
-    public function save($savePath)
+    public function save(string $savePath): void
     {
         $image = $this->image;
 
@@ -521,10 +517,10 @@ class Resizer
     /**
      * Open a file, detect its mime-type and create an image resource from it.
      * @param \Symfony\Component\HttpFoundation\File\File $file File instance
-     * @return mixed
+     * @return GdImage
      * @throws Exception Thrown for invalid MIME type
      */
-    protected function openImage($file)
+    protected function openImage(FileObj $file): GdImage
     {
         $filePath = $file->getPathname();
 
@@ -561,45 +557,33 @@ class Resizer
 
     /**
      * Return the image dimensions based on the option that was chosen.
-     * @param int $newWidth The width of the image
-     * @param int $newHeight The height of the image
+     * @param float $newWidth The width of the image
+     * @param float $newHeight The height of the image
      * @return array
      * @throws Exception Thrown for invalid dimension string
      */
-    protected function getDimensions($newWidth, $newHeight)
+    #[ArrayShape(['width' => 'float', 'height' => 'float'])]
+    protected function getDimensions(float $newWidth, float $newHeight): array
     {
         $mode = $this->getOption('mode');
 
-        switch ($mode) {
-            case 'exact':
-                return [$newWidth, $newHeight];
-
-            case 'portrait':
-                return [$this->getSizeByFixedHeight($newHeight), $newHeight];
-
-            case 'landscape':
-                return [$newWidth, $this->getSizeByFixedWidth($newWidth)];
-
-            case 'auto':
-                return $this->getSizeByAuto($newWidth, $newHeight);
-
-            case 'crop':
-                return $this->getOptimalCrop($newWidth, $newHeight);
-
-            case 'fit':
-                return $this->getSizeByFit($newWidth, $newHeight);
-
-            default:
-                throw new Exception('Invalid dimension type. Accepted types: exact, portrait, landscape, auto, crop, fit.');
-        }
+        return match ($mode) {
+            'exact' => [$newWidth, $newHeight],
+            'portrait' => [$this->getSizeByFixedHeight($newHeight), $newHeight],
+            'landscape' => [$newWidth, $this->getSizeByFixedWidth($newWidth)],
+            'auto' => $this->getSizeByAuto($newWidth, $newHeight),
+            'crop' => $this->getOptimalCrop($newWidth, $newHeight),
+            'fit' => $this->getSizeByFit($newWidth, $newHeight),
+            default => throw new Exception('Invalid dimension type. Accepted types: exact, portrait, landscape, auto, crop, fit.'),
+        };
     }
 
     /**
      * Returns the width based on the image height
-     * @param int $newHeight The height of the image
-     * @return int
+     * @param float $newHeight The height of the image
+     * @return float
      */
-    protected function getSizeByFixedHeight($newHeight)
+    protected function getSizeByFixedHeight(float $newHeight): float
     {
         $ratio = $this->width / $this->height;
         return $newHeight * $ratio;
@@ -607,10 +591,10 @@ class Resizer
 
     /**
      * Returns the height based on the image width
-     * @param int $newWidth The width of the image
-     * @return int
+     * @param float $newWidth The width of the image
+     * @return float
      */
-    protected function getSizeByFixedWidth($newWidth)
+    protected function getSizeByFixedWidth(float $newWidth): float
     {
         $ratio = $this->height / $this->width;
         return $newWidth * $ratio;
@@ -618,11 +602,12 @@ class Resizer
 
     /**
      * Checks to see if an image is portrait or landscape and resizes accordingly.
-     * @param int $newWidth  The width of the image
-     * @param int $newHeight The height of the image
+     * @param float $newWidth  The width of the image
+     * @param float $newHeight The height of the image
      * @return array
      */
-    protected function getSizeByAuto($newWidth, $newHeight)
+    #[ArrayShape(['width' => 'float', 'height' => 'float'])]
+    protected function getSizeByAuto(float $newWidth, float $newHeight): array
     {
         // Less than 1 pixel height and width? (revert to original)
         if ($newWidth <= 1 && $newHeight <= 1) {
@@ -670,21 +655,17 @@ class Resizer
     /**
      * Attempts to find the best way to crop. Whether crop is based on the
      * image being portrait or landscape.
-     * @param int $newWidth  The width of the image
-     * @param int $newHeight The height of the image
+     * @param float $newWidth  The width of the image
+     * @param float $newHeight The height of the image
      * @return array
      */
-    protected function getOptimalCrop($newWidth, $newHeight)
+    #[ArrayShape(['width' => 'float', 'height' => 'float'])]
+    protected function getOptimalCrop(float $newWidth, float $newHeight): array
     {
         $heightRatio = $this->height / $newHeight;
         $widthRatio  = $this->width /  $newWidth;
 
-        if ($heightRatio < $widthRatio) {
-            $optimalRatio = $heightRatio;
-        }
-        else {
-            $optimalRatio = $widthRatio;
-        }
+        $optimalRatio = min($heightRatio, $widthRatio);
 
         $optimalHeight = round($this->height / $optimalRatio);
         $optimalWidth  = round($this->width  / $optimalRatio);
@@ -694,11 +675,12 @@ class Resizer
 
     /**
      * Fit the image inside a bounding box using maximum width and height constraints.
-     * @param int $maxWidth The maximum width of the image
-     * @param int $maxHeight The maximum height of the image
+     * @param float $maxWidth The maximum width of the image
+     * @param float $maxHeight The maximum height of the image
      * @return array
      */
-    protected function getSizeByFit($maxWidth, $maxHeight)
+    #[ArrayShape(['width' => 'float', 'height' => 'float'])]
+    protected function getSizeByFit(float $maxWidth, float $maxHeight): array
     {
 
         // Calculate the scaling ratios in order to get the target width and height
