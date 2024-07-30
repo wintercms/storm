@@ -131,7 +131,7 @@ class_alias(\Winter\Storm\Database\ModelException::class, \October\Rain\Database
 class_alias(\Winter\Storm\Database\Models\DeferredBinding::class, \October\Rain\Database\Models\DeferredBinding::class);
 class_alias(\Winter\Storm\Database\Models\Revision::class, \October\Rain\Database\Models\Revision::class);
 class_alias(\Winter\Storm\Database\NestedTreeScope::class, \October\Rain\Database\NestedTreeScope::class);
-class_alias(\Illuminate\Database\Eloquent\Relations\Pivot, \Winter\Storm\Database\Pivot::class);
+class_alias(\Illuminate\Database\Eloquent\Relations\Pivot::class, \Winter\Storm\Database\Pivot::class);
 class_alias(\Winter\Storm\Database\Pivot::class, \October\Rain\Database\Pivot::class);
 class_alias(\Winter\Storm\Database\Query\Grammars\Concerns\SelectConcatenations::class, \October\Rain\Database\Query\Grammars\Concerns\SelectConcatenations::class);
 class_alias(\Winter\Storm\Database\Query\Grammars\MySqlGrammar::class, \October\Rain\Database\Query\Grammars\MySqlGrammar::class);
