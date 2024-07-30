@@ -51,9 +51,7 @@ class BelongsToMany extends BelongsToManyBase implements Relation
     {
         $relationModel = $this->getRelated();
 
-        /*
-         * Nulling the relationship
-         */
+        // Nulling the relationship
         if (!$value) {
             // Disassociate in memory immediately
             $this->parent->setRelation($this->relationName, $relationModel->newCollection());
