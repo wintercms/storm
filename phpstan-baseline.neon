@@ -65,10 +65,6 @@ parameters:
 			count: 1
 			path: src/Database/Model.php
 
-		-
-			message: "#^Return type \\(Winter\\\\Storm\\\\Database\\\\Pivot\\) of method Winter\\\\Storm\\\\Database\\\\Model\\:\\:newPivot\\(\\) should be compatible with return type \\(Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Pivot\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:newPivot\\(\\)$#"
-			count: 1
-			path: src/Database/Model.php
 
 		-
 			message: "#^Static property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$dispatcher \\(Illuminate\\\\Contracts\\\\Events\\\\Dispatcher\\) in isset\\(\\) is not nullable\\.$#"
