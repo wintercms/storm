@@ -823,22 +823,6 @@ class Model extends EloquentModel implements ModelInterface
     //
 
     /**
-     * Create a generic pivot model instance.
-     * @param  \Winter\Storm\Database\Model  $parent
-     * @param  array  $attributes
-     * @param  string  $table
-     * @param  bool  $exists
-     * @param  string|null  $using
-     * @return \Winter\Storm\Database\Pivot
-     */
-    public function newPivot(EloquentModel $parent, array $attributes, $table, $exists, $using = null)
-    {
-        return $using
-            ? $using::fromRawAttributes($parent, $attributes, $table, $exists)
-            : Pivot::fromAttributes($parent, $attributes, $table, $exists);
-    }
-
-    /**
      * Create a pivot model instance specific to a relation.
      * @param  \Winter\Storm\Database\Model  $parent
      * @param  string  $relationName
