@@ -30,7 +30,7 @@ use Winter\Storm\Database\Relations\Relation;
  *
  * ```php
  * public $hasMany = [
- *     'messages' => [Message::class, 'count' => true]
+ *     'total_messages' => [Message::class, 'count' => true]
  * ];
  * ```
  *
