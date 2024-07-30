@@ -65,9 +65,7 @@ class BelongsToMany extends BelongsToManyBase implements Relation
             return;
         }
 
-        /*
-         * Convert models to keys
-         */
+        // Convert models to keys
         if ($value instanceof Model) {
             $value = $value->getKey();
         } elseif (is_array($value)) {
