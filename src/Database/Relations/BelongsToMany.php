@@ -106,8 +106,7 @@ class BelongsToMany extends BelongsToManyBase implements Relation
             $related = $this->getRelated();
 
             $value = $this->parent->getRelation($this->relationName)->pluck($related->getKeyName())->all();
-        }
-        else {
+        } else {
             $value = $this->allRelatedIds($sessionKey)->all();
         }
 
