@@ -87,11 +87,6 @@ parameters:
 			path: src/Database/MorphPivot.php
 
 		-
-			message: "#^Parameter \\#1 \\$ids of method Winter\\\\Storm\\\\Database\\\\Pivot\\:\\:newQueryForRestoration\\(\\) expects array\\<int\\|string\\>\\|string, int given\\.$#"
-			count: 1
-			path: src/Database/MorphPivot.php
-
-		-
 			message: "#^Parameter \\#2 \\$string of function explode expects string, int given\\.$#"
 			count: 1
 			path: src/Database/MorphPivot.php
