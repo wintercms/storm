@@ -83,9 +83,7 @@ class BelongsToMany extends BelongsToManyBase implements Relation
             $value = [$value];
         }
 
-        /*
-         * Setting the relationship
-         */
+        // Setting the relationship
         $relationCollection = $value instanceof Collection
             ? $value
             : $relationModel->whereIn($relationModel->getKeyName(), $value)->get();
