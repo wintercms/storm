@@ -20,7 +20,7 @@ use Winter\Storm\Database\Relations\Relation;
  * the relationship definition method. For example:
  *
  * ```php
- * public function messages()
+ * public function totalMessages()
  * {
  *     return $this->hasMany(Message::class)->countOnly();
  * }
