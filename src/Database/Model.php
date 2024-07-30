@@ -829,7 +829,7 @@ class Model extends EloquentModel implements ModelInterface
      * @param  array   $attributes
      * @param  string  $table
      * @param  bool    $exists
-     * @return \Illuminate\Database\Eloquent\Relations\Pivot|null
+     * @return \Winter\Storm\Database\Pivot|null
      */
     public function newRelationPivot($relationName, $parent, $attributes, $table, $exists)
     {
