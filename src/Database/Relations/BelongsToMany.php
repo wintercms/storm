@@ -70,8 +70,7 @@ class BelongsToMany extends BelongsToManyBase implements Relation
          */
         if ($value instanceof Model) {
             $value = $value->getKey();
-        }
-        elseif (is_array($value)) {
+        } elseif (is_array($value)) {
             foreach ($value as $_key => $_value) {
                 if ($_value instanceof Model) {
                     $value[$_key] = $_value->getKey();
