@@ -851,7 +851,6 @@ class Model extends EloquentModel implements ModelInterface
     {
         $relation = $this->{$relationName}();
         $pivotModel = $relation->getPivotClass();
-
         return $pivotModel::fromRawAttributes($parent, $attributes, $table, $exists);
     }
 
