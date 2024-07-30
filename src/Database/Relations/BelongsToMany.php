@@ -78,9 +78,7 @@ class BelongsToMany extends BelongsToManyBase implements Relation
             }
         }
 
-        /*
-         * Convert scalar to array
-         */
+        // Convert scalar to array
         if (!is_array($value) && !$value instanceof Collection) {
             $value = [$value];
         }
