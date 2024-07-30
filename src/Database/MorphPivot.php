@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Database;
 
+use \Illuminate\Database\Eloquent\Relations\Pivot;
+
 /**
  * Reimplementation of \Illuminate\Database\Eloquent\Relations\MorphPivot
  * but extends Winter's Pivot base class instead of Laravel's to get access to
@@ -148,7 +150,7 @@ class MorphPivot extends Pivot
         }
 
         if (!str_contains($ids, ':')) {
-            return parent::newQueryForRestoration($ids);
+            return parent::newQueryForRestoration([$ids]);
         }
 
         $segments = explode(':', $ids);
