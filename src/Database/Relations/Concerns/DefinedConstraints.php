@@ -14,8 +14,7 @@ trait DefinedConstraints
     /**
      * Set the defined constraints on the relation query.
      *
-     * This method is kept for backwards compatibility, but is no longer being called directly by Storm when
-     * initializing relations. Constraints are now applied on an as-needed basis.
+     * @deprecated 1.3.0 Constraints are now applied on an as-needed basis.
      *
      * @return void
      */
