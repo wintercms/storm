@@ -512,45 +512,45 @@ trait HasRelationships
 
         // Add dependency, if required
         if (
-            in_array(
+            ($definition['delete'] ?? false) === true
+            && in_array(
                 \Winter\Storm\Database\Relations\Concerns\CanBeDependent::class,
                 class_uses_recursive($relation)
             )
-            && (($definition['delete'] ?? false) === true)
         ) {
             $relation = $relation->dependent();
         }
 
         // Remove detachable, if required
         if (
-            in_array(
+            ($definition['detach'] ?? true) === false
+            && in_array(
                 \Winter\Storm\Database\Relations\Concerns\CanBeDetachable::class,
                 class_uses_recursive($relation)
             )
-            && (($definition['detach'] ?? true) === false)
         ) {
             $relation = $relation->notDetachable();
         }
 
         // Remove pushable flag, if required
         if (
-            in_array(
+            ($definition['push'] ?? true) === false
+            && in_array(
                 \Winter\Storm\Database\Relations\Concerns\CanBePushed::class,
                 class_uses_recursive($relation)
             )
-            && (($definition['push'] ?? true) === false)
         ) {
             $relation = $relation->noPush();
         }
 
         // Add count only flag, if required
         if (
-            in_array(
+            ($definition['count'] ?? false) === true
+            && $addConstraints
+            && in_array(
                 \Winter\Storm\Database\Relations\Concerns\CanBeCounted::class,
                 class_uses_recursive($relation)
             )
-            && (($definition['count'] ?? false) === true)
-            && $addConstraints
         ) {
             $relation = $relation->countOnly();
         }
