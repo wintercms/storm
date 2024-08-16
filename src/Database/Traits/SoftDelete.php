@@ -87,6 +87,11 @@ trait SoftDelete
             MorphToMany::class,
         ] as $relationClass) {
             $relationClass::extend(function () {
+                // Prevent double-defining the dynamically added properties and methods below
+                if ($this->methodExists('softDeletable')) {
+                    return;
+                }
+
                 $this->addDynamicProperty('isSoftDeletable', false);
                 $this->addDynamicProperty('deletedAtColumn', 'deleted_at');
 
