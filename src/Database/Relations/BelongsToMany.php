@@ -41,7 +41,9 @@ class BelongsToMany extends BelongsToManyBase implements Relation
      */
     public function getPivotClass()
     {
-        return $this->using ?? Pivot::class;
+        return !empty($this->using)
+            ? $this->using
+            : Pivot::class;
     }
 
     /**
