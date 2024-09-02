@@ -521,6 +521,17 @@ trait HasRelationships
             $relation = $relation->dependent();
         }
 
+        // Add soft delete, if required
+        if (
+            ($definition['softDelete'] ?? false) === true
+            && in_array(
+                \Winter\Storm\Database\Relations\Concerns\CanBeSoftDeleted::class,
+                class_uses_recursive($relation)
+            )
+        ) {
+            $relation = $relation->softDeletable();
+        }
+
         // Remove detachable, if required
         if (
             ($definition['detach'] ?? true) === false

@@ -15,6 +15,7 @@ class HasManyThrough extends HasManyThroughBase
     use Concerns\CanBeCounted;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
+    use Concerns\CanBeSoftDeleted;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 

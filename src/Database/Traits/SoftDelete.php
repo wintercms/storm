@@ -6,13 +6,7 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Winter\Storm\Database\Relations\AttachMany;
-use Winter\Storm\Database\Relations\AttachOne;
 use Winter\Storm\Database\Relations\BelongsToMany;
-use Winter\Storm\Database\Relations\HasMany;
-use Winter\Storm\Database\Relations\HasOne;
-use Winter\Storm\Database\Relations\MorphMany;
-use Winter\Storm\Database\Relations\MorphOne;
 use Winter\Storm\Database\Relations\MorphToMany;
 
 /**
@@ -75,46 +69,6 @@ trait SoftDelete
              */
             return $model->fireEvent('model.afterRestore', halt: true);
         });
-
-        foreach ([
-            AttachMany::class,
-            AttachOne::class,
-            BelongsToMany::class,
-            HasMany::class,
-            HasOne::class,
-            MorphMany::class,
-            MorphOne::class,
-            MorphToMany::class,
-        ] as $relationClass) {
-            $relationClass::extend(function () {
-                // Prevent double-defining the dynamically added properties and methods below
-                if ($this->methodExists('softDeletable')) {
-                    return;
-                }
-
-                $this->addDynamicProperty('isSoftDeletable', false);
-                $this->addDynamicProperty('deletedAtColumn', 'deleted_at');
-
-                $this->addDynamicMethod('softDeletable', function (string $deletedAtColumn = 'deleted_at') {
-                    $this->isSoftDeletable = true;
-                    $this->deletedAtColumn = $deletedAtColumn;
-                    return $this;
-                });
-
-                $this->addDynamicMethod('notSoftDeletable', function () {
-                    $this->isSoftDeletable = false;
-                    return $this;
-                });
-
-                $this->addDynamicMethod('isSoftDeletable', function () {
-                    return $this->isSoftDeletable;
-                });
-
-                $this->addDynamicMethod('getDeletedAtColumn', function () {
-                    return $this->deletedAtColumn;
-                });
-            }, true);
-        }
     }
 
     /**

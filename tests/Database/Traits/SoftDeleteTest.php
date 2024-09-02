@@ -9,6 +9,9 @@ use Winter\Storm\Tests\Database\Fixtures\UserWithSoftAuthor;
 use Winter\Storm\Tests\Database\Fixtures\UserWithAuthorAndSoftDelete;
 use Winter\Storm\Tests\Database\Fixtures\UserWithSoftAuthorAndSoftDelete;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Tests\Database\Fixtures\Category;
+use Winter\Storm\Tests\Database\Fixtures\EventLog;
+use Winter\Storm\Tests\Database\Fixtures\Post;
 use Winter\Storm\Tests\Database\Fixtures\UserLaravel;
 use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftAuthor;
 use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftAuthorAndSoftDelete;
@@ -165,5 +168,29 @@ class SoftDeleteTest extends DbTestCase
         $user->restore();
 
         $this->assertNotNull(SoftDeleteAuthor::find($authorId));
+    }
+
+    public function testCannotMakeModelSoftDeleteIfNotUsingTrait()
+    {
+        $categoryModel = new Category();
+        $relation = $categoryModel->hasMany(Post::class);
+
+        $this->assertFalse($relation->isSoftDeletable());
+
+        $relation->softDeletable();
+
+        // Should still be false because the model does not use the trait
+        $this->assertFalse($relation->isSoftDeletable());
+
+        $postModel = new Post();
+
+        $relation = $postModel->morphMany(EventLog::class, 'related');
+
+        $this->assertFalse($relation->isSoftDeletable());
+
+        $relation->softDeletable();
+
+        // This should now be true because EventLog does use the trait
+        $this->assertTrue($relation->isSoftDeletable());
     }
 }

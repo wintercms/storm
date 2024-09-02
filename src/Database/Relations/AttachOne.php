@@ -17,6 +17,7 @@ class AttachOne extends MorphOneBase implements Relation
     use Concerns\CanBeDependent;
     use Concerns\CanBeExtended;
     use Concerns\CanBePushed;
+    use Concerns\CanBeSoftDeleted;
     use Concerns\DefinedConstraints;
     use Concerns\HasRelationName;
 
