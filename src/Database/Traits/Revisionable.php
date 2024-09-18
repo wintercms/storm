@@ -105,7 +105,8 @@ trait Revisionable
             class_uses_recursive(get_class($this))
         );
 
-        if (!$softDeletes) {
+        if (!$softDeletes || $softDeletes && !$this->isSoftDelete()) {
+            $this->revisionableFullCleanUp();
             return;
         }
 
@@ -153,6 +154,16 @@ trait Revisionable
         foreach ($toDelete as $record) {
             $record->delete();
         }
+    }
+
+    /*
+     * Deletes all revision records.
+     */
+    protected function revisionableFullCleanUp()
+    {
+        $relation = $this->getRevisionHistoryName();
+        $relationObject = $this->{$relation}();
+        $relationObject->delete();
     }
 
     protected function revisionableGetCastType($attribute)
