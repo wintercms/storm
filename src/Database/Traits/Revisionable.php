@@ -20,6 +20,12 @@ trait Revisionable
      * public $revisionableLimit = 500;
      */
 
+    /**
+     * @var bool Flag for ignoring revision records with the same old and new values.
+     *
+     * public $revisionIgnoreSameValue = false;
+     */
+
     /*
      * You can change the relation name used to store revisions:
      *
@@ -72,9 +78,15 @@ trait Revisionable
                 continue;
             }
 
+            $oldValue = array_get($this->original, $attribute);
+
+            if($this->ignoreRevisionSameValue($oldValue, $value)){
+                continue;
+            }
+
             $toSave[] = [
                 'field' => $attribute,
-                'old_value' => array_get($this->original, $attribute),
+                'old_value' => $oldValue,
                 'new_value' => $value,
                 'revisionable_type' => $relationObject->getMorphClass(),
                 'revisionable_id' => $this->getKey(),
@@ -130,6 +142,26 @@ trait Revisionable
 
         Db::table($revisionModel->getTable())->insert($toSave);
         $this->revisionableCleanUp();
+    }
+
+    /**
+     * Identify if the revision should be ignored if the old and new values are the same.
+     *
+     * @param mixed $oldValue
+     * @param mixed $newValue
+     * @return bool
+     */
+    public function ignoreRevisionSameValue($oldValue, $newValue)
+    {
+        $revisionIgnoreSameValue = property_exists($this, 'revisionIgnoreSameValue')
+            ? $this->revisionIgnoreSameValue
+            : false;
+
+        if(!$revisionIgnoreSameValue){
+            return false;
+        }
+
+        return $oldValue == $newValue;
     }
 
     /*
