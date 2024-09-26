@@ -46,7 +46,7 @@
         "scssphp/scssphp": "~1.0",
         "symfony/console": ">=6.0.9 <6.3.0",
         "symfony/yaml": "^6.0",
-        "twig/twig": "^3.14",
+        "twig/twig": "<3.9",
         "wikimedia/less.php": "~3.0",
         "wikimedia/minify": "~2.2",
         "winter/laravel-config-writer": "^1.0.1"
