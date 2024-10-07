@@ -46,7 +46,7 @@
         "scssphp/scssphp": "~1.0",
         "symfony/console": ">=6.0.9 <6.3.0",
         "symfony/yaml": "^6.0",
-        "twig/twig": "<3.9",
+        "twig/twig": "^3.14",
         "wikimedia/less.php": "~3.0",
         "wikimedia/minify": "~2.2",
         "winter/laravel-config-writer": "^1.0.1"
@@ -56,8 +56,8 @@
         "mockery/mockery": "^1.4.4",
         "squizlabs/php_codesniffer": "^3.2",
         "php-parallel-lint/php-parallel-lint": "^1.0",
-        "meyfa/phpunit-assert-gd": "^2.0.0|^3.0.0",
-        "dms/phpunit-arraysubset-asserts": "^0.1.0|^0.2.1",
+        "meyfa/phpunit-assert-gd": "^3.0.0",
+        "dms/phpunit-arraysubset-asserts": "^0.5.0",
         "larastan/larastan": "^2.8.1",
         "orchestra/testbench": "^7.1.0"
     },
@@ -88,15 +88,10 @@
         }
     },
     "scripts": {
-        "test": [
-            "phpunit ./tests --stop-on-failure"
-        ],
-        "lint": [
-            "parallel-lint --exclude vendor --exclude storage --exclude tests/fixtures/plugins/testvendor/goto/Plugin.php ."
-        ],
-        "sniff": [
-            "phpcs --colors -nq --report=\"full\" --extensions=\"php\""
-        ]
+        "test": "phpunit ./tests",
+        "lint": "parallel-lint --exclude vendor .",
+        "sniff": "phpcs --colors -nq --report=\"full\" --extensions=\"php\"",
+        "analyze": "phpstan analyse --memory-limit=2G src"
     },
     "extra": {
         "branch-alias": {
