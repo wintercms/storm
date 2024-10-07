@@ -245,7 +245,7 @@ class UrlGenerator extends UrlGeneratorBase
         // so no real world URL will be able to use it.
         if (!empty($url['port'])) {
             // Ignore the port if it is the default port for the current scheme
-            if ((int) getservbyname($url['scheme'], 'tcp') !== $url['port']) {
+            if (!static::isDefaultPort($url['scheme'], $url['port'])) {
                 $urlString .= ':' . $url['port'];
             }
         }
@@ -369,5 +369,37 @@ class UrlGenerator extends UrlGeneratorBase
         }
 
         return implode($argSeparator, $result);
+    }
+
+    /**
+     * Determines if the given scheme and port are the default for the scheme.
+     */
+    public static function isDefaultPort(string $scheme, int $port): bool
+    {
+        $known = [
+            'ftp' => 21,
+            'ssh' => 22,
+            'sftp' => 22,
+            'telnet' => 23,
+            'smtp' => 25,
+            'dns' => 53,
+            'gopher' => 70,
+            'http' => 80,
+            'pop3' => 110,
+            'imap' => 143,
+            'ldap' => 389,
+            'https' => 443,
+            'smtps' => 465,
+            'ldaps' => 636,
+            'ftps' => 990,
+            'imaps' => 993,
+            'pop3s' => 995,
+        ];
+
+        if (array_key_exists(strtolower($scheme), $known)) {
+            return $known[strtolower($scheme)] === $port;
+        }
+
+        return false;
     }
 }
