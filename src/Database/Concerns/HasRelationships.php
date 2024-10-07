@@ -4,7 +4,6 @@ namespace Winter\Storm\Database\Concerns;
 
 use InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection as CollectionBase;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation as EloquentRelation;
 use Winter\Storm\Database\Attributes\Relation;
@@ -160,9 +159,9 @@ trait HasRelationships
     ];
 
     /**
-     * @var array<string, string> Stores relations that have resolved to Laravel-style relation objects.
+     * @var array<string, array<string, mixed>> Stores relations that have resolved to Laravel-style relation objects.
      */
-    protected static array $resolvedRelations = [];
+    protected static array $resolvedRelationMethods = [];
 
     //
     // Relations
@@ -171,9 +170,9 @@ trait HasRelationships
     /**
      * Checks if model has a relationship by supplied name.
      */
-    public function hasRelation(string $name): bool
+    public function hasRelation(string $name, bool $includeMethods = true): bool
     {
-        return $this->getRelationDefinition($name) !== null;
+        return $this->getRelationDefinition($name, $includeMethods) !== null;
     }
 
     /**
@@ -206,13 +205,13 @@ trait HasRelationships
      * If the name resolves to a relation method, the method's returned relation object will be converted back to an
      * array definition.
      */
-    public function getRelationDefinition(string $name): ?array
+    public function getRelationDefinition(string $name, bool $includeMethods = true): ?array
     {
-        if (method_exists($this, $name) && $this->isRelationMethod($name)) {
+        if ($includeMethods && $this->isRelationMethod($name)) {
             return $this->relationMethodDefinition($name);
         }
 
-        if (($type = $this->getRelationType($name)) !== null) {
+        if (($type = $this->getRelationType($name, $includeMethods)) !== null) {
             return (array) $this->getRelationTypeDefinition($type, $name) + $this->getRelationDefaults($type);
         }
 
@@ -275,10 +274,10 @@ trait HasRelationships
     /**
      * Returns a relationship type based on a supplied name.
      */
-    public function getRelationType(string $name): ?string
+    public function getRelationType(string $name, bool $includeMethods = true): ?string
     {
-        if (method_exists($this, $name)) {
-            return array_search(get_class($this->{$name}()), static::$relationTypes) ?: null;
+        if ($includeMethods && $this->isRelationMethod($name)) {
+            return $this->getRelationMethodType($name);
         }
 
         foreach (array_keys(static::$relationTypes) as $type) {
@@ -581,7 +580,7 @@ trait HasRelationships
      */
     protected function getRelationCaller(): ?string
     {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $trace = debug_backtrace(0);
 
         $handled = Arr::first($trace, function ($trace) {
             return $trace['function'] === 'handleRelation';
@@ -591,15 +590,37 @@ trait HasRelationships
             return null;
         }
 
-        $caller = Arr::first($trace, function ($trace) {
-            return !in_array(
+        $currentKey = null;
+
+        $caller = Arr::first($trace, function ($trace, $key) use (&$currentKey) {
+            $result = !in_array(
                 $trace['class'],
                 [
                     \Illuminate\Database\Eloquent\Model::class,
                     \Winter\Storm\Database\Model::class,
                 ]
             );
+
+            if ($result) {
+                $currentKey = $key;
+            }
+
+            return $result;
         });
+
+        // If we're dealing with a closure, we're likely dealing with an extension. We'll need to go deeper!
+        if (str_contains($caller['function'], '{closure}')) {
+            [$stepOne, $stepTwo] = array_slice($trace, $currentKey + 1, 2);
+
+            if ($stepOne['function'] !== 'call_user_func_array') {
+                return null;
+            }
+            if ($stepTwo['class'] !== \Winter\Storm\Database\Model::class || $stepTwo['function'] !== 'extendableCall') {
+                return null;
+            }
+
+            return $stepTwo['args'][0];
+        }
 
         return !is_null($caller) ? $caller['function'] : null;
     }
@@ -654,7 +675,98 @@ trait HasRelationships
             }
         }
 
+        if (count($this->extensionData['methods'] ?? [])) {
+            foreach ($this->extensionData['methods'] as $name => $method) {
+                if ($this->isRelationMethod($method)) {
+                    $relationMethods[] = $name;
+                }
+            }
+        }
+
+        if (count($this->extensionData['dynamicMethods'] ?? [])) {
+            foreach ($this->extensionData['dynamicMethods'] as $name => $method) {
+                if ($this->isRelationMethod($method)) {
+                    $relationMethods[] = $name;
+                }
+            }
+        }
+
         return $relationMethods;
+    }
+
+    /**
+     * Determine the relation type of a relation method.
+     *
+     * This is used to determine if a method is a relation method, first and foremost, and then to determine the type of the relation.
+     */
+    protected function getRelationMethodType(string $name): ?string
+    {
+        if (!$this->methodExists($name)) {
+            return null;
+        }
+
+        if (isset(static::$resolvedRelationMethods[$name])) {
+            if (!static::$resolvedRelationMethods[$name]['isRelation']) {
+                return null;
+            }
+
+            return static::$resolvedRelationMethods[$name]['type'];
+        }
+
+        // Directly defined relation methods
+        if (method_exists($this, $name)) {
+            $method = new \ReflectionMethod($this, $name);
+        } elseif (isset($this->extensionData['methods'][$name])) {
+            $method = new \ReflectionFunction($this->extensionData['methods'][$name]->getClosure());
+        } elseif (isset($this->extensionData['dynamicMethods'][$name])) {
+            $method = new \ReflectionFunction($this->extensionData['dynamicMethods'][$name]->getClosure());
+        }
+
+        if (count($method->getAttributes(Relation::class))) {
+            $type = array_search(get_class($this->$name()), static::$relationTypes);
+            if (!$type) {
+                static::$resolvedRelationMethods[$name] = [
+                    'isRelation' => false,
+                ];
+            }
+
+            static::$resolvedRelationMethods[$name] = [
+                'isRelation' => true,
+                'type' => $type,
+            ];
+
+            return $type;
+        }
+
+        $returnType = $method->getReturnType();
+
+        if (is_null($returnType)) {
+            static::$resolvedRelationMethods[$name] = [
+                'isRelation' => false,
+            ];
+
+            return null;
+        }
+
+        if (
+            $returnType instanceof \ReflectionNamedType
+             && in_array($returnType->getName(), array_values(static::$relationTypes))
+        ) {
+            $type = array_search($returnType->getName(), static::$relationTypes);
+
+            static::$resolvedRelationMethods[$name] = [
+                'isRelation' => true,
+                'type' => $type,
+            ];
+
+            return $type;
+        }
+
+        static::$resolvedRelationMethods[$name] = [
+            'isRelation' => false,
+        ];
+
+        return null;
     }
 
     /**
@@ -662,32 +774,17 @@ trait HasRelationships
      *
      * A relation method either specifies the `Relation` attribute or has a return type that matches a relation.
      */
-    public function isRelationMethod(string $name): bool
+    protected function isRelationMethod(string $name): bool
     {
-        if (!method_exists($this, $name)) {
+        if (!$this->methodExists($name)) {
             return false;
         }
 
-        $method = new \ReflectionMethod($this, $name);
-
-        if (count($method->getAttributes(Relation::class))) {
-            return true;
+        if (isset(static::$resolvedRelationMethods[$name])) {
+            return static::$resolvedRelationMethods[$name]['isRelation'];
         }
 
-        $returnType = $method->getReturnType();
-
-        if (is_null($returnType)) {
-            return false;
-        }
-
-        if (
-            $returnType instanceof \ReflectionNamedType
-             && in_array($returnType->getName(), array_values(static::$relationTypes))
-        ) {
-            return true;
-        }
-
-        return false;
+        return $this->getRelationMethodType($name) !== null;
     }
 
     /**
@@ -699,7 +796,12 @@ trait HasRelationships
             return [];
         }
 
-        return $this->{$name}()->getArrayDefinition();
+        if (isset(static::$resolvedRelationMethods[$name]['definition'])) {
+            return static::$resolvedRelationMethods[$name]['definition'];
+        }
+
+        $definition = $this->{$name}()->getArrayDefinition() + $this->getRelationDefaults($this->getRelationType($name));
+        return static::$resolvedRelationMethods[$name]['definition'] = $definition;
     }
 
     /**
