@@ -720,6 +720,8 @@ trait HasRelationships
             $method = new \ReflectionFunction($this->extensionData['methods'][$name]->getClosure());
         } elseif (isset($this->extensionData['dynamicMethods'][$name])) {
             $method = new \ReflectionFunction($this->extensionData['dynamicMethods'][$name]->getClosure());
+        } else {
+            return null;
         }
 
         if (count($method->getAttributes(Relation::class))) {
