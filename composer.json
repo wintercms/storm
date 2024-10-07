@@ -94,15 +94,10 @@
         }
     },
     "scripts": {
-        "test": [
-            "phpunit ./tests --stop-on-failure"
-        ],
-        "lint": [
-            "parallel-lint --exclude vendor --exclude storage --exclude tests/fixtures/plugins/testvendor/goto/Plugin.php ."
-        ],
-        "sniff": [
-            "phpcs --colors -nq --report=\"full\" --extensions=\"php\""
-        ]
+        "test": "phpunit ./tests",
+        "lint": "parallel-lint --exclude vendor .",
+        "sniff": "phpcs --colors -nq --report=\"full\" --extensions=\"php\"",
+        "analyze": "phpstan analyse --memory-limit=2G src"
     },
     "extra": {
         "branch-alias": {

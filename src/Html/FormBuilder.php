@@ -113,10 +113,10 @@ class FormBuilder
     public function open(array $options = []): string
     {
         $method = strtoupper(array_get($options, 'method', 'post'));
-        $request = array_get($options, 'request');
+        $request = array_get($options, 'request', '');
         $model = array_get($options, 'model');
 
-        if ($model) {
+        if (!is_null($model)) {
             $this->model = $model;
         }
 
@@ -972,9 +972,8 @@ class FormBuilder
 
     /**
      * Returns a hidden HTML input, supplying the session key value.
-     * @return string
      */
-    protected function requestHandler($name = null)
+    protected function requestHandler(string $name = null): string
     {
         if (!strlen($name)) {
             return '';

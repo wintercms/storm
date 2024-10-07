@@ -1,5 +1,6 @@
 <?php
 
+use AssertGD\DiffCalculator\ScaledRgbChannels;
 use Winter\Storm\Database\Attach\Resizer;
 
 class ResizerTest extends TestCase
@@ -458,7 +459,8 @@ class ResizerTest extends TestCase
                 $this->tmpTarget,
                 $this->target,
                 $methodName . ' result did not match ' . $this->target,
-                0.05
+                0.05,
+                new ScaledRgbChannels()
             );
         }
     }

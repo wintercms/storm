@@ -135,8 +135,3 @@ parameters:
 			message: "#^Call to an undefined method Illuminate\\\\Routing\\\\Router\\:\\:after\\(\\)\\.$#"
 			count: 1
 			path: src/Foundation/Application.php
-
-		-
-			message: "#^Call to an undefined method Orchestra\\\\Testbench\\\\Exceptions\\\\Handler\\:\\:error\\(\\)\\.$#"
-			count: 1
-			path: src/Foundation/Application.php
