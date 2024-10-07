@@ -120,20 +120,21 @@ class Builder extends BuilderModel
      *
      * This method also accepts the Laravel signature:
      *
-     * `paginate(int|null $perPage, array $columns, string $pageName, int|null $page)`
+     * `paginate(int|null $perPage, array $columns, string $pageName, int|null $page, \Closure|int|null $total)`
      *
      * @param int|null $perPage
      * @param array|int|null $currentPage
      * @param array|string $columns
      * @param string|int|null $pageName
+     * @param \Closure|int|null $total
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page')
+    public function paginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page', $total = null)
     {
         /*
          * Engage Laravel signature support
          *
-         * paginate($perPage, $columns, $pageName, $currentPage)
+         * paginate($perPage, $columns, $pageName, $currentPage, $total)
          */
         if (is_array($currentPage)) {
             $_columns = $columns;
@@ -153,7 +154,7 @@ class Builder extends BuilderModel
             $perPage = $this->model->getPerPage();
         }
 
-        $total = $this->toBase()->getCountForPagination();
+        $total = value($total) ?? $this->toBase()->getCountForPagination();
         $this->forPage((int) $currentPage, (int) $perPage);
 
         return $this->paginator($this->get($columns), $total, $perPage, $currentPage, [

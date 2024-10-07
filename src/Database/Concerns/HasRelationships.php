@@ -308,17 +308,17 @@ trait HasRelationships
         switch ($relationType) {
             case 'hasOne':
             case 'hasMany':
-                $relation = $this->validateRelationArgs($relationName, ['key', 'otherKey']);
+                $relation = $this->validateRelationArgs($relation, $relationName, ['key', 'otherKey']);
                 $relationObj = $this->$relationType($relation[0], $relation['key'], $relation['otherKey'], $relationName);
                 break;
 
             case 'belongsTo':
-                $relation = $this->validateRelationArgs($relationName, ['key', 'otherKey']);
+                $relation = $this->validateRelationArgs($relation, $relationName, ['key', 'otherKey']);
                 $relationObj = $this->$relationType($relation[0], $relation['key'], $relation['otherKey'], $relationName);
                 break;
 
             case 'belongsToMany':
-                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps']);
+                $relation = $this->validateRelationArgs($relation, $relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps']);
                 $relationObj = $this->$relationType($relation[0], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
 
                 if (isset($relation['pivotModel'])) {
@@ -328,19 +328,19 @@ trait HasRelationships
                 break;
 
             case 'morphTo':
-                $relation = $this->validateRelationArgs($relationName, ['name', 'type', 'id']);
+                $relation = $this->validateRelationArgs($relation, $relationName, ['name', 'type', 'id']);
                 $relationObj = $this->$relationType($relation['name'] ?: $relationName, $relation['type'], $relation['id']);
                 break;
 
             case 'morphOne':
             case 'morphMany':
-                $relation = $this->validateRelationArgs($relationName, ['type', 'id', 'key'], ['name']);
+                $relation = $this->validateRelationArgs($relation, $relationName, ['type', 'id', 'key'], ['name']);
                 $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['type'], $relation['id'], $relation['key'], $relationName);
                 break;
 
             case 'morphToMany':
-                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
-                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], false, $relationName);
+                $relation = $this->validateRelationArgs($relation, $relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
+                $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], $relationName, false);
 
                 if (isset($relation['pivotModel'])) {
                     $relationObj->using($relation['pivotModel']);
@@ -349,19 +349,19 @@ trait HasRelationships
                 break;
 
             case 'morphedByMany':
-                $relation = $this->validateRelationArgs($relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
+                $relation = $this->validateRelationArgs($relation, $relationName, ['table', 'key', 'otherKey', 'parentKey', 'relatedKey', 'pivot', 'timestamps'], ['name']);
                 $relationObj = $this->$relationType($relation[0], $relation['name'], $relation['table'], $relation['key'], $relation['otherKey'], $relation['parentKey'], $relation['relatedKey'], $relationName);
                 break;
 
             case 'attachOne':
             case 'attachMany':
-                $relation = $this->validateRelationArgs($relationName, ['public', 'key']);
+                $relation = $this->validateRelationArgs($relation, $relationName, ['public', 'key']);
                 $relationObj = $this->$relationType($relation[0], $relation['public'], $relation['key'], $relationName);
                 break;
 
             case 'hasOneThrough':
             case 'hasManyThrough':
-                $relation = $this->validateRelationArgs($relationName, ['key', 'throughKey', 'otherKey', 'secondOtherKey'], ['through']);
+                $relation = $this->validateRelationArgs($relation, $relationName, ['key', 'throughKey', 'otherKey', 'secondOtherKey'], ['through']);
                 $relationObj = $this->$relationType($relation[0], $relation['through'], $relation['key'], $relation['throughKey'], $relation['otherKey'], $relation['secondOtherKey'], $relationName);
                 break;
 
@@ -375,10 +375,8 @@ trait HasRelationships
     /**
      * Validate relation supplied arguments.
      */
-    protected function validateRelationArgs($relationName, $optional, $required = [])
+    protected function validateRelationArgs($relation, $relationName, $optional, $required = [])
     {
-        $relation = $this->getRelationDefinition($relationName);
-
         // Query filter arguments
         $filters = ['scope', 'conditions', 'order', 'pivot', 'timestamps', 'push', 'count', 'default'];
 
@@ -667,9 +665,18 @@ trait HasRelationships
     /**
      * Define a polymorphic many-to-many relationship.
      * This code is almost a duplicate of Eloquent but uses a Storm relation class.
+     * @param  string  $related
+     * @param  string  $name
+     * @param  string|null  $table
+     * @param  string|null  $primaryKey
+     * @param  string|null  $foreignKey
+     * @param  string|null  $parentKey
+     * @param  string|null  $relatedKey
+     * @param  string|null  $relationName
+     * @param  bool  $inverse
      * @return \Winter\Storm\Database\Relations\MorphToMany
      */
-    public function morphToMany($related, $name, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $inverse = false, $relationName = null)
+    public function morphToMany($related, $name, $table = null, $primaryKey = null, $foreignKey = null, $parentKey = null, $relatedKey = null, $relationName = null, $inverse = false)
     {
         if (is_null($relationName)) {
             $relationName = $this->getRelationCaller();
@@ -720,8 +727,8 @@ trait HasRelationships
             $foreignKey,
             $parentKey,
             $relatedKey,
-            true,
-            $relationName
+            $relationName,
+            true
         );
     }
 

@@ -182,7 +182,7 @@ class CheckForTrustedHostTest extends TestCase
     {
         $middleware = $this->getMockBuilder(CheckForTrustedHost::class)
             ->disableOriginalConstructor()
-            ->setMethods(['hosts', 'shouldSpecifyTrustedHosts'])
+            ->onlyMethods(['hosts', 'shouldSpecifyTrustedHosts'])
             ->getMock();
 
         $middleware->expects($this->any())

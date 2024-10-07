@@ -1,17 +1,21 @@
 <?php namespace Winter\Storm\Database\Connections;
 
 use PDO;
-use Illuminate\Database\PDO\MySqlDriver;
 use Illuminate\Database\Schema\MySqlBuilder;
 use Illuminate\Database\Query\Processors\MySqlProcessor;
-use Illuminate\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
+
+use Winter\Storm\Database\PDO\MySqlDriver;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
+use Winter\Storm\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
+use Winter\Storm\Database\Traits\HasConnection;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class MySqlConnection extends Connection
+class MySqlConnection extends \Illuminate\Database\MySqlConnection
 {
+    use HasConnection;
+
     /**
      * Get the default query grammar instance.
      *
@@ -57,16 +61,6 @@ class MySqlConnection extends Connection
     }
 
     /**
-     * Get the Doctrine DBAL driver.
-     *
-     * @return \Illuminate\Database\PDO\MySqlDriver
-     */
-    protected function getDoctrineDriver()
-    {
-        return new MySqlDriver;
-    }
-
-    /**
      * Bind values to their parameters in the given statement.
      *
      * @param  \PDOStatement $statement
@@ -82,5 +76,15 @@ class MySqlConnection extends Connection
                 is_int($value) || is_float($value) ? PDO::PARAM_INT : PDO::PARAM_STR
             );
         }
+    }
+
+    /**
+     * Get the Doctrine DBAL driver.
+     *
+     * @return \Winter\Storm\Database\PDO\MySqlDriver
+     */
+    protected function getDoctrineDriver()
+    {
+        return new MySqlDriver;
     }
 }

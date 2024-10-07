@@ -25,7 +25,7 @@ class FilesystemTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function providePathsForIsAbsolutePath()
+    public static function providePathsForIsAbsolutePath()
     {
         return [
             ['/var/lib', true],

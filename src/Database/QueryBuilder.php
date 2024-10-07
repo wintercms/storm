@@ -463,7 +463,7 @@ class QueryBuilder extends QueryBuilderBase
             }
 
             return $this->newQuery()
-                ->from(new Expression('(' . $clone->toSql() . ') as ' . $this->grammar->wrap('aggregate_table')))
+                ->from($clone, $this->grammar->wrap('aggregate_table'))
                 ->mergeBindings($clone)
                 ->setAggregate('count', $this->withoutSelectAliases($columns))
                 ->get()

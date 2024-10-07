@@ -33,8 +33,6 @@ class DatabaseServiceProvider extends DatabaseServiceProviderBase
         Model::flushDuplicateCache();
         Model::flushEventListeners();
 
-        $this->registerEloquentFactory();
-
         $this->registerQueueableEntityResolver();
 
         // The connection factory is used to create the actual connection instances on

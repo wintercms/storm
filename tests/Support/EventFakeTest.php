@@ -5,7 +5,7 @@ use Winter\Storm\Support\Testing\Fakes\EventFake;
 
 class EventFakeTest extends TestCase
 {
-    protected EventFake $faker;
+    protected ?EventFake $faker = null;
 
     public function setUp(): void
     {
