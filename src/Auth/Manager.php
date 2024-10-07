@@ -171,7 +171,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      * Sets the user
      * @phpstan-param Models\User $user
      */
-    public function setUser(Authenticatable $user): self
+    public function setUser(Authenticatable $user): static
     {
         $this->user = $user;
         return $this;
