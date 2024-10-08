@@ -44,9 +44,9 @@ trait CanBeDetachable
     /**
      * Allow this relationship to be detached when the primary model is deleted.
      */
-    public function detachable(): static
+    public function detachable(bool $enabled = true): static
     {
-        $this->detachable = true;
+        $this->detachable = $enabled;
 
         return $this;
     }

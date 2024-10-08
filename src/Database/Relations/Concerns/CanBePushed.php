@@ -42,9 +42,9 @@ trait CanBePushed
     /**
      * Allow this relationship to be saved when the `push()` method is used on the primary model.
      */
-    public function push(): static
+    public function pushable(bool $enabled = true): static
     {
-        $this->isPushable = true;
+        $this->isPushable = $enabled;
 
         return $this;
     }
@@ -52,7 +52,7 @@ trait CanBePushed
     /**
      * Disallow this relationship from being saved when the `push()` method is used on the primary model.
      */
-    public function noPush(): static
+    public function notPushable(): static
     {
         $this->isPushable = false;
 

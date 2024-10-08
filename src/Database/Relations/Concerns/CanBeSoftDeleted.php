@@ -48,10 +48,10 @@ trait CanBeSoftDeleted
     /**
      * Mark the relationship as soft deletable.
      */
-    public function softDeletable(): static
+    public function softDeletable(bool $enabled = true): static
     {
         if (in_array('Winter\Storm\Database\Traits\SoftDelete', class_uses_recursive($this->related))) {
-            $this->isSoftDeletable = true;
+            $this->isSoftDeletable = $enabled;
         }
 
         return $this;

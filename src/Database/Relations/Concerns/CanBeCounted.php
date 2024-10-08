@@ -47,8 +47,14 @@ trait CanBeCounted
     /**
      * Mark the relationship as a count-only relationship.
      */
-    public function countOnly(): static
+    public function countOnly(bool $enabled = true): static
     {
+        if (!$enabled) {
+            $this->countOnly = false;
+
+            return $this;
+        }
+
         $this->countOnly = true;
 
         if ($this instanceof BelongsToMany) {

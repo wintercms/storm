@@ -46,9 +46,9 @@ trait CanBeDependent
     /**
      * Mark the relationship as dependent on the primary model.
      */
-    public function dependent(): static
+    public function dependent(bool $enabled = true): static
     {
-        $this->dependent = true;
+        $this->dependent = $enabled;
 
         return $this;
     }
