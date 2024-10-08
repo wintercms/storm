@@ -20,7 +20,7 @@ use Winter\Storm\Database\Relations\MorphMany;
 use Winter\Storm\Database\Relations\MorphOne;
 use Winter\Storm\Database\Relations\MorphTo;
 use Winter\Storm\Database\Relations\MorphToMany;
-use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Exception\SystemException;
 use Winter\Storm\Support\Arr;
 
 /**
@@ -367,7 +367,7 @@ trait HasRelationships
      *
      * If the relation is defined in both places, an exception will be thrown.
      *
-     * @throws \Winter\Storm\Exception\ApplicationException
+     * @throws \Winter\Storm\Exception\SystemException
      */
     protected function detectRelationConflict(string $name): void
     {
@@ -375,7 +375,7 @@ trait HasRelationships
             $this->getRelationType($name, false) !== null
             && $this->isRelationMethod($name)
         ) {
-            throw new ApplicationException(sprintf(
+            throw new SystemException(sprintf(
                 'Relation "%s" in model "%s" is defined both as a relation method and in the relation properties config.',
                 $name,
                 get_called_class()
