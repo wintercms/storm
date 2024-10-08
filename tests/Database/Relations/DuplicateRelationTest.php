@@ -3,7 +3,7 @@
 namespace Winter\Storm\Tests\Database\Relations;
 
 use Winter\Storm\Database\Model;
-use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Exception\SystemException;
 use Winter\Storm\Tests\Database\Fixtures\Author;
 use Winter\Storm\Tests\Database\Fixtures\DuplicateRelationNote;
 use Winter\Storm\Tests\DbTestCase;
@@ -26,7 +26,7 @@ class DuplicateRelationTest extends DbTestCase
 
     public function testMethodPropertyWhenMethodRelationExists()
     {
-        $this->expectException(ApplicationException::class);
+        $this->expectException(SystemException::class);
         $this->expectExceptionMessageMatches('/Relation "author" in model "' . preg_quote(DuplicateRelationNote::class) . '" is defined both/');
 
         Model::unguard();
@@ -42,7 +42,7 @@ class DuplicateRelationTest extends DbTestCase
 
     public function testGetRelationDefinitionWhenBothExist()
     {
-        $this->expectException(ApplicationException::class);
+        $this->expectException(SystemException::class);
         $this->expectExceptionMessageMatches('/Relation "author" in model "' . preg_quote(DuplicateRelationNote::class) . '" is defined both/');
 
         $note = new DuplicateRelationNote;
