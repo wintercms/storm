@@ -5,6 +5,7 @@ namespace Winter\Storm\Tests\Database\Fixtures;
 use Illuminate\Database\Schema\Builder;
 use Winter\Storm\Database\Attributes\Relation;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Database\Relations\BelongsToMany;
 use Winter\Storm\Database\Relations\HasMany;
 use Winter\Storm\Database\Relations\HasOne;
 use Winter\Storm\Database\Relations\MorphToMany;
@@ -74,19 +75,19 @@ class Author extends Model
         return $this->hasMany(Post::class);
     }
 
-    #[Relation]
+    #[Relation('belongsToMany')]
     public function scopes()
     {
         return $this->belongsToMany(Role::class, 'database_tester_authors_roles');
     }
 
-    #[Relation]
+    #[Relation(BelongsToMany::class)]
     public function executiveAuthors()
     {
         return $this->belongsToMany(Role::class, 'database_tester_authors_roles')->wherePivot('is_executive', 1);
     }
 
-    #[Relation]
+    #[Relation('morphOne')]
     public function info()
     {
         return $this->morphOne(Meta::class, 'taggable');
@@ -97,7 +98,7 @@ class Author extends Model
         return $this->morphToMany(Tag::class, 'taggable', 'database_tester_taggables')->withPivot('added_by');
     }
 
-    #[Relation]
+    #[Relation('morphMany')]
     public function auditLogs()
     {
         return $this->morphMany(EventLog::class, 'related')->dependent();

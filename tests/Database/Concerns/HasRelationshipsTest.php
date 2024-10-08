@@ -16,6 +16,7 @@ use Winter\Storm\Tests\Database\Fixtures\Meta;
 use Winter\Storm\Tests\Database\Fixtures\Phone;
 use Winter\Storm\Tests\Database\Fixtures\Post;
 use Winter\Storm\Tests\Database\Fixtures\Role;
+use Winter\Storm\Tests\Database\Fixtures\SoftDeleteUser;
 use Winter\Storm\Tests\Database\Fixtures\Tag;
 use Winter\Storm\Tests\Database\Fixtures\User;
 use Winter\Storm\Tests\DbTestCase;
@@ -196,5 +197,126 @@ class HasRelationshipsTest extends DbTestCase
         ], $author->getRelationDefinition('labels'));
 
         $this->assertNull($author->getRelationDefinition('invalid'));
+    }
+
+    public function testGetRelationDefinitions()
+    {
+        $author = new Author();
+        $definitions = $author->getRelationDefinitions();
+
+        $this->assertCount(3, $definitions['belongsTo']);
+
+        $this->assertEquals([
+            'user' => [User::class, 'delete' => true],
+            'country' => [Country::class],
+            'user_soft' => [SoftDeleteUser::class, 'key' => 'user_id', 'softDelete' => true],
+        ], $definitions['belongsTo']);
+
+        $this->assertCount(2, $definitions['hasMany']);
+
+        $this->assertEquals([
+            'posts' => [Post::class], // Property-style
+            'messages' => [ // Laravel-style
+                Post::class,
+                'key' => 'author_id',
+                'otherKey' => 'id',
+                'delete' => false,
+                'push' => true,
+                'count' => false
+            ],
+        ], $definitions['hasMany']);
+
+        $this->assertCount(2, $definitions['hasOne']);
+
+        $this->assertEquals([
+            'phone' => [Phone::class], // Property-style
+            'contactNumber' => [ // Laravel-style
+                Phone::class,
+                'key' => 'author_id',
+                'otherKey' => 'id',
+                'delete' => false,
+                'push' => true,
+                'count' => false
+            ],
+        ], $definitions['hasOne']);
+
+        $this->assertCount(3, $definitions['belongsToMany']);
+
+        $this->assertEquals([
+            'roles' => [ // Property-style
+                'Winter\Storm\Tests\Database\Fixtures\Role',
+                'table' => 'database_tester_authors_roles'
+            ],
+            'scopes' => [ // Laravel-style
+                Role::class,
+                'table' => 'database_tester_authors_roles',
+                'key' => 'author_id',
+                'otherKey' => 'id',
+                'push' => true,
+                'detach' => true,
+                'count' => false,
+            ],
+            'executiveAuthors' => [ // Laravel-style
+                Role::class,
+                'table' => 'database_tester_authors_roles',
+                'key' => 'author_id',
+                'otherKey' => 'id',
+                'push' => true,
+                'detach' => true,
+                'count' => false,
+            ],
+        ], $definitions['belongsToMany']);
+
+        $this->assertCount(2, $definitions['morphMany']);
+
+        $this->assertEquals([
+            'event_log' => [EventLog::class, 'name' => 'related', 'delete' => true, 'softDelete' => true], // Property-style
+            'auditLogs' => [ // Laravel-style
+                EventLog::class,
+                'type' => 'related_type',
+                'id' => 'related_id',
+                'delete' => true,
+                'push' => true,
+                'count' => false,
+            ],
+        ], $definitions['morphMany']);
+
+        $this->assertCount(2, $definitions['morphOne']);
+
+        $this->assertEquals([
+            'meta' => [Meta::class, 'name' => 'taggable'], // Property-style
+            'info' => [ // Laravel-style
+                Meta::class,
+                'type' => 'taggable_type',
+                'id' => 'taggable_id',
+                'delete' => false,
+                'push' => true,
+                'count' => false,
+            ],
+        ], $definitions['morphOne']);
+
+        $this->assertCount(2, $definitions['morphToMany']);
+
+        $this->assertEquals([
+            'tags' => [ // Property-style
+                Tag::class,
+                'name'  => 'taggable',
+                'table' => 'database_tester_taggables',
+                'pivot' => ['added_by']
+            ],
+            'labels' => [ // Laravel-style
+                Tag::class,
+                'table' => 'database_tester_taggables',
+                'key' => 'taggable_id',
+                'otherKey' => 'tag_id',
+                'parentKey' => 'id',
+                'relatedKey' => 'id',
+                'inverse' => false,
+                'push' => true,
+                'count' => false,
+                'pivot' => ['added_by'],
+                'detach' => true,
+            ],
+        ], $definitions['morphToMany']);
     }
 }

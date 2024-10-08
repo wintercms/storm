@@ -770,7 +770,7 @@ class Model extends EloquentModel implements ModelInterface
          * Never call handleRelation() anywhere else as it could
          * break getRelationCaller(), use $this->{$name}() instead
          */
-        if ($this->hasRelation($name, false)) {
+        if ($this->hasRelation($name, true)) {
             return $this->handleRelation($name);
         }
 
