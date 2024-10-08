@@ -20,6 +20,7 @@ use Winter\Storm\Database\Relations\MorphMany;
 use Winter\Storm\Database\Relations\MorphOne;
 use Winter\Storm\Database\Relations\MorphTo;
 use Winter\Storm\Database\Relations\MorphToMany;
+use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Support\Arr;
 
 /**
@@ -179,6 +180,8 @@ trait HasRelationships
      */
     public function hasRelation(string $name, bool $propertyOnly = false): bool
     {
+        $this->detectRelationConflict($name);
+
         if (!$propertyOnly && $this->isRelationMethod($name, true)) {
             return true;
         }
@@ -218,6 +221,8 @@ trait HasRelationships
      */
     public function getRelationDefinition(string $name, bool $includeMethods = true): ?array
     {
+        $this->detectRelationConflict($name);
+
         if ($includeMethods && $this->isRelationMethod($name)) {
             return $this->relationMethodDefinition($name);
         }
@@ -358,6 +363,27 @@ trait HasRelationships
     }
 
     /**
+     * Detects if the relation is specified both as a relation method and in the relation properties.
+     *
+     * If the relation is defined in both places, an exception will be thrown.
+     *
+     * @throws \Winter\Storm\Exception\ApplicationException
+     */
+    protected function detectRelationConflict(string $name): void
+    {
+        if (
+            $this->getRelationType($name, false) !== null
+            && $this->isRelationMethod($name)
+        ) {
+            throw new ApplicationException(sprintf(
+                'Relation "%s" in model "%s" is defined both as a relation method and in the relation properties config.',
+                $name,
+                get_called_class()
+            ));
+        }
+    }
+
+    /**
      * Creates a Laravel relation object from a Winter relation definition array.
      *
      * Winter has traditionally used array properties in the model to configure relationships. This method converts
@@ -365,6 +391,8 @@ trait HasRelationships
      */
     protected function handleRelation(string $relationName, bool $addConstraints = true): EloquentRelation
     {
+        $this->detectRelationConflict($relationName);
+
         $relationType = $this->getRelationType($relationName);
         $definition = $this->getRelationDefinition($relationName);
         $relatedClass = $definition[0] ?? null;

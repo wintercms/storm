@@ -2,7 +2,6 @@
 
 namespace Winter\Storm\Tests\Database\Relations;
 
-use Winter\Storm\Database\Attributes\Relation;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Relations\BelongsTo;
 use Winter\Storm\Tests\Database\Fixtures\Author;
