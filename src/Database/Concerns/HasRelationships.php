@@ -571,7 +571,7 @@ trait HasRelationships
                 class_uses_recursive($relation)
             )
         ) {
-            $relation = $relation->noPush();
+            $relation = $relation->notPushable();
         }
 
         // Add count only flag, if required
