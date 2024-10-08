@@ -737,21 +737,23 @@ trait HasRelationships
      *
      * This is used to determine if a method is a relation method, first and foremost, and then to determine the type of the relation.
      */
-    protected function getRelationMethodType(string $name): ?string
+    protected function getRelationMethodType(string $name, bool $ignoreResolved = false): ?string
     {
         if (!$this->methodExists($name)) {
             return null;
         }
 
-        if (isset(static::$resolvedRelationMethods[static::class][$name])) {
-            return static::$resolvedRelationMethods[static::class][$name]['type'];
-        }
+        if (!$ignoreResolved) {
+            if (isset(static::$resolvedRelationMethods[static::class][$name])) {
+                return static::$resolvedRelationMethods[static::class][$name]['type'];
+            }
 
-        if (
-            isset(static::$resolvedNonRelationMethods[static::class])
-            && in_array($name, static::$resolvedNonRelationMethods[static::class])
-        ) {
-            return null;
+            if (
+                isset(static::$resolvedNonRelationMethods[static::class])
+                && in_array($name, static::$resolvedNonRelationMethods[static::class])
+            ) {
+                return null;
+            }
         }
 
         // Directly defined relation methods
