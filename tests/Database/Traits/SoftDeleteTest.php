@@ -2,130 +2,195 @@
 
 namespace Winter\Storm\Tests\Database\Traits;
 
-class SoftDeleteTest extends \DbTestCase
+use Winter\Storm\Tests\Database\Fixtures\Author;
+use Winter\Storm\Tests\Database\Fixtures\UserWithAuthor;
+use Winter\Storm\Tests\Database\Fixtures\SoftDeleteAuthor;
+use Winter\Storm\Tests\Database\Fixtures\UserWithSoftAuthor;
+use Winter\Storm\Tests\Database\Fixtures\UserWithAuthorAndSoftDelete;
+use Winter\Storm\Tests\Database\Fixtures\UserWithSoftAuthorAndSoftDelete;
+use Winter\Storm\Database\Model;
+use Winter\Storm\Tests\Database\Fixtures\Category;
+use Winter\Storm\Tests\Database\Fixtures\EventLog;
+use Winter\Storm\Tests\Database\Fixtures\Post;
+use Winter\Storm\Tests\Database\Fixtures\UserLaravel;
+use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftAuthor;
+use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftAuthorAndSoftDelete;
+use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftDelete;
+use Winter\Storm\Tests\DbTestCase;
+
+class SoftDeleteTest extends DbTestCase
 {
-    protected $seeded = [];
-
-    public function setUp(): void
+    public function testDeleteOptionOnHardModel()
     {
-        parent::setUp();
+        Model::unguard();
+        $user = UserWithAuthor::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
 
-        $this->seeded = [
-            'posts' => [],
-            'categories' => []
-        ];
-
-        $this->createTables();
-        $this->seedTables();
+        $authorId = $author->id;
+        $user->delete(); // Hard
+        $this->assertNull(Author::find($authorId));
     }
 
-    protected function createTables()
+    public function testDeleteOptionOnHardModelLaravelRelation()
     {
-        $this->getBuilder()->create('posts', function ($table) {
-            $table->increments('id');
-            $table->string('title')->default('');
-            $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
-        });
+        Model::unguard();
+        $user = UserLaravel::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
 
-        $this->getBuilder()->create('categories', function ($table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->timestamps();
-        });
-
-        $this->getBuilder()->create('categories_posts', function ($table) {
-            $table->primary(['post_id', 'category_id']);
-            $table->unsignedInteger('post_id');
-            $table->unsignedInteger('category_id');
-            $table->timestamp('deleted_at')->nullable();
-        });
+        $authorId = $author->id;
+        $user->delete(); // Hard
+        $this->assertNull(Author::find($authorId));
     }
 
-    protected function seedTables()
+    public function testSoftDeleteOptionOnHardModel()
     {
-        $this->seeded['posts'][] = Post::create([
-            'title' => 'First Post',
-        ]);
-        $this->seeded['posts'][] = Post::create([
-            'title' => 'Second Post',
-        ]);
+        Model::unguard();
+        $user = UserWithSoftAuthor::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
 
-        $this->seeded['categories'][] = Category::create([
-            'name' => 'Category 1'
-        ]);
-        $this->seeded['categories'][] = Category::create([
-            'name' => 'Category 2'
-        ]);
-
-        $this->seeded['posts'][0]->categories()->attach($this->seeded['categories'][0]);
-        $this->seeded['posts'][0]->categories()->attach($this->seeded['categories'][1]);
-
-        $this->seeded['posts'][1]->categories()->attach($this->seeded['categories'][0]);
-        $this->seeded['posts'][1]->categories()->attach($this->seeded['categories'][1]);
+        $authorId = $author->id;
+        $user->delete(); // Hard
+        $this->assertNotNull(Author::find($authorId)); // Do nothing
     }
 
-    public function testDeleteAndRestore()
+    public function testSoftDeleteOptionOnHardModelLaravelRelation()
     {
-        $post = Post::first();
-        $this->assertTrue($post->deleted_at === null);
-        $this->assertTrue($post->categories()->where('deleted_at', null)->count() === 2);
+        Model::unguard();
+        $user = UserLaravelWithSoftAuthor::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
 
-        $post->delete();
-
-        $post = Post::withTrashed()->first();
-        $this->assertTrue($post->deleted_at != null);
-        $this->assertTrue($post->categories()->where('deleted_at', '!=', null)->count() === 2);
-        $post->restore();
-
-        $post = Post::first();
-        $this->assertTrue($post->deleted_at === null);
-        $this->assertTrue($post->categories()->where('deleted_at', null)->count() === 2);
+        $authorId = $author->id;
+        $user->delete(); // Hard
+        $this->assertNotNull(Author::find($authorId)); // Do nothing
     }
-}
 
-class Post extends \Winter\Storm\Database\Model
-{
-    use \Winter\Storm\Database\Traits\SoftDelete;
+    public function testSoftDeleteOptionOnSoftModel()
+    {
+        Model::unguard();
+        $user = UserWithSoftAuthorAndSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = SoftDeleteAuthor::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
 
-    public $table = 'posts';
+        $authorId = $author->id;
+        $user->delete(); // Soft
+        $this->assertNull(SoftDeleteAuthor::find($authorId));
+        $this->assertNotNull(SoftDeleteAuthor::withTrashed()->find($authorId));
+    }
 
-    public $fillable = ['title'];
+    public function testSoftDeleteOptionOnSoftModelLaravelRelation()
+    {
+        Model::unguard();
+        $user = UserLaravelWithSoftAuthorAndSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = SoftDeleteAuthor::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
+        $authorId = $author->id;
+        $user->delete(); // Soft
+        $this->assertNull(SoftDeleteAuthor::find($authorId));
+        $this->assertNotNull(SoftDeleteAuthor::withTrashed()->find($authorId));
+    }
 
-    public $belongsToMany = [
-        'categories' => [
-            Category::class,
-            'table'      => 'categories_posts',
-            'key'        => 'post_id',
-            'otherKey'   => 'category_id',
-            'softDelete' => true,
-        ],
-    ];
-}
+    public function testDeleteOptionOnSoftModel()
+    {
+        Model::unguard();
+        $user = UserWithAuthorAndSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
 
-class Category extends \Winter\Storm\Database\Model
-{
-    public $table = 'categories';
+        $authorId = $author->id;
+        $user->delete(); // Soft
+        $this->assertNotNull(Author::find($authorId)); // Do nothing
 
-    public $fillable = ['name'];
+        $userId = $user->id;
+        $user = UserWithAuthorAndSoftDelete::withTrashed()->find($userId);
+        $user->restore();
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-    ];
+        $user->forceDelete(); // Hard
+        $this->assertNull(Author::find($authorId));
+    }
 
-    public $belongsToMany = [
-        'posts' => [
-            Post::class,
-            'table'     => 'categories_posts',
-            'key'       => 'category_id',
-            'otherKey'  => 'post_id',
-        ],
-    ];
+    public function testDeleteOptionOnSoftModelLaravelRelation()
+    {
+        Model::unguard();
+        $user = UserLaravelWithSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = Author::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
+
+        $authorId = $author->id;
+        $user->delete(); // Soft
+        $this->assertNotNull(Author::find($authorId)); // Do nothing
+
+        $userId = $user->id;
+        $user = UserLaravelWithSoftDelete::withTrashed()->find($userId);
+        $user->restore();
+
+        $user->forceDelete(); // Hard
+        $this->assertNull(Author::find($authorId));
+    }
+
+    public function testRestoreSoftDeleteRelation()
+    {
+        Model::unguard();
+        $user = UserWithSoftAuthorAndSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = SoftDeleteAuthor::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
+
+        $authorId = $author->id;
+        $user->delete(); // Soft
+        $this->assertNull(SoftDeleteAuthor::find($authorId));
+        $this->assertNotNull(SoftDeleteAuthor::withTrashed()->find($authorId));
+
+        $userId = $user->id;
+        $user = UserWithSoftAuthorAndSoftDelete::withTrashed()->find($userId);
+        $user->restore();
+
+        $this->assertNotNull(SoftDeleteAuthor::find($authorId));
+    }
+
+    public function testRestoreSoftDeleteRelationLaravelRelation()
+    {
+        Model::unguard();
+        $user = UserLaravelWithSoftAuthorAndSoftDelete::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $author = SoftDeleteAuthor::create(['name' => 'Louie', 'email' => 'louie@example.com', 'user_id' => $user->id]);
+        Model::reguard();
+
+        $authorId = $author->id;
+        $user->delete(); // Soft
+        $this->assertNull(SoftDeleteAuthor::find($authorId));
+        $this->assertNotNull(SoftDeleteAuthor::withTrashed()->find($authorId));
+
+        $userId = $user->id;
+        $user = UserLaravelWithSoftAuthorAndSoftDelete::withTrashed()->find($userId);
+        $user->restore();
+
+        $this->assertNotNull(SoftDeleteAuthor::find($authorId));
+    }
+
+    public function testCannotMakeModelSoftDeleteIfNotUsingTrait()
+    {
+        $categoryModel = new Category();
+        $relation = $categoryModel->hasMany(Post::class);
+
+        $this->assertFalse($relation->isSoftDeletable());
+
+        $relation->softDeletable();
+
+        // Should still be false because the model does not use the trait
+        $this->assertFalse($relation->isSoftDeletable());
+
+        $postModel = new Post();
+
+        $relation = $postModel->morphMany(EventLog::class, 'related');
+
+        $this->assertFalse($relation->isSoftDeletable());
+
+        $relation->softDeletable();
+
+        // This should now be true because EventLog does use the trait
+        $this->assertTrue($relation->isSoftDeletable());
+    }
 }

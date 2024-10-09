@@ -1,4 +1,6 @@
-<?php namespace Winter\Storm\Database\Relations\Concerns;
+<?php
+
+namespace Winter\Storm\Database\Relations\Concerns;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -14,41 +16,6 @@ trait BelongsOrMorphsToMany
      * @var boolean When a join is not used, don't select aliased columns.
      */
     public $orphanMode = false;
-
-    /**
-     * Create a new belongs to many relationship instance.
-     *
-     * @param  \Winter\Storm\Database\Builder  $query
-     * @param  \Winter\Storm\Database\Model  $parent
-     * @param  string  $table
-     * @param  string  $foreignPivotKey
-     * @param  string  $relatedPivotKey
-     * @param  string  $relationName
-     * @return void
-     */
-    public function __construct(
-        \Winter\Storm\Database\Builder $query,
-        \Winter\Storm\Database\Model $parent,
-        $table,
-        $foreignPivotKey,
-        $relatedPivotKey,
-        $parentKey,
-        $relatedKey,
-        $relationName = null
-    ) {
-        parent::__construct(
-            $query,
-            $parent,
-            $table,
-            $foreignPivotKey,
-            $relatedPivotKey,
-            $parentKey,
-            $relatedKey,
-            $relationName
-        );
-
-        $this->addDefinedConstraints();
-    }
 
     /**
      * Get the select columns for the relation query.
@@ -324,89 +291,6 @@ trait BelongsOrMorphsToMany
         }
 
         return $pivot->setPivotKeys($this->foreignPivotKey, $this->relatedPivotKey);
-    }
-
-    /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
-     */
-    public function setSimpleValue($value)
-    {
-        $relationModel = $this->getRelated();
-
-        /*
-         * Nulling the relationship
-         */
-        if (!$value) {
-            // Disassociate in memory immediately
-            $this->parent->setRelation($this->relationName, $relationModel->newCollection());
-
-            // Perform sync when the model is saved
-            $this->parent->bindEventOnce('model.afterSave', function () {
-                $this->detach();
-            });
-            return;
-        }
-
-        /*
-         * Convert models to keys
-         */
-        if ($value instanceof Model) {
-            $value = $value->getKey();
-        }
-        elseif (is_array($value)) {
-            foreach ($value as $_key => $_value) {
-                if ($_value instanceof Model) {
-                    $value[$_key] = $_value->getKey();
-                }
-            }
-        }
-
-        /*
-         * Convert scalar to array
-         */
-        if (!is_array($value) && !$value instanceof Collection) {
-            $value = [$value];
-        }
-
-        /*
-         * Setting the relationship
-         */
-        $relationCollection = $value instanceof Collection
-            ? $value
-            : $relationModel->whereIn($relationModel->getKeyName(), $value)->get();
-
-        // Associate in memory immediately
-        $this->parent->setRelation($this->relationName, $relationCollection);
-
-        // Perform sync when the model is saved
-        $this->parent->bindEventOnce('model.afterSave', function () use ($value) {
-            $this->sync($value);
-        });
-    }
-
-    /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
-     */
-    public function getSimpleValue()
-    {
-        $value = [];
-
-        $relationName = $this->relationName;
-
-        $sessionKey = $this->parent->sessionKey;
-
-        if ($this->parent->relationLoaded($relationName)) {
-            $related = $this->getRelated();
-
-            $value = $this->parent->getRelation($relationName)->pluck($related->getKeyName())->all();
-        }
-        else {
-            $value = $this->allRelatedIds($sessionKey)->all();
-        }
-
-        return $value;
     }
 
     /**

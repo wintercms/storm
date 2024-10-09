@@ -1,7 +1,9 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
+namespace Winter\Storm\Database\Relations;
+
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThroughBase;
 
 /**
@@ -10,24 +12,20 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThroughBase;
  */
 class HasManyThrough extends HasManyThroughBase
 {
+    use Concerns\CanBeCounted;
+    use Concerns\CanBeExtended;
+    use Concerns\CanBePushed;
+    use Concerns\CanBeSoftDeleted;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * @var string The "name" of the relationship.
+     * {@inheritDoc}
      */
-    protected $relationName;
-
-    /**
-     * Create a new has many relationship instance.
-     * @return void
-     */
-    public function __construct(Builder $query, Model $farParent, Model $parent, $firstKey, $secondKey, $localKey, $secondLocalKey, $relationName = null)
+    public function __construct(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
     {
-        $this->relationName = $relationName;
-
-        parent::__construct($query, $farParent, $parent, $firstKey, $secondKey, $localKey, $secondLocalKey);
-
-        $this->addDefinedConstraints();
+        parent::__construct($query, $farParent, $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey);
+        $this->extendableRelationConstruct();
     }
 
     /**
@@ -41,5 +39,22 @@ class HasManyThrough extends HasManyThroughBase
 
         return in_array('Winter\Storm\Database\Traits\SoftDelete', $uses) ||
             in_array('Illuminate\Database\Eloquent\SoftDeletes', $uses);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [
+            get_class($this->query->getModel()),
+            'through' => get_class($this->throughParent),
+            'key' => $this->getForeignKeyName(),
+            'throughKey' => $this->getFirstKeyName(),
+            'otherKey' => $this->getLocalKeyName(),
+            'secondOtherKey' => $this->getSecondLocalKeyName(),
+            'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
+        ];
     }
 }
