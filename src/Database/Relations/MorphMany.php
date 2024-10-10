@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany as MorphManyBase;
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphMany extends MorphManyBase implements Relation
+class MorphMany extends MorphManyBase implements RelationInterface
 {
     use Concerns\MorphOneOrMany;
     use Concerns\CanBeCounted;

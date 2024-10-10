@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class HasOne extends HasOneBase implements Relation
+class HasOne extends HasOneBase implements RelationInterface
 {
     use Concerns\HasOneOrMany;
     use Concerns\CanBeCounted;

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Winter\Storm\Database\Pivot;
 
-class BelongsToMany extends BelongsToManyBase implements Relation
+class BelongsToMany extends BelongsToManyBase implements RelationInterface
 {
     use Concerns\BelongsOrMorphsToMany;
     use Concerns\CanBeCounted;

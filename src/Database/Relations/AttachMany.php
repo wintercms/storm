@@ -10,7 +10,7 @@ use Winter\Storm\Database\Attach\File as FileModel;
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class AttachMany extends MorphManyBase implements Relation
+class AttachMany extends MorphManyBase implements RelationInterface
 {
     use Concerns\AttachOneOrMany;
     use Concerns\CanBeCounted;
