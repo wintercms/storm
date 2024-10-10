@@ -10,7 +10,7 @@ use Winter\Storm\Database\Attach\File as FileModel;
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class AttachOne extends MorphOneBase implements Relation
+class AttachOne extends MorphOneBase implements RelationInterface
 {
     use Concerns\AttachOneOrMany;
     use Concerns\CanBeCounted;

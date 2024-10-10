@@ -155,6 +155,7 @@ class_alias(\Winter\Storm\Database\Relations\MorphOne::class, \October\Rain\Data
 class_alias(\Winter\Storm\Database\Relations\Concerns\MorphOneOrMany::class, \October\Rain\Database\Relations\MorphOneOrMany::class);
 class_alias(\Winter\Storm\Database\Relations\MorphTo::class, \October\Rain\Database\Relations\MorphTo::class);
 class_alias(\Winter\Storm\Database\Relations\MorphToMany::class, \October\Rain\Database\Relations\MorphToMany::class);
+class_alias(\Winter\Storm\Database\Relations\Relation::class, \October\Rain\Database\Relations\Relation::class);
 class_alias(\Winter\Storm\Database\Schema\Blueprint::class, \October\Rain\Database\Schema\Blueprint::class);
 class_alias(\Winter\Storm\Database\SortableScope::class, \October\Rain\Database\SortableScope::class);
 class_alias(\Winter\Storm\Database\Traits\DeferredBinding::class, \October\Rain\Database\Traits\DeferredBinding::class);

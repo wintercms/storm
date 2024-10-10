@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphTo extends MorphToBase implements Relation
+class MorphTo extends MorphToBase implements RelationInterface
 {
     use Concerns\BelongsOrMorphsTo;
     use Concerns\CanBeCounted;

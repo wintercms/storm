@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
  * @phpstan-property \Winter\Storm\Database\Model $child
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class BelongsTo extends BelongsToBase implements Relation
+class BelongsTo extends BelongsToBase implements RelationInterface
 {
     use Concerns\BelongsOrMorphsTo;
     use Concerns\CanBeCounted;

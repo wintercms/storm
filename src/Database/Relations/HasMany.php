@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany as HasManyBase;
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class HasMany extends HasManyBase implements Relation
+class HasMany extends HasManyBase implements RelationInterface
 {
     use Concerns\HasOneOrMany;
     use Concerns\CanBeCounted;

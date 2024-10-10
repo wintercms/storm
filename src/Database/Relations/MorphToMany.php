@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
  *
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphToMany extends BaseMorphToMany implements Relation
+class MorphToMany extends BaseMorphToMany implements RelationInterface
 {
     use Concerns\BelongsOrMorphsToMany;
     use Concerns\CanBeCounted;

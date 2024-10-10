@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphOne extends MorphOneBase implements Relation
+class MorphOne extends MorphOneBase implements RelationInterface
 {
     use Concerns\MorphOneOrMany;
     use Concerns\CanBeCounted;
