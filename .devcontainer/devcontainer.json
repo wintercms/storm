@@ -24,7 +24,7 @@
     "portsAttributes": {
         "9003": {
             "label": "Xdebug",
-            "onAutoForward": "notify"
+            "onAutoForward": "ignore"
         }
     },
     "customizations": {
