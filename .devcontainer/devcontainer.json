@@ -36,6 +36,7 @@
             "extensions": [
                 "xdebug.php-debug",
                 "bmewburn.vscode-intelephense-client",
+                "EditorConfig.EditorConfig",
                 "shevaua.phpcs",
                 "swordev.phpstan",
                 "wintercms.winter-cms"
