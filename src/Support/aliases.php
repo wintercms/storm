@@ -155,7 +155,6 @@ class_alias(\Winter\Storm\Database\Relations\MorphOne::class, \October\Rain\Data
 class_alias(\Winter\Storm\Database\Relations\Concerns\MorphOneOrMany::class, \October\Rain\Database\Relations\MorphOneOrMany::class);
 class_alias(\Winter\Storm\Database\Relations\MorphTo::class, \October\Rain\Database\Relations\MorphTo::class);
 class_alias(\Winter\Storm\Database\Relations\MorphToMany::class, \October\Rain\Database\Relations\MorphToMany::class);
-class_alias(\Winter\Storm\Database\Relations\Relation::class, \October\Rain\Database\Relations\Relation::class);
 class_alias(\Winter\Storm\Database\Schema\Blueprint::class, \October\Rain\Database\Schema\Blueprint::class);
 class_alias(\Winter\Storm\Database\SortableScope::class, \October\Rain\Database\SortableScope::class);
 class_alias(\Winter\Storm\Database\Traits\DeferredBinding::class, \October\Rain\Database\Traits\DeferredBinding::class);
@@ -175,6 +174,10 @@ class_alias(\Winter\Storm\Database\TreeCollection::class, \October\Rain\Database
 class_alias(\Winter\Storm\Database\Updater::class, \October\Rain\Database\Updater::class);
 class_alias(\Winter\Storm\Database\Updates\Migration::class, \October\Rain\Database\Updates\Migration::class);
 class_alias(\Winter\Storm\Database\Updates\Seeder::class, \October\Rain\Database\Updates\Seeder::class);
+
+// Alias Relation to the underlying Illuminate class
+class_alias(\Illuminate\Database\Eloquent\Relations\Relation::class, \Winter\Storm\Database\Relations\Relation::class);
+class_alias(\Illuminate\Database\Eloquent\Relations\Relation::class, \October\Rain\Database\Relations\Relation::class);
 
 /**
  * Alias October\Rain\Events
