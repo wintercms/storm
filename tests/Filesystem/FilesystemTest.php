@@ -14,6 +14,14 @@ class FilesystemTest extends TestCase
         $this->filesystem = new Filesystem();
     }
 
+    public function testUnique()
+    {
+        $this->assertSame('winter_4.cms', $this->filesystem->unique('winter.cms', ['winter_1.cms', 'test_5', 'winter_3.cms']));
+        $this->assertSame('winter_98.cms', $this->filesystem->unique('winter.cms', ['winter_97.cms', 'test_5', 'winter_1.cms']));
+        $this->assertSame('winter 1.cms', $this->filesystem->unique('winter.cms', ['winter_1.cms', 'test_5', 'winter_3.cms'], ' '));
+        $this->assertSame('winter_1.cms', $this->filesystem->unique('winter.cms', ['test_5']));
+    }
+
     /**
      * @dataProvider providePathsForIsAbsolutePath
      * @see Symfony\Component\Filesystem\Tests\FilesystemTest::testIsAbsolutePath
