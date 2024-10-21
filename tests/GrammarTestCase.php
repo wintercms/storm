@@ -20,6 +20,7 @@ class GrammarTestCase extends TestCase
     protected function setupConnection(Blueprint $blueprint)
     {
         $connection = m::mock(Connection::class);
+        $connection->shouldReceive('getServerVersion')->andReturn('3.35');
         $connection->shouldReceive('getSchemaBuilder')->andReturn($this->getSchemaBuilder($blueprint));
         $connection->shouldReceive('scalar')->andReturn('');
         $this->connection = $connection;
