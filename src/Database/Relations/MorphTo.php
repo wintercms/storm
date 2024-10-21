@@ -1,37 +1,37 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
+namespace Winter\Storm\Database\Relations;
+
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphTo extends MorphToBase
+class MorphTo extends MorphToBase implements RelationInterface
 {
     use Concerns\BelongsOrMorphsTo;
+    use Concerns\CanBeCounted;
+    use Concerns\CanBeExtended;
+    use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * @var string The "name" of the relationship.
+     * {@inheritDoc}
      */
-    protected $relationName;
-
-    public function __construct(Builder $query, Model $parent, $foreignKey, $otherKey, $type, $relationName)
+    public function __construct(Builder $query, Model $parent, $foreignKey, $ownerKey, $type, $relation)
     {
-        $this->relationName = $relationName;
-
-        parent::__construct($query, $parent, $foreignKey, $otherKey, $type, $relationName);
-
-        $this->addDefinedConstraints();
+        parent::__construct($query, $parent, $foreignKey, $ownerKey, $type, $relation);
+        $this->extendableRelationConstruct();
     }
 
     /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
+     * {@inheritDoc}
      */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         // Nulling the relationship
         if (!$value) {
@@ -65,14 +65,27 @@ class MorphTo extends MorphToBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {
         return [
             $this->parent->getAttribute($this->foreignKey),
             $this->parent->getAttribute($this->morphType)
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [
+            get_class($this->query->getModel()),
+            'key' => $this->getForeignKeyName(),
+            'otherKey' => $this->getOwnerKeyName(),
+            'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
         ];
     }
 }

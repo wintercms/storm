@@ -40,6 +40,23 @@ class ConnectionFactory extends ConnectionFactoryBase
     }
 
     /**
+     * Create a connector instance based on the configuration.
+     *
+     * @param  array  $config
+     * @return \Illuminate\Database\Connectors\ConnectorInterface
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function createConnector(array $config)
+    {
+        if (array_get($config, 'driver') === 'sqlite') {
+            return new SQLiteConnector;
+        } else {
+            return parent::createConnector($config);
+        }
+    }
+
+    /**
      * Create a new connection instance.
      *
      * @param  string   $driver

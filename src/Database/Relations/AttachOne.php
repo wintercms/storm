@@ -1,4 +1,6 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
+
+namespace Winter\Storm\Database\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -8,37 +10,41 @@ use Winter\Storm\Database\Attach\File as FileModel;
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class AttachOne extends MorphOneBase
+class AttachOne extends MorphOneBase implements RelationInterface
 {
     use Concerns\AttachOneOrMany;
+    use Concerns\CanBeCounted;
+    use Concerns\CanBeDependent;
+    use Concerns\CanBeExtended;
+    use Concerns\CanBePushed;
+    use Concerns\CanBeSoftDeleted;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * Create a new has many relationship instance.
-     * @param Builder $query
-     * @param Model $parent
-     * @param string $type
-     * @param string $id
-     * @param bool $isPublic
-     * @param string $localKey
-     * @param null|string $relationName
+     * Create a new attach one relationship instance.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  string  $type
+     * @param  string  $id
+     * @param  bool  $isPublic
+     * @param  string  $localKey
+     * @param  string  $fieldName
+     * @return void
      */
-    public function __construct(Builder $query, Model $parent, $type, $id, $isPublic, $localKey, $relationName = null)
+    public function __construct(Builder $query, Model $parent, $type, $id, $isPublic, $localKey, $fieldName)
     {
-        $this->relationName = $relationName;
-
-        $this->public = $isPublic;
-
+        $this->fieldName = $fieldName;
         parent::__construct($query, $parent, $type, $id, $localKey);
-
-        $this->addDefinedConstraints();
+        $this->public = $isPublic;
+        $this->extendableRelationConstruct();
     }
 
     /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
+     * {@inheritDoc}
      */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         if (is_array($value)) {
             $value = reset($value);
@@ -69,8 +75,7 @@ class AttachOne extends MorphOneBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {
@@ -109,5 +114,20 @@ class AttachOne extends MorphOneBase
         }
 
         return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [
+            get_class($this->query->getModel()),
+            'key' => $this->localKey,
+            'delete' => $this->isDependent(),
+            'public' => $this->public,
+            'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
+        ];
     }
 }

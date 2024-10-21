@@ -24,7 +24,7 @@
     "portsAttributes": {
         "9003": {
             "label": "Xdebug",
-            "onAutoForward": "notify"
+            "onAutoForward": "ignore"
         }
     },
     "customizations": {
@@ -36,6 +36,7 @@
             "extensions": [
                 "xdebug.php-debug",
                 "bmewburn.vscode-intelephense-client",
+                "EditorConfig.EditorConfig",
                 "shevaua.phpcs",
                 "swordev.phpstan",
                 "wintercms.winter-cms"

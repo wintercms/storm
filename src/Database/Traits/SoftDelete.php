@@ -1,12 +1,19 @@
-<?php namespace Winter\Storm\Database\Traits;
+<?php
+
+namespace Winter\Storm\Database\Traits;
 
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as CollectionBase;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Winter\Storm\Database\Relations\BelongsToMany;
+use Winter\Storm\Database\Relations\MorphToMany;
 
+/**
+ * @mixin \Winter\Storm\Database\Model
+ */
 trait SoftDelete
 {
-
     /**
      * Indicates if the model is currently force deleting.
      *
@@ -112,32 +119,36 @@ trait SoftDelete
      */
     protected function performSoftDeleteOnRelations()
     {
-        $definitions = $this->getRelationDefinitions();
-        foreach ($definitions as $type => $relations) {
-            foreach ($relations as $name => $options) {
-                if (!array_get($options, 'softDelete', false)) {
-                    continue;
-                }
-                // Attempt to load the related record(s)
-                if (!$relation = $this->{$name}) {
-                    continue;
-                }
-                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
-                    // relations using pivot table
-                    $value = $this->fromDateTime($this->freshTimestamp());
-                    $this->updatePivotDeletedAtColumn($name, $options, $value);
-                } elseif (in_array($type, ['belongsTo', 'hasOneThrough', 'hasManyThrough', 'morphTo'])) {
-                    // the model does not own the related record, we should not remove it.
-                    continue;
-                } elseif (in_array($type, ['attachOne', 'attachMany', 'hasOne', 'hasMany', 'morphOne', 'morphMany'])) {
-                    if ($relation instanceof EloquentModel) {
-                        $relation->delete();
-                    } elseif ($relation instanceof CollectionBase) {
-                        $relation->each(function ($model) {
-                            $model->delete();
-                        });
-                    }
-                }
+        foreach ($this->getDefinedRelations() as $name => $relation) {
+            if (!$relation->methodExists('isSoftDeletable')) {
+                continue;
+            }
+
+            // Apply soft delete to the relation if it's defined in the array config
+            $definition = $this->getRelationDefinition($name);
+            if (array_get($definition, 'softDelete', false)) {
+                $relation->softDeletable($definition['deletedAtColumn'] ?? 'deleted_at');
+            }
+
+            if (!$relation->isSoftDeletable()) {
+                continue;
+            }
+
+            if (in_array(get_class($relation), [BelongsToMany::class, MorphToMany::class])) {
+                // relations using pivot table
+                $value = $this->fromDateTime($this->freshTimestamp());
+                $this->updatePivotDeletedAtColumn($relation, $value);
+                return;
+            }
+
+            $records = $relation->getResults();
+
+            if ($records instanceof EloquentModel) {
+                $records->delete();
+            } elseif ($records instanceof CollectionBase) {
+                $records->each(function ($model) {
+                    $model->delete();
+                });
             }
         }
     }
@@ -187,13 +198,10 @@ trait SoftDelete
     /**
      * Update relation pivot table deleted_at column
      */
-    protected function updatePivotDeletedAtColumn(string $relationName, array $options, string|null $value)
+    protected function updatePivotDeletedAtColumn(Relation $relation, $value)
     {
-        // get deletedAtColumn from the relation options, otherwise use default
-        $deletedAtColumn = array_get($options, 'deletedAtColumn', 'deleted_at');
-
-        $this->{$relationName}()->newPivotQuery()->update([
-            $deletedAtColumn => $value,
+        $relation->newPivotQuery()->update([
+            $relation->getDeletedAtColumn() => $value,
         ]);
     }
 
@@ -204,30 +212,37 @@ trait SoftDelete
      */
     protected function performRestoreOnRelations()
     {
-        $definitions = $this->getRelationDefinitions();
-        foreach ($definitions as $type => $relations) {
-            foreach ($relations as $name => $options) {
-                if (!array_get($options, 'softDelete', false)) {
-                    continue;
-                }
+        foreach ($this->getDefinedRelations() as $name => $relation) {
+            if (!$relation->methodExists('isSoftDeletable')) {
+                continue;
+            }
 
-                if (in_array($type, ['belongsToMany', 'morphToMany', 'morphedByMany'])) {
-                    // relations using pivot table
-                    $this->updatePivotDeletedAtColumn($name, $options, null);
-                } else {
-                    $relation = $this->{$name}()->onlyTrashed()->getResults();
-                    if (!$relation) {
-                        continue;
-                    }
+            // Apply soft delete to the relation if it's defined in the array config
+            $definition = $this->getRelationDefinition($name);
+            if (array_get($definition, 'softDelete', false)) {
+                $relation->softDeletable($definition['deletedAtColumn'] ?? 'deleted_at');
+            }
 
-                    if ($relation instanceof EloquentModel) {
-                        $relation->restore();
-                    } elseif ($relation instanceof CollectionBase) {
-                        $relation->each(function ($model) {
-                            $model->restore();
-                        });
-                    }
-                }
+            if (!$relation->isSoftDeletable()) {
+                continue;
+            }
+
+            if (in_array(get_class($relation), [BelongsToMany::class, MorphToMany::class])) {
+                $this->updatePivotDeletedAtColumn($relation, null);
+                return;
+            }
+
+            $results = $relation->onlyTrashed()->getResults();
+            if (!$results) {
+                continue;
+            }
+
+            if ($results instanceof EloquentModel) {
+                $results->restore();
+            } elseif ($results instanceof CollectionBase) {
+                $results->each(function ($model) {
+                    $model->restore();
+                });
             }
         }
     }

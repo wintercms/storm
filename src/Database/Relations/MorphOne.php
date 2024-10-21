@@ -1,35 +1,45 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
+namespace Winter\Storm\Database\Relations;
+
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphOne extends MorphOneBase
+class MorphOne extends MorphOneBase implements RelationInterface
 {
     use Concerns\MorphOneOrMany;
+    use Concerns\CanBeCounted;
+    use Concerns\CanBeDependent;
+    use Concerns\CanBeExtended;
+    use Concerns\CanBePushed;
+    use Concerns\CanBeSoftDeleted;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * Create a new has many relationship instance.
+     * Create a new morph one or many relationship instance.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  string  $type
+     * @param  string  $id
+     * @param  string  $localKey
      * @return void
      */
-    public function __construct(Builder $query, Model $parent, $type, $id, $localKey, $relationName = null)
+    public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
     {
-        $this->relationName = $relationName;
-
         parent::__construct($query, $parent, $type, $id, $localKey);
-
-        $this->addDefinedConstraints();
+        $this->extendableRelationConstruct();
     }
 
     /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
+     * {@inheritDoc}
      */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         if (is_array($value)) {
             return;
@@ -86,8 +96,7 @@ class MorphOne extends MorphOneBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {
@@ -100,5 +109,20 @@ class MorphOne extends MorphOneBase
         }
 
         return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [
+            get_class($this->query->getModel()),
+            'type' => $this->getMorphType(),
+            'id' => $this->getForeignKeyName(),
+            'delete' => $this->isDependent(),
+            'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
+        ];
     }
 }

@@ -1,8 +1,11 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
 
-use Winter\Storm\Database\MorphPivot;
-use Illuminate\Database\Eloquent\Model;
+namespace Winter\Storm\Database\Relations;
+
 use Illuminate\Database\Eloquent\Builder;
+use Winter\Storm\Database\MorphPivot;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
 
 /**
@@ -14,26 +17,19 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany as BaseMorphToMany;
  *
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class MorphToMany extends BaseMorphToMany
+class MorphToMany extends BaseMorphToMany implements RelationInterface
 {
     use Concerns\BelongsOrMorphsToMany;
+    use Concerns\CanBeCounted;
+    use Concerns\CanBeDetachable;
+    use Concerns\CanBeExtended;
+    use Concerns\CanBePushed;
     use Concerns\DeferOneOrMany;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * Create a new morph to many relationship instance.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Model  $parent
-     * @param  string  $name
-     * @param  string  $table
-     * @param  string  $foreignPivotKey
-     * @param  string  $relatedPivotKey
-     * @param  string  $parentKey
-     * @param  string  $relatedKey
-     * @param  string  $relationName
-     * @param  bool  $inverse
-     * @return void
+     * {@inheritDoc}
      */
     public function __construct(
         Builder $query,
@@ -47,20 +43,8 @@ class MorphToMany extends BaseMorphToMany
         $relationName = null,
         $inverse = false
     ) {
-        parent::__construct(
-            $query,
-            $parent,
-            $name,
-            $table,
-            $foreignPivotKey,
-            $relatedPivotKey,
-            $parentKey,
-            $relatedKey,
-            $relationName,
-            $inverse
-        );
-
-        $this->addDefinedConstraints();
+        parent::__construct($query, $parent, $name, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName, $inverse);
+        $this->extendableRelationConstruct();
     }
 
     /**
@@ -92,5 +76,111 @@ class MorphToMany extends BaseMorphToMany
               ->setMorphClass($this->morphClass);
 
         return $pivot;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSimpleValue($value): void
+    {
+        $relationModel = $this->getRelated();
+
+        /*
+         * Nulling the relationship
+         */
+        if (!$value) {
+            // Disassociate in memory immediately
+            $this->parent->setRelation($this->relationName, $relationModel->newCollection());
+
+            // Perform sync when the model is saved
+            $this->parent->bindEventOnce('model.afterSave', function () {
+                $this->detach();
+            });
+            return;
+        }
+
+        /*
+         * Convert models to keys
+         */
+        if ($value instanceof Model) {
+            $value = $value->getKey();
+        }
+        elseif (is_array($value)) {
+            foreach ($value as $_key => $_value) {
+                if ($_value instanceof Model) {
+                    $value[$_key] = $_value->getKey();
+                }
+            }
+        }
+
+        /*
+         * Convert scalar to array
+         */
+        if (!is_array($value) && !$value instanceof Collection) {
+            $value = [$value];
+        }
+
+        /*
+         * Setting the relationship
+         */
+        $relationCollection = $value instanceof Collection
+            ? $value
+            : $relationModel->whereIn($relationModel->getKeyName(), $value)->get();
+
+        // Associate in memory immediately
+        $this->parent->setRelation($this->relationName, $relationCollection);
+
+        // Perform sync when the model is saved
+        $this->parent->bindEventOnce('model.afterSave', function () use ($value) {
+            $this->sync($value);
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSimpleValue()
+    {
+        $value = [];
+
+        $relationName = $this->relationName;
+
+        $sessionKey = $this->parent->sessionKey;
+
+        if ($this->parent->relationLoaded($relationName)) {
+            $related = $this->getRelated();
+
+            $value = $this->parent->getRelation($relationName)->pluck($related->getKeyName())->all();
+        }
+        else {
+            $value = $this->allRelatedIds($sessionKey)->all();
+        }
+
+        return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        $definition = [
+            get_class($this->query->getModel()),
+            'table' => $this->getTable(),
+            'key' => $this->getForeignPivotKeyName(),
+            'otherKey' => $this->getRelatedPivotKeyName(),
+            'parentKey' => $this->getParentKeyName(),
+            'relatedKey' => $this->getRelatedKeyName(),
+            'inverse' => $this->getInverse(),
+            'push' => $this->isPushable(),
+            'detach' => $this->isDetachable(),
+            'count' => $this->isCountOnly(),
+        ];
+
+        if (count($this->pivotColumns)) {
+            $definition['pivot'] = $this->pivotColumns;
+        }
+
+        return $definition;
     }
 }
