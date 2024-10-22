@@ -14,6 +14,20 @@ use Illuminate\Support\Fluent;
 class SQLiteGrammar extends SQLiteGrammarBase
 {
     /**
+     * @inheritDoc
+     */
+    public function getAlterCommands(Connection $connection)
+    {   
+        $alterCommands = ['change', 'primary', 'dropPrimary', 'foreign', 'dropForeign'];
+
+        if (version_compare($connection->getServerVersion(), '3.35', '>=')) {
+            $alterCommands[] = 'dropColumn';
+        }
+
+        return $alterCommands;
+    }
+
+    /**
      * Compile a change column command into a series of SQL statements.
      *
      * Starting with Laravel 11, previous column attributes do not persist when changing a column.
