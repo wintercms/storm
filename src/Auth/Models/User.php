@@ -15,11 +15,12 @@ use Winter\Storm\Database\Model;
  * @method \Winter\Storm\Database\Relations\BelongsToMany groups() Group relation.
  * @method \Winter\Storm\Database\Relations\BelongsTo role() Role relation.
  */
-class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
+class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable, \Illuminate\Contracts\Auth\CanResetPassword
 {
     use \Winter\Storm\Database\Traits\Hashable;
     use \Winter\Storm\Database\Traits\Purgeable;
     use \Winter\Storm\Database\Traits\Validation;
+    use \Winter\Storm\Auth\Passwords\CanResetPassword;
 
     /**
      * @var string The table associated with the model.
