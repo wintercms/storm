@@ -17,7 +17,9 @@ class SQLiteGrammar extends SQLiteGrammarBase
      * @inheritDoc
      */
     public function getAlterCommands(Connection $connection)
-    {   
+    {
+        // Can be removed when the following PR gets merged:
+        // https://github.com/laravel/framework/pull/53262
         $alterCommands = ['change', 'primary', 'dropPrimary', 'foreign', 'dropForeign'];
 
         if (version_compare($connection->getServerVersion(), '3.35', '>=')) {
