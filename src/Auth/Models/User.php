@@ -111,6 +111,13 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     protected $rememberTokenName = 'persist_code';
 
     /**
+     * The column name of the password field using during authentication.
+     *
+     * @var string
+     */
+    protected $authPasswordName = 'password';
+
+    /**
      * @var array The user merged permissions.
      */
     protected $mergedPermissions;
@@ -248,7 +255,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
      */
     public function checkPassword($password)
     {
-        return Hash::check($password, $this->password);
+        return Hash::check($password, $this->getAuthPassword());
     }
 
     /**
@@ -285,7 +292,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     public function attemptResetPassword($resetCode, $newPassword)
     {
         if ($this->checkResetPasswordCode($resetCode)) {
-            $this->password = $newPassword;
+            $this->{$this->getAuthPasswordName()} = $newPassword;
             $this->reset_password_code = null;
             return $this->forceSave();
         }
@@ -601,12 +608,22 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     }
 
     /**
+     * Get the name of the password attribute for the user.
+     *
+     * @return string
+     */
+    public function getAuthPasswordName()
+    {
+        return $this->authPasswordName;
+    }
+
+    /**
      * Get the password for the user.
      * @return string
      */
     public function getAuthPassword()
     {
-        return $this->password;
+        return $this->{$this->getAuthPasswordName()};
     }
 
     /**

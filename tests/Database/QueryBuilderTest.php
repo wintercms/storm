@@ -105,9 +105,10 @@ class QueryBuilderTest extends TestCase
             ->disableOriginalClone()
             ->disableArgumentCloning()
             ->disallowMockingUnknownTypes()
-            ->setMethods([
+            ->onlyMethods([
                 'table',
                 'raw',
+                'scalar',
                 'selectOne',
                 'select',
                 'cursor',
@@ -125,6 +126,8 @@ class QueryBuilderTest extends TestCase
                 'transactionLevel',
                 'pretend',
                 'getDatabaseName',
+            ])
+            ->addMethods([
                 'getConfig',
             ])
             ->getMock();

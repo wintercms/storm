@@ -22,6 +22,7 @@ use Winter\Storm\Support\Str;
  */
 class Model extends EloquentModel implements ModelInterface
 {
+    use Concerns\HasAttributes;
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
     use Concerns\HidesAttributes;
@@ -105,7 +106,6 @@ class Model extends EloquentModel implements ModelInterface
         }
 
         // Resolver hasn't been set yet
-        /** @phpstan-ignore-next-line */
         if (!static::getConnectionResolver()) {
             return false;
         }
@@ -1050,20 +1050,6 @@ class Model extends EloquentModel implements ModelInterface
     //
     // Getters
     //
-
-    /**
-     * Determine if the given attribute will be processed by getAttributeValue().
-     */
-    public function hasAttribute(string $key): bool
-    {
-        return (
-            array_key_exists($key, $this->attributes)
-            || array_key_exists($key, $this->casts)
-            || $this->hasGetMutator($key)
-            || $this->hasAttributeMutator($key)
-            || $this->isClassCastable($key)
-        );
-    }
 
     /**
      * Get an attribute from the model.

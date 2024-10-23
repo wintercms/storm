@@ -333,7 +333,7 @@ if (!function_exists('array_shuffle')) {
      */
     function array_shuffle($array, $seed = null)
     {
-        return Arr::shuffle($array, $seed);
+        return Arr::shuffle($array);
     }
 }
 

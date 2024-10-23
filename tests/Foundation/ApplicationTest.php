@@ -5,7 +5,7 @@ use Winter\Storm\Filesystem\PathResolver;
 
 class ApplicationTest extends TestCase
 {
-    protected string $basePath;
+    protected string $basePath = '';
 
     protected function setUp(): void
     {

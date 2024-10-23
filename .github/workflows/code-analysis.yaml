@@ -23,6 +23,21 @@ jobs:
       - name: Checkout changes
         uses: actions/checkout@v4
 
+      - name: Setup extension cache
+        id: extcache
+        uses: shivammathur/cache-extensions@v1
+        with:
+          php-version: '8.2'
+          extensions: ${{ env.extensions }}
+          key: ${{ env.key }}
+
+      - name: Cache extensions
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.extcache.outputs.dir }}
+          key: ${{ steps.extcache.outputs.key }}
+          restore-keys: ${{ steps.extcache.outputs.key }}
+
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -32,6 +47,9 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --no-scripts
+
+      - name: Clear phpstan cache
+        run: ./vendor/bin/phpstan clear-result-cache
 
       - name: Analyse code
         run: ./vendor/bin/phpstan analyse --memory-limit=2G --no-progress

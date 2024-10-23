@@ -432,7 +432,7 @@ class CheckForTrustedProxiesTest extends TestCase
     {
         $middleware = $this->getMockBuilder(CheckForTrustedProxies::class)
             ->disableOriginalConstructor()
-            ->setMethods(['proxies', 'headers'])
+            ->onlyMethods(['proxies', 'headers'])
             ->getMock();
 
         $middleware->expects($this->any())

@@ -2,15 +2,19 @@
 
 use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Database\Query\Processors\SQLiteProcessor;
-use Illuminate\Database\PDO\SQLiteDriver;
+
+use Winter\Storm\Database\PDO\SQLiteDriver;
 use Winter\Storm\Database\Query\Grammars\SQLiteGrammar as QueryGrammar;
-use Illuminate\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
+use Winter\Storm\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
+use Winter\Storm\Database\Traits\HasConnection;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class SQLiteConnection extends Connection
+class SQLiteConnection extends \Illuminate\Database\SQLiteConnection
 {
+    use HasConnection;
+
     /**
      * Get the default query grammar instance.
      *
@@ -58,7 +62,7 @@ class SQLiteConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Illuminate\Database\PDO\SQLiteDriver
+     * @return \Winter\Storm\Database\PDO\SQLiteDriver
      */
     protected function getDoctrineDriver()
     {
