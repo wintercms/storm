@@ -39,7 +39,7 @@ class Model extends EloquentModel implements ModelInterface
     public $implement = null;
 
     /**
-     * @var array Make the model's attributes public so behaviors can modify them.
+     * @var array<string, mixed> Make the model's attributes public so behaviors can modify them.
      */
     public $attributes = [];
 
