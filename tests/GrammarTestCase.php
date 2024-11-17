@@ -1,5 +1,7 @@
 <?php
 
+namespace Winter\Storm\Tests;
+
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
