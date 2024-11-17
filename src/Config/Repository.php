@@ -31,7 +31,7 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
     /**
      * All of the configuration items.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $items = [];
 
