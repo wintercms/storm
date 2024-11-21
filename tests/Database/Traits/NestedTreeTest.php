@@ -100,6 +100,86 @@ class NestedTreeTest extends DbTestCase
         ], $array);
     }
 
+    public function testToNestedArray()
+    {
+        $array = CategoryNested::nestedArray('name', 'id');
+        $this->assertEquals([
+            1 => [
+                "name" => "Category Orange",
+                "children" => [
+                    2 => [
+                        "name" => "Autumn Leaves",
+                        "children" => [
+                            3 => [
+                                "name" => "September",
+                            ],
+                            4 => [
+                                "name" => "October",
+                            ],
+                            5 => [
+                                "name" => "November",
+                            ],
+                        ],
+                    ],
+                    6 => [
+                        "name" => "Summer Breeze",
+                    ],
+                ],
+            ],
+            7 => [
+                "name" => "Category Green",
+                "children" => [
+                    8 => [
+                        "name" => "Winter Snow",
+                    ],
+                    9 => [
+                        "name" => "Spring Trees",
+                    ],
+                ],
+            ],
+        ], $array);
+    }
+
+    public function testToNestedArrayFromCollection()
+    {
+        $array = CategoryNested::get()->toNestedArray('name', 'id');
+        $this->assertEquals([
+            1 => [
+                "name" => "Category Orange",
+                "children" => [
+                    2 => [
+                        "name" => "Autumn Leaves",
+                        "children" => [
+                            3 => [
+                                "name" => "September",
+                            ],
+                            4 => [
+                                "name" => "October",
+                            ],
+                            5 => [
+                                "name" => "November",
+                            ],
+                        ],
+                    ],
+                    6 => [
+                        "name" => "Summer Breeze",
+                    ],
+                ],
+            ],
+            7 => [
+                "name" => "Category Green",
+                "children" => [
+                    8 => [
+                        "name" => "Winter Snow",
+                    ],
+                    9 => [
+                        "name" => "Spring Trees",
+                    ],
+                ],
+            ],
+        ], $array);
+    }
+
     public function seedSampleTree()
     {
         Model::unguard();
