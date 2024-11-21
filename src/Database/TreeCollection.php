@@ -98,4 +98,53 @@ class TreeCollection extends Collection
         $rootItems = $this->toNested();
         return $buildCollection($rootItems);
     }
+
+    /**
+     * Gets an nesteed array with values of a given columns.
+     * @param  array $values  Model columns to return
+     * @param  string $key    Model column to use as key
+     * @return array
+     */
+    public function nestedToArray($values, $key = null)
+    {
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+
+        /*
+         * Recursive helper function
+         */
+        $buildCollection = function ($items) use (&$buildCollection, $values, $key) {
+            $result = [];
+
+            foreach ($items as $item) {
+                if ($key !== null) {
+                    $result[$item->{$key}] = $item->only($values);
+                }
+                else {
+                    $result[] = $item->only($values);
+                }
+
+                /*
+                 * Add the children
+                 */
+                $childItems = $item->getChildren();
+                if ($childItems->count() > 0) {
+                    if ($key !== null) {
+                        $result[$item->{$key}]['children'] = $buildCollection($childItems);
+                    } else {
+                        $result[]['children'] = $buildCollection($childItems);
+                    }
+                }
+            }
+
+            return $result;
+        };
+
+        /*
+         * Build a nested collection
+         */
+        $rootItems = $this->toNested();
+        return $buildCollection($rootItems);
+    }
 }
