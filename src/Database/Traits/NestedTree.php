@@ -54,6 +54,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
  *   $query->leaves(); // Filters as all final nodes without children.
  *   $query->getNested(); // Returns an eager loaded collection of results.
  *   $query->listsNested(); // Returns an indented array of key and value columns.
+ *   $query->nestedArray(); // Returns an nested array of key and values columns.
  *
  * Flat result access methods:
  *
@@ -516,6 +517,19 @@ trait NestedTree
     public function scopeGetNested($query)
     {
         return $query->get()->toNested();
+    }
+
+    /**
+     * Gets an nested array with values of a given columns.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @param  mixed  $columns Model columns to return, either a string name of the role or an array of names.
+     * @param  string $key     Model column to use as key
+     * @return array
+     */
+    public function scopeNestedArray($query, $columns, $key = null)
+    {
+        return $query->get()->toNestedArray($columns, $key);
     }
 
     /**
