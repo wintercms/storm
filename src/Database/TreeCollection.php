@@ -118,11 +118,13 @@ class TreeCollection extends Collection
             $result = [];
 
             foreach ($items as $item) {
+                $itemArray = [];
+
                 if ($key !== null) {
-                    $result[$item->{$key}] = $item->only($values);
+                    $itemArray[$item->{$key}] = $item->only($values);
                 }
                 else {
-                    $result[] = $item->only($values);
+                    $itemArray = array_merge($itemArray, $item->only($values));
                 }
 
                 /*
@@ -131,10 +133,16 @@ class TreeCollection extends Collection
                 $childItems = $item->getChildren();
                 if ($childItems->count() > 0) {
                     if ($key !== null) {
-                        $result[$item->{$key}]['children'] = $buildCollection($childItems);
+                        $itemArray[$item->{$key}]['children'] = $buildCollection($childItems);
                     } else {
-                        $result[]['children'] = $buildCollection($childItems);
+                        $itemArray = array_merge($itemArray, ['children' => $buildCollection($childItems)]);
                     }
+                }
+
+                if ($key !== null) {
+                    $result = $result + $itemArray;
+                } else {
+                    $result[] = $itemArray;
                 }
             }
 
