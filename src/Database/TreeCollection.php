@@ -101,7 +101,7 @@ class TreeCollection extends Collection
 
     /**
      * Gets an nested array with values of a given columns.
-     * @param  array $values  Model columns to return
+     * @param  mixed  $values Model columns to return, either a string name of the role or an array of names.
      * @param  string $key    Model column to use as key
      * @return array
      */
