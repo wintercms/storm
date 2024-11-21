@@ -100,12 +100,12 @@ class TreeCollection extends Collection
     }
 
     /**
-     * Gets an nesteed array with values of a given columns.
+     * Gets an nested array with values of a given columns.
      * @param  array $values  Model columns to return
      * @param  string $key    Model column to use as key
      * @return array
      */
-    public function nestedToArray($values, $key = null)
+    public function toNestedArray($values, $key = null)
     {
         if (!is_array($values)) {
             $values = [$values];
