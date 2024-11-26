@@ -40,7 +40,7 @@ class File extends Model
     ];
 
     /**
-     * @var string[] The attributes that are mass assignable.
+     * @var array<int, string> The attributes that are mass assignable.
      */
     protected $fillable = [
         'file_name',
@@ -62,7 +62,7 @@ class File extends Model
     /**
      * @var string[] Known image extensions.
      */
-    public static $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    public static $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
 
     /**
      * @var array<int, string> Hidden fields from array/json access
@@ -70,7 +70,7 @@ class File extends Model
     protected $hidden = ['attachment_type', 'attachment_id', 'is_public'];
 
     /**
-     * @var array Add fields to array/json access
+     * @var array<int, string> Add fields to array/json access
      */
     protected $appends = ['path', 'extension'];
 
@@ -91,6 +91,7 @@ class File extends Model
         'jpg'  => 'image/jpeg',
         'jpeg' => 'image/jpeg',
         'webp' => 'image/webp',
+        'avif' => 'image/avif',
         'pdf'  => 'application/pdf',
         'svg'  => 'image/svg+xml',
     ];
@@ -119,7 +120,9 @@ class File extends Model
             ? $uploadedFile->getPath() . DIRECTORY_SEPARATOR . $uploadedFile->getFileName()
             : $uploadedFile->getRealPath();
 
-        $this->putFile($realPath, $this->disk_name);
+        if (!$this->putFile($realPath, $this->disk_name)) {
+            throw new ApplicationException('The file failed to be stored');
+        }
 
         return $this;
     }
@@ -1008,7 +1011,11 @@ class File extends Model
      */
     protected function copyLocalToStorage($localPath, $storagePath)
     {
-        return $this->getDisk()->put($storagePath, FileHelper::get($localPath), $this->isPublic() ? 'public' : null);
+        return $this->getDisk()->put(
+            $storagePath,
+            FileHelper::get($localPath),
+            $this->isPublic() ? ($this->getDisk()->getConfig()['visibility'] ?? 'public') : null
+        );
     }
 
     //

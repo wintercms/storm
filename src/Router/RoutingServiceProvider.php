@@ -2,9 +2,11 @@
 
 namespace Winter\Storm\Router;
 
-use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
 use Illuminate\Routing\RoutingServiceProvider as RoutingServiceProviderBase;
 
+/**
+ * @property \Winter\Storm\Foundation\Application $app
+ */
 class RoutingServiceProvider extends RoutingServiceProviderBase
 {
     /**
@@ -60,7 +62,7 @@ class RoutingServiceProvider extends RoutingServiceProviderBase
             );
         });
 
-        $this->app->extend('url', function (UrlGeneratorContract $url, $app) {
+        $this->app->extend('url', function (UrlGenerator $url, $app) {
             // Next we will set a few service resolvers on the URL generator so it can
             // get the information it needs to function. This just provides some of
             // the convenience features to this URL generator like "signed" URLs.

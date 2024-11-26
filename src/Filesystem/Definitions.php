@@ -108,6 +108,7 @@ class Definitions
     {
         return [
             'avi',
+            'avif',
             'bmp',
             'css',
             'doc',
@@ -162,6 +163,7 @@ class Definitions
     protected function assetExtensions(): array
     {
         return [
+            'avif',
             'bmp',
             'css',
             'eot',
@@ -194,6 +196,7 @@ class Definitions
     protected function imageExtensions(): array
     {
         return [
+            'avif',
             'bmp',
             'gif',
             'jpeg',

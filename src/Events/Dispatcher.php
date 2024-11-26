@@ -313,4 +313,15 @@ class Dispatcher extends BaseDispatcher
             ? $this->createCallbackForListenerRunningAfterCommits($listener, $method)
             : [$listener, $method];
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function forget($event)
+    {
+        parent::forget($event);
+        if (isset($this->sorted[$event])) {
+            unset($this->sorted[$event]);
+        }
+    }
 }

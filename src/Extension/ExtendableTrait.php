@@ -9,6 +9,7 @@ use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Serialization;
 use Illuminate\Support\Facades\App;
 use ReflectionException;
+use October\Rain\Extension\ExtendableTrait as OctoberExtendableTrait;
 
 /**
  * This extension trait is used when access to the underlying base class
@@ -42,11 +43,6 @@ trait ExtendableTrait
      * @var array Collection of static methods used by behaviors.
      */
     protected static $extendableStaticMethods = [];
-
-    /**
-     * @var bool Indicates if dynamic properties can be created.
-     */
-    protected static $extendableGuardProperties = true;
 
     /**
      * @var ClassLoader|null Class loader instance.
@@ -207,15 +203,7 @@ trait ExtendableTrait
         if (array_key_exists($dynamicName, $this->getDynamicProperties())) {
             return;
         }
-        self::$extendableGuardProperties = false;
-
-        if (!property_exists($this, $dynamicName)) {
-            $this->{$dynamicName} = $value;
-        }
-
-        $this->extensionData['dynamicProperties'][] = $dynamicName;
-
-        self::$extendableGuardProperties = true;
+        array_set($this->extensionData['dynamicProperties'], $dynamicName, $value);
     }
 
     /**
@@ -327,12 +315,7 @@ trait ExtendableTrait
      */
     public function getDynamicProperties()
     {
-        $result = [];
-        $propertyNames = $this->extensionData['dynamicProperties'];
-        foreach ($propertyNames as $propName) {
-            $result[$propName] = $this->{$propName};
-        }
-        return $result;
+        return $this->extensionData['dynamicProperties'];
     }
 
     /**
@@ -378,6 +361,10 @@ trait ExtendableTrait
      */
     public function extendableGet($name)
     {
+        if (isset($this->extensionData['dynamicProperties'][$name])) {
+            return $this->extensionData['dynamicProperties'][$name];
+        }
+
         foreach ($this->extensionData['extensions'] as $extensionObject) {
             if (
                 property_exists($extensionObject, $name) &&
@@ -417,13 +404,13 @@ trait ExtendableTrait
         $parent = $this->extensionGetParentClass();
         if ($parent !== false && $this->extensionMethodExists($parent, '__set')) {
             $this->extensionCallMethod($parent, '__set', [$name, $value]);
+            return;
         }
 
-        /*
-         * Setting an undefined property
-         */
-        if (!self::$extendableGuardProperties) {
-            $this->{$name} = $value;
+        // Don't allow automatic creation of dynamic properties through the setter magic method,
+        // addDynamicProperty() must be used instead.
+        if (array_key_exists($name, $this->getDynamicProperties())) {
+            array_set($this->extensionData['dynamicProperties'], $name, $value);
         }
     }
 
@@ -580,7 +567,10 @@ trait ExtendableTrait
             return false;
         }
 
-        while (!in_array(ExtendableTrait::class, $parent->getTraitNames())) {
+        while (
+            !in_array(ExtendableTrait::class, $parent->getTraitNames())
+            && !in_array(OctoberExtendableTrait::class, $parent->getTraitNames())
+        ) {
             $parent = $parent->getParentClass();
             if ($parent === false) {
                 break;

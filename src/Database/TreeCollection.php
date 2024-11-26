@@ -98,4 +98,61 @@ class TreeCollection extends Collection
         $rootItems = $this->toNested();
         return $buildCollection($rootItems);
     }
+
+    /**
+     * Gets an nested array with values of a given columns.
+     * @param  mixed  $values Model columns to return, either a string name of the role or an array of names.
+     * @param  string $key    Model column to use as key
+     * @return array
+     */
+    public function toNestedArray($values, $key = null)
+    {
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+
+        /*
+         * Recursive helper function
+         */
+        $buildCollection = function ($items) use (&$buildCollection, $values, $key) {
+            $result = [];
+
+            foreach ($items as $item) {
+                $itemArray = [];
+
+                if ($key !== null) {
+                    $itemArray[$item->{$key}] = $item->only($values);
+                }
+                else {
+                    $itemArray = array_merge($itemArray, $item->only($values));
+                }
+
+                /*
+                 * Add the children
+                 */
+                $childItems = $item->getChildren();
+                if ($childItems->count() > 0) {
+                    if ($key !== null) {
+                        $itemArray[$item->{$key}]['children'] = $buildCollection($childItems);
+                    } else {
+                        $itemArray = array_merge($itemArray, ['children' => $buildCollection($childItems)]);
+                    }
+                }
+
+                if ($key !== null) {
+                    $result = $result + $itemArray;
+                } else {
+                    $result[] = $itemArray;
+                }
+            }
+
+            return $result;
+        };
+
+        /*
+         * Build a nested collection
+         */
+        $rootItems = $this->toNested();
+        return $buildCollection($rootItems);
+    }
 }

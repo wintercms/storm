@@ -11,7 +11,7 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
      * @var \Winter\Storm\Foundation\Application The application instance.
      */
     protected $app;
-    
+
     /**
      * Bootstrap the application events.
      * @return void
@@ -86,6 +86,8 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
      */
     protected function loadConfigFrom($path, $namespace)
     {
-        $this->app['config']->package($namespace, $path);
+        /** @var \Winter\Storm\Config\Repository */
+        $config = $this->app['config'];
+        $config->package($namespace, $path);
     }
 }

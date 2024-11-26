@@ -17,7 +17,7 @@ class SortableScope implements ScopeInterface
     {
         // Only apply the scope when no other explicit orders have been set
         if (empty($builder->getQuery()->orders) && empty($builder->getQuery()->unionOrders)) {
-            $builder->orderBy($model->getSortOrderColumn());
+            $builder->orderBy($model->qualifyColumn($model->getSortOrderColumn()));
         }
     }
 }
