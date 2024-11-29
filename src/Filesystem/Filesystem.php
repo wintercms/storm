@@ -542,7 +542,6 @@ class Filesystem extends FilesystemBase
      */
     public function copyBetweenDisks(string|FilesystemAdapter $sourceDisk, string|FilesystemAdapter $destinationDisk, string $filePath, ?string $targetPath = null): bool
     {
-        $targetPath = $targetPath ?? $filePath;
 
         // Resolve source disk
         if (is_string($sourceDisk)) {
@@ -557,12 +556,11 @@ class Filesystem extends FilesystemBase
         // Open a read stream from the source disk
         $readStream = $sourceDisk->readStream($filePath);
         if (!$readStream) {
-            // Handle the error (e.g., file not found on source disk)
             return false;
         }
 
         // Write the stream to the destination disk
-        $result = $destinationDisk->put($targetPath, $readStream);
+        $result = $destinationDisk->put($targetPath ?? $filePath, $readStream);
 
         // Close the read stream
         if (is_resource($readStream)) {
@@ -586,13 +584,8 @@ class Filesystem extends FilesystemBase
         $copied = $this->copyBetweenDisks($sourceDisk, $destinationDisk, $filePath, $targetPath);
 
         if ($copied) {
-            // Resolve source disk
-            if (is_string($sourceDisk)) {
-                $sourceDisk = Storage::disk($sourceDisk);
-            }
-
             // Delete the original file from the source disk
-            return $sourceDisk->delete($filePath);
+            return (is_string($sourceDisk) ? Storage::disk($sourceDisk) : $sourceDisk)->delete($filePath);
         }
 
         return false;
