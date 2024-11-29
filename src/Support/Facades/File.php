@@ -53,6 +53,8 @@ use Winter\Storm\Support\Facade;
  * @method static int|float|null getFilePermissions()
  * @method static int|float|null getFolderPermissions()
  * @method static bool fileNameMatch(string $fileName, string $pattern)
+ * @method static bool copyBetweenDisks(string $sourceDisk, string $destinationDisk, string $filePath, string|null $targetPath = null)
+ * @method static bool moveBetweenDisks(string $sourceDisk, string $destinationDisk, string $filePath, string|null $targetPath = null)
  *
  * @see \Winter\Storm\Filesystem\Filesystem
  */
