@@ -546,28 +546,23 @@ class Filesystem extends FilesystemBase
 
         // Resolve source disk
         if (is_string($sourceDisk)) {
-            $source = Storage::disk($sourceDisk);
-        } else {
-            $source = $sourceDisk;
+            $sourceDisk = Storage::disk($sourceDisk);
         }
 
         // Resolve destination disk
         if (is_string($destinationDisk)) {
-            $destination = Storage::disk($destinationDisk);
-        } else {
-            $destination = $destinationDisk;
+            $destinationDisk = Storage::disk($destinationDisk);
         }
 
         // Open a read stream from the source disk
-        $readStream = $source->readStream($filePath);
-
-        if ($readStream === false) {
+        $readStream = $sourceDisk->readStream($filePath);
+        if (!$readStream) {
             // Handle the error (e.g., file not found on source disk)
             return false;
         }
 
         // Write the stream to the destination disk
-        $result = $destination->put($targetPath, $readStream);
+        $result = $destinationDisk->put($targetPath, $readStream);
 
         // Close the read stream
         if (is_resource($readStream)) {
@@ -593,13 +588,11 @@ class Filesystem extends FilesystemBase
         if ($copied) {
             // Resolve source disk
             if (is_string($sourceDisk)) {
-                $source = Storage::disk($sourceDisk);
-            } else {
-                $source = $sourceDisk;
+                $sourceDisk = Storage::disk($sourceDisk);
             }
 
             // Delete the original file from the source disk
-            return $source->delete($filePath);
+            return $sourceDisk->delete($filePath);
         }
 
         return false;
