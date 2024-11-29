@@ -542,7 +542,6 @@ class Filesystem extends FilesystemBase
      */
     public function copyBetweenDisks(string|FilesystemAdapter $sourceDisk, string|FilesystemAdapter $destinationDisk, string $filePath, ?string $targetPath = null): bool
     {
-
         // Resolve source disk
         if (is_string($sourceDisk)) {
             $sourceDisk = Storage::disk($sourceDisk);
