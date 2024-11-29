@@ -584,7 +584,7 @@ class Filesystem extends FilesystemBase
 
         if ($copied) {
             // Delete the original file from the source disk
-            if (is_string($sourceDisk) {
+            if (is_string($sourceDisk)) {
                 $sourceDisk = Storage::disk($sourceDisk);
             }
 
