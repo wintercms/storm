@@ -612,11 +612,8 @@ class Filesystem extends FilesystemBase
                 ->in($path . $pattern)
                 ->files()->name('/^[A-Z]{1}.+\.php$/')
             )->map(function ($model) use ($path) {
-                return str_replace(
-                    ['/', '.php'],
-                    ['\\', ''],
-                    Str::after($model->getRealPath(), realpath($path).DIRECTORY_SEPARATOR)
-                );
+                $modelPath = str_replace(['/', '.php'], ['\\', ''], Str::after($model->getRealPath(), realpath($path).DIRECTORY_SEPARATOR));
+                return ucwords($modelPath, '\\');
             }));
         }
 
