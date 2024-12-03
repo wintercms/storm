@@ -21,6 +21,7 @@ use Winter\Storm\Support\Facade;
  * @method static string basename(string $path)
  * @method static string dirname(string $path)
  * @method static string extension(string $path)
+ * @method static \Illuminate\Support\Collection findModels(array $paths)
  * @method static string type(string $path)
  * @method static string|false mimeType(string $path)
  * @method static int size(string $path)
