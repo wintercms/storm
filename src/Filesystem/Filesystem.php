@@ -2,11 +2,14 @@
 
 use DirectoryIterator;
 use FilesystemIterator;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Filesystem\Filesystem as FilesystemBase;
 use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use ReflectionClass;
+use Symfony\Component\Finder\Finder;
+use Winter\Storm\Support\Collection;
 use Winter\Storm\Support\Facades\Config;
 
 /**
@@ -592,5 +595,31 @@ class Filesystem extends FilesystemBase
         }
 
         return false;
+    }
+
+    /**
+     * Find all Database Models in provided paths with patterns.
+     *
+     * @param array $paths      The associative array of $path => $pattern to search for.
+     * @return Collection       A collection of Database Models found.
+     */
+    public function findModels(array $paths): Collection
+    {
+        $models = collect();
+
+        foreach ($paths as $path => $pattern) {
+            $models = $models->merge(collect(Finder::create()
+                ->in($path . $pattern)
+                ->files()->name('/^[A-Z]{1}.+\.php$/')
+            )->map(function ($model) use ($path) {
+                return str_replace(
+                    ['/', '.php'],
+                    ['\\', ''],
+                    Str::after($model->getRealPath(), realpath($path).DIRECTORY_SEPARATOR)
+                );
+            }));
+        }
+
+        return $models;
     }
 }
