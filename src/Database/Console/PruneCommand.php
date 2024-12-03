@@ -5,6 +5,7 @@ namespace Winter\Storm\Database\Console;
 use Illuminate\Database\Console\PruneCommand as BasePruneCommand;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Prunable;
+use Illuminate\Support\Facades\Event;
 use Winter\Storm\Support\Facades\File;
 
 class PruneCommand extends BasePruneCommand
@@ -53,7 +54,7 @@ class PruneCommand extends BasePruneCommand
          *     });
          *
          */
-        $models = \Event::fire('system.console.model.prune.findModels', [$this], true);
+        $models = Event::fire('system.console.model.prune.findModels', [$this], true);
         if ($models instanceof \Illuminate\Support\Collection) {
             return $models;
         }

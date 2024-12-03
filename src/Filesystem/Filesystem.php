@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 use ReflectionClass;
 use Symfony\Component\Finder\Finder;
-use Winter\Storm\Support\Collection;
+use Illuminate\Support\Collection;
 use Winter\Storm\Support\Facades\Config;
 
 /**
