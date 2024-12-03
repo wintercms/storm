@@ -28,12 +28,7 @@ class PruneCommand extends BasePruneCommand
             throw new InvalidArgumentException('The --models and --except options cannot be combined.');
         }
 
-        $paths = [
-            base_path() . '/modules' => '/*/models',
-            plugins_path() => '/*/*/models',
-        ];
-
-        return File::findModels($paths)
+        return $this->findModels()
             ->when(! empty($except), function ($models) use ($except) {
                 return $models->reject(function ($model) use ($except) {
                     return in_array($model, $except);
@@ -43,6 +38,31 @@ class PruneCommand extends BasePruneCommand
             })->filter(function ($model) {
                 return class_exists($model);
             })->values();
+    }
+
+    protected function findModels()
+    {
+        /**
+         * @event system.console.model.prune.findModels
+         * Give the opportunity to return a collection of Models to prune.
+         *
+         * Example usage:
+         *
+         *     Event::listen('system.console.model.prune.findModels', function () {
+         *         return collect(['example model' => '\System\Models\File']);
+         *     });
+         *
+         */
+        $models = \Event::fire('system.console.model.prune.findModels', [$this], true);
+        if ($models instanceof \Illuminate\Support\Collection) {
+            return $models;
+        }
+
+        $paths = [
+            base_path() . '/modules' => '/*/models',
+            plugins_path() => '/*/*/models',
+        ];
+        return File::findModels($paths);
     }
 
     /**
