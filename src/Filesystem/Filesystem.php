@@ -613,8 +613,7 @@ class Filesystem extends FilesystemBase
                 ->map(function ($model) use ($path) {
                     $modelPath = str_replace(['/', '.php'], ['\\', ''], Str::after($model->getRealPath(), realpath($path).DIRECTORY_SEPARATOR));
                     return ucwords($modelPath, '\\');
-                })
-            );
+                }));
         }
 
         return $models;
