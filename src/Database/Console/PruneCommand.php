@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Database\Console;
 
+use Exception;
 use Illuminate\Database\Console\PruneCommand as BasePruneCommand;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Prunable;
@@ -11,9 +12,7 @@ use Winter\Storm\Support\Facades\File;
 class PruneCommand extends BasePruneCommand
 {
     /**
-     * Determine the models that should be pruned.
-     *
-     * @return \Illuminate\Support\Collection
+     * {@inheritDoc}
      */
     protected function models()
     {
@@ -24,10 +23,6 @@ class PruneCommand extends BasePruneCommand
         }
 
         $except = $this->option('except');
-
-        if (! empty($models) && ! empty($except)) {
-            throw new InvalidArgumentException('The --models and --except options cannot be combined.');
-        }
 
         return $this->findModels()
             ->when(! empty($except), function ($models) use ($except) {
@@ -76,7 +71,7 @@ class PruneCommand extends BasePruneCommand
     {
         try {
             $uses = class_uses_recursive($model);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
 
