@@ -18,6 +18,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'ClearCompiled'         => \Winter\Storm\Foundation\Console\ClearCompiledCommand::class,
         'ConfigCache'           => \Illuminate\Foundation\Console\ConfigCacheCommand::class,
         'ConfigClear'           => \Illuminate\Foundation\Console\ConfigClearCommand::class,
+        'DbPrune'               => \Illuminate\Database\Console\PruneCommand::class,
         'Down'                  => \Illuminate\Foundation\Console\DownCommand::class,
         'Environment'           => \Illuminate\Foundation\Console\EnvironmentCommand::class,
         'EventCache'            => \Illuminate\Foundation\Console\EventCacheCommand::class,
@@ -49,7 +50,6 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // @TODO: Assess for inclusion
         // 'ClearResets' => ClearResetsCommand::class,
         // 'Db' => DbCommand::class,
-        // 'DbPrune' => PruneCommand::class,
         // 'DbWipe' => WipeCommand::class,
         // 'OptimizeClear' => OptimizeClearCommand::class,
         // 'QueueClear' => QueueClearCommand::class,
