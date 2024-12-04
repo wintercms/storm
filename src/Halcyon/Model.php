@@ -242,7 +242,7 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
                     if ($model->methodExists($method)) {
                         // Register the method as a listener with default priority
                         // to allow for complete control over the execution order
-                        $model->bindEvent('model.' . $method, [$model, $method]);
+                        $model->bindEventOnce('model.' . $method, [$model, $method]);
                     }
                     // First listener that returns a non-null result will cancel the
                     // further propagation of the event; If that result is false, the

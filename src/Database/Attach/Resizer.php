@@ -135,7 +135,7 @@ class Resizer
                 imagefill($img, 0, 0, $alphaIndex);
                 imagecolortransparent($img, $alphaIndex);
             }
-        } elseif ($this->mime === 'image/png' || $this->mime === 'image/webp') {
+        } elseif ($this->mime === 'image/png' || $this->mime === 'image/webp' || $this->mime === 'image/avif') {
             imagealphablending($img, false);
             imagesavealpha($img, true);
         }
@@ -495,10 +495,20 @@ class Resizer
                 }
                 break;
 
+            case 'avif':
+                // Check AVIF support is enabled
+                // The IMG_AVIF constant is available starting from PHP 8.1.0. It will need to be checked until the minimum system requirements are bumped.
+                if (defined('IMG_AVIF') && (imagetypes() & IMG_AVIF)) {
+                    imageavif($image, $savePath, $imageQuality);
+                } else {
+                    throw new Exception('AVIF support is not enabled.');
+                }
+                break;
+
             default:
                 throw new Exception(
                     sprintf(
-                        'Invalid image type: %s. Accepted types: jpg, gif, png, webp.',
+                        'Invalid image type: %s. Accepted types: jpg, gif, png, webp, avif.',
                         $extension
                     )
                 );
@@ -533,10 +543,14 @@ class Resizer
                 $img = @imagecreatefromwebp($filePath);
                 $this->retainImageTransparency($img);
                 break;
+            case 'image/avif':
+                $img = @imagecreatefromavif($filePath);
+                $this->retainImageTransparency($img);
+                break;
             default:
                 throw new Exception(
                     sprintf(
-                        'Invalid mime type: %s. Accepted types: image/jpeg, image/gif, image/png, image/webp.',
+                        'Invalid mime type: %s. Accepted types: image/jpeg, image/gif, image/png, image/webp, image/avif.',
                         $this->mime
                     )
                 );

@@ -401,6 +401,25 @@ class UrlGeneratorTest extends TestCase
             'path' => '/changelog'
         ]));
 
+        $this->assertEquals('ftp://username:password@ftp.test.com.au:80/newfolder', UrlGenerator::buildUrl([
+            'scheme' => 'https',
+            'user' => 'user',
+            'pass' => 'pass',
+            'host' => 'github.com',
+            'port' => 80,
+            'path' => '/wintercms/winter',
+            'query' => 'test=1&test=2',
+            'fragment' => 'comment1'
+        ], [
+            'scheme' => 'ftp',
+            'user' => 'username',
+            'pass' => 'password',
+            'host' => 'ftp.test.com.au',
+            'path' => 'newfolder',
+            'query' => '',
+            'fragment' => ''
+        ]));
+
         $this->assertEquals('ftp://username:password@ftp.test.com.au/newfolder', UrlGenerator::buildUrl([
             'scheme' => 'https',
             'user' => 'user',

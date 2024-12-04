@@ -1,6 +1,9 @@
-<?php namespace Winter\Storm\Database\Relations\Concerns;
+<?php
 
-use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
+namespace Winter\Storm\Database\Relations\Concerns;
+
+use Winter\Storm\Database\Relations\HasManyThrough;
+use Winter\Storm\Database\Relations\HasOneThrough;
 
 /*
  * Handles the constraints and filters defined by a relation.
@@ -11,20 +14,17 @@ trait DefinedConstraints
     /**
      * Set the defined constraints on the relation query.
      *
+     * @deprecated 1.3.0 Constraints are now applied on an as-needed basis.
+     *
      * @return void
      */
     public function addDefinedConstraints()
     {
-        if (isset($this->farParent)) {
-            // hasOneThrough / hasManyThrough relations
-            $parent = $this->farParent;
-        } else {
-            $parent = $this->parent;
-        }
-        $args = $parent->getRelationDefinition($this->relationName);
+        $args = ($this instanceof HasOneThrough || $this instanceof HasManyThrough)
+            ? $this->farParent->getRelationDefinition($this->relationName)
+            : $this->parent->getRelationDefinition($this->relationName);
 
         $this->addDefinedConstraintsToRelation($this, $args);
-
         $this->addDefinedConstraintsToQuery($this, $args);
     }
 
@@ -34,10 +34,13 @@ trait DefinedConstraints
      * @param \Illuminate\Database\Eloquent\Relations\Relation $relation
      * @param array|null $args
      */
-    public function addDefinedConstraintsToRelation($relation, ?array $args = null)
+    public function addDefinedConstraintsToRelation($relation = null, ?array $args = null)
     {
-        if ($args === null) {
-            $args = $this->parent->getRelationDefinition($this->relationName);
+        if (is_null($relation)) {
+            $relation = $this;
+        }
+        if (is_null($args)) {
+            $args = $this->getRelationArgs();
         }
 
         /*
@@ -60,26 +63,6 @@ trait DefinedConstraints
         if (array_get($args, 'timestamps')) {
             $relation->withTimestamps();
         }
-
-        /*
-         * Count "helper" relation
-         */
-        if ($count = array_get($args, 'count')) {
-            if ($relation instanceof BelongsToManyBase) {
-                $relation->countMode = true;
-            }
-            if (isset($relation->farParent)) {
-                $foreignKey = $relation->getQualifiedFirstKeyName();
-            } else {
-                $foreignKey = $relation->getForeignKey();
-            }
-            $countSql = $this->parent->getConnection()->raw('count(*) as count');
-            $relation
-                ->select($foreignKey, $countSql)
-                ->groupBy($foreignKey)
-                ->orderBy($foreignKey)
-            ;
-        }
     }
 
     /**
@@ -88,10 +71,13 @@ trait DefinedConstraints
      * @param \Illuminate\Database\Eloquent\Relations\Relation|\Winter\Storm\Database\QueryBuilder $query
      * @param array|null $args
      */
-    public function addDefinedConstraintsToQuery($query, ?array $args = null)
+    public function addDefinedConstraintsToQuery($query = null, ?array $args = null)
     {
-        if ($args === null) {
-            $args = $this->parent->getRelationDefinition($this->relationName);
+        if (is_null($query)) {
+            $query = $this;
+        }
+        if (is_null($args)) {
+            $args = $this->getRelationArgs();
         }
 
         /*
@@ -129,5 +115,15 @@ trait DefinedConstraints
         if ($scope = array_get($args, 'scope')) {
             $query->$scope($this->parent);
         }
+    }
+
+    /**
+     * Get the relation definition for the related model.
+     */
+    protected function getRelationArgs(): array
+    {
+        return ($this instanceof HasOneThrough || $this instanceof HasManyThrough)
+            ? $this->farParent->getRelationDefinition($this->relationName)
+            : $this->parent->getRelationDefinition($this->relationName);
     }
 }

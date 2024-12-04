@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Winter\Storm\Support\Collection;
+use Winter\Storm\Support\Facades\Event;
 
 require_once("helpers-array.php");
 require_once("helpers-paths.php");
@@ -141,16 +143,13 @@ if (!function_exists('trace_log')) {
     function trace_log(...$messages)
     {
         foreach ($messages as $message) {
-            $level = 'info';
-
-            if ($message instanceof Exception) {
-                $level = 'error';
+            if ($message instanceof Throwable) {
+                Log::error($message->getMessage(), ['exception' => $message]);
+            } elseif (is_array($message) || (is_object($message) && !method_exists($message, '__toString'))) {
+                Log::info(print_r($message, true));
+            } else {
+                Log::info((string) $message);
             }
-            elseif (is_array($message) || is_object($message)) {
-                $message = print_r($message, true);
-            }
-
-            Log::$level($message);
         }
     }
 }
