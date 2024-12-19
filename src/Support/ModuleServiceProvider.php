@@ -31,6 +31,9 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
         if (File::isFile($routesFile)) {
             $this->loadRoutesFrom($routesFile);
         }
+
+        // Bind the service provider to the application container
+        $this->app->instance($this::class, $this);
     }
 
     /**
