@@ -1,12 +1,17 @@
 <?php namespace Winter\Storm\Support;
 
-use Winter\Storm\Support\Str;
+use Illuminate\Support\ServiceProvider as ServiceProviderBase;
+use Winter\Storm\Foundation\Extension\WinterExtension;
+use Winter\Storm\Packager\Composer;
 use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Facades\File;
-use Illuminate\Support\ServiceProvider as ServiceProviderBase;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Support\Traits\HasComposerPackage;
 
-abstract class ModuleServiceProvider extends ServiceProviderBase
+abstract class ModuleServiceProvider extends ServiceProviderBase implements WinterExtension
 {
+    use HasComposerPackage;
+
     /**
      * @var \Winter\Storm\Foundation\Application The application instance.
      */
@@ -34,6 +39,9 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
 
         // Bind the service provider to the application container
         $this->app->instance($this::class, $this);
+
+        // Register the composer package if exists
+        $this->setComposerPackage(Composer::getPackageInfoByExtension($this));
     }
 
     /**
