@@ -162,6 +162,7 @@ trait Emitter
                     continue;
                 }
                 if ($halt) {
+                    unset($this->emitterSingleEventCollection[$event]);
                     return $response;
                 }
                 $result[] = $response;
