@@ -48,6 +48,17 @@ class HasRelationshipsTest extends DbTestCase
         $this->assertFalse($author->hasRelation('invalid'));
     }
 
+    public function testDynamicRelationMethod()
+    {
+        $author = new Author();
+
+        $author->addDynamicMethod('dynamicMethodAsClosure', function () {});
+        $author->addDynamicMethod('dynamicClassMethod', [$author, 'isDatabaseReady']);
+
+        $this->assertFalse($author->hasRelation('dynamicMethodAsClosure'));
+        $this->assertFalse($author->hasRelation('dynamicClassMethod'));
+    }
+
     public function testGetRelationType()
     {
         $author = new Author();
