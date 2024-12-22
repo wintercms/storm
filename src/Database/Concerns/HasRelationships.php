@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Database\Concerns;
 
+use Closure;
 use InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
