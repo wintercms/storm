@@ -16,11 +16,6 @@ trait Emitter
     use ReflectsClosures;
 
     /**
-     * @var array Collection of registered events to be fired once only.
-     */
-    protected $emitterSingleEventCollection = [];
-
-    /**
      * @var array Collection of registered events.
      */
     protected $emitterEventCollection = [];
@@ -36,9 +31,10 @@ trait Emitter
      * @param mixed  $callback when the third parameter is omitted and a Closure or QueuedClosure is provided
      * this parameter is used as an integer this is used as priority variable
      * @param int $priority
+     * @param bool $once run handler once only
      * @return self
      */
-    public function bindEvent($event, $callback = null, $priority = 0)
+    public function bindEvent($event, $callback = null, $priority = 0, $once = false)
     {
         if ($event instanceof Closure || $event instanceof QueuedClosure) {
             if ($priority === 0 && (is_int($callback) || filter_var($callback, FILTER_VALIDATE_INT))) {
@@ -46,13 +42,13 @@ trait Emitter
             }
         }
         if ($event instanceof Closure) {
-            return $this->bindEvent($this->firstClosureParameterType($event), $event, $priority);
+            return $this->bindEvent($this->firstClosureParameterType($event), $event, $priority, $once);
         } elseif ($event instanceof QueuedClosure) {
-            return $this->bindEvent($this->firstClosureParameterType($event->closure), $event->resolve(), $priority);
+            return $this->bindEvent($this->firstClosureParameterType($event->closure), $event->resolve(), $priority, $once);
         } elseif ($callback instanceof QueuedClosure) {
             $callback = $callback->resolve();
         }
-        $this->emitterEventCollection[$event][$priority][] = Serialization::wrapClosure($callback);
+        $this->emitterEventCollection[$event][$priority][] = [Serialization::wrapClosure($callback), $once];
         unset($this->emitterEventSorted[$event]);
         return $this;
     }
@@ -61,20 +57,13 @@ trait Emitter
      * Create a new event binding that fires once only
      * @param string|Closure|QueuedClosure  $event
      * @param QueuedClosure|Closure|null  $callback When a Closure or QueuedClosure is provided as the first parameter
+     * @param int $priority
      * this parameter can be omitted
      * @return self
      */
-    public function bindEventOnce($event, $callback = null)
+    public function bindEventOnce($event, $callback = null, $priority = 1)
     {
-        if ($event instanceof Closure) {
-            return $this->bindEventOnce($this->firstClosureParameterType($event), $event);
-        } elseif ($event instanceof QueuedClosure) {
-            return $this->bindEventOnce($this->firstClosureParameterType($event->closure), $event->resolve());
-        } elseif ($callback instanceof QueuedClosure) {
-            $callback = $callback->resolve();
-        }
-        $this->emitterSingleEventCollection[$event][] = Serialization::wrapClosure($callback);
-        return $this;
+        return $thisbindEvent($event, $callback, $priority, once:true);
     }
 
     /**
@@ -116,12 +105,8 @@ trait Emitter
         }
 
         if ($event === null) {
-            unset($this->emitterSingleEventCollection, $this->emitterEventCollection, $this->emitterEventSorted);
+            unset($this->emitterEventCollection, $this->emitterEventSorted);
             return $this;
-        }
-
-        if (isset($this->emitterSingleEventCollection[$event])) {
-            unset($this->emitterSingleEventCollection[$event]);
         }
 
         if (isset($this->emitterEventCollection[$event])) {
@@ -152,41 +137,29 @@ trait Emitter
 
         $result = [];
 
-        /*
-         * Single events
-         */
-        if (isset($this->emitterSingleEventCollection[$event])) {
-            foreach ($this->emitterSingleEventCollection[$event] as $callback) {
-                $response = call_user_func_array(Serialization::unwrapClosure($callback), $params);
-                if (is_null($response)) {
-                    continue;
-                }
-                if ($halt) {
-                    return $response;
-                }
-                $result[] = $response;
-            }
-
-            unset($this->emitterSingleEventCollection[$event]);
-        }
-
-        /*
-         * Recurring events, with priority
-         */
         if (isset($this->emitterEventCollection[$event])) {
             if (!isset($this->emitterEventSorted[$event])) {
                 $this->emitterEventSortEvents($event);
             }
 
             foreach ($this->emitterEventSorted[$event] as $callback) {
+                list($callback, $once) = $callback;
                 $response = call_user_func_array(Serialization::unwrapClosure($callback), $params);
                 if (is_null($response)) {
                     continue;
                 }
                 if ($halt) {
+                    if ($once) {
+                        unset($this->emitterEventCollection[$event]);
+                        unset($this->emitterEventSorted[$event]);
+                    }
                     return $response;
                 }
                 $result[] = $response;
+            }
+            if ($once) {
+                unset($this->emitterEventCollection[$event]);
+                unset($this->emitterEventSorted[$event]);
             }
         }
 
