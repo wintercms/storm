@@ -136,6 +136,7 @@ trait Emitter
         list($event, $params) = $this->parseEventAndPayload($event, $params);
 
         $result = [];
+        $once = false;
 
         if (isset($this->emitterEventCollection[$event])) {
             if (!isset($this->emitterEventSorted[$event])) {
@@ -150,16 +151,19 @@ trait Emitter
                 }
                 if ($halt) {
                     if ($once) {
-                        unset($this->emitterEventCollection[$event]);
-                        unset($this->emitterEventSorted[$event]);
+                        // unset this handler only.
+                        #unset($this->emitterEventCollection[$event]);
+                        #unset($this->emitterEventSorted[$event]);
                     }
                     return $response;
                 }
                 $result[] = $response;
-            }
-            if ($once) {
-                unset($this->emitterEventCollection[$event]);
-                unset($this->emitterEventSorted[$event]);
+
+                if ($once) {
+                    // unset this handler only.
+                    #unset($this->emitterEventCollection[$event]);
+                    #unset($this->emitterEventSorted[$event]);
+                }
             }
         }
 
