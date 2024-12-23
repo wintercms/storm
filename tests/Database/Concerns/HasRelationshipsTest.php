@@ -48,17 +48,27 @@ class HasRelationshipsTest extends DbTestCase
         $this->assertFalse($author->hasRelation('invalid'));
     }
 
-    public function testDynamicRelationMethods()
+    public function testRelationDynamicMethods()
+    {
+        $author = new Author();
+
+        $author->addDynamicMethod('dynamicClassMethodFromArray', [$author, 'messages']);
+        $this->assertTrue($author->hasRelation('dynamicClassMethodFromArray'));
+        $this->assertEquals('hasMany', $author->getRelationType('dynamicClassMethodFromArray'));
+    }
+
+    public function testNonRelationDynamicMethods()
     {
         $author = new Author();
 
         $author->addDynamicMethod('dynamicMethodAsClosure', function () {
         });
-        $author->addDynamicMethod('dynamicStaticClassMethodFromArray', [Author::class, 'hasDatabaseTable']);
-        $author->addDynamicMethod('dynamicClassMethodFromArray', [$author, 'isDatabaseReady']);
-
         $this->assertFalse($author->hasRelation('dynamicMethodAsClosure'));
+
+        $author->addDynamicMethod('dynamicStaticClassMethodFromArray', [Author::class, 'hasDatabaseTable']);
         $this->assertFalse($author->hasRelation('dynamicStaticClassMethodFromArray'));
+
+        $author->addDynamicMethod('dynamicClassMethodFromArray', [$author, 'isDatabaseReady']);
         $this->assertFalse($author->hasRelation('dynamicClassMethodFromArray'));
     }
 
