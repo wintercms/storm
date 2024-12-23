@@ -63,7 +63,7 @@ trait Emitter
      */
     public function bindEventOnce($event, $callback = null, $priority = 1)
     {
-        return $thisbindEvent($event, $callback, $priority, once:true);
+        return $this->bindEvent($event, $callback, $priority, once:true);
     }
 
     /**
