@@ -64,7 +64,7 @@ class Composer
     public static function getWinterPackages(): array
     {
         $key = static::COMPOSER_CACHE_KEY . File::lastModified(base_path('composer.lock'));
-        return static::$winterPackages = Cache::rememberForever($key, function () {
+        return static::$winterPackages = static::remember($key, function () {
             $installed = static::info();
             $packages = [];
             foreach ($installed as $package) {
@@ -90,10 +90,10 @@ class Composer
 
     public static function getAvailableUpdates(): array
     {
-        $upgrades = Cache::remember(
+        $upgrades = static::remember(
             static::COMPOSER_CACHE_KEY . '.updates',
-            60 * 5,
-            fn () => static::update(dryRun: true)->getUpgraded()
+            fn () => static::update(dryRun: true)->getUpgraded(),
+            60 * 5
         );
 
         $packages = static::getWinterPackageNames();
@@ -131,5 +131,41 @@ class Composer
                 array_merge(...array_values(static::getWinterPackages()))
             )
         );
+    }
+
+    /**
+     * This method moves the composer caching out of cache, this is so it is not invalidated during tests. @TODO: fix.
+     *
+     * @param string $key
+     * @param callable $callable
+     * @param int|null $expires
+     * @return mixed
+     */
+    protected static function remember(string $key, callable $callable, ?int $expires = null): mixed
+    {
+        $dir = temp_path('composer');
+
+        if (!File::exists($dir)) {
+            File::makeDirectory($dir);
+        }
+
+        $file = $dir . '/' . md5($key) . '.cache';
+
+        if (File::exists($file)) {
+            $cache = unserialize(File::get($file));
+
+            if (is_null($cache['expires']) || time() < $cache['expires']) {
+                return $cache['result'];
+            }
+        }
+
+        $result = $callable();
+
+        File::put($file, serialize([
+            'expires' => $expires ? time() + $expires : null,
+            'result' => $result
+        ]));
+
+        return $result;
     }
 }
