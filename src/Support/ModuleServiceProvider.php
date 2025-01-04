@@ -101,4 +101,14 @@ abstract class ModuleServiceProvider extends ServiceProviderBase implements Wint
         $config = $this->app['config'];
         $config->package($namespace, $path);
     }
+
+    public function getVersion(): string
+    {
+        return $this->composerPackage['versions'][0] ?? 'dev-unknown';
+    }
+
+    public function __toString(): string
+    {
+        return $this->getIdentifier();
+    }
 }
