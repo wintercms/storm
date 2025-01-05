@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Support;
 
 use Illuminate\Support\ServiceProvider as ServiceProviderBase;
+use Winter\Storm\Foundation\Application;
 use Winter\Storm\Foundation\Extension\WinterExtension;
 use Winter\Storm\Packager\Composer;
 use Winter\Storm\Support\ClassLoader;
@@ -16,6 +17,10 @@ abstract class ModuleServiceProvider extends ServiceProviderBase implements Wint
      * @var \Winter\Storm\Foundation\Application The application instance.
      */
     protected $app;
+
+    protected string $path;
+
+    protected string $identifier;
 
     /**
      * Bootstrap the application events.
@@ -105,6 +110,16 @@ abstract class ModuleServiceProvider extends ServiceProviderBase implements Wint
     public function getVersion(): string
     {
         return $this->composerPackage['versions'][0] ?? 'dev-unknown';
+    }
+
+    public function getPath(): string
+    {
+        return $this->path ?? $this->path = dirname((new \ReflectionClass(get_called_class()))->getFileName());
+    }
+
+    public function getIdentifier(): string
+    {
+        return $this->identifier ?? $this->identifier = (new \ReflectionClass(get_called_class()))->getNamespaceName();
     }
 
     public function __toString(): string
