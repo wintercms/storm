@@ -4,7 +4,9 @@ namespace Winter\Storm\Packager;
 
 use Illuminate\Support\Facades\Cache;
 use Winter\Packager\Composer as PackagerComposer;
+use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Foundation\Extension\WinterExtension;
+use Winter\Storm\Network\Http;
 use Winter\Storm\Packager\Commands\InfoCommand;
 use Winter\Storm\Packager\Commands\RemoveCommand;
 use Winter\Storm\Packager\Commands\RequireCommand;
@@ -167,5 +169,32 @@ class Composer
         ]));
 
         return $result;
+    }
+
+    public static function listPackages(string $type): array
+    {
+        return Cache::remember(static::COMPOSER_CACHE_KEY . '.packages.' . $type, 60 * 60 * 24, function () use ($type) {
+            $page = 0;
+            $packages = [];
+            do {
+                $result = Http::get('https://packagist.org/search.json', function (Http $http) use (&$page, $type) {
+                    $http->data([
+                        'q' => '',
+                        'page' => ++$page,
+                        'type' => $type
+                    ]);
+                });
+
+                if ($result->code != '200') {
+                    throw new ApplicationException('Unable to retrieve packages, failed with code: ' . $result->code);
+                }
+
+                $data = json_decode($result->body, JSON_OBJECT_AS_ARRAY);
+
+                $packages = array_merge($packages, $data['results']);
+            } while (isset($data['next']));
+
+            return $packages;
+        });
     }
 }
