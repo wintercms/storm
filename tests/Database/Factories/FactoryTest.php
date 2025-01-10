@@ -9,6 +9,9 @@ class FactoryTest extends TestCase
         $factoryClass = Factory::resolveFactoryName('Plugin\Author\Models\TestModel');
         $this->assertEquals($factoryClass, 'Plugin\Author\Database\Factories\TestModelFactory');
 
+        $factoryClass = Factory::resolveFactoryName('Models\TestModel');
+        $this->assertEquals($factoryClass, 'Database\Factories\TestModelFactory');
+
         $factoryClass = Factory::resolveFactoryName('TestModel');
         $this->assertEquals($factoryClass, 'Database\Factories\TestModelFactory');
     }

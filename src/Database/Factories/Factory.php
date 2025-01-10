@@ -20,7 +20,7 @@ abstract class Factory extends BaseFactory
      */
     public static function resolveFactoryName(string $modelName)
     {
-        if (Str::contains($modelName, '\\Models\\')) {
+        if (Str::contains($modelName, 'Models\\')) {
             $pluginNamespace = trim(Str::before($modelName, 'Models'), '\\');
             $modelClassName = trim(Str::after($modelName, 'Models'), '\\');
         } else {
