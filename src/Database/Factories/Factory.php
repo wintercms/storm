@@ -20,9 +20,18 @@ abstract class Factory extends BaseFactory
      */
     public static function resolveFactoryName(string $modelName)
     {
-        $pluginNamespace = Str::before($modelName, 'Models');
-        $modelClassName = Str::after($modelName, 'Models\\');
+        if (Str::contains($modelName, '\\Models\\')) {
+            $pluginNamespace = trim(Str::before($modelName, 'Models'), '\\');
+            $modelClassName = trim(Str::after($modelName, 'Models'), '\\');
+        } else {
+            $pluginNamespace = '';
+            $modelClassName = $modelName;
+        }
 
-        return $pluginNamespace.static::$namespace.$modelClassName.'Factory';
+        return trim(implode('\\', [
+            $pluginNamespace,
+            trim(static::$namespace, '\\'),
+            $modelClassName.'Factory'
+        ]), '\\');
     }
 }
