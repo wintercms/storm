@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory as BaseFactory;
 use Illuminate\Support\Str;
 
 /**
- * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TModel of \Winter\Storm\Database\Model
  *
  * @method $this trashed()
  */
@@ -15,8 +15,8 @@ abstract class Factory extends BaseFactory
     /**
      * Get the factory name for the given model name.
      *
-     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $modelName
-     * @return class-string<\Illuminate\Database\Eloquent\Factories\Factory>
+     * @param  class-string<\Winter\Storm\Database\Model>  $modelName
+     * @return class-string<\Winter\Storm\Database\Factories\Factory>
      */
     public static function resolveFactoryName(string $modelName)
     {
