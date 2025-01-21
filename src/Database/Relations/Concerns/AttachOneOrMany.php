@@ -72,9 +72,10 @@ trait AttachOneOrMany
             $query = $this->getRelationExistenceQueryForSelfJoin($query, $parentQuery, $columns);
         }
         else {
-            $key = DbDongle::cast($this->getQualifiedParentKeyName(), 'TEXT');
+            $grammar = $this->query->getGrammar();
+            $key = DbDongle::cast($grammar->wrap($this->getQualifiedParentKeyName()), 'TEXT');
 
-            $query = $query->select($columns)->whereColumn($this->getExistenceCompareKey(), '=', $key);
+            $query = $query->select($columns)->whereRaw($grammar->wrap($this->getExistenceCompareKey()) . '=' . $key);
         }
 
         $query = $query->where($this->morphType, $this->morphClass);
@@ -98,9 +99,10 @@ trait AttachOneOrMany
 
         $query->getModel()->setTable($hash);
 
-        $key = DbDongle::cast($this->getQualifiedParentKeyName(), 'TEXT');
+        $grammar = $query->getGrammar();
+        $key = DbDongle::cast($grammar->wrap($this->getQualifiedParentKeyName()), 'TEXT');
 
-        return $query->whereColumn($hash.'.'.$this->getForeignKeyName(), '=', $key);
+        return $query->whereRaw($grammar->wrap($hash.'.'.$this->getForeignKeyName()) . '=' . $key);
     }
 
     /**
