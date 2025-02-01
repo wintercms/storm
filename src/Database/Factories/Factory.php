@@ -13,20 +13,6 @@ use Illuminate\Support\Str;
 abstract class Factory extends BaseFactory
 {
     /**
-     * The default model name resolver.
-     *
-     * @var callable|null
-     */
-    protected static $modelNameResolver = null;
-
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var class-string<\Illuminate\Database\Eloquent\Model|TModel>|null
-     */
-    protected $model = null;
-
-    /**
      * Get the factory name for the given model name.
      *
      * @param  class-string<\Winter\Storm\Database\Model>  $modelName
@@ -56,6 +42,7 @@ abstract class Factory extends BaseFactory
      */
     public function modelName()
     {
+        // @phpstan-ignore-next-line
         $resolver = static::$modelNameResolver ?? function (self $factory) {
             $baseNamespace = join("\\", array_slice(
                 explode("\\", Str::replaceFirst(static::$namespace, '', get_class($factory))),
@@ -69,6 +56,7 @@ abstract class Factory extends BaseFactory
             return class_exists($guessedClass) ? $guessedClass : parent::modelName();
         };
 
+        // @phpstan-ignore-next-line
         return $this->model ?? $resolver($this);
     }
 }
