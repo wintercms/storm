@@ -2,14 +2,12 @@
 
 namespace Winter\Storm\Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory as BaseFactory;
-
 trait HasFactory
 {
     /**
      * Get a new factory instance for the model.
      */
-    public static function factory(callable|array|int|null $count = null, callable|array $state = []): BaseFactory
+    public static function factory(callable|array|int|null $count = null, callable|array $state = []): Factory
     {
         $factory = static::newFactory() ?: Factory::factoryForModel(get_called_class());
 
