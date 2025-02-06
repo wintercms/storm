@@ -141,7 +141,7 @@ if (!function_exists('array_last')) {
      * @param  mixed  $default
      * @return mixed
      */
-    function array_last($array, callable|null $callback = null, $default = null)
+    function array_last($array, ?callable $callback = null, $default = null)
     {
         return Arr::last($array, $callback, $default);
     }
