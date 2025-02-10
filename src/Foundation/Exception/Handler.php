@@ -360,6 +360,10 @@ class Handler extends ExceptionHandler
      */
     protected function isInAppError(string $file): bool
     {
+        if (basename($file) === 'index.php') {
+            return false;
+        }
+
         return !Str::startsWith($file, base_path('vendor')) && !Str::startsWith($file, base_path('modules'));
     }
 }
