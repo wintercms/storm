@@ -8,10 +8,15 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Winter\Storm\Database\Model;
 use Winter\Storm\Exception\AjaxException;
+use Winter\Storm\Support\Str;
 
 class Handler extends ExceptionHandler
 {
+    public const EXECPTION_LOG_VERSION = 2;
+    public const EXECPTION_SNIPPET_LINES = 12;
+
     /**
      * A list of the exception types that should not be reported.
      *
@@ -64,8 +69,11 @@ class Handler extends ExceptionHandler
             return;
         }
 
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+
         if (class_exists('Log')) {
-            Log::error($throwable);
+            Log::error($throwable->getMessage(), $this->parseExecption($throwable));
         }
 
         /**
@@ -235,5 +243,125 @@ class Handler extends ExceptionHandler
         }
 
         return false;
+    }
+
+    /**
+     * Convert a throwable into an array of date for logging
+     *
+     * @param Throwable $throwable
+     * @return array
+     */
+    protected function parseExecption(\Throwable $throwable): array
+    {
+        return [
+            'logVersion' => static::EXECPTION_LOG_VERSION,
+            'type' => $throwable::class,
+            'message' => $throwable->getMessage(),
+            'file' => $throwable->getFile(),
+            'line' => $throwable->getLine(),
+            'snippet' => $this->getSnippet($throwable->getFile(), $throwable->getLine()),
+            'trace' => $this->parseTrace($throwable->getTrace()),
+            'stringTrace' => $throwable->getTraceAsString(),
+            'code' => $throwable->getCode(),
+            'previous' => $throwable->getPrevious()
+                ? $this->parseExecption($throwable->getPrevious())
+                : null,
+        ];
+    }
+
+    /**
+     * Generate an array trace with extra data not provided by the default trace
+     *
+     * @param array $trace
+     * @return array
+     * @throws \ReflectionException
+     */
+    protected function parseTrace(array $trace): array
+    {
+        foreach ($trace as $index => $frame) {
+            if (!isset($frame['file']) && isset($frame['class'])) {
+                $ref = new ReflectionClass($frame['class']);
+                $frame['file'] = $ref->getFileName();
+
+                if (!isset($frame['line']) && isset($frame['function']) && !str_contains($frame['function'], '{')) {
+                    foreach (file($frame['file']) as $line => $text) {
+                        if (preg_match(sprintf('/function\s.*%s/', $frame['function']), $text)) {
+                            $frame['line'] = $line + 1;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            $trace[$index] = [
+                'file' => $frame['file'] ?? null,
+                'line' => $frame['line'] ?? null,
+                'function' => $frame['function'] ?? null,
+                'class' => $frame['class'] ?? null,
+                'type' => $frame['type'] ?? null,
+                'snippet' => !empty($frame['file']) && !empty($frame['line'])
+                    ? $this->getSnippet($frame['file'], $frame['line'])
+                    : '',
+                'in_app' => ($frame['file'] ?? null) ? $this->isInAppError($frame['file']) : false,
+                'arguments' => array_map(function ($arg) {
+                    if (is_numeric($arg)) {
+                        return $arg;
+                    }
+                    if (is_string($arg)) {
+                        return "'$arg'";
+                    }
+                    if (is_null($arg)) {
+                        return 'null';
+                    }
+                    if (is_bool($arg)) {
+                        return $arg ? 'true' : 'false';
+                    }
+                    if (is_array($arg)) {
+                        return 'Array';
+                    }
+                    if (is_object($arg)) {
+                        return get_class($arg);
+                    }
+                    if (is_resource($arg)) {
+                        return 'Resource';
+                    }
+                }, $frame['args'] ?? []),
+            ];
+        }
+
+        return $trace;
+    }
+
+    /**
+     * Get the code snippet referenced in a trace
+     *
+     * @param string $file
+     * @param int $line
+     * @return array
+     */
+    protected function getSnippet(string $file, int $line): array
+    {
+        $lines = file($file);
+
+        if (count($lines) < static::EXECPTION_SNIPPET_LINES) {
+            return $lines;
+        }
+
+        return array_slice(
+            $lines,
+            $line - (static::EXECPTION_SNIPPET_LINES / 2),
+            static::EXECPTION_SNIPPET_LINES, true
+        );
+    }
+
+    /**
+     * Helper to work out if a file should be considered "In App" or not
+     *
+     * @param string $file
+     * @return bool
+     */
+    protected function isInAppError(string $file): bool
+    {
+        return !Str::startsWith($file, base_path('vendor')) && !Str::startsWith($file, base_path('modules'));
     }
 }
