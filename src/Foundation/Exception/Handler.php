@@ -350,7 +350,8 @@ class Handler extends ExceptionHandler
         return array_slice(
             $lines,
             $line - (static::EXECPTION_SNIPPET_LINES / 2),
-            static::EXECPTION_SNIPPET_LINES, true
+            static::EXECPTION_SNIPPET_LINES,
+            true
         );
     }
 
