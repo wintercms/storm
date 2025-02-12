@@ -13,8 +13,8 @@ use Winter\Storm\Support\Str;
 
 class Handler extends ExceptionHandler
 {
-    public const EXECPTION_LOG_VERSION = 2;
-    public const EXECPTION_SNIPPET_LINES = 12;
+    public const EXCEPTION_LOG_VERSION = 2;
+    public const EXCEPTION_SNIPPET_LINES = 12;
 
     /**
      * A list of the exception types that should not be reported.
@@ -258,7 +258,7 @@ class Handler extends ExceptionHandler
     public function getDetails(Throwable $throwable): array
     {
         return [
-            'logVersion' => static::EXECPTION_LOG_VERSION,
+            'logVersion' => static::EXCEPTION_LOG_VERSION,
             'exception' => $this->exceptionToArray($throwable),
             'environment' => $this->getEnviromentInfo(),
         ];
@@ -362,17 +362,17 @@ class Handler extends ExceptionHandler
         if (str_contains($file, ': eval()\'d code')) {
             return [];
         }
-        
+
         $lines = file($file);
 
-        if (count($lines) < static::EXECPTION_SNIPPET_LINES) {
+        if (count($lines) < static::EXCEPTION_SNIPPET_LINES) {
             return $lines;
         }
 
         return array_slice(
             $lines,
-            $line - (static::EXECPTION_SNIPPET_LINES / 2),
-            static::EXECPTION_SNIPPET_LINES,
+            $line - (static::EXCEPTION_SNIPPET_LINES / 2),
+            static::EXCEPTION_SNIPPET_LINES,
             true
         );
     }
