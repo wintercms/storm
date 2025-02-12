@@ -13,8 +13,8 @@ use Winter\Storm\Support\Str;
 
 class Handler extends ExceptionHandler
 {
-    public const EXCEPTION_LOG_VERSION = 2;
-    public const EXCEPTION_SNIPPET_LINES = 12;
+    protected const EXCEPTION_LOG_VERSION = 2;
+    protected const EXCEPTION_SNIPPET_LINES = 12;
 
     /**
      * A list of the exception types that should not be reported.
