@@ -8,7 +8,6 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use Winter\Storm\Database\Model;
 use Winter\Storm\Exception\AjaxException;
 use Winter\Storm\Support\Str;
 
