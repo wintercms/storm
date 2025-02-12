@@ -359,6 +359,10 @@ class Handler extends ExceptionHandler
      */
     protected function getSnippet(string $file, int $line): array
     {
+        if (str_contains($file, ': eval()\'d code')) {
+            return [];
+        }
+        
         $lines = file($file);
 
         if (count($lines) < static::EXECPTION_SNIPPET_LINES) {
