@@ -71,20 +71,12 @@ class Handler extends ExceptionHandler
         if (class_exists('Log')) {
             try {
                 // Attempt to log the exception with details
-                Log::error($throwable->getMessage(), [
-                    'logVersion' => static::EXECPTION_LOG_VERSION,
-                    'exception' => $this->parseExecption($throwable),
-                    'environment' => $this->getEnviromentInfo(),
-                ]);
+                Log::error($throwable->getMessage(), $this->getDetails($throwable));
             } catch (Throwable $e) {
                 // For some reason something failed, fall back to the old log style
                 Log::error($throwable);
                 // Log what failed in the v2 log style for debugging
-                Log::error($e->getMessage(), [
-                    'logVersion' => static::EXECPTION_LOG_VERSION,
-                    'exception' => $this->parseExecption($e),
-                    'environment' => $this->getEnviromentInfo(),
-                ]);
+                Log::error($e->getMessage(), $this->getDetails($e));
             }
         }
 
@@ -258,12 +250,27 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Convert a throwable into an array of date for logging
+     * Constructs the details array for logging
      *
      * @param Throwable $throwable
      * @return array
      */
-    protected function parseExecption(\Throwable $throwable): array
+    public function getDetails(Throwable $throwable): array
+    {
+        return [
+            'logVersion' => static::EXECPTION_LOG_VERSION,
+            'exception' => $this->exceptionToArray($throwable),
+            'environment' => $this->getEnviromentInfo(),
+        ];
+    }
+
+    /**
+     * Convert a throwable into an array of data for logging
+     *
+     * @param Throwable $throwable
+     * @return array
+     */
+    protected function exceptionToArray(\Throwable $throwable): array
     {
         return [
             'type' => $throwable::class,
@@ -271,11 +278,11 @@ class Handler extends ExceptionHandler
             'file' => $throwable->getFile(),
             'line' => $throwable->getLine(),
             'snippet' => $this->getSnippet($throwable->getFile(), $throwable->getLine()),
-            'trace' => $this->parseTrace($throwable->getTrace()),
+            'trace' => $this->exceptionTraceToArray($throwable->getTrace()),
             'stringTrace' => $throwable->getTraceAsString(),
             'code' => $throwable->getCode(),
             'previous' => $throwable->getPrevious()
-                ? $this->parseExecption($throwable->getPrevious())
+                ? $this->exceptionToArray($throwable->getPrevious())
                 : null,
         ];
     }
@@ -287,7 +294,7 @@ class Handler extends ExceptionHandler
      * @return array
      * @throws \ReflectionException
      */
-    protected function parseTrace(array $trace): array
+    protected function exceptionTraceToArray(array $trace): array
     {
         foreach ($trace as $index => $frame) {
             if (!isset($frame['file']) && isset($frame['class'])) {
@@ -367,21 +374,6 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Helper to work out if a file should be considered "In App" or not
-     *
-     * @param string $file
-     * @return bool
-     */
-    protected function isInAppError(string $file): bool
-    {
-        if (basename($file) === 'index.php' || basename($file) === 'artisan') {
-            return false;
-        }
-
-        return !Str::startsWith($file, base_path('vendor')) && !Str::startsWith($file, base_path('modules'));
-    }
-
-    /**
      * Get environment details to record with the exception
      *
      * @return array
@@ -406,5 +398,20 @@ class Handler extends ExceptionHandler
             'ip' => app('request')->ip(),
             'userAgent' => app('request')->header('User-Agent'),
         ];
+    }
+
+    /**
+     * Helper to work out if a file should be considered "In App" or not
+     *
+     * @param string $file
+     * @return bool
+     */
+    protected function isInAppError(string $file): bool
+    {
+        if (basename($file) === 'index.php' || basename($file) === 'artisan') {
+            return false;
+        }
+
+        return !Str::startsWith($file, base_path('vendor')) && !Str::startsWith($file, base_path('modules'));
     }
 }
