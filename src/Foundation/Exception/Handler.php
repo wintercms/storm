@@ -386,7 +386,7 @@ class Handler extends ExceptionHandler
 
         return [
             'context' => 'Web',
-            'backend' => app()->runningInBackend(),
+            'backend' => method_exists(app(), 'runningInBackend') ? app()->runningInBackend() : false,
             'testing' => app()->runningUnitTests(),
             'url' => app('url')->current(),
             'method' => app('request')->method(),
