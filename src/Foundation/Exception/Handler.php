@@ -69,7 +69,11 @@ class Handler extends ExceptionHandler
         }
 
         if (class_exists('Log')) {
-            Log::error($throwable->getMessage(), $this->parseExecption($throwable));
+            Log::error($throwable->getMessage(), [
+                'logVersion' => static::EXECPTION_LOG_VERSION,
+                'exception' => $this->parseExecption($throwable),
+                'environment' => $this->getEnviromentInfo(),
+            ]);
         }
 
         /**
@@ -250,7 +254,6 @@ class Handler extends ExceptionHandler
     protected function parseExecption(\Throwable $throwable): array
     {
         return [
-            'logVersion' => static::EXECPTION_LOG_VERSION,
             'type' => $throwable::class,
             'message' => $throwable->getMessage(),
             'file' => $throwable->getFile(),
@@ -359,10 +362,37 @@ class Handler extends ExceptionHandler
      */
     protected function isInAppError(string $file): bool
     {
-        if (basename($file) === 'index.php') {
+        if (basename($file) === 'index.php' || basename($file) === 'artisan') {
             return false;
         }
 
         return !Str::startsWith($file, base_path('vendor')) && !Str::startsWith($file, base_path('modules'));
+    }
+
+    /**
+     * Get environment details to record with the exception
+     *
+     * @return array
+     */
+    protected function getEnviromentInfo(): array
+    {
+        if (app()->runningInConsole()) {
+            return [
+                'context' => 'CLI',
+                'testing' => app()->runningUnitTests(),
+                'env' => app()->environment(),
+            ];
+        }
+
+        return [
+            'context' => 'Web',
+            'backend' => app()->runningInBackend(),
+            'testing' => app()->runningUnitTests(),
+            'url' => app('url')->current(),
+            'method' => app('request')->method(),
+            'env' => app()->environment(),
+            'ip' => app('request')->ip(),
+            'userAgent' => app('request')->header('User-Agent'),
+        ];
     }
 }
