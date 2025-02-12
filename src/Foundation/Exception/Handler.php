@@ -69,11 +69,23 @@ class Handler extends ExceptionHandler
         }
 
         if (class_exists('Log')) {
-            Log::error($throwable->getMessage(), [
-                'logVersion' => static::EXECPTION_LOG_VERSION,
-                'exception' => $this->parseExecption($throwable),
-                'environment' => $this->getEnviromentInfo(),
-            ]);
+            try {
+                // Attempt to log the exception with details
+                Log::error($throwable->getMessage(), [
+                    'logVersion' => static::EXECPTION_LOG_VERSION,
+                    'exception' => $this->parseExecption($throwable),
+                    'environment' => $this->getEnviromentInfo(),
+                ]);
+            } catch (Throwable $e) {
+                // For some reason something failed, fall back to the old log style
+                Log::error($throwable);
+                // Log what failed in the v2 log style for debugging
+                Log::error($e->getMessage(), [
+                    'logVersion' => static::EXECPTION_LOG_VERSION,
+                    'exception' => $this->parseExecption($e),
+                    'environment' => $this->getEnviromentInfo(),
+                ]);
+            }
         }
 
         /**
