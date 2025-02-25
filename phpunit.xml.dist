@@ -10,14 +10,14 @@
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
 >
     <testsuites>
-      <testsuite name="Storm Library Test Suite">
-        <directory>./tests</directory>
-      </testsuite>
+        <testsuite name="Storm Library Test Suite">
+            <directory>./tests</directory>
+        </testsuite>
     </testsuites>
     <source>
-      <include>
-        <directory suffix=".php">./src/</directory>
-      </include>
+        <include>
+            <directory suffix=".php">./src/</directory>
+        </include>
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
