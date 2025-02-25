@@ -658,7 +658,10 @@ trait HasRelationships
         });
 
         // If we're dealing with a closure, we're likely dealing with an extension. We'll need to go deeper!
-        if (str_contains($caller['function'], '{closure}')) {
+        if (
+            str_contains($caller['function'], '{closure:') // PHP 8.4+
+            || str_contains($caller['function'], '{closure}') // <= PHP 8.3
+        ) {
             [$stepOne, $stepTwo] = array_slice($trace, $currentKey + 1, 2);
 
             if ($stepOne['function'] !== 'call_user_func_array') {

@@ -14,7 +14,7 @@ interface ResolverInterface
      *
      * @throws \Winter\Storm\Halcyon\Exception\MissingDatasourceException If a datasource with the given name does not exist.
      */
-    public function datasource(string $name = null): DatasourceInterface;
+    public function datasource(?string $name = null): DatasourceInterface;
 
     /**
      * Adds a datasource to the resolver.
