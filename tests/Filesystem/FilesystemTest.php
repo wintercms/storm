@@ -44,7 +44,7 @@ class FilesystemTest extends TestCase
         $this->assertEquals($expectedBytes, $result);
     }
 
-    public function provideSizesForSizeToBytes()
+    public static function provideSizesForSizeToBytes()
     {
         return [
             ['1 byte', '1'],
@@ -70,7 +70,7 @@ class FilesystemTest extends TestCase
         $this->assertEquals($expectedString, $result);
     }
 
-    public function provideBytesForSizeToString()
+    public static function provideBytesForSizeToString()
     {
         return [
             [1, '1 byte'],
@@ -94,7 +94,7 @@ class FilesystemTest extends TestCase
         $this->filesystem->sizeToBytes($input);
     }
 
-    public function provideInvalidSizesForSizeToBytes()
+    public static function provideInvalidSizesForSizeToBytes()
     {
         return [
             ['-1G'],               // Negative value
