@@ -9,7 +9,6 @@ use Illuminate\Database\Query\Processors\SqlServerProcessor;
 use Winter\Storm\Database\PDO\SqlServerDriver;
 use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 use Winter\Storm\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
-use Winter\Storm\Database\Traits\HasConnection;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar

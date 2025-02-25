@@ -1,4 +1,4 @@
-<?php namespace Winter\Storm\Database\Traits;
+<?php namespace Winter\Storm\Database\Connections;
 
 use Doctrine\DBAL\Connection as DoctrineConnection;
 use Doctrine\DBAL\Types\Type;
