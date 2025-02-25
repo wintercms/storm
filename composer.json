@@ -59,7 +59,7 @@
         "meyfa/phpunit-assert-gd": "^3.0.0",
         "dms/phpunit-arraysubset-asserts": "^0.5.0",
         "larastan/larastan": "^2.8.1",
-        "orchestra/testbench": "^7.1.0"
+        "orchestra/testbench": "^7.47.0"
     },
     "suggest": {
         "ext-pdo_dblib": "Required to use MS SQL Server databases",
