@@ -34,7 +34,7 @@ trait SoftDelete
             if ($model->methodExists('beforeRestore')) {
                 // Register the method as a listener with default priority
                 // to allow for complete control over the execution order
-                $model->bindEvent('model.beforeRestore', [$model, 'beforeRestore']);
+                $model->bindEventOnce('model.beforeRestore', [$model, 'beforeRestore']);
             }
             /**
              * @event model.beforeRestore
@@ -54,7 +54,7 @@ trait SoftDelete
             if ($model->methodExists('afterRestore')) {
                 // Register the method as a listener with default priority
                 // to allow for complete control over the execution order
-                $model->bindEvent('model.afterRestore', [$model, 'afterRestore']);
+                $model->bindEventOnce('model.afterRestore', [$model, 'afterRestore']);
             }
             /**
              * @event model.afterRestore

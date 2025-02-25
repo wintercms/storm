@@ -1,26 +1,45 @@
 <?php namespace Winter\Storm\Support\Facades;
 
 use Winter\Storm\Support\Facade;
+use Winter\Storm\Network\Http as NetworkHttp;
 
 /**
- * @method static \Winter\Storm\Network\Http make(string $url, string $method, callable $options = null)
- * @method static \Winter\Storm\Network\Http get(string $url, array $options = null)
- * @method static \Winter\Storm\Network\Http post(string $url, array $options = null)
- * @method static \Winter\Storm\Network\Http delete(string $url, array $options = null)
- * @method static \Winter\Storm\Network\Http patch(string $url, array $options = null)
- * @method static \Winter\Storm\Network\Http put(string $url, array $options = null)
- * @method static \Winter\Storm\Network\Http options(string $url, array $options = null)
- * @method static \Winter\Storm\Network\Http send()
- * @method static string getRequestData()
- * @method static \Winter\Storm\Network\Http data(string $key, string $value = null)
- * @method static \Winter\Storm\Network\Http header(string $key, string $value = null)
- * @method static \Winter\Storm\Network\Http proxy(string $type, string $host, int $port, string $username = null, string $password = null)
- * @method static \Winter\Storm\Network\Http auth(string $user, string $pass = null)
- * @method static \Winter\Storm\Network\Http noRedirect()
- * @method static \Winter\Storm\Network\Http verifySSL()
- * @method static \Winter\Storm\Network\Http timeout(int $timeout)
- * @method static \Winter\Storm\Network\Http toFile(string $path, string $filter = null)
- * @method static \Winter\Storm\Network\Http setOption(string $option, string $value = null)
+ * Facade for the Http network access class.
+ *
+ * Static methods:
+ *
+ * @method static NetworkHttp make(string $url, string $method, callable|null $options = null) Create a new Http instance with the given URL and method.
+ * @method static NetworkHttp get(string $url, callable|null $options = null) Perform a GET request.
+ * @method static NetworkHttp post(string $url, callable|null $options = null) Perform a POST request.
+ * @method static NetworkHttp delete(string $url, callable|null $options = null) Perform a DELETE request.
+ * @method static NetworkHttp patch(string $url, callable|null $options = null) Perform a PATCH request.
+ * @method static NetworkHttp put(string $url, callable|null $options = null) Perform a PUT request.
+ * @method static NetworkHttp options(string $url, callable|null $options = null) Perform an OPTIONS request.
+ * @method static NetworkHttp head(string $url, callable|null $options = null) Perform a HEAD request.
+ *
+ * Instance methods:
+ *
+ * @method NetworkHttp send() Execute the HTTP request.
+ * @method string getRequestData() Return the request data set.
+ * @method NetworkHttp json(mixed $payload) Add JSON encoded payload.
+ * @method NetworkHttp data(array|string $key, array|string|null $value = null) Add data to the request.
+ * @method NetworkHttp header(array|string $key, array|string|null $value = null) Add a header to the request.
+ * @method NetworkHttp proxy(string $type, string $host, int $port, string|null $username = null, string|null $password = null) Set a proxy for the request.
+ * @method NetworkHttp auth(string $user, string|null $pass = null) Add authentication to the request.
+ * @method NetworkHttp noRedirect() Disable redirects.
+ * @method NetworkHttp verifySSL() Enable SSL verification.
+ * @method NetworkHttp timeout(int $timeout) Set the request timeout.
+ * @method NetworkHttp toFile(string $path, string|null $filter = null) Write the response to a file.
+ * @method NetworkHttp setOption(array|int|string $option, mixed $value = null) Add single or multiple CURL options to the request.
+ * @method string __toString() Get the last response body.
+ *
+ * Properties:
+ *
+ * @property string $body The last response body.
+ * @property int $code The last returned HTTP code.
+ * @property bool $ok Indicates if the last response was successful (HTTP 2xx).
+ * @property array $headers The headers from the last response.
+ * @property array $info The cURL response information.
  *
  * @see \Winter\Storm\Network\Http
  */

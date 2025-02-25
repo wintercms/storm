@@ -973,7 +973,7 @@ class FormBuilder
     /**
      * Returns a hidden HTML input, supplying the session key value.
      */
-    protected function requestHandler(string $name = null): string
+    protected function requestHandler(?string $name = null): string
     {
         if (!strlen($name)) {
             return '';

@@ -2,7 +2,9 @@
 
 use DirectoryIterator;
 use FilesystemIterator;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Filesystem\Filesystem as FilesystemBase;
+use Illuminate\Filesystem\FilesystemAdapter;
 use InvalidArgumentException;
 use ReflectionClass;
 use Winter\Storm\Support\Facades\Config;
@@ -527,5 +529,68 @@ class Filesystem extends FilesystemBase
         $iterator($basePath);
 
         $this->symlinks = $symlinks;
+    }
+
+    /**
+     * Copies a file from one storage disk to another.
+     *
+     * @param string|FilesystemAdapter $sourceDisk      The source disk name or instance.
+     * @param string|FilesystemAdapter $destinationDisk The destination disk name or instance.
+     * @param string                   $filePath        The path to the file on the source disk.
+     * @param string|null              $targetPath      The path to the file on the destination disk. If null, uses the same as $filePath.
+     * @return bool Returns true if the file was copied successfully, false otherwise.
+     */
+    public function copyBetweenDisks(string|FilesystemAdapter $sourceDisk, string|FilesystemAdapter $destinationDisk, string $filePath, ?string $targetPath = null): bool
+    {
+        // Resolve source disk
+        if (is_string($sourceDisk)) {
+            $sourceDisk = Storage::disk($sourceDisk);
+        }
+
+        // Resolve destination disk
+        if (is_string($destinationDisk)) {
+            $destinationDisk = Storage::disk($destinationDisk);
+        }
+
+        // Open a read stream from the source disk
+        $readStream = $sourceDisk->readStream($filePath);
+        if (!$readStream) {
+            return false;
+        }
+
+        // Write the stream to the destination disk
+        $result = $destinationDisk->put($targetPath ?? $filePath, $readStream);
+
+        // Close the read stream
+        if (is_resource($readStream)) {
+            fclose($readStream);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Moves a file from one storage disk to another.
+     *
+     * @param string|FilesystemAdapter $sourceDisk      The source disk name or instance.
+     * @param string|FilesystemAdapter $destinationDisk The destination disk name or instance.
+     * @param string                   $filePath        The path to the file on the source disk.
+     * @param string|null              $targetPath      The path to the file on the destination disk. If null, uses the same as $filePath.
+     * @return bool Returns true if the file was moved successfully, false otherwise.
+     */
+    public function moveBetweenDisks(string|FilesystemAdapter $sourceDisk, string|FilesystemAdapter $destinationDisk, string $filePath, ?string $targetPath = null): bool
+    {
+        $copied = $this->copyBetweenDisks($sourceDisk, $destinationDisk, $filePath, $targetPath);
+
+        if ($copied) {
+            // Delete the original file from the source disk
+            if (is_string($sourceDisk)) {
+                $sourceDisk = Storage::disk($sourceDisk);
+            }
+
+            return $sourceDisk->delete($filePath);
+        }
+
+        return false;
     }
 }

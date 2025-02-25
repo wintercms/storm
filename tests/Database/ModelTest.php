@@ -2,10 +2,12 @@
 
 namespace Tests\Database;
 
+use Mockery;
 use Illuminate\Support\Facades\DB;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Tests\DbTestCase;
 
-class ModelTest extends \DbTestCase
+class ModelTest extends DbTestCase
 {
     protected $seeded = [];
 
@@ -634,6 +636,19 @@ class ModelTest extends \DbTestCase
 
         $this->assertEquals('2', $modelMiddleRow->value);
     }
+
+    public function testNicerEventOnlyBoundOnce()
+    {
+        $model = new TestModelVisibleWithEvent();
+        $model->name = 'Ben Thomson';
+        $model->save();
+
+        $this->assertEquals(1, $model->calledCount);
+
+        $model->save();
+
+        $this->assertEquals(2, $model->calledCount);
+    }
 }
 
 class TestModelGuarded extends Model
@@ -672,6 +687,16 @@ class TestModelVisible extends Model
     ];
 
     public $table = 'test_model';
+}
+
+class TestModelVisibleWithEvent extends TestModelVisible
+{
+    public $calledCount = 0;
+
+    protected function afterSave()
+    {
+        $this->calledCount++;
+    }
 }
 
 class TestModelHidden extends Model

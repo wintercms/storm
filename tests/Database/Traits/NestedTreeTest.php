@@ -100,6 +100,349 @@ class NestedTreeTest extends DbTestCase
         ], $array);
     }
 
+    public function testToNestedArray()
+    {
+        $array = CategoryNested::nestedArray('name', 'id');
+        $this->assertEquals([
+            1 => [
+                "name" => "Category Orange",
+                "children" => [
+                    2 => [
+                        "name" => "Autumn Leaves",
+                        "children" => [
+                            3 => [
+                                "name" => "September",
+                            ],
+                            4 => [
+                                "name" => "October",
+                            ],
+                            5 => [
+                                "name" => "November",
+                            ],
+                        ],
+                    ],
+                    6 => [
+                        "name" => "Summer Breeze",
+                    ],
+                ],
+            ],
+            7 => [
+                "name" => "Category Green",
+                "children" => [
+                    8 => [
+                        "name" => "Winter Snow",
+                    ],
+                    9 => [
+                        "name" => "Spring Trees",
+                    ],
+                ],
+            ],
+        ], $array);
+
+        CategoryNested::flushDuplicateCache();
+
+        $array = CategoryNested::nestedArray('name');
+        $this->assertEquals([
+            0 => [
+                "name" => "Category Orange",
+                "children" => [
+                    0 => [
+                        "name" => "Autumn Leaves",
+                        "children" => [
+                            0 => [
+                                "name" => "September",
+                            ],
+                            1 => [
+                                "name" => "October",
+                            ],
+                            2 => [
+                                "name" => "November",
+                            ],
+                        ],
+                    ],
+                    1 => [
+                        "name" => "Summer Breeze",
+                    ],
+                ],
+            ],
+            1 => [
+                "name" => "Category Green",
+                "children" => [
+                    0 => [
+                        "name" => "Winter Snow",
+                    ],
+                    1 => [
+                        "name" => "Spring Trees",
+                    ],
+                ],
+            ],
+        ], $array);
+    }
+
+    public function testToNestedArrayFromCollection()
+    {
+        $array = CategoryNested::get()->toNestedArray('name', 'id');
+        $this->assertEquals([
+            1 => [
+                "name" => "Category Orange",
+                "children" => [
+                    2 => [
+                        "name" => "Autumn Leaves",
+                        "children" => [
+                            3 => [
+                                "name" => "September",
+                            ],
+                            4 => [
+                                "name" => "October",
+                            ],
+                            5 => [
+                                "name" => "November",
+                            ],
+                        ],
+                    ],
+                    6 => [
+                        "name" => "Summer Breeze",
+                    ],
+                ],
+            ],
+            7 => [
+                "name" => "Category Green",
+                "children" => [
+                    8 => [
+                        "name" => "Winter Snow",
+                    ],
+                    9 => [
+                        "name" => "Spring Trees",
+                    ],
+                ],
+            ],
+        ], $array);
+
+        CategoryNested::flushDuplicateCache();
+
+        $array = CategoryNested::get()->toNestedArray(['name', 'description'], 'id');
+        $this->assertEquals([
+            1 => [
+                "name" => "Category Orange",
+                'description' => 'A root level test category',
+                "children" => [
+                    2 => [
+                        "name" => "Autumn Leaves",
+                        'description' => 'Disccusion about the season of falling leaves.',
+                        "children" => [
+                            3 => [
+                                "name" => "September",
+                                'description' => 'The start of the fall season.'
+                            ],
+                            4 => [
+                                "name" => "October",
+                                'description' => 'The middle of the fall season.'
+                            ],
+                            5 => [
+                                "name" => "November",
+                                'description' => 'The end of the fall season.'
+                            ],
+                        ],
+                    ],
+                    6 => [
+                        "name" => "Summer Breeze",
+                        'description' => 'Disccusion about the wind at the ocean.'
+                    ],
+                ],
+            ],
+            7 => [
+                "name" => "Category Green",
+                'description' => 'A root level test category',
+                "children" => [
+                    8 => [
+                        "name" => "Winter Snow",
+                        'description' => 'Disccusion about the frosty snow flakes.'
+                    ],
+                    9 => [
+                        "name" => "Spring Trees",
+                        'description' => 'Disccusion about the blooming gardens.'
+                    ],
+                ],
+            ],
+        ], $array);
+    }
+
+    public function testToNestedArrayWithoutKey()
+    {
+        $array = CategoryNested::nestedArray('name');
+        $this->assertEquals([
+            [
+                "name" => "Category Orange",
+                "children" => [
+                    [
+                        "name" => "Autumn Leaves",
+                        "children" => [
+                            [
+                                "name" => "September",
+                            ],
+                            [
+                                "name" => "October",
+                            ],
+                            [
+                                "name" => "November",
+                            ],
+                        ],
+                    ],
+                    [
+                        "name" => "Summer Breeze",
+                    ],
+                ],
+            ],
+            [
+                "name" => "Category Green",
+                "children" => [
+                    [
+                        "name" => "Winter Snow",
+                    ],
+                    [
+                        "name" => "Spring Trees",
+                    ],
+                ],
+            ],
+        ], $array);
+
+        CategoryNested::flushDuplicateCache();
+
+        $array = CategoryNested::nestedArray(['name', 'description']);
+        $this->assertEquals([
+            [
+                "name" => "Category Orange",
+                'description' => 'A root level test category',
+                "children" => [
+                    [
+                        "name" => "Autumn Leaves",
+                        'description' => 'Disccusion about the season of falling leaves.',
+                        "children" => [
+                            [
+                                "name" => "September",
+                                'description' => 'The start of the fall season.'
+                            ],
+                            [
+                                "name" => "October",
+                                'description' => 'The middle of the fall season.'
+                            ],
+                            [
+                                "name" => "November",
+                                'description' => 'The end of the fall season.'
+                            ],
+                        ],
+                    ],
+                    [
+                        "name" => "Summer Breeze",
+                        'description' => 'Disccusion about the wind at the ocean.'
+                    ],
+                ],
+            ],
+            [
+                "name" => "Category Green",
+                'description' => 'A root level test category',
+                "children" => [
+                    [
+                        "name" => "Winter Snow",
+                        'description' => 'Disccusion about the frosty snow flakes.'
+                    ],
+                    [
+                        "name" => "Spring Trees",
+                        'description' => 'Disccusion about the blooming gardens.'
+                    ],
+                ],
+            ],
+        ], $array);
+    }
+
+    public function testToNestedArrayFromCollectionWithoutKey()
+    {
+        $array = CategoryNested::get()->toNestedArray('name');
+        $this->assertEquals([
+            [
+                "name" => "Category Orange",
+                "children" => [
+                    [
+                        "name" => "Autumn Leaves",
+                        "children" => [
+                            [
+                                "name" => "September",
+                            ],
+                            [
+                                "name" => "October",
+                            ],
+                            [
+                                "name" => "November",
+                            ],
+                        ],
+                    ],
+                    [
+                        "name" => "Summer Breeze",
+                    ],
+                ],
+            ],
+            [
+                "name" => "Category Green",
+                "children" => [
+                    [
+                        "name" => "Winter Snow",
+                    ],
+                    [
+                        "name" => "Spring Trees",
+                    ],
+                ],
+            ],
+        ], $array);
+
+        CategoryNested::flushDuplicateCache();
+
+        $array = CategoryNested::get()->toNestedArray(['name', 'description']);
+        $this->assertEquals([
+            [
+                "name" => "Category Orange",
+                'description' => 'A root level test category',
+                "children" => [
+                    [
+                        "name" => "Autumn Leaves",
+                        'description' => 'Disccusion about the season of falling leaves.',
+                        "children" => [
+                            [
+                                "name" => "September",
+                                'description' => 'The start of the fall season.'
+                            ],
+                            [
+                                "name" => "October",
+                                'description' => 'The middle of the fall season.'
+                            ],
+                            [
+                                "name" => "November",
+                                'description' => 'The end of the fall season.'
+                            ],
+                        ],
+                    ],
+                    [
+                        "name" => "Summer Breeze",
+                        'description' => 'Disccusion about the wind at the ocean.'
+                    ],
+                ],
+            ],
+            [
+                "name" => "Category Green",
+                'description' => 'A root level test category',
+                "children" => [
+                    [
+                        "name" => "Winter Snow",
+                        'description' => 'Disccusion about the frosty snow flakes.'
+                    ],
+                    [
+                        "name" => "Spring Trees",
+                        'description' => 'Disccusion about the blooming gardens.'
+                    ],
+                ],
+            ],
+        ], $array);
+    }
+
     public function seedSampleTree()
     {
         Model::unguard();
