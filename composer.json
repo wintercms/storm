@@ -44,10 +44,10 @@
         "nesbot/carbon": "^2.0",
         "nikic/php-parser": "^4.10",
         "scssphp/scssphp": "~1.0",
-        "symfony/console": "^6.4|^7.0",
+        "symfony/console": "^7.0",
         "symfony/process": "^7.1",
         "symfony/yaml": "^6.4|^7.0",
-        "twig/twig": "^3",
+        "twig/twig": "^3.14",
         "wikimedia/less.php": "~3.0",
         "wikimedia/minify": "~2.2",
         "winter/laravel-config-writer": "^1.0.1"
@@ -60,6 +60,7 @@
         "mockery/mockery": "^1.6|^2.0",
         "dms/phpunit-arraysubset-asserts": "^0.5",
         "orchestra/testbench": "^9.0",
+        "orchestra/testbench-core": "~7.51.0",
         "larastan/larastan": "^2.8.1"
     },
     "suggest": {
@@ -89,7 +90,7 @@
         }
     },
     "scripts": {
-        "test": "phpunit ./tests",
+        "test": "./vendor/bin/phpunit ./tests",
         "lint": "parallel-lint --exclude vendor .",
         "sniff": "phpcs --colors -nq --report=\"full\" --extensions=\"php\"",
         "analyze": "phpstan analyse --memory-limit=2G src"
