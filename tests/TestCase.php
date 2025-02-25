@@ -17,7 +17,7 @@ class TestCase extends TestbenchTestCase
      */
     protected function resolveApplication()
     {
-        return tap(new Application($this->getBasePath()), function ($app) {
+        return tap(new Application($this->applicationBasePath()), function ($app) {
             $app->bind(
                 \Winter\Storm\Foundation\Bootstrap\LoadConfiguration::class,
                 \Orchestra\Testbench\Bootstrap\LoadConfiguration::class
