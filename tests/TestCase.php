@@ -11,6 +11,16 @@ use Winter\Storm\Foundation\Application;
 class TestCase extends TestbenchTestCase
 {
     /**
+     * Resolve application implementation.
+     *
+     * @return \Illuminate\Foundation\Application
+     */
+    protected function resolveApplication()
+    {
+        return new Application(static::applicationBasePath());
+    }
+    
+    /**
      * Resolve application resolving callback.
      *
      * @param  \Illuminate\Foundation\Application  $app
