@@ -11,20 +11,19 @@ use Winter\Storm\Foundation\Application;
 class TestCase extends TestbenchTestCase
 {
     /**
-     * Resolve application implementation.
+     * Resolve application resolving callback.
      *
-     * @return \Winter\Storm\Foundation\Application
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return void
      */
-    protected function resolveApplication()
+    protected function resolveApplicationResolvingCallback($app): void
     {
-        return tap(new Application($this->getBasePath()), function ($app) {
-            $app->bind(
-                \Winter\Storm\Foundation\Bootstrap\LoadConfiguration::class,
-                \Orchestra\Testbench\Bootstrap\LoadConfiguration::class
-            );
+        $app->bind(
+            \Winter\Storm\Foundation\Bootstrap\LoadConfiguration::class,
+            \Orchestra\Testbench\Bootstrap\LoadConfiguration::class
+        );
 
-            PackageManifest::swap($app, $this);
-        });
+        PackageManifest::swap($app, $this);
     }
 
     protected static function callProtectedMethod($object, $name, $params = [])
