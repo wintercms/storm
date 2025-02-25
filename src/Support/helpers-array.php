@@ -328,10 +328,9 @@ if (!function_exists('array_shuffle')) {
      * Shuffle the given array and return the result.
      *
      * @param  array  $array
-     * @param  int|null  $seed
      * @return array
      */
-    function array_shuffle($array, $seed = null)
+    function array_shuffle($array)
     {
         return Arr::shuffle($array);
     }
