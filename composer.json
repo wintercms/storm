@@ -59,7 +59,8 @@
         "meyfa/phpunit-assert-gd": "^3.0.0",
         "dms/phpunit-arraysubset-asserts": "^0.5.0",
         "larastan/larastan": "^2.8.1",
-        "orchestra/testbench": "^7.1.0"
+        "orchestra/testbench": "^7.1.0",
+        "orchestra/testbench-core": "~7.51.0"
     },
     "suggest": {
         "ext-pdo_dblib": "Required to use MS SQL Server databases",
@@ -88,7 +89,7 @@
         }
     },
     "scripts": {
-        "test": "phpunit ./tests",
+        "test": "./vendor/bin/phpunit ./tests",
         "lint": "parallel-lint --exclude vendor .",
         "sniff": "phpcs --colors -nq --report=\"full\" --extensions=\"php\"",
         "analyze": "phpstan analyse --memory-limit=2G src"
