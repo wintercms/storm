@@ -13,7 +13,7 @@ class TestCase extends TestbenchTestCase
     /**
      * Resolve application implementation.
      *
-     * @return \Illuminate\Foundation\Application
+     * @return \Winter\Storm\Foundation\Application
      */
     protected function resolveApplication()
     {
