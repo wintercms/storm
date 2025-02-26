@@ -71,7 +71,7 @@ trait AttachOneOrMany
         if ($parentQuery->getQuery()->from == $query->getQuery()->from) {
             $query = $this->getRelationExistenceQueryForSelfJoin($query, $parentQuery, $columns);
         } else {
-            $grammar = $this->query->getGrammar();
+            $grammar = $query->getGrammar();
             $query->select($columns)->whereRaw(sprintf(
                 '%s = %s',
                 $grammar->wrap($this->getExistenceCompareKey()),
