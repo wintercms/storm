@@ -223,6 +223,24 @@ trait Validation
         return $this->saveInternal(['force' => true] + (array) $options);
     }
 
+    public function relationShipValidation() {
+        $relationShipsNames = array_keys($this->hasOne + $this->belongsTo + $this->hasMany + $this->belongsToMany);
+        foreach ($relationShipsNames as $rn) {
+            if ($this->isAttributeRequired($rn)) {
+                $validation = $this->rules[$rn];
+                $this->rules[$rn] = null;
+                if ($this->getKey() === null) {
+                    $c = $this->{$rn}()->withDeferred(post('_session_key'))->count();
+                } else {
+                    $c = $this->{$rn}()->count();
+                }
+                if ($c == 0) {
+                    $this->rules[$rn] = $validation;
+                }
+            }
+        }
+    }
+
     /**
      * Validate the model instance
      * @return bool
@@ -236,6 +254,8 @@ trait Validation
         $throwOnValidation = property_exists($this, 'throwOnValidation')
             ? $this->throwOnValidation
             : true;
+
+        $this->relationShipValidation();
 
         if ($this->fireModelEvent('validating') === false) {
             if ($throwOnValidation) {
