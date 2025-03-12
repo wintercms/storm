@@ -75,7 +75,7 @@ abstract class Command extends BaseCommand implements SignalableCommandInterface
         renderUsing($this->output->getOutput());
 
         try {
-            // Wizardy
+            // Calling the grandparent run() method, see: https://www.php.net/manual/en/language.oop5.inheritance.php#100005)
             return SymfonyCommand::run(
                 $this->input = $input, $this->output
             );
