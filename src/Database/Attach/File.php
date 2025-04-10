@@ -62,6 +62,11 @@ class File extends Model
     protected $guarded = [];
 
     /**
+     * @var string[] The attributes that should be cast to JSON
+     */
+    protected $jsonable = ['metadata'];
+
+    /**
      * @var string[] Known image extensions.
      */
     public static $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
@@ -558,7 +563,14 @@ class File extends Model
      */
     protected function getImageDimensions(): array|false
     {
-        return getimagesize($this->getLocalPath());
+        if (!empty($this->metadata['internal']['dimensions'])) {
+            return $this->metadata['internal']['dimensions'];
+        }
+
+        $this->metadata['internal']['dimensions'] = getimagesize($this->getLocalPath());
+        $this->save();
+
+        return $this->metadata['internal']['dimensions'];
     }
 
     /**
