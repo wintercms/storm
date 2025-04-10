@@ -30,11 +30,6 @@ class File extends Model
     use \Winter\Storm\Database\Traits\Sortable;
 
     /**
-     * The name of the storage disk used by this class.
-     */
-    public const DISK = 'local';
-
-    /**
      * @var string The table associated with the model.
      */
     protected $table = 'files';
@@ -115,7 +110,7 @@ class File extends Model
         $this->file_name = $uploadedFile->getClientOriginalName();
         $this->file_size = $uploadedFile->getSize();
         $this->content_type = $uploadedFile->getMimeType();
-        $this->disk_name = $this->getDiskName();
+        $this->disk_name = $this->generateFilenameForDisk();
 
         /*
          * getRealPath() can be empty for some environments (IIS)
@@ -140,7 +135,7 @@ class File extends Model
         $this->file_name = empty($filename) ? $file->getFilename() : $filename;
         $this->file_size = $file->getSize();
         $this->content_type = $file->getMimeType();
-        $this->disk_name = $this->getDiskName();
+        $this->disk_name = $this->generateFilenameForDisk();
 
         $this->putFile($file->getRealPath(), $this->disk_name);
 
@@ -166,7 +161,7 @@ class File extends Model
         }
 
         $this->file_size = $disk->size($filePath);
-        $this->disk_name = $this->getDiskName();
+        $this->disk_name = $this->generateFilenameForDisk();
 
         if (!$disk->copy($filePath, $this->getDiskPath())) {
             throw new ApplicationException(sprintf('Unable to copy `%s` to `%s`', $filePath, $this->getDiskPath()));
@@ -740,9 +735,9 @@ class File extends Model
     //
 
     /**
-     * Generates a disk name from the supplied file name.
+     * Generates a unique filename to use for storing the file on the disk
      */
-    protected function getDiskName(): string
+    protected function generateFilenameForDisk(): string
     {
         if ($this->disk_name !== null) {
             return $this->disk_name;
@@ -757,7 +752,7 @@ class File extends Model
 
         $name = str_replace('.', '', uniqid('', true));
 
-        return $this->disk_name = !empty($ext) ? $name.'.'.$ext : $name;
+        return !empty($ext) ? $name . '.' . $ext : $name;
     }
 
     /**
@@ -1002,11 +997,19 @@ class File extends Model
     }
 
     /**
+     * Returns the name of the storage disk the file is stored on
+     */
+    protected function getDiskName(): string
+    {
+        return 'local';
+    }
+
+    /**
      * Returns the storage disk the file is stored on
      */
     public function getDisk(): FilesystemAdapter
     {
-        return Storage::disk(static::DISK);
+        return Storage::disk($this->getDiskName());
     }
 
     /**
