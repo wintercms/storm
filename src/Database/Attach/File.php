@@ -24,6 +24,7 @@ use Winter\Storm\Support\Svg;
  * @property int $file_size The size of the file
  * @property string $content_type The MIME type of the file
  * @property string $disk_name The generated disk name of the file
+ * @property array $metadata Array for storing metadata about the file
  */
 class File extends Model
 {
