@@ -7,6 +7,7 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\File\File as FileObj;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Winter\Storm\Database\Model;
@@ -54,6 +55,7 @@ class File extends Model
         'attachment_type',
         'is_public',
         'sort_order',
+        'metadata',
         'data',
     ];
 
@@ -156,7 +158,7 @@ class File extends Model
         $disk = $this->getDisk();
 
         if (!$disk->exists($filePath)) {
-            throw new \InvalidArgumentException(sprintf('File `%s` was not found on the storage disk', $filePath));
+            throw new InvalidArgumentException(sprintf('File `%s` was not found on the storage disk', $filePath));
         }
 
         if (empty($this->file_name)) {
@@ -231,11 +233,11 @@ class File extends Model
     }
 
     //
-    // Attribute mutators
+    // Attribute accessors & mutators
     //
 
     /**
-     * Helper attribute for getPath.
+     * Accessor for $this->path
      */
     public function getPathAttribute(): string
     {
@@ -243,7 +245,7 @@ class File extends Model
     }
 
     /**
-     * Helper attribute for getExtension.
+     * Accessor for $this->extension
      */
     public function getExtensionAttribute(): string
     {
@@ -259,7 +261,7 @@ class File extends Model
     }
 
     /**
-     * Helper attribute for get image width.
+     * Accessor for $this->width
      *
      * Returns `null` if this file is not an image.
      */
@@ -275,7 +277,7 @@ class File extends Model
     }
 
     /**
-     * Helper attribute for get image height.
+     * Accessor for $this->height
      *
      * Returns `null` if this file is not an image.
      */
@@ -291,7 +293,7 @@ class File extends Model
     }
 
     /**
-     * Helper attribute for file size in human format.
+     * Accessor for $this->size, returns file size in human format.
      */
     public function getSizeAttribute(): string
     {
