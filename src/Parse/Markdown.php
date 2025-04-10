@@ -10,7 +10,6 @@ use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
 use League\CommonMark\Extension\FrontMatter\FrontMatterParser;
 use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
 use League\CommonMark\Extension\InlinesOnly\InlinesOnlyExtension;
-use League\CommonMark\Extension\Strikethrough\StrikethroughExtension;
 use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
 use League\CommonMark\Extension\TaskList\TaskListExtension;
@@ -19,6 +18,7 @@ use League\CommonMark\Parser\MarkdownParserInterface;
 use League\CommonMark\Renderer\DocumentRendererInterface;
 use League\CommonMark\Renderer\HtmlRenderer;
 use Winter\Storm\Parse\Markdown\CommonMarkCoreExtension;
+use Winter\Storm\Parse\Markdown\StrikethroughExtension;
 use Winter\Storm\Support\Facades\Event;
 
 /**

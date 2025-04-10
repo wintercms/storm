@@ -92,6 +92,16 @@ class ArraySourceTest extends DbTestCase
         $this->assertEquals(18, $records->last()->states()->get()->last()->id);
         $this->assertEquals('Newfoundland and Labrador', $records->last()->states()->get()->last()->name);
     }
+
+    public function testGeneratorRecords(): void
+    {
+        $records = Random::get();
+
+        $this->assertEquals(120, $records->count());
+
+        $record = Random::find(10);
+        $this->assertEquals('Record 10', $record->name);
+    }
 }
 
 class ArrayModel extends \Winter\Storm\Database\Model
@@ -125,7 +135,10 @@ class ArrayModel extends \Winter\Storm\Database\Model
         ],
     ];
 
-    public $arraySchema = [
+    public $recordSchema = [
+        'id' => 'integer',
+        'name' => 'string',
+        'role' => 'string',
         'start_year' => 'integer',
     ];
 
@@ -246,5 +259,25 @@ class State extends \Winter\Storm\Database\Model
     protected function arraySourceGetDbDir(): string|false
     {
         return dirname(dirname(__DIR__)) . '/tmp';
+    }
+}
+
+class Random extends \Winter\Storm\Database\Model
+{
+    use \Winter\Storm\Database\Traits\ArraySource;
+
+    public $schema = [
+        'name' => 'string',
+        'random_int' => 'integer',
+    ];
+
+    public function getRecords()
+    {
+        for ($i = 1; $i <= 120; ++$i) {
+            yield [
+                'name' => 'Record ' . $i,
+                'random_int' => random_int(1, 120),
+            ];
+        }
     }
 }

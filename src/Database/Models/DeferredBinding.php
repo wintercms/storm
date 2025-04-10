@@ -36,6 +36,10 @@ class DeferredBinding extends Model
      */
     protected $nullable = ['pivot_data'];
 
+    public $morphTo = [
+        'slave' => [],
+    ];
+
     /**
      * Prevents duplicates and conflicting binds.
      */

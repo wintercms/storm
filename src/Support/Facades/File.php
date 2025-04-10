@@ -4,7 +4,7 @@ use Winter\Storm\Support\Facade;
 
 /**
  * @method static bool exists(string $path)
- * @method static string get(string $path, bool $lock)
+ * @method static string get(string $path, bool $lock = false)
  * @method static string sharedGet(string $path)
  * @method static mixed getRequire(string $path)
  * @method static mixed requireOnce(string $file)
@@ -53,6 +53,8 @@ use Winter\Storm\Support\Facade;
  * @method static int|float|null getFilePermissions()
  * @method static int|float|null getFolderPermissions()
  * @method static bool fileNameMatch(string $fileName, string $pattern)
+ * @method static bool copyBetweenDisks(string|FilesystemAdapter $sourceDisk, string|FilesystemAdapter $destinationDisk, string $filePath, ?string $targetPath = null)
+ * @method static bool moveBetweenDisks(string|FilesystemAdapter $sourceDisk, string|FilesystemAdapter $destinationDisk, string $filePath, ?string $targetPath = null)
  *
  * @see \Winter\Storm\Filesystem\Filesystem
  */

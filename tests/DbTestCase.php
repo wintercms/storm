@@ -1,43 +1,98 @@
 <?php
 
-use Illuminate\Support\Facades\App;
+namespace Winter\Storm\Tests;
+
+use ReflectionClass;
+use Illuminate\Database\Schema\Builder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Winter\Storm\Database\Connectors\ConnectionFactory;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Pivot;
 use Winter\Storm\Events\Dispatcher;
 
+/**
+ * Base test case class for test cases involving the database.
+ *
+ * This class sets up an in-memory SQLite database for testing and auto-migrates applicable models.
+ *
+ * @author Alexey Bobkov, Samuel Georges (original version)
+ * @author Winter CMS Maintainers (updated)
+ * @copyright Winter CMS
+ */
 class DbTestCase extends TestCase
 {
+    use RefreshDatabase;
+
+    /**
+     * @var string[] Stores models that have been automatically migrated.
+     */
+    protected array $migratedModels = [];
+
     public function setUp(): void
     {
         parent::setUp();
-
-        $config = [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-        ];
-        App::make(ConnectionFactory::class)->make($config, 'testing');
-        DB::setDefaultConnection('testing');
-
-        Model::setEventDispatcher(new Dispatcher());
+        Model::setEventDispatcher($this->modelDispatcher());
     }
 
     public function tearDown(): void
     {
         $this->flushModelEventListeners();
+        $this->rollbackModels();
 
         parent::tearDown();
     }
 
     /**
-     * Returns an instance of the schema builder for the test database.
-     *
-     * @return \Illuminate\Database\Schema\Builder
+     * Creates a dispatcher for the model events.
      */
-    protected function getBuilder()
+    protected function modelDispatcher(): Dispatcher
+    {
+        $dispatcher = new Dispatcher();
+
+        $callback = function ($eventName, $params) {
+            if (!str_starts_with($eventName, 'eloquent.booted')) {
+                return;
+            }
+
+            $model = $params[0];
+
+            if (!in_array('Winter\Storm\Tests\Database\Fixtures\MigratesForTesting', class_uses_recursive($model))) {
+                return;
+            }
+
+            if ($model::$migrated === false) {
+                $model::migrateUp($this->getBuilder());
+                $model::$migrated = true;
+                $this->migratedModels[] = $model;
+            }
+        };
+
+        $dispatcher->listen('*', $callback);
+
+        return $dispatcher;
+    }
+
+    /**
+     * Returns an instance of the schema builder for the test database.
+     */
+    protected function getBuilder(): Builder
     {
         return DB::connection()->getSchemaBuilder();
+    }
+
+    /**
+     * Rolls back all migrated models.
+     *
+     * This should be fired in the teardown process.
+     */
+    protected function rollbackModels(): void
+    {
+        foreach ($this->migratedModels as $model) {
+            $model::migrateDown($this->getBuilder());
+            $model::$migrated = false;
+        }
+
+        $this->migratedModels = [];
     }
 
     /**
@@ -68,5 +123,10 @@ class DbTestCase extends TestCase
         }
 
         Model::flushEventListeners();
+    }
+
+    protected function defineDatabaseMigrations()
+    {
+        $this->loadMigrationsFrom(dirname(__DIR__) . '/src/Database/Migrations');
     }
 }

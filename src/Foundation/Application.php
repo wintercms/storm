@@ -6,15 +6,14 @@ use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
-use Illuminate\Support\Collection;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
 use Winter\Storm\Foundation\ProviderRepository;
 use Winter\Storm\Foundation\Providers\ExecutionContextProvider;
 use Winter\Storm\Foundation\Providers\LogServiceProvider;
-use Winter\Storm\Foundation\Providers\MakerServiceProvider;
 use Winter\Storm\Router\RoutingServiceProvider;
+use Winter\Storm\Support\Collection;
 use Winter\Storm\Support\Str;
 use Winter\Storm\Support\Facades\Config;
 
@@ -109,8 +108,6 @@ class Application extends ApplicationBase
         $this->register(new LogServiceProvider($this));
 
         $this->register(new RoutingServiceProvider($this));
-
-        $this->register(new MakerServiceProvider($this));
 
         $this->register(new ExecutionContextProvider($this));
 
@@ -282,26 +279,22 @@ class Application extends ApplicationBase
     }
 
     /**
-     * Resolve the given type from the container.
+     * Normalize a relative or absolute path to a cache file.
      *
-     * (Overriding Container::make)
-     *
-     * @param  string  $abstract
-     * @return mixed
+     * @param  string  $key
+     * @param  string  $default
+     * @return string
      */
-    public function make($abstract, array $parameters = [])
+    protected function normalizeCachePath($key, $default)
     {
-        $abstract = $this->getAlias($abstract);
+        $path = parent::normalizeCachePath($key, $default);
 
-        if (isset($this->deferredServices[$abstract])) {
-            $this->loadDeferredProvider($abstract);
+        $directory = pathinfo($path, PATHINFO_DIRNAME);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
         }
 
-        if ($parameters) {
-            return $this->make(Maker::class)->make($abstract, $parameters);
-        }
-
-        return parent::make($abstract);
+        return $path;
     }
 
     /**
@@ -312,7 +305,7 @@ class Application extends ApplicationBase
      */
     public function before($callback)
     {
-        $this['router']->before($callback);
+        $this->make('router')->before($callback);
     }
 
     /**
@@ -323,7 +316,7 @@ class Application extends ApplicationBase
      */
     public function after($callback)
     {
-        $this['router']->after($callback);
+        $this->make('router')->after($callback);
     }
 
     /**
@@ -334,7 +327,7 @@ class Application extends ApplicationBase
      */
     public function error(Closure $callback)
     {
-        $this->make('Illuminate\Contracts\Debug\ExceptionHandler')->error($callback);
+        $this->make('Illuminate\Contracts\Debug\ExceptionHandler')->error($callback); // @phpstan-ignore-line
     }
 
     /**
@@ -362,18 +355,24 @@ class Application extends ApplicationBase
 
     /**
      * Returns true if a database connection is present.
-     * @return boolean
      */
-    public function hasDatabase()
+    public function hasDatabase(): bool
     {
         try {
             $this['db.connection']->getPdo();
-        }
-        catch (Throwable $ex) {
+        } catch (Throwable $ex) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the provided table is present on the default database connection.
+     */
+    public function hasDatabaseTable(string $table): bool
+    {
+        return $this->hasDatabase() && $this['db.connection']->getSchemaBuilder()->hasTable($table);
     }
 
     /**

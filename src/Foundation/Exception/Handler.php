@@ -54,7 +54,9 @@ class Handler extends ExceptionHandler
          *         }
          *     });
          */
-        if (app()->make('events')->dispatch('exception.beforeReport', [$throwable], true) === false) {
+        /** @var \Winter\Storm\Events\Dispatcher */
+        $events = app()->make('events');
+        if ($events->dispatch('exception.beforeReport', [$throwable], true) === false) {
             return;
         }
 
@@ -63,7 +65,7 @@ class Handler extends ExceptionHandler
         }
 
         if (class_exists('Log')) {
-            Log::error($throwable);
+            Log::error($throwable, ['skipDatabaseLog' => true]);
         }
 
         /**

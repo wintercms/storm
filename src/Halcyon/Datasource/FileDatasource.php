@@ -342,10 +342,6 @@ class FileDatasource extends Datasource
             ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->basePath))
             : [];
 
-        if (!is_array($it)) {
-            $it->setMaxDepth($this->maxDepth + 1);
-        }
-
         foreach ($it as $file) {
             if ($file->isDir()) {
                 continue;

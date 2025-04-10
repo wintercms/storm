@@ -10,16 +10,19 @@ use Symfony\Component\HttpFoundation\File\File as FileObj;
  * Usage:
  *      Resizer::open(mixed $file)
  *          ->resize(int $width , int $height, string 'exact, portrait, landscape, auto, fit or crop')
- *          ->save(string 'path/to/file.jpg', int $quality);
+ *          ->setOptions(['quality' => int $quality])
+ *          ->save(string 'path/to/file.jpg');
  *
  *      // Resize and save an image.
  *      Resizer::open(Input::file('field_name'))
  *          ->resize(800, 600, 'crop')
- *          ->save('path/to/file.jpg', 100);
+ *          ->setOptions(['quality' => 100])
+ *          ->save('path/to/file.jpg');
  *
  *      // Recompress an image.
  *      Resizer::open('path/to/image.jpg')
- *          ->save('path/to/new_image.jpg', 60);
+ *          ->setOptions(['quality' => 60])
+ *          ->save('path/to/new_image.jpg');
  *
  * @author Alexey Bobkov, Samuel Georges
  */
@@ -132,7 +135,7 @@ class Resizer
                 imagefill($img, 0, 0, $alphaIndex);
                 imagecolortransparent($img, $alphaIndex);
             }
-        } elseif ($this->mime === 'image/png' || $this->mime === 'image/webp') {
+        } elseif ($this->mime === 'image/png' || $this->mime === 'image/webp' || $this->mime === 'image/avif') {
             imagealphablending($img, false);
             imagesavealpha($img, true);
         }
@@ -492,10 +495,20 @@ class Resizer
                 }
                 break;
 
+            case 'avif':
+                // Check AVIF support is enabled
+                // The IMG_AVIF constant is available starting from PHP 8.1.0. It will need to be checked until the minimum system requirements are bumped.
+                if (defined('IMG_AVIF') && (imagetypes() & IMG_AVIF)) {
+                    imageavif($image, $savePath, $imageQuality);
+                } else {
+                    throw new Exception('AVIF support is not enabled.');
+                }
+                break;
+
             default:
                 throw new Exception(
                     sprintf(
-                        'Invalid image type: %s. Accepted types: jpg, gif, png, webp.',
+                        'Invalid image type: %s. Accepted types: jpg, gif, png, webp, avif.',
                         $extension
                     )
                 );
@@ -530,10 +543,14 @@ class Resizer
                 $img = @imagecreatefromwebp($filePath);
                 $this->retainImageTransparency($img);
                 break;
+            case 'image/avif':
+                $img = @imagecreatefromavif($filePath);
+                $this->retainImageTransparency($img);
+                break;
             default:
                 throw new Exception(
                     sprintf(
-                        'Invalid mime type: %s. Accepted types: image/jpeg, image/gif, image/png, image/webp.',
+                        'Invalid mime type: %s. Accepted types: image/jpeg, image/gif, image/png, image/webp, image/avif.',
                         $this->mime
                     )
                 );

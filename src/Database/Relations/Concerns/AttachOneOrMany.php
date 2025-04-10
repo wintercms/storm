@@ -12,14 +12,14 @@ trait AttachOneOrMany
     use DeferOneOrMany;
 
     /**
-     * @var string The "name" of the relationship.
-     */
-    protected $relationName;
-
-    /**
      * @var ?boolean Default value for file public or protected state.
      */
     protected $public;
+
+    /**
+     * The field name (relation) to associate this attachment with.
+     */
+    protected string $fieldName;
 
     /**
      * Determines if the file should be flagged "public" or not.
@@ -44,10 +44,18 @@ trait AttachOneOrMany
 
             $this->query->where($this->foreignKey, '=', $this->getParentKey());
 
-            $this->query->where('field', $this->relationName);
+            $this->query->where('field', $this->getFieldName());
 
             $this->query->whereNotNull($this->foreignKey);
         }
+    }
+
+    /**
+     * Get the field name (relation) to associate this attachment with.
+     */
+    public function getFieldName()
+    {
+        return $this->fieldName;
     }
 
     /**
@@ -62,16 +70,17 @@ trait AttachOneOrMany
     {
         if ($parentQuery->getQuery()->from == $query->getQuery()->from) {
             $query = $this->getRelationExistenceQueryForSelfJoin($query, $parentQuery, $columns);
+        } else {
+            $grammar = $query->getGrammar();
+            $query->select($columns)->whereRaw(sprintf(
+                '%s = %s',
+                $grammar->wrap($this->getExistenceCompareKey()),
+                DbDongle::cast($grammar->wrap($this->getQualifiedParentKeyName()), 'TEXT')
+            ));
         }
-        else {
-            $key = DbDongle::cast($this->getQualifiedParentKeyName(), 'TEXT');
 
-            $query = $query->select($columns)->whereColumn($this->getExistenceCompareKey(), '=', $key);
-        }
-
-        $query = $query->where($this->morphType, $this->morphClass);
-
-        return $query->where('field', $this->relationName);
+        return $query->where($this->morphType, $this->morphClass)
+            ->where('field', $this->fieldName);
     }
 
     /**
@@ -84,15 +93,19 @@ trait AttachOneOrMany
      */
     public function getRelationExistenceQueryForSelfRelation(Builder $query, Builder $parentQuery, $columns = ['*'])
     {
+        $hash = $this->getRelationCountHash();
+        $grammar = $query->getGrammar();
+        
         $query->select($columns)->from(
-            $query->getModel()->getTable().' as '.$hash = $this->getRelationCountHash()
+            $query->getModel()->getTable() . ' as ' . $hash
         );
-
         $query->getModel()->setTable($hash);
 
-        $key = DbDongle::cast($this->getQualifiedParentKeyName(), 'TEXT');
-
-        return $query->whereColumn($hash.'.'.$this->getForeignKeyName(), '=', $key);
+        return $query->whereRaw(sprintf(
+            '%s = %s',
+            $grammar->wrap($hash . '.' . $this->getForeignKeyName()),
+            DbDongle::cast($grammar->wrap($this->getQualifiedParentKeyName()), 'TEXT')
+        ));
     }
 
     /**
@@ -105,7 +118,7 @@ trait AttachOneOrMany
     {
         parent::addEagerConstraints($models);
 
-        $this->query->where('field', $this->relationName);
+        $this->query->where('field', $this->fieldName);
     }
 
     /**
@@ -122,7 +135,7 @@ trait AttachOneOrMany
             $model->setAttribute('is_public', $this->isPublic());
         }
 
-        $model->setAttribute('field', $this->relationName);
+        $model->setAttribute('field', $this->fieldName);
 
         if ($sessionKey === null) {
             return parent::save($model);
@@ -146,7 +159,7 @@ trait AttachOneOrMany
             $attributes = array_merge(['is_public' => $this->isPublic()], $attributes);
         }
 
-        $attributes['field'] = $this->relationName;
+        $attributes['field'] = $this->fieldName;
 
         $model = parent::create($attributes);
 
@@ -189,7 +202,7 @@ trait AttachOneOrMany
 
             $model->setAttribute($this->getForeignKeyName(), $this->parent->getKey());
             $model->setAttribute($this->getMorphType(), $this->morphClass);
-            $model->setAttribute('field', $this->relationName);
+            $model->setAttribute('field', $this->fieldName);
             $model->save();
 
             /*

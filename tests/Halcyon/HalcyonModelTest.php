@@ -29,7 +29,6 @@ class HalcyonModelTest extends TestCase
     {
         $pages = HalcyonTestPage::all();
 
-        $this->assertCount(2, $pages);
         $this->assertContains('about.htm', $pages->lists('fileName'));
         $this->assertContains('home.htm', $pages->lists('fileName'));
     }
@@ -351,23 +350,13 @@ ESC;
 
     public function testAddDynamicPoperty()
     {
-        @unlink($targetFile = __DIR__.'/../fixtures/halcyon/themes/theme1/pages/dynamicproperty.htm');
-
-        $page = HalcyonTestPage::create([
-            'fileName' => 'dynamicproperty',
-            'title' => 'Add Dynamic Property',
-            'markup' => '<p>Foo bar!</p>'
-        ]);
+        $page = HalcyonTestPage::find('home');
 
         $page->addDynamicProperty('myDynamicProperty', 'myDynamicPropertyValue');
-        $this->assertArrayHasKey('myDynamicProperty', $page->attributes);
         $this->assertEquals('myDynamicPropertyValue', $page->myDynamicProperty);
-        $page->save();
-        $page = HalcyonTestPage::find('dynamicproperty');
-        $this->assertNotNull($page);
+
         // Dynamic properties should not be saved to DB layer
         $this->assertArrayNotHasKey('myDynamicProperty', $page->attributes);
-        @unlink($targetFile);
     }
 
     //

@@ -2,6 +2,8 @@
 
 use Exception;
 
+use Winter\Sorm\Database\Model;
+
 /**
  * HasSortableRelations trait
  *
@@ -50,24 +52,23 @@ trait HasSortableRelations
             if (array_key_exists($relationName, $sortableRelations)) {
                 $column = $this->getRelationSortOrderColumn($relationName);
 
-                $this->updateRelationOrder($relationName, $relatedModel->id, $column);
+                $this->updateRelationOrder($relationName, $relatedModel->getKey(), $column);
             }
         });
 
         foreach ($sortableRelations as $relationName => $column) {
-            $relation = $this->$relationName();
-            if (method_exists($relation, 'updateExistingPivot')) {
-                // Make sure all pivot-based defined sortable relations load the sort_order column as pivot data.
-                $definition = $this->getRelationDefinition($relationName);
-                $pivot = array_wrap(array_get($definition, 'pivot', []));
+            $relationType = $this->getRelationType($relationName);
+            if (!in_array($relationType, ['belongsToMany', 'morphToMany'])) {
+                continue;
+            }
+            $definition = $this->getRelationDefinition($relationName);
+            $pivot = array_wrap(array_get($definition, 'pivot', []));
 
-                if (!in_array($column, $pivot)) {
-                    $pivot[] = $column;
-                    $definition['pivot'] = $pivot;
-
-                    $relationType = $this->getRelationType($relationName);
-                    $this->$relationType[$relationName] = $definition;
-                }
+            if (!in_array($column, $pivot)) {
+                // Make sure the sort order column is available as pivot data.
+                $pivot[] = $column;
+                $definition['pivot'] = $pivot;
+                $this->$relationType[$relationName] = $definition;
             }
         }
     }
@@ -101,7 +102,7 @@ trait HasSortableRelations
     /**
      * Update relation record sort_order.
      */
-    protected function updateRelationOrder(string $relationName, int $id, string $column, int $order = 0) : void
+    protected function updateRelationOrder(string $relationName, string|int|Model $id, string $column, int $order = 0) : void
     {
         $relation = $this->{$relationName}();
 
@@ -111,7 +112,11 @@ trait HasSortableRelations
         if (method_exists($relation, 'updateExistingPivot')) {
             $relation->updateExistingPivot($id, [ $column => (int)$order ]);
         } else {
-            $record = $relation->find($id);
+            if ($id instanceof Model) {
+                $record = $id;
+            } else {
+                $record = $relation->getRelated()->find($id);
+            }
             $record->{$column} = (int)$order;
             $record->save();
         }

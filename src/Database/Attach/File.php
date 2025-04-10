@@ -13,6 +13,7 @@ use Winter\Storm\Database\Model;
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Network\Http;
 use Winter\Storm\Support\Facades\File as FileHelper;
+use Winter\Storm\Support\Svg;
 
 /**
  * File attachment model
@@ -46,7 +47,7 @@ class File extends Model
     ];
 
     /**
-     * @var string[] The attributes that are mass assignable.
+     * @var array<int, string> The attributes that are mass assignable.
      */
     protected $fillable = [
         'file_name',
@@ -68,7 +69,7 @@ class File extends Model
     /**
      * @var string[] Known image extensions.
      */
-    public static $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    public static $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
 
     /**
      * @var array<int, string> Hidden fields from array/json access
@@ -76,7 +77,7 @@ class File extends Model
     protected $hidden = ['attachment_type', 'attachment_id', 'is_public'];
 
     /**
-     * @var array Add fields to array/json access
+     * @var array<int, string> Add fields to array/json access
      */
     protected $appends = ['path', 'extension'];
 
@@ -97,6 +98,7 @@ class File extends Model
         'jpg'  => 'image/jpeg',
         'jpeg' => 'image/jpeg',
         'webp' => 'image/webp',
+        'avif' => 'image/avif',
         'pdf'  => 'application/pdf',
         'svg'  => 'image/svg+xml',
     ];
@@ -122,7 +124,9 @@ class File extends Model
             ? $uploadedFile->getPath() . DIRECTORY_SEPARATOR . $uploadedFile->getFileName()
             : $uploadedFile->getRealPath();
 
-        $this->putFile($realPath, $this->disk_name);
+        if (!$this->putFile($realPath, $this->disk_name)) {
+            throw new ApplicationException('The file failed to be stored');
+        }
 
         return $this;
     }
@@ -777,17 +781,24 @@ class File extends Model
             $destinationFileName = $this->disk_name;
         }
 
-        $destinationPath = $this->getStorageDirectory() . $this->getPartitionDirectory();
+        $destinationFolder = $this->getStorageDirectory() . $this->getPartitionDirectory();
+        $destinationPath = $destinationFolder . $destinationFileName;
+
+        // Filter SVG files
+        if (pathinfo($destinationPath, PATHINFO_EXTENSION) === 'svg') {
+            file_put_contents($sourcePath, Svg::extract($sourcePath));
+        }
 
         if (!$this->isLocalStorage()) {
-            return $this->copyLocalToStorage($sourcePath, $destinationPath . $destinationFileName);
+            return $this->copyLocalToStorage($sourcePath, $destinationPath);
         }
 
         /*
          * Using local storage, tack on the root path and work locally
          * this will ensure the correct permissions are used.
          */
-        $destinationPath = $this->getLocalRootPath() . '/' . $destinationPath;
+        $destinationFolder = $this->getLocalRootPath() . '/' . $destinationFolder;
+        $destinationPath = $destinationFolder . $destinationFileName;
 
         /*
          * Verify the directory exists, if not try to create it. If creation fails
@@ -795,13 +806,13 @@ class File extends Model
          * otherwise trigger the error.
          */
         if (
-            !FileHelper::isDirectory($destinationPath) &&
-            !FileHelper::makeDirectory($destinationPath, 0777, true, true)
+            !FileHelper::isDirectory($destinationFolder) &&
+            !FileHelper::makeDirectory($destinationFolder, 0777, true, true)
         ) {
             trigger_error(error_get_last()['message'], E_USER_WARNING);
         }
 
-        return FileHelper::copy($sourcePath, $destinationPath . $destinationFileName);
+        return FileHelper::copy($sourcePath, $destinationPath);
     }
 
     /**
@@ -933,7 +944,11 @@ class File extends Model
      */
     protected function copyLocalToStorage($localPath, $storagePath)
     {
-        return $this->getDisk()->put($storagePath, FileHelper::get($localPath), $this->isPublic() ? 'public' : null);
+        return $this->getDisk()->put(
+            $storagePath,
+            FileHelper::get($localPath),
+            $this->isPublic() ? ($this->getDisk()->getConfig()['visibility'] ?? 'public') : null
+        );
     }
 
     //
