@@ -65,10 +65,10 @@ class BelongsToMany extends BelongsToManyBase implements RelationInterface
             return;
         }
 
-        // Convert models to keys and check if pivot data exists
+        // if pivot data doesn't exists, Convert models to keys , else convert models to nested arrays with the keys as the indexes (pivot of relation needs to use Winter\Storm\Database\Pivot)
         if ($value instanceof Model) {
-            if ($value->pivot instanceof Pivot) {
-                $value = [$value->getKey() => $value->pivot->toArray()];
+            if ($value->{$this->getPivotAccessor()} instanceof Pivot) {
+                $value = [$value->getKey() => $value->{$this->getPivotAccessor()}->toArray()];
             } else {
                 $value = $value->getKey();
             }
@@ -76,10 +76,10 @@ class BelongsToMany extends BelongsToManyBase implements RelationInterface
             $newValue = [];
             foreach ($value as $_key => $_value) {
                 if ($_value instanceof Model) {
-                    if ($_value->pivot instanceof Pivot) {
-                        $newValue[$_value->getKey()] = $_value->pivot->toArray();
+                    if ($_value->{$this->getPivotAccessor()} instanceof Pivot) {
+                        $newValue[$_value->getKey()] = $_value->{$this->getPivotAccessor()}->toArray();
                     } else {
-                        $newValue[$_key] = $_value->getKey();
+                        $newValue[] = $_value->getKey();
                     }
                 }
             }
@@ -93,14 +93,18 @@ class BelongsToMany extends BelongsToManyBase implements RelationInterface
             $value = [$value];
         }
 
-        //Check if value has nested arrays (pivot data)
-        $keys = $value;
-        $hasPivot = false;
+        //checks if $value has nested arrays(pivot data) and regenerates the keys in a basic array format
+        $keys = [];
         foreach ($value as $_key => $_value) {
             if (is_array($_value)) {
-                $keys[$_key] = $_key;
-                $hasPivot = true;
+                $keys[] = $_key;
             }
+        }
+        if (count($keys) < 1) {
+            $keys = $value;
+            $hasPivot = false;
+        } else {
+            $hasPivot = true;
         }
 
         // Setting the relationship
@@ -109,11 +113,11 @@ class BelongsToMany extends BelongsToManyBase implements RelationInterface
             : $relationModel->whereIn($relationModel->getKeyName(), $keys)->get();
 
 
-        // Associate in memory immediately with pivot data (pivot of relation needs to use Winter\Storm\Database\Pivot)
+        // If avaliable, associate the pivot relation(s) in memory immediately (pivot of relation needs to use Winter\Storm\Database\Pivot)
         if ($hasPivot) {
             foreach ($relationCollection as  $_relationModel) {
-                if (isset($value[$_relationModel->id])) {
-                    $_relationModel->setRelation('pivot', $this->newPivot($value[$_relationModel->id]));
+                if (isset($value[$_relationModel->getKey()])) {
+                    $_relationModel->setRelation($this->getPivotAccessor(), $this->newPivot($value[$_relationModel->getKey()]));
                 }
             }
         }
