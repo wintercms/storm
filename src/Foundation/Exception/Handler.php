@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Winter\Storm\Exception\AjaxException;
+use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Exception\SystemException;
 
 class Handler extends ExceptionHandler
 {
@@ -118,17 +120,13 @@ class Handler extends ExceptionHandler
     {
         if ($throwable instanceof HttpExceptionInterface) {
             $code = $throwable->getStatusCode();
-        }
-        elseif ($throwable instanceof AjaxException) {
+        } elseif ($throwable instanceof AjaxException) {
             $code = 406;
-        }
-        elseif ($throwable instanceof SystemException && $throwable->getCode() !== 0) {
+        } elseif ($throwable instanceof SystemException && $throwable->getCode() !== 0) {
             $code = $throwable->getCode();
-        }
-        elseif ($throwable instanceof ApplicationException && $throwable->getCode() !== 0) {
+        } elseif ($throwable instanceof ApplicationException && $throwable->getCode() !== 0) {
             $code = $throwable->getCode();
-        }
-        else {
+        } else {
             $code = 500;
         }
 
