@@ -122,6 +122,12 @@ class Handler extends ExceptionHandler
         elseif ($throwable instanceof AjaxException) {
             $code = 406;
         }
+        elseif ($throwable instanceof SystemException && $throwable->getCode() !== 0) {
+            $code = $throwable->getCode();
+        }
+        elseif ($throwable instanceof ApplicationException && $throwable->getCode() !== 0) {
+            $code = $throwable->getCode();
+        }
         else {
             $code = 500;
         }
