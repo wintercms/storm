@@ -637,7 +637,7 @@ class ModelTest extends DbTestCase
         $this->assertEquals('2', $modelMiddleRow->value);
     }
 
-    public function testHasManyThroughSoftDelete()
+    public function testHasXThroughSoftDelete()
     {
         $this->getBuilder()->create('test_model1', function ($table) {
             $table->increments('id');
@@ -673,15 +673,18 @@ class ModelTest extends DbTestCase
             'name' => 'Test',
         ]);
 
-        $rowResult = TestModel1::with(['test_model2'])->first();
+        $rowResult = TestModel1::with(['test_model2', 'test_model2_one'])->first();
+
         $this->assertEquals(1, $rowResult->test_model2->count());
+        $this->assertNotEquals(null, $rowResult->test_model2_one);
 
         $modelMiddleRow->delete();
-        Db::flushDuplicateCache();
 
-        $rowResult = TestModel1::with(['test_model2'])->first();
-        
+        Db::flushDuplicateCache();
+        $rowResult = TestModel1::with(['test_model2', 'test_model2_one'])->first();
+
         $this->assertEquals(0, $rowResult->test_model2->count());
+        $this->assertEquals(null, $rowResult->test_model2_one);
     }
 
     public function testNicerEventOnlyBoundOnce()
@@ -770,6 +773,15 @@ class TestModel1 extends Model
 
     public $hasManyThrough = [
         'test_model2' => [
+            TestModel2::class,
+            'key'        => 'model1_id',
+            'through'    => TestModelMiddleSoftDelete::class,
+            'throughKey' => 'model_middle_id',
+            'otherKey'   => 'id',
+        ],
+    ];
+    public $hasOneThrough = [
+        'test_model2_one' => [
             TestModel2::class,
             'key'        => 'model1_id',
             'through'    => TestModelMiddleSoftDelete::class,
