@@ -19,7 +19,7 @@ trait SelectConcatenations
     {
         $select = parent::compileColumns($query, $columns);
 
-        if (count($query->concats)) {
+        if (property_exists($query, 'concats') && is_array($query->concats) && count($query->concats)) {
             $select .= $this->compileConcats($query);
         }
 
