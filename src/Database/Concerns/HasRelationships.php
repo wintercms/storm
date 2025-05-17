@@ -440,7 +440,7 @@ trait HasRelationships
             case 'belongsToMany':
                 $relation = $this->belongsToMany(
                     $relatedClass,
-                    $definition['table'] ?? null,
+                    $definition['table'] ?? $definition['pivotModel'] ?? null,
                     $definition['key'] ?? null,
                     $definition['otherKey'] ?? null,
                     $definition['parentKey'] ?? null,
