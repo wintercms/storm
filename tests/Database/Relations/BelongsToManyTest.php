@@ -371,7 +371,7 @@ class BelongsToManyTest extends DbTestCase
         $this->assertEquals([1, 2], $author->executiveAuthors()->get()->lists('id'));
     }
 
-    function testTableDefaultsToCustomPivotTable()
+    public function testTableDefaultsToCustomPivotTable()
     {
         $model = new TestModel();
         $relation = $model->{'dependencies'}();
