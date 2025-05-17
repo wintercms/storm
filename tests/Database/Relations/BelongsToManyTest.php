@@ -3,6 +3,7 @@
 namespace Winter\Storm\Tests\Database\Relations;
 
 use Winter\Storm\Database\Model;
+use Winter\Storm\Database\Pivot;
 use Winter\Storm\Support\Facades\DB;
 use Winter\Storm\Tests\Database\Fixtures\Category;
 use Winter\Storm\Tests\Database\Fixtures\Post;
@@ -369,4 +370,27 @@ class BelongsToManyTest extends DbTestCase
         $this->assertEquals([1, 2], $author->executiveAuthors()->lists('id'));
         $this->assertEquals([1, 2], $author->executiveAuthors()->get()->lists('id'));
     }
+
+    function testTableDefaultsToCustomPivotTable()
+    {
+        $model = new TestModel();
+        $relation = $model->{'dependencies'}();
+
+        $this->assertEquals('custom_pivot_table', $relation->getTable());
+    }
+}
+
+class TestModel extends Model
+{
+    public $belongsToMany = [
+        'dependencies' => [
+            Model::class,
+            'pivotModel' => TestCustomPivotModel::class,
+        ],
+    ];
+}
+
+class TestCustomPivotModel extends Pivot
+{
+    public $table = 'custom_pivot_table';
 }
