@@ -374,7 +374,25 @@ class BelongsToManyTest extends DbTestCase
     public function testTableDefaultsToCustomPivotTable()
     {
         $model = new TestModel();
-        $relation = $model->{'dependencies'}();
+        $model->addBelongsToManyRelation('pivot_with_table', [
+            Model::class,
+            'pivotModel' => CustomPivotWithTable::class,
+        ]);
+
+        $relation = $model->{'pivot_with_table'}();
+
+        $this->assertEquals('custom_pivot_table', $relation->getTable());
+    }
+
+    public function testTableDefaultsToCustomPivotTableWithoutTable()
+    {
+        $model = new TestModel();
+        $model->addBelongsToManyRelation('pivot_without_table', [
+            Model::class,
+            'pivotModel' => CustomPivotWithoutTable::class,
+        ]);
+
+        $relation = $model->{'pivot_without_table'}();
 
         $this->assertEquals('custom_pivot_table', $relation->getTable());
     }
@@ -390,7 +408,11 @@ class TestModel extends Model
     ];
 }
 
-class TestCustomPivotModel extends Pivot
+class CustomPivotWithTable extends Pivot
 {
     public $table = 'custom_pivot_table';
+}
+
+class CustomPivotWithoutTable extends Pivot
+{
 }
