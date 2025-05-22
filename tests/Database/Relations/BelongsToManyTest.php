@@ -379,7 +379,7 @@ class BelongsToManyTest extends DbTestCase
             'pivotModel' => CustomPivotWithTable::class,
         ]);
 
-        $relation = $model->{'pivot_with_table'}();
+        $relation = $model->pivot_with_table();
 
         $this->assertEquals('custom_pivot_table', $relation->getTable());
     }
@@ -392,20 +392,14 @@ class BelongsToManyTest extends DbTestCase
             'pivotModel' => CustomPivotWithoutTable::class,
         ]);
 
-        $relation = $model->{'pivot_without_table'}();
+        $relation = $model->pivot_without_table();
 
-        $this->assertEquals('custom_pivot_table', $relation->getTable());
+        $this->assertEquals('custom_pivot_without_table', $relation->getTable());
     }
 }
 
 class TestModel extends Model
 {
-    public $belongsToMany = [
-        'dependencies' => [
-            Model::class,
-            'pivotModel' => TestCustomPivotModel::class,
-        ],
-    ];
 }
 
 class CustomPivotWithTable extends Pivot
