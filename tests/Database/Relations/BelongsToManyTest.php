@@ -396,6 +396,20 @@ class BelongsToManyTest extends DbTestCase
 
         $this->assertEquals('custom_pivot_without_table', $relation->getTable());
     }
+
+    public function testTableDefaultsToRelationTable()
+    {
+        $model = new TestModel();
+        $model->addBelongsToManyRelation('pivot_without_table', [
+            Model::class,
+            'table' => 'custom_pivot_table',
+            'pivotModel' => CustomPivotWithoutTable::class,
+        ]);
+
+        $relation = $model->pivot_without_table();
+
+        $this->assertEquals('custom_pivot_table', $relation->getTable());
+    }
 }
 
 class TestModel extends Model
