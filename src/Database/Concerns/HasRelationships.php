@@ -481,7 +481,7 @@ trait HasRelationships
                 $relation = $this->morphToMany(
                     $relatedClass,
                     $definition['name'] ?? $relationName,
-                    $definition['pivotModel'] ?? $definition['table'] ?? null,
+                    $definition['table'] ?? $definition['pivotModel'] ?? null,
                     $definition['key'] ?? null,
                     $definition['otherKey'] ?? null,
                     $definition['parentKey'] ?? null,
