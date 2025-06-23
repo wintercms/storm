@@ -352,7 +352,7 @@ class Model extends EloquentModel implements ModelInterface
          * Example usage:
          *
          *     $model->bindEvent('model.afterUpdate', function () use (\Winter\Storm\Database\Model $model) {
-         *         if ($model->title !== $model->original['title']) {
+         *         if (!$model->originalIsEquivalent('title') {
          *             \Log::info("{$model->name} updated its title!");
          *         }
          *     });
@@ -394,7 +394,7 @@ class Model extends EloquentModel implements ModelInterface
          * Example usage:
          *
          *     $model->bindEvent('model.afterSave', function () use (\Winter\Storm\Database\Model $model) {
-         *         if ($model->title !== $model->original['title']) {
+         *         if (!$model->originalIsEquivalent('title') {
          *             \Log::info("{$model->name} updated its title!");
          *         }
          *     });

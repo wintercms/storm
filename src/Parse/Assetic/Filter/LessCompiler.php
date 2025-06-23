@@ -30,6 +30,9 @@ class LessCompiler extends BaseFilter implements HashableInterface, DependencyEx
     public function filterLoad(AssetInterface $asset)
     {
         $parser = new Less_Parser();
+        
+        // Ensure unchanged behavior across Less.php 3.x and Less.php 5.x
+        $parser->SetOption('strictMath', false);
 
         // CSS Rewriter will take care of this
         $parser->SetOption('relativeUrls', false);

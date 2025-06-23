@@ -38,6 +38,10 @@ trait HandlesCleanup
 
     /**
      * Handle the provided Unix process signal
+     *
+     * @ param int|false $previousExitCode
+     *
+     * @return int|false The exit code to return or false to continue the normal execution
      */
     public function handleSignal(int $signal, int|false $previousExitCode = 0): int|false
     {

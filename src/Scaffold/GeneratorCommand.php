@@ -33,6 +33,11 @@ abstract class GeneratorCommand extends Command
     protected $nameFrom = 'name';
 
     /**
+     * @var bool Allows the process to continue if an existing file is detected
+     */
+    protected bool $throwOverwriteException = true;
+
+    /**
      * Reserved names that cannot be used for generation.
      *
      * @var string[]
@@ -176,11 +181,24 @@ abstract class GeneratorCommand extends Command
 
         // Make sure this command won't overwrite any existing files before running
         if (!$this->option('force')) {
+            $foundExisting = 0;
             foreach ($stubs as $stub) {
                 $destinationFile = $this->getDestinationForStub($stub);
                 if ($this->files->exists($destinationFile)) {
-                    throw new Exception("Cannot create the {$this->type}:\r\n$destinationFile already exists.\r\nPass --force to overwrite existing files.");
+                    if ($this->throwOverwriteException) {
+                        $this->components->error("File: $destinationFile already exists.\r\nPass --force to overwrite existing files.");
+                        throw new Exception("Cannot create the {$this->type}, encountered an existing file.");
+                    }
+
+                    $this->output->writeLn('<fg=red>File:</> ' . str_replace(base_path(), '', $destinationFile) . ' <fg=red>already exists.</>');
+                    $foundExisting++;
                 }
+            }
+
+            if ($foundExisting) {
+                // Add padding
+                $this->output->writeLn('');
+                $this->components->info('File' . ($foundExisting > 1 ? 's' : '') . ' already exist, pass --force to overwrite existing files.');
             }
         }
 
@@ -222,9 +240,11 @@ abstract class GeneratorCommand extends Command
 
         $this->makeDirectory($destinationFile);
 
-        $this->files->put($destinationFile, $destinationContent);
-
-        $this->comment('File generated: ' . str_replace(base_path(), '', $destinationFile));
+        // Validate to prevent incorrect overwrites
+        if (!$this->files->exists($destinationFile) && !$this->option('force')) {
+            $this->files->put($destinationFile, $destinationContent);
+            $this->output->writeLn('<fg=green>File generated:</> ' . str_replace(base_path(), '', $destinationFile));
+        }
     }
 
     /**
