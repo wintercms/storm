@@ -19,7 +19,7 @@ class ApplicationException extends ExceptionBase
      * @param int $code Error code.
      * @param Exception $previous Previous exception.
      */
-    public function __construct($message = "", $code = 0, Exception $previous = null)
+    public function __construct($message = "", $code = 0, ?Exception $previous = null)
     {
         $message = HtmlBuilder::clean($message);
 

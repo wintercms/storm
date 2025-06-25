@@ -55,7 +55,7 @@ class Argon extends Carbon
      */
     public static function createFromFormatWithCurrentLocale(
         string $format,
-        string $time = null,
+        ?string $time = null,
         \DateTimeZone|string|false|null $timezone = null
     ): static|false {
         if (is_string($time)) {

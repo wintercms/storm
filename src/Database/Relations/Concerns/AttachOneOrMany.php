@@ -70,16 +70,17 @@ trait AttachOneOrMany
     {
         if ($parentQuery->getQuery()->from == $query->getQuery()->from) {
             $query = $this->getRelationExistenceQueryForSelfJoin($query, $parentQuery, $columns);
+        } else {
+            $grammar = $query->getGrammar();
+            $query->select($columns)->whereRaw(sprintf(
+                '%s = %s',
+                $grammar->wrap($this->getExistenceCompareKey()),
+                DbDongle::cast($grammar->wrap($this->getQualifiedParentKeyName()), 'TEXT')
+            ));
         }
-        else {
-            $key = DbDongle::cast($this->getQualifiedParentKeyName(), 'TEXT');
 
-            $query = $query->select($columns)->whereColumn($this->getExistenceCompareKey(), '=', $key);
-        }
-
-        $query = $query->where($this->morphType, $this->morphClass);
-
-        return $query->where('field', $this->fieldName);
+        return $query->where($this->morphType, $this->morphClass)
+            ->where('field', $this->fieldName);
     }
 
     /**
@@ -92,15 +93,19 @@ trait AttachOneOrMany
      */
     public function getRelationExistenceQueryForSelfRelation(Builder $query, Builder $parentQuery, $columns = ['*'])
     {
+        $hash = $this->getRelationCountHash();
+        $grammar = $query->getGrammar();
+        
         $query->select($columns)->from(
-            $query->getModel()->getTable().' as '.$hash = $this->getRelationCountHash()
+            $query->getModel()->getTable() . ' as ' . $hash
         );
-
         $query->getModel()->setTable($hash);
 
-        $key = DbDongle::cast($this->getQualifiedParentKeyName(), 'TEXT');
-
-        return $query->whereColumn($hash.'.'.$this->getForeignKeyName(), '=', $key);
+        return $query->whereRaw(sprintf(
+            '%s = %s',
+            $grammar->wrap($hash . '.' . $this->getForeignKeyName()),
+            DbDongle::cast($grammar->wrap($this->getQualifiedParentKeyName()), 'TEXT')
+        ));
     }
 
     /**

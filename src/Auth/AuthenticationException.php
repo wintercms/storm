@@ -29,7 +29,7 @@ class AuthenticationException extends ApplicationException
      * @param int $code Error code.
      * @param Exception $previous Previous exception.
      */
-    public function __construct($message = "", $code = 0, Exception $previous = null)
+    public function __construct($message = "", $code = 0, ?Exception $previous = null)
     {
         $this->errorMessage = Lang::get('backend::lang.auth.invalid_login');
 
