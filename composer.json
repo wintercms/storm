@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": "^8.0.2",
+        "php": ">=8.1",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-dom": "*",
@@ -38,16 +38,16 @@
         "assetic/framework": "~3.0",
         "doctrine/dbal": "^2.6",
         "enshrined/svg-sanitize": "~0.16",
-        "laravel/framework": "^9.1",
+        "laravel/framework": "^9.49",
         "laravel/tinker": "^2.7",
         "league/csv": "~9.1",
         "nesbot/carbon": "^2.0",
         "nikic/php-parser": "^4.10",
         "scssphp/scssphp": "~1.0",
-        "symfony/console": ">=6.0.9 <6.3.0",
+        "symfony/console": "^6.4",
         "symfony/yaml": "^6.0",
         "twig/twig": "^3.14",
-        "wikimedia/less.php": "~3.0",
+        "wikimedia/less.php": "^5.0",
         "wikimedia/minify": "~2.2",
         "winter/laravel-config-writer": "^1.0.1",
         "winter/packager": "~0.2"
@@ -60,7 +60,7 @@
         "meyfa/phpunit-assert-gd": "^3.0.0",
         "dms/phpunit-arraysubset-asserts": "^0.5.0",
         "larastan/larastan": "^2.8.1",
-        "orchestra/testbench": "^7.1.0"
+        "orchestra/testbench": "^7.47.0"
     },
     "suggest": {
         "ext-pdo_dblib": "Required to use MS SQL Server databases",
@@ -89,7 +89,7 @@
         }
     },
     "scripts": {
-        "test": "phpunit ./tests",
+        "test": "./vendor/bin/phpunit ./tests",
         "lint": "parallel-lint --exclude vendor .",
         "sniff": "phpcs --colors -nq --report=\"full\" --extensions=\"php\"",
         "analyze": "phpstan analyse --memory-limit=2G src"

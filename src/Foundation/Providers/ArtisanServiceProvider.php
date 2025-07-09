@@ -16,7 +16,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'CacheClear'            => \Illuminate\Cache\Console\ClearCommand::class,
         'CacheForget'           => \Illuminate\Cache\Console\ForgetCommand::class,
         'ClearCompiled'         => \Winter\Storm\Foundation\Console\ClearCompiledCommand::class,
-        'ConfigCache'           => \Illuminate\Foundation\Console\ConfigCacheCommand::class,
+        'ConfigCache'           => \Winter\Storm\Foundation\Console\ConfigCacheCommand::class,
         'ConfigClear'           => \Illuminate\Foundation\Console\ConfigClearCommand::class,
         'Down'                  => \Illuminate\Foundation\Console\DownCommand::class,
         'Environment'           => \Illuminate\Foundation\Console\EnvironmentCommand::class,

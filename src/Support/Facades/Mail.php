@@ -8,6 +8,7 @@ use Winter\Storm\Support\Testing\Fakes\MailFake;
  * @method static \Illuminate\Mail\PendingMail bcc($users)
  * @method static void raw(string $text, $callback)
  * @method static void send(\Illuminate\Contracts\Mail\Mailable|string|array $view, array $data = [], \Closure|string $callback = null)
+ * @method static void sendTo(array|string|object $recipients, \Illuminate\Contracts\Mail\Mailable|string|array $view, array $data = [], \Closure|string $callback = null, array $options = [])
  * @method static array failures()
  * @method static mixed queue(\Illuminate\Contracts\Mail\Mailable|string|array $view, string $queue = null)
  * @method static mixed later(\DateTimeInterface|\DateInterval|int $delay, \Illuminate\Contracts\Mail\Mailable|string|array $view, string $queue = null)

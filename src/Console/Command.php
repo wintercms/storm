@@ -5,6 +5,7 @@ namespace Winter\Storm\Console;
 use Illuminate\Console\Command as BaseCommand;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components\Factory;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,7 +23,7 @@ use function Termwind\renderUsing;
  *
  * @method static mixed extend(callable $callback, bool $scoped = false, ?object $outerScope = null)
  */
-abstract class Command extends BaseCommand implements SignalableCommandInterface
+abstract class Command extends BaseCommand implements PromptsForMissingInput, SignalableCommandInterface
 {
     use Traits\HandlesCleanup;
     use Traits\ProvidesAutocompletion;

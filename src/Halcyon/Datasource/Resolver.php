@@ -31,7 +31,7 @@ class Resolver implements ResolverInterface
     /**
      * @inheritDoc
      */
-    public function datasource(string $name = null): DatasourceInterface
+    public function datasource(?string $name = null): DatasourceInterface
     {
         if (is_null($name)) {
             $name = $this->getDefaultDatasource();

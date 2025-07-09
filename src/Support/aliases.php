@@ -122,7 +122,6 @@ class_alias(\Winter\Storm\Database\Connections\SQLiteConnection::class, \October
 class_alias(\Winter\Storm\Database\Connections\SqlServerConnection::class, \October\Rain\Database\Connections\SqlServerConnection::class);
 class_alias(\Winter\Storm\Database\Connectors\ConnectionFactory::class, \October\Rain\Database\Connectors\ConnectionFactory::class);
 class_alias(\Winter\Storm\Database\DatabaseServiceProvider::class, \October\Rain\Database\DatabaseServiceProvider::class);
-class_alias(\Winter\Storm\Database\DataFeed::class, \October\Rain\Database\DataFeed::class);
 class_alias(\Winter\Storm\Database\Dongle::class, \October\Rain\Database\Dongle::class);
 class_alias(\Winter\Storm\Database\MemoryCache::class, \October\Rain\Database\MemoryCache::class);
 class_alias(\Winter\Storm\Database\Model::class, \October\Rain\Database\Model::class);
