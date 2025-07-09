@@ -43,19 +43,12 @@ trait HandlesCleanup
      *
      * @return int|false The exit code to return or false to continue the normal execution
      */
-    public function handleSignal(int $signal, /* int|false $previousExitCode = 0 */)
+    public function handleSignal(int $signal): void
     {
         // Handle the signal
         if (method_exists($this, 'handleCleanup')) {
             $this->handleCleanup();
         }
-
-        // Exit cleanly at this point if this was a user termination
-        if (in_array($signal, [SIGINT, SIGQUIT])) {
-            return 0;
-        }
-
-        return false;
     }
 
     /**
