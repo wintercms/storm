@@ -241,7 +241,7 @@ abstract class GeneratorCommand extends Command
         $this->makeDirectory($destinationFile);
 
         // Validate to prevent incorrect overwrites
-        if (!$this->files->exists($destinationFile) && !$this->option('force')) {
+        if (!$this->files->exists($destinationFile) || $this->option('force')) {
             $this->files->put($destinationFile, $destinationContent);
             $this->output->writeLn('<fg=green>File generated:</> ' . str_replace(base_path(), '', $destinationFile));
         }

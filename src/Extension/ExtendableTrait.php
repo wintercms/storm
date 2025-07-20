@@ -547,7 +547,7 @@ trait ExtendableTrait
      *
      * @return ReflectionClass|false
      */
-    protected function extensionGetParentClass(object $instance = null)
+    protected function extensionGetParentClass(?object $instance = null)
     {
         // Shortcut to prevent infinite loops if the class extends Extendable.
         if ($this instanceof Extendable) {
