@@ -18,6 +18,7 @@ php_errors.log
 /.settings/
 
 #phpunit
+.phpunit.result.cache
 tests/.phpunit.result.cache
 tests/tmp
 tests/artifacts/*
