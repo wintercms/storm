@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Connection;;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
@@ -148,7 +149,7 @@ class QueryBuilderTest extends TestCase
 
     protected function getMySqlBuilder()
     {
-        $grammar = new MySqlGrammar;
+        $grammar = new MySqlGrammar($this->createMock(Connection::class));
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);
@@ -156,7 +157,7 @@ class QueryBuilderTest extends TestCase
 
     protected function getPostgresBuilder()
     {
-        $grammar = new PostgresGrammar;
+        $grammar = new PostgresGrammar($this->createMock(Connection::class));
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);
@@ -164,7 +165,7 @@ class QueryBuilderTest extends TestCase
 
     protected function getSQLiteBuilder()
     {
-        $grammar = new SQLiteGrammar;
+        $grammar = new SQLiteGrammar($this->createMock(Connection::class));
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);
@@ -172,7 +173,7 @@ class QueryBuilderTest extends TestCase
 
     protected function getSqlServerBuilder()
     {
-        $grammar = new SqlServerGrammar;
+        $grammar = new SqlServerGrammar($this->createMock(Connection::class));
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);
