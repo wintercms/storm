@@ -21,7 +21,7 @@ class PostgresConnection extends \Illuminate\Database\PostgresConnection
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new QueryGrammar);
+        return new QueryGrammar($this);
     }
 
     /**
@@ -45,7 +45,7 @@ class PostgresConnection extends \Illuminate\Database\PostgresConnection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return $this->withTablePrefix(new SchemaGrammar);
+        return new SchemaGrammar($this);
     }
 
     /**

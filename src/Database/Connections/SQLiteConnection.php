@@ -21,7 +21,7 @@ class SQLiteConnection extends \Illuminate\Database\SQLiteConnection
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new QueryGrammar);
+        return new QueryGrammar($this);
     }
 
     /**
@@ -45,7 +45,7 @@ class SQLiteConnection extends \Illuminate\Database\SQLiteConnection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return $this->withTablePrefix(new SchemaGrammar);
+        return new SchemaGrammar($this);
     }
 
     /**

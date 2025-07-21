@@ -2,7 +2,6 @@
 
 namespace Winter\Storm\Database\Schema\Grammars;
 
-use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar as PostgresGrammarBase;
@@ -19,15 +18,17 @@ class PostgresGrammar extends PostgresGrammarBase
      *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
      * @param  \Illuminate\Support\Fluent  $command
-     * @param  \Illuminate\Database\Connection  $connection
      * @return array|string
      *
      * @throws \RuntimeException
      */
-    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection)
+    public function compileChange(Blueprint $blueprint, Fluent $command)
     {
         $columns = [];
-        $oldColumns = collect($connection->getSchemaBuilder()->getColumns($blueprint->getTable()));
+        $schema = $this->connection->getSchemaBuilder();
+        $table = $blueprint->getTable();
+
+        $oldColumns = collect($schema->getColumns($table));
 
         foreach ($blueprint->getChangedColumns() as $column) {
             $changes = ['type '.$this->getType($column).$this->modifyCollate($blueprint, $column)];

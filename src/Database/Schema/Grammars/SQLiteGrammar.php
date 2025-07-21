@@ -2,7 +2,6 @@
 
 namespace Winter\Storm\Database\Schema\Grammars;
 
-use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
@@ -22,23 +21,21 @@ class SQLiteGrammar extends SQLiteGrammarBase
      *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
      * @param  \Illuminate\Support\Fluent  $command
-     * @param  \Illuminate\Database\Connection  $connection
      * @return array|string
      *
      * @throws \RuntimeException
      */
-    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection)
+    public function compileChange(Blueprint $blueprint, Fluent $command)
     {
-        $schema = $connection->getSchemaBuilder();
+        $autoIncrementColumn = null;
+        $columnNames = [];
+        $schema = $this->connection->getSchemaBuilder();
         $table = $blueprint->getTable();
 
         $changedColumns = collect($blueprint->getChangedColumns());
-        $columnNames = [];
-        $autoIncrementColumn = null;
+        $oldColumns = collect($schema->getColumns($table));
 
-        $oldColumns = collect($connection->getSchemaBuilder()->getColumns($blueprint->getTable()));
-
-        $columns = collect($schema->getColumns($table))
+        $columns = $oldColumns
             ->map(function ($column) use ($blueprint, $changedColumns, &$columnNames, &$autoIncrementColumn, $oldColumns) {
                 $column = $changedColumns->first(fn ($col) => $col->name === $column['name'], $column);
 

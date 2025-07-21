@@ -67,7 +67,7 @@ class SqlServerConnection extends \Illuminate\Database\SqlServerConnection
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new QueryGrammar);
+        return new QueryGrammar($this);
     }
 
     /**
@@ -91,7 +91,7 @@ class SqlServerConnection extends \Illuminate\Database\SqlServerConnection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return $this->withTablePrefix(new SchemaGrammar);
+        return new SchemaGrammar($this);
     }
 
     /**
