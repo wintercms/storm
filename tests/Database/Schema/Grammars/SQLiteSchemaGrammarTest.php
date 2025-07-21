@@ -2,28 +2,28 @@
 
 namespace Winter\Storm\Tests\Database\Schema\Grammars;
 
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\SQLiteBuilder;
 use Winter\Storm\Database\Schema\Grammars\SQLiteGrammar;
 
 class SQLiteSchemaGrammarTest extends \GrammarTestCase
 {
     public function setUp(): void
     {
-        parent::setUp();
+        $this->grammarClass = SQLiteGrammar::class;
+        $this->builderClass = SQLiteBuilder::class;
 
-        $this->grammar = new SQLiteGrammar;
+        parent::setUp();
     }
 
     public function testNoInitialModifiersAddNullable()
     {
-        $initialBlueprint = new Blueprint('users');
+        $initialBlueprint = $this->getBlueprint('users');
         $initialBlueprint->string('name');
-        $this->setupConnection($initialBlueprint);
 
         $statements = $this->runBlueprint($initialBlueprint);
         $this->assertSame('alter table "users" add column "name" varchar not null', $statements[0]);
 
-        $changedBlueprint = new Blueprint('users');
+        $changedBlueprint = $this->getBlueprint('users');
         $changedBlueprint->string('name')->nullable()->change();
 
         $statements = $this->runBlueprint($changedBlueprint);
@@ -32,14 +32,13 @@ class SQLiteSchemaGrammarTest extends \GrammarTestCase
 
     public function testNullableInitialModifierAddDefault()
     {
-        $initialBlueprint = new Blueprint('users');
+        $initialBlueprint = $this->getBlueprint('users');
         $initialBlueprint->string('name')->nullable();
-        $this->setupConnection($initialBlueprint);
 
         $statements = $this->runBlueprint($initialBlueprint);
         $this->assertSame('alter table "users" add column "name" varchar', $statements[0]);
 
-        $changedBlueprint = new Blueprint('users');
+        $changedBlueprint = $this->getBlueprint('users');
         $changedBlueprint->string('name')->default('admin')->change();
 
         $statements = $this->runBlueprint($changedBlueprint);
@@ -48,14 +47,13 @@ class SQLiteSchemaGrammarTest extends \GrammarTestCase
 
     public function testNullableInitialModifierAddDefaultNotNullable()
     {
-        $initialBlueprint = new Blueprint('users');
+        $initialBlueprint = $this->getBlueprint('users');
         $initialBlueprint->string('name')->nullable();
-        $this->setupConnection($initialBlueprint);
 
         $statements = $this->runBlueprint($initialBlueprint);
         $this->assertSame('alter table "users" add column "name" varchar', $statements[0]);
 
-        $changedBlueprint = new Blueprint('users');
+        $changedBlueprint = $this->getBlueprint('users');
         $changedBlueprint->string('name')->default('admin')->nullable(false)->change();
 
         $statements = $this->runBlueprint($changedBlueprint);

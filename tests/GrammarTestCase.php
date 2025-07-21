@@ -5,30 +5,54 @@ namespace Winter\Storm\Tests;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
-use Illuminate\Database\Schema\Grammars\Grammar;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class GrammarTestCase extends TestCase
 {
-    protected Connection $connection;
-    protected Grammar $grammar;
+    protected $connection = null;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->connection = m::mock(Connection::class)
+            ->shouldReceive('getTablePrefix')->andReturn('')
+            ->shouldReceive('getServerVersion')->andReturn('3.35')
+            ->shouldReceive('scalar')->andReturn('')
+            ->getMock();
+
+        $this->connection = $this->connection
+            ->shouldReceive('getSchemaGrammar')->andReturn($this->getSchemaGrammar())
+            ->getMock();
+    }
 
     protected function tearDown(): void
     {
         m::close();
     }
 
-    protected function setupConnection(Blueprint $blueprint)
+    public function getConnection()
     {
-        $connection = m::mock(Connection::class);
-        $connection->shouldReceive('getServerVersion')->andReturn('3.35');
-        $connection->shouldReceive('getSchemaBuilder')->andReturn($this->getSchemaBuilder($blueprint));
-        $connection->shouldReceive('scalar')->andReturn('');
-        $this->connection = $connection;
+        return $this->connection();
     }
 
-    protected function getSchemaBuilder(Blueprint $blueprint)
+    protected function getBlueprint(string $table)
+    {
+        $blueprint =  new Blueprint($this->connection, $table);
+        $this->connection->shouldReceive('getSchemaBuilder')->andReturnUsing(function () use ($blueprint) {
+            return $this->getSchemaBuilder($blueprint);
+        });
+
+        return $blueprint;
+    }
+
+    protected function getSchemaGrammar()
+    {
+        return new $this->grammarClass($this->connection);
+    }
+
+    protected function getSchemaBuilder($blueprint)
     {
         $schemaBuilder = m::mock(Builder::class);
         $schemaBuilder->shouldReceive('getColumns')->andReturn($blueprint->getColumns());
@@ -40,6 +64,6 @@ class GrammarTestCase extends TestCase
 
     protected function runBlueprint(Blueprint $blueprint)
     {
-        return $blueprint->toSql($this->connection, $this->grammar);
+        return $blueprint->toSql();
     }
 }
