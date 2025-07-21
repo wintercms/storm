@@ -12,7 +12,7 @@ class GrammarTestCase extends TestCase
 {
     protected $connection = null;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -27,7 +27,7 @@ class GrammarTestCase extends TestCase
             ->getMock();
     }
 
-    protected function tearDown(): void
+    public function tearDown(): void
     {
         m::close();
     }

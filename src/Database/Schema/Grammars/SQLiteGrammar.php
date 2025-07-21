@@ -104,13 +104,13 @@ class SQLiteGrammar extends SQLiteGrammarBase
             fn ($index) => $this->{'compile'.ucfirst($index->name)}($blueprint, $index)
         )->all();
 
-        $tempTable = $this->wrap('__temp__'.$blueprint->getPrefix().$table);
+        $tempTable = $this->wrapTable($blueprint, '__temp__'.$this->connection->getTablePrefix());
         $table = $this->wrapTable($blueprint);
         $columnNames = implode(', ', $columnNames);
 
-        $foreignKeyConstraintsEnabled = $connection->scalar('pragma foreign_keys');
+        $foreignKeyConstraintsEnabled = $this->connection->scalar($this->pragma('foreign_keys'));
 
-        return array_filter(
+        $sqlQuery = array_filter(
             array_merge(
                 [
                     $foreignKeyConstraintsEnabled ? $this->compileDisableForeignKeyConstraints() : null,
@@ -144,6 +144,8 @@ class SQLiteGrammar extends SQLiteGrammarBase
                 ]
             )
         );
+
+        return $sqlQuery;
     }
 
     public function getDefaultValue($value)
