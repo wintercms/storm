@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\Connection;;
+use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
