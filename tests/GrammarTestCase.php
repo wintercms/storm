@@ -54,12 +54,12 @@ class GrammarTestCase extends TestCase
 
     protected function getSchemaBuilder($blueprint)
     {
-        $schemaBuilder = m::mock(Builder::class);
-        $schemaBuilder->shouldReceive('getColumns')->andReturn($blueprint->getColumns());
-        $schemaBuilder->shouldReceive('getForeignKeys')->andReturn([]);
-        $schemaBuilder->shouldReceive('getIndexes')->andReturn([]);
-
-        return $schemaBuilder;
+        return m::mock(Builder::class)
+            ->shouldReceive('getColumns')->andReturn($blueprint->getColumns())
+            ->shouldReceive('getForeignKeys')->andReturn([])
+            ->shouldReceive('getIndexes')->andReturn([])
+            ->shouldReceive('parseSchemaAndTable')->andReturnNull()
+            ->getMock();
     }
 
     protected function runBlueprint(Blueprint $blueprint)
