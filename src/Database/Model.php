@@ -697,10 +697,10 @@ class Model extends EloquentModel implements ModelInterface
     protected function newBaseQueryBuilder()
     {
         $conn = $this->getConnection();
-
         $grammar = $conn->getQueryGrammar();
+        $processor = $conn->getPostProcessor();
 
-        $builder = new QueryBuilder($conn, $grammar, $conn->getPostProcessor());
+        $builder = new QueryBuilder($conn, $grammar, $processor);
 
         if ($this->duplicateCache) {
             $builder->enableDuplicateCache();
