@@ -4,10 +4,10 @@ namespace Winter\Storm\Database\Schema\Grammars;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
-use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SqlServerGrammarBase;
+use Illuminate\Database\Schema\Grammars\SqlServerGrammar as BaseSqlServerGrammar;
 use Illuminate\Support\Fluent;
 
-class SqlServerGrammar extends SqlServerGrammarBase
+class SqlServerGrammar extends BaseSqlServerGrammar
 {
     /**
      * Compile a change column command into a series of SQL statements.

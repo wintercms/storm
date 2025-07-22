@@ -4,10 +4,10 @@ namespace Winter\Storm\Database\Schema\Grammars;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
-use Illuminate\Database\Schema\Grammars\PostgresGrammar as PostgresGrammarBase;
+use Illuminate\Database\Schema\Grammars\PostgresGrammar as BasePostgresGrammar;
 use Illuminate\Support\Fluent;
 
-class PostgresGrammar extends PostgresGrammarBase
+class PostgresGrammar extends BasePostgresGrammar
 {
     /**
      * Compile a change column command into a series of SQL statements.

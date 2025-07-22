@@ -7,10 +7,10 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Database\Schema\ForeignKeyDefinition;
 use Illuminate\Database\Schema\IndexDefinition;
-use Illuminate\Database\Schema\Grammars\SQLiteGrammar as SQLiteGrammarBase;
+use Illuminate\Database\Schema\Grammars\SQLiteGrammar as BaseSQLiteGrammar;
 use Illuminate\Support\Fluent;
 
-class SQLiteGrammar extends SQLiteGrammarBase
+class SQLiteGrammar extends BaseSQLiteGrammar
 {
     /**
      * Compile a change column command into a series of SQL statements.

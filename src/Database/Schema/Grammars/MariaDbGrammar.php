@@ -2,9 +2,9 @@
 
 namespace Winter\Storm\Database\Schema\Grammars;
 
-use Illuminate\Database\Schema\Grammars\MariaDbGrammar as MariaDbGrammarBase;
+use Illuminate\Database\Schema\Grammars\MariaDbGrammar as BaseMariaDbGrammar;
 
-class MariaDbGrammar extends MariaDbGrammarBase
+class MariaDbGrammar extends BaseMariaDbGrammar
 {
     use Concerns\MySqlBasedGrammar;
 }

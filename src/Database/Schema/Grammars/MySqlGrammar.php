@@ -2,9 +2,9 @@
 
 namespace Winter\Storm\Database\Schema\Grammars;
 
-use Illuminate\Database\Schema\Grammars\MySqlGrammar as MySqlGrammarBase;
+use Illuminate\Database\Schema\Grammars\MySqlGrammar as BaseMySqlGrammar;
 
-class MySqlGrammar extends MySqlGrammarBase
+class MySqlGrammar extends BaseMySqlGrammar
 {
     use Concerns\MySqlBasedGrammar;
 }
