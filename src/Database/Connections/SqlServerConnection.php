@@ -3,6 +3,8 @@
 use Closure;
 use Exception;
 use Throwable;
+
+use Illuminate\Database\SqlServerConnection as BaseSqlServerConnection;
 use Illuminate\Database\Schema\SqlServerBuilder;
 use Illuminate\Database\Query\Processors\SqlServerProcessor;
 
@@ -13,7 +15,7 @@ use Winter\Storm\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class SqlServerConnection extends \Illuminate\Database\SqlServerConnection
+class SqlServerConnection extends BaseSqlServerConnection
 {
     use HasConnection;
 

@@ -1,11 +1,11 @@
 <?php namespace Winter\Storm\Database\Connections;
 
-use Illuminate\Database\Connection as ConnectionBase;
+use Illuminate\Database\Connection as BaseConnection;
 
 /*
  * @deprecated
  */
-abstract class Connection extends ConnectionBase
+abstract class Connection extends BaseConnection
 {
     use HasConnection;
 

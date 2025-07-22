@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Database\Connections;
 
+use Illuminate\Database\PostgresConnection as BasePostgresConnection;
 use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
 
@@ -10,7 +11,7 @@ use Winter\Storm\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class PostgresConnection extends \Illuminate\Database\PostgresConnection
+class PostgresConnection extends BasePostgresConnection
 {
     use HasConnection;
 

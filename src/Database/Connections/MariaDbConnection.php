@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Database\Connections;
 
 use PDO;
+use Illuminate\Database\MariaDbConnection as BaseMariaDbConnection;
 use Illuminate\Database\Schema\MariaDbBuilder;
 use Illuminate\Database\Query\Processors\MariaDbProcessor;
 
@@ -11,7 +12,7 @@ use Winter\Storm\Database\Query\Grammars\MariaDbGrammar as QueryGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class MariaDbConnection extends \Illuminate\Database\MariaDbConnection
+class MariaDbConnection extends BaseMariaDbConnection
 {
     use HasConnection;
 

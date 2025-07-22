@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Database\Connections;
 
 use PDO;
+use Illuminate\Database\MySqlConnection as BaseMySqlConnection;
 use Illuminate\Database\Schema\MySqlBuilder;
 use Illuminate\Database\Query\Processors\MySqlProcessor;
 
@@ -11,7 +12,7 @@ use Winter\Storm\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class MySqlConnection extends \Illuminate\Database\MySqlConnection
+class MySqlConnection extends BaseMySqlConnection
 {
     use HasConnection;
 

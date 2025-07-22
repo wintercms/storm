@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Database\Connections;
 
+use Illuminate\Database\SQLiteConnection as BaseSQLiteConnection;
 use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Database\Query\Processors\SQLiteProcessor;
 
@@ -10,7 +11,7 @@ use Winter\Storm\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class SQLiteConnection extends \Illuminate\Database\SQLiteConnection
+class SQLiteConnection extends BaseSQLiteConnection
 {
     use HasConnection;
 
