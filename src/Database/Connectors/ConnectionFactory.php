@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Database\Connectors;
 
 use Illuminate\Support\Arr;
-use Illuminate\Database\Connectors\ConnectionFactory as ConnectionFactoryBase;
+use Illuminate\Database\Connectors\ConnectionFactory as BaseConnectionFactory;
 use Illuminate\Database\Connection;
 use Winter\Storm\Database\Connections\MariaDbConnection;
 use Winter\Storm\Database\Connections\MySqlConnection;
@@ -11,7 +11,7 @@ use Winter\Storm\Database\Connections\SqlServerConnection;
 use PDOException;
 use InvalidArgumentException;
 
-class ConnectionFactory extends ConnectionFactoryBase
+class ConnectionFactory extends BaseConnectionFactory
 {
     /**
      * Carbon copy of parent. Except Laravel creates an "uncatchable" exception,
