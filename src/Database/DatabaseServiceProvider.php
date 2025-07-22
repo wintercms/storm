@@ -1,9 +1,11 @@
 <?php namespace Winter\Storm\Database;
 
-use Winter\Storm\Database\Schema\Blueprint;
-use Winter\Storm\Database\Connectors\ConnectionFactory;
 use Illuminate\Database\DatabaseServiceProvider as DatabaseServiceProviderBase;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Database\DatabaseTransactionsManager;
+
+use Winter\Storm\Database\Schema\Blueprint;
+use Winter\Storm\Database\Connectors\ConnectionFactory;
 
 class DatabaseServiceProvider extends DatabaseServiceProviderBase
 {
@@ -33,8 +35,17 @@ class DatabaseServiceProvider extends DatabaseServiceProviderBase
         Model::flushDuplicateCache();
         Model::flushEventListeners();
 
+        $this->registerConnectionServices();
         $this->registerQueueableEntityResolver();
+    }
 
+    /**
+     * Register the primary database bindings.
+     *
+     * @return void
+     */
+    protected function registerConnectionServices()
+    {
         // The connection factory is used to create the actual connection instances on
         // the database. We will inject the factory into the manager so that it may
         // make the connections while they are actually needed and not of before.
@@ -59,6 +70,10 @@ class DatabaseServiceProvider extends DatabaseServiceProviderBase
             $app['events']->dispatch('db.schema.getBuilder', [$builder]);
 
             return $builder;
+        });
+
+        $this->app->singleton('db.transactions', function ($app) {
+            return new DatabaseTransactionsManager;
         });
 
         $this->app->singleton('db.dongle', function ($app) {
