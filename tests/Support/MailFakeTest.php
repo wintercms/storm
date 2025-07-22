@@ -17,7 +17,7 @@ class MailFakeTest extends TestCase
         parent::setUp();
 
         App::shouldReceive('getLocale')->andReturn('en/US');
-        $this->manager = m::mock(MailManager::class);
+        $this->manager = m::mock(MailManager::class)->shouldReceive('getDefaultDriver')->andReturn('smtp')->getMock();
         Mail::swap(new MailFake($this->manager));
 
         $this->recipient = 'fake@localhost';
