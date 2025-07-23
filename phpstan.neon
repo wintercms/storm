@@ -17,6 +17,4 @@ parameters:
     databaseMigrationsPath:
         - src/Auth/Migrations
         - src/Database/Migrations
-    stubFiles:
-        - tests/stubs/Facades.stub
     treatPhpDocTypesAsCertain: false
