@@ -70,7 +70,7 @@ trait HasConnection
     {
         $this->fireEvent('connection.'.$this->getName().'.'.$event, $this);
 
-        parent::fireConnectionEvent($event);
+        return parent::fireConnectionEvent($event);
     }
 
     /**
