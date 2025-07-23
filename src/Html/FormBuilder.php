@@ -865,6 +865,8 @@ class FormBuilder
         if (isset($this->model)) {
             return $this->getModelValueAttribute($name);
         }
+
+        return null;
     }
 
     /**
@@ -877,10 +879,11 @@ class FormBuilder
     {
         if (is_object($this->model)) {
             return object_get($this->model, $this->transformKey($name));
-        }
-        elseif (is_array($this->model)) {
+        } elseif (is_array($this->model)) {
             return array_get($this->model, $this->transformKey($name));
         }
+
+        return null;
     }
 
     /**

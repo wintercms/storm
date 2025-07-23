@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Database;
 
+use Illuminate\Database\Connection;
 use Illuminate\Database\DatabaseServiceProvider as DatabaseServiceProviderBase;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\DatabaseTransactionsManager;
@@ -105,7 +106,7 @@ class DatabaseServiceProvider extends DatabaseServiceProviderBase
     protected function swapSchemaBuilderBlueprint()
     {
         $this->app['events']->listen('db.schema.getBuilder', function (\Illuminate\Database\Schema\Builder $builder) {
-            $builder->blueprintResolver(function ($connection, $table, $callback) {
+            $builder->blueprintResolver(function (Connection $connection, string $table, \Closure $callback) {
                 return new Blueprint($connection, $table, $callback);
             });
         });

@@ -42,6 +42,7 @@ class LoadConfiguration
             return $config['hosts'][$hostname];
         }
 
+        // @phpstan-ignore-next-line
         return env('APP_ENV', array_get($config, 'default', 'production'));
     }
 
@@ -52,6 +53,7 @@ class LoadConfiguration
     {
         $config = [];
 
+        // @phpstan-ignore-next-line
         $environment = env('APP_ENV');
 
         if ($environment && file_exists($configPath = base_path() . '/config/' . $environment . '/environment.php')) {

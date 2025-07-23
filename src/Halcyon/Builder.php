@@ -277,7 +277,7 @@ class Builder
      * Execute the query as a fresh "select" statement.
      *
      * @param  array  $columns
-     * @return \Winter\Storm\Halcyon\Collection|static[]
+     * @return array|null
      */
     public function getFresh($columns = ['*'])
     {

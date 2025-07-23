@@ -79,12 +79,6 @@ parameters:
 			path: src/Database/Behaviors/Encryptable.php
 
 		-
-			message: '#^Variable \$model in PHPDoc tag @var does not exist\.$#'
-			identifier: varTag.variableNotFound
-			count: 1
-			path: src/Database/Behaviors/Encryptable.php
-
-		-
 			message: '#^Parameter \#1 \$app of class Illuminate\\Database\\DatabaseManager constructor expects Illuminate\\Contracts\\Foundation\\Application, Illuminate\\Contracts\\Container\\Container given\.$#'
 			identifier: argument.type
 			count: 1

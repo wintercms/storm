@@ -312,9 +312,9 @@ class DbDatasource extends Datasource
      */
     public function delete(string $dirName, string $fileName, string $extension): bool
     {
+        $path = $this->makeFilePath($dirName, $fileName, $extension);
         try {
             // Get the existing record
-            $path = $this->makeFilePath($dirName, $fileName, $extension);
             $recordQuery = $this->getQuery()->where('path', $path);
 
             // Attempt to delete the existing record
@@ -330,8 +330,7 @@ class DbDatasource extends Datasource
             }
 
             return true;
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw (new DeleteFileException)->setInvalidPath($path);
         }
     }
