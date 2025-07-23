@@ -6,6 +6,8 @@ parameters:
     paths:
         - src
     level: 5
+    ignoreErrors:
+        - identifier: trait.unused
     excludePaths:
         # Exclude PHP Parser files
         - src/Parse/PHP/ArrayFile.php
