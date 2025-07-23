@@ -101,7 +101,8 @@
         "test": "./vendor/bin/phpunit ./tests",
         "lint": "parallel-lint --exclude vendor .",
         "sniff": "phpcs --colors -nq --report=\"full\" --extensions=\"php\"",
-        "analyze": "phpstan analyse --memory-limit=2G src"
+        "analyze": "phpstan analyse --memory-limit=2G src",
+        "baseline": "phpstan analyse --memory-limit=2G src --generate-baseline"
     },
     "extra": {
         "branch-alias": {

@@ -1,137 +1,1039 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Call to an undefined method \\$this\\(Winter\\\\Storm\\\\Auth\\\\Models\\\\(Group|Role|User)\\)::getOriginal(Encryptable|Hash)Values\\(\\)\\.$#"
-			paths:
-				- src/Auth/Models/Group.php
-				- src/Auth/Models/Role.php
-				- src/Auth/Models/User.php
+			message: '#^Call to an undefined method \$this\(Winter\\Storm\\Auth\\Models\\Group\)\:\:getOriginalEncryptableValues\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Auth/Models/Group.php
 
 		-
-			messages:
-				- "#^Parameter \\#1 \\$app of class Illuminate\\\\Database\\\\DatabaseManager constructor expects Illuminate\\\\Contracts\\\\Foundation\\\\Application, Illuminate\\\\Contracts\\\\Container\\\\Container given\\.$#"
+			message: '#^Call to an undefined method \$this\(Winter\\Storm\\Auth\\Models\\Group\)\:\:getOriginalHashValues\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Auth/Models/Group.php
+
+		-
+			message: '#^Call to an undefined method \$this\(Winter\\Storm\\Auth\\Models\\Role\)\:\:getOriginalEncryptableValues\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Auth/Models/Role.php
+
+		-
+			message: '#^Call to an undefined method \$this\(Winter\\Storm\\Auth\\Models\\Role\)\:\:getOriginalHashValues\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Auth/Models/Role.php
+
+		-
+			message: '#^Call to an undefined method \$this\(Winter\\Storm\\Auth\\Models\\User\)\:\:getOriginalEncryptableValues\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Auth/Models/User.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(Winter\\Storm\\Auth\\Models\\User\) and ''getHashableAttribut…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Auth/Models/User.php
+
+		-
+			message: '#^Call to function property_exists\(\) with \$this\(Winter\\Storm\\Auth\\Models\\User\) and ''attributeNames'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Auth/Models/User.php
+
+		-
+			message: '#^Call to function property_exists\(\) with \$this\(Winter\\Storm\\Auth\\Models\\User\) and ''customMessages'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Auth/Models/User.php
+
+		-
+			message: '#^PHPDoc type array\<string\> of property Winter\\Storm\\Auth\\Models\\User\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Auth/Models/User.php
+
+		-
+			message: '#^PHPDoc type array\<string\> of property Winter\\Storm\\Database\\Attach\\File\:\:\$appends is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$appends\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Database/Attach/File.php
+
+		-
+			message: '#^PHPDoc type array\<string\> of property Winter\\Storm\\Database\\Attach\\File\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Database/Attach/File.php
+
+		-
+			message: '#^PHPDoc type array\<string\> of property Winter\\Storm\\Database\\Attach\\File\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Database/Attach/File.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Behaviors\\Encryptable\:\:propertyExists\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Behaviors/Encryptable.php
+
+		-
+			message: '#^Variable \$model in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: src/Database/Behaviors/Encryptable.php
+
+		-
+			message: '#^Parameter \#1 \$app of class Illuminate\\Database\\DatabaseManager constructor expects Illuminate\\Contracts\\Foundation\\Application, Illuminate\\Contracts\\Container\\Container given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Database/Capsule/Manager.php
 
 		-
-			messages:
-				- "#^Call to an undefined method Illuminate\\\\Database\\\\ConnectionInterface::getName\\(\\)\\.$#"
+			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: src/Database/MemoryCache.php
 
 		-
-			messages:
-				- "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Model::\\$(is_bind|master_field|pivot_data|slave_(id|type))\\.$#"
-				- "#^Method Winter\\\\Storm\\\\Database\\\\Model::getDeferredBindingRecords\\(\\) should return Winter\\\\Storm\\\\Database\\\\Collection but returns Illuminate\\\\Database\\\\Eloquent\\\\Collection\\<int, Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\.$#"
-				- "#^Return type \\(Winter\\\\Storm\\\\Database\\\\Pivot\\) of method Winter\\\\Storm\\\\Database\\\\Model::newPivot\\(\\) should be compatible with return type \\(Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Pivot\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Model::newPivot\\(\\)$#"
-				- "#^Return type \\(Winter\\\\Storm\\\\Database\\\\Collection\\) of method Winter\\\\Storm\\\\Database\\\\Model::newCollection\\(\\) should be compatible with return type \\(Illuminate\\\\Database\\\\Eloquent\\\\Collection\\<\\(int\\|string\\), static\\(Illuminate\\\\Database\\\\Eloquent\\\\Model\\)\\>\\) of method Illuminate\\\\Database\\\\Eloquent\\\\Model::newCollection\\(\\)#"
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_bind\.$#'
+			identifier: property.notFound
+			count: 1
 			path: src/Database/Model.php
 
 		-
-			messages:
-				- "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Model::errors\\(\\)\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$master_field\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$pivot_data\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slave_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slave_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:getDeferredBindingRecords\(\) should return Winter\\Storm\\Database\\Collection but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newBelongsTo\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model\> but returns Winter\\Storm\\Database\\Relations\\BelongsTo\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newBelongsToMany\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Relations\\Pivot, ''pivot''\> but returns Winter\\Storm\\Database\\Relations\\BelongsToMany\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newHasMany\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model\> but returns Winter\\Storm\\Database\\Relations\\HasMany\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newHasManyThrough\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasManyThrough\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TIntermediateModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model\> but returns Winter\\Storm\\Database\\Relations\\HasManyThrough\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newHasOne\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasOne\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model\> but returns Winter\\Storm\\Database\\Relations\\HasOne\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newHasOneThrough\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasOneThrough\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TIntermediateModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model\> but returns Winter\\Storm\\Database\\Relations\\HasOneThrough\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newMorphMany\(\) should return Illuminate\\Database\\Eloquent\\Relations\\MorphMany\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model\> but returns Winter\\Storm\\Database\\Relations\\MorphMany\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newMorphOne\(\) should return Illuminate\\Database\\Eloquent\\Relations\\MorphOne\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model\> but returns Winter\\Storm\\Database\\Relations\\MorphOne\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newMorphTo\(\) should return Illuminate\\Database\\Eloquent\\Relations\\MorphTo\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model\> but returns Winter\\Storm\\Database\\Relations\\MorphTo\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Method Winter\\Storm\\Database\\Model\:\:newMorphToMany\(\) should return Illuminate\\Database\\Eloquent\\Relations\\MorphToMany\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Relations\\MorphPivot, ''pivot''\> but returns Winter\\Storm\\Database\\Relations\\MorphToMany\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Return type \(Winter\\Storm\\Database\\Collection\) of method Winter\\Storm\\Database\\Model\:\:newCollection\(\) should be compatible with return type \(Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), static\(Illuminate\\Database\\Eloquent\\Model\)\>\) of method Illuminate\\Database\\Eloquent\\Model\:\:newCollection\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Return type \(Winter\\Storm\\Database\\Pivot\) of method Winter\\Storm\\Database\\Model\:\:newPivot\(\) should be compatible with return type \(Illuminate\\Database\\Eloquent\\Relations\\Pivot\) of method Illuminate\\Database\\Eloquent\\Model\:\:newPivot\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Model\:\:errors\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: src/Database/ModelException.php
 
 		-
-			messages:
-				- "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model::deleteCancel\\(\\)\\.$#"
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:deleteCancel\(\)\.$#'
+			identifier: method.notFound
+			count: 2
 			path: src/Database/Models/DeferredBinding.php
 
 		-
-			messages:
-				- "#^Parameter \\#1 \\$haystack of function str_contains expects string, int given\\.$#"
-				- "#^Parameter \\#1 \\$ids of method Winter\\\\Storm\\\\Database\\\\Pivot::newQueryForRestoration\\(\\) expects array\\<int\\|string\\>\\|string, int given\\.$#"
-				- "#^Parameter \\#2 \\$string of function explode expects string, int given\\.$#"
+			message: '#^Parameter \#1 \$haystack of function str_contains expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Database/MorphPivot.php
 
 		-
-			messages:
-				- "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model::getLeftColumnName\\(\\)\\.$#"
+			message: '#^Parameter \#1 \$ids of method Winter\\Storm\\Database\\Pivot\:\:newQueryForRestoration\(\) expects array\<int\|string\>\|string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/MorphPivot.php
+
+		-
+			message: '#^Parameter \#2 \$string of function explode expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/MorphPivot.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getLeftColumnName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: src/Database/NestedTreeScope.php
 
 		-
-			messages:
-				- "#^Access to an undefined property Illuminate.+(Builder|(Column|Index)Definition|Fluent)::\\$(.+)\\.$#"
-			paths:
-				- src/Database/Schema/Grammars/*Grammar.php
-				- src/Database/Query/Grammars/*Grammar.php
+			message: '#^Access to an undefined property Illuminate\\Database\\Query\\Builder\:\:\$concats\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Database/Query/Grammars/MariaDbGrammar.php
 
 		-
-			messages:
-				- "#^Call to an undefined method Illuminate\\\\Database\\\\ConnectionInterface::getName\\(\\)\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Database\\Query\\Builder\:\:\$concats\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Database/Query/Grammars/MySqlGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Query\\Builder\:\:\$concats\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Database/Query/Grammars/PostgresGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Query\\Builder\:\:\$concats\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Database/Query/Grammars/SQLiteGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Query\\Builder\:\:\$concats\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Database/Query/Grammars/SqlServerGrammar.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: src/Database/QueryBuilder.php
 
 		-
-			messages:
-				- "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\Relation::(getForeignKey|select|with(Default|Pivot|Timestamps))\\(\\)\\.$#"
-				- "#^Call to an undefined method (TDeclaringModel of )?Illuminate\\\\Database\\\\Eloquent\\\\Model::((un)?bind(Deferred|EventOnce)|fireEvent|getRelationDefinition|newRelationPivot|reloadRelations)\\(\\)\\.$#"
-				- "#^Call to an undefined method Illuminate\\\\Database\\\\Query\\\\Builder::lists\\(\\)\\.$#"
-				- "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\(Attach|(Belongs|Morph)To)(One|Many)::(flushDuplicateCache|getRelationExistenceQueryForSelfJoin)\\(\\)\\.$#"
-				- "#^Call to private method .+ of parent class Illuminate\\\\Database\\\\Eloquent\\\\Relations#"
-			paths:
-				- src/Database/Relations/*.php
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/AttachMany.php
 
 		-
-			messages:
-				- "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Model::\\$(children|sessionKey)\\.$#"
-				- "#^Parameter \\#3 \\$pageName of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects string, array given\\.$#"
-				- "#^Parameter \\#4 \\$page of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>::(simpleP|p)aginate\\(\\) expects int\\|null, string given.$#"
-
-			paths:
-				- src/Database/Relations/*
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/AttachMany.php
 
 		-
-			messages:
-				- "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model::getSortOrderColumn\\(\\)\\.$#"
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/AttachMany.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Relations\\AttachMany\:\:getRelationExistenceQueryForSelfJoin\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/AttachMany.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/AttachMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/AttachOne.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/AttachOne.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/AttachOne.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Relations\\AttachOne\:\:getRelationExistenceQueryForSelfJoin\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/AttachOne.php
+
+		-
+			message: '#^Call to private method delete\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphOne\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 3
+			path: src/Database/Relations/AttachOne.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphOne\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/AttachOne.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:bindEventOnce\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsTo.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsTo.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsTo.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsTo.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Relations\\BelongsTo\:\:getForeignKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsTo.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/BelongsTo.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$sessionKey\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:bindDeferred\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:bindEventOnce\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:fireEvent\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getRelationDefinition\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:newRelationPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:reloadRelations\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:unbindDeferred\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:lists\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Relations\\BelongsToMany\:\:flushDuplicateCache\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\Pivot,string\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#2 \$columns of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:paginate\(\) expects array\<int, string\>, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#2 \$columns of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:simplePaginate\(\) expects array\<int, string\>, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#2 \$currentPage \(int\) of method Winter\\Storm\\Database\\Relations\\BelongsToMany\:\:paginate\(\) should be compatible with parameter \$columns \(array\<int, string\>\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\Pivot,string\>\:\:paginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#2 \$currentPage \(int\|null\) of method Winter\\Storm\\Database\\Relations\\BelongsToMany\:\:simplePaginate\(\) should be compatible with parameter \$columns \(array\<int, string\>\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\Pivot,string\>\:\:simplePaginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#3 \$columns \(array\) of method Winter\\Storm\\Database\\Relations\\BelongsToMany\:\:paginate\(\) should be compatible with parameter \$pageName \(string\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\Pivot,string\>\:\:paginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#3 \$columns \(array\) of method Winter\\Storm\\Database\\Relations\\BelongsToMany\:\:simplePaginate\(\) should be compatible with parameter \$pageName \(string\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\Pivot,string\>\:\:simplePaginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#3 \$pageName of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:paginate\(\) expects string, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#3 \$pageName of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:simplePaginate\(\) expects string, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#4 \$page of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:paginate\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#4 \$page of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:simplePaginate\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#4 \$pageName \(string\) of method Winter\\Storm\\Database\\Relations\\BelongsToMany\:\:paginate\(\) should be compatible with parameter \$page \(int\|null\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\Pivot,string\>\:\:paginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Parameter \#4 \$pageName \(string\) of method Winter\\Storm\\Database\\Relations\\BelongsToMany\:\:simplePaginate\(\) should be compatible with parameter \$page \(int\|null\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\Pivot,string\>\:\:simplePaginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/BelongsToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasMany.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/HasMany.php
+
+		-
+			message: '#^Call to private method update\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/HasMany.php
+
+		-
+			message: '#^Call to private method whereNotIn\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/HasMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasManyThrough.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasManyThrough.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasManyThrough.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasManyThrough\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/HasManyThrough.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasOne.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasOne.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasOne.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasOne\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/HasOne.php
+
+		-
+			message: '#^Call to private method update\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasOne\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 2
+			path: src/Database/Relations/HasOne.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasOneThrough.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasOneThrough.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/HasOneThrough.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasOneThrough\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/HasOneThrough.php
+
+		-
+			message: '#^Instanceof between \*NEVER\* and Winter\\Storm\\Database\\Relations\\HasManyThrough will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
+			count: 4
+			path: src/Database/Relations/HasOneThrough.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Relations\\MorphMany\:\:getForeignKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
+			message: '#^Call to private method update\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
+			message: '#^Call to private method whereNotIn\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/MorphMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphOne.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphOne.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphOne.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Relations\\MorphOne\:\:getForeignKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphOne.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphOne\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/MorphOne.php
+
+		-
+			message: '#^Call to private method update\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphOne\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 2
+			path: src/Database/Relations/MorphOne.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:bindEventOnce\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphTo.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphTo.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphTo.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphTo.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Relations\\MorphTo\:\:getForeignKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphTo.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphTo\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/MorphTo.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withPivot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withTimestamps\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:lists\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Call to an undefined method Winter\\Storm\\Database\\Relations\\MorphToMany\:\:flushDuplicateCache\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Call to private method select\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\MorphToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\MorphPivot,string\>\.$#'
+			identifier: method.private
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#2 \$columns of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:paginate\(\) expects array\<int, string\>, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#2 \$columns of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:simplePaginate\(\) expects array\<int, string\>, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#2 \$currentPage \(int\) of method Winter\\Storm\\Database\\Relations\\MorphToMany\:\:paginate\(\) should be compatible with parameter \$columns \(array\<int, string\>\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\MorphPivot,string\>\:\:paginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#2 \$currentPage \(int\|null\) of method Winter\\Storm\\Database\\Relations\\MorphToMany\:\:simplePaginate\(\) should be compatible with parameter \$columns \(array\<int, string\>\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\MorphPivot,string\>\:\:simplePaginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#3 \$columns \(array\) of method Winter\\Storm\\Database\\Relations\\MorphToMany\:\:paginate\(\) should be compatible with parameter \$pageName \(string\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\MorphPivot,string\>\:\:paginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#3 \$columns \(array\) of method Winter\\Storm\\Database\\Relations\\MorphToMany\:\:simplePaginate\(\) should be compatible with parameter \$pageName \(string\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\MorphPivot,string\>\:\:simplePaginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#3 \$pageName of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:paginate\(\) expects string, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#3 \$pageName of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:simplePaginate\(\) expects string, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#4 \$page of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:paginate\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#4 \$page of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:simplePaginate\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#4 \$pageName \(string\) of method Winter\\Storm\\Database\\Relations\\MorphToMany\:\:paginate\(\) should be compatible with parameter \$page \(int\|null\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\MorphPivot,string\>\:\:paginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Parameter \#4 \$pageName \(string\) of method Winter\\Storm\\Database\\Relations\\MorphToMany\:\:simplePaginate\(\) should be compatible with parameter \$page \(int\|null\) of method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Relations\\MorphPivot,string\>\:\:simplePaginate\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Database/Relations/MorphToMany.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/MariaDbGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$renameTo\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/MariaDbGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/MySqlGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$renameTo\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/MySqlGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/PostgresGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$autoIncrement\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/SQLiteGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Database/Schema/Grammars/SQLiteGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$storedAs\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/SQLiteGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$storedAsJson\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/SQLiteGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$virtualAs\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/SQLiteGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$virtualAsJson\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/SQLiteGrammar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Database/Schema/Grammars/SqlServerGrammar.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getSortOrderColumn\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: src/Database/SortableScope.php
 
 		-
-			messages:
-				- "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Model::\\$children\\.$#"
-				- "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model::getParentId\\(\\)\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$children\.$#'
+			identifier: property.notFound
+			count: 1
 			path: src/Database/TreeCollection.php
 
 		-
-			messages:
-				- "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer::queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue::queue\\(\\)$#"
-				- "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer::queue\\(\\) should be compatible with parameter \\$queue \\(BackedEnum\\|string\\|null\\) of method Illuminate\\\\Mail\\\\Mailer::queue\\(\\)$#"
-				- "#^Parameter \\#2 \\$view \\(array\\|string\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer::queueOn\\(\\) should be compatible with parameter \\$view \\(Illuminate\\\\Contracts\\\\Mail\\\\Mailable\\) of method Illuminate\\\\Mail\\\\Mailer::queueOn\\(\\)$#"
-				- "#^Parameter \\#3 \\$data \\(array\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer::later\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue::later\\(\\)$#"
-				- "#^Parameter \\#3 \\$data \\(array\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer::later\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Mail\\\\Mailer::later\\(\\)$#"
-				- "#^Parameter \\#3 \\$view \\(array\\|string\\) of method Winter\\\\Storm\\\\Mail\\\\Mailer::laterOn\\(\\) should be compatible with parameter \\$view \\(Illuminate\\\\Contracts\\\\Mail\\\\Mailable\\) of method Illuminate\\\\Mail\\\\Mailer::laterOn\\(\\)$#"
-			path: src/Mail/Mailer.php
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getParentId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Database/TreeCollection.php
 
 		-
-			messages:
-				- "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Support\\\\Testing\\\\Fakes\\\\MailFake::queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\MailQueue::queue\\(\\)$#"
-				- "#^Parameter \\#2 \\$data \\(array\\) of method Winter\\\\Storm\\\\Support\\\\Testing\\\\Fakes\\\\MailFake::queue\\(\\) should be compatible with parameter \\$queue \\(string\\|null\\) of method Illuminate\\\\Support\\\\Testing\\\\Fakes\\\\MailFake::queue\\(\\)$#"
-				- "#^Return type \\(void\\) of method Winter\\\\Storm\\\\Support\\\\Testing\\\\Fakes\\\\MailFake::send\\(\\) should be compatible with return type \\(Illuminate\\\\Mail\\\\SentMessage\\|null\\) of method Illuminate\\\\Contracts\\\\Mail\\\\Mailer::send\\(\\)$#"
-			path: src/Support/Testing/Fakes/MailFake.php
-
-		-
-			messages:
-				- "#^Call to an undefined method Illuminate\\\\Routing\\\\Router::(after|before)\\(\\)\\.$#"
+			message: '#^Call to an undefined method Illuminate\\Routing\\Router\:\:after\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: src/Foundation/Application.php
 
 		-
-			messages:
-				- "#^Instanceof between \\*NEVER\\* and Winter\\\\Storm\\\\Database\\\\Relations\\\\HasManyThrough will always evaluate to false\\.$#"
-			paths:
-				- src/Database/Relations/Concerns/DefinedConstraints.php
-				- src/Database/Relations/Concerns/CanBeCounted.php
+			message: '#^Call to an undefined method Illuminate\\Routing\\Router\:\:before\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Foundation/Application.php
 
 		-
-			messages:
-				- "#Method Winter\\\\Storm\\\\Database\\\\Model::new(Has(One|Many)(Through)?|BelongsTo(Many)?|Morph(One|To|Many|ToMany))\\(\\) should return Illuminate\\\\Database\\\\Eloquent\\\\Relations#"
-			paths:
-				- src/Database/Concerns/HasRelationships.php
+			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Mail\\Mailer\:\:queue\(\) should be compatible with parameter \$queue \(BackedEnum\|string\|null\) of method Illuminate\\Mail\\Mailer\:\:queue\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Mail/Mailer.php
 
 		-
-			messages:
-				- "#^Parameter .+ of method (Illuminate|Winter).+::(paginate|simplePaginate).+ (expects|should be compatible with)#"
-			paths:
-				- src/Database/Relations/Concerns/BelongsOrMorphsToMany.php
+			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Mail\\Mailer\:\:queue\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Contracts\\Mail\\MailQueue\:\:queue\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Mail/Mailer.php
 
 		-
-			messages:
-				- "#^Call to an undefined method Winter\\\\Storm\\\\Database\\\\Relations\\\\(Morph(One|To|Many)|BelongsTo|Has(One|Many)Through)::getForeignKey\\(\\)\\.$#"
-			paths:
-				- src/Database/Relations/Concerns/CanBeCounted.php
+			message: '#^Parameter \#2 \$view \(array\|string\) of method Winter\\Storm\\Mail\\Mailer\:\:queueOn\(\) should be compatible with parameter \$view \(Illuminate\\Contracts\\Mail\\Mailable\) of method Illuminate\\Mail\\Mailer\:\:queueOn\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Mail/Mailer.php
+
+		-
+			message: '#^Parameter \#3 \$data \(array\) of method Winter\\Storm\\Mail\\Mailer\:\:later\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Contracts\\Mail\\MailQueue\:\:later\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Mail/Mailer.php
+
+		-
+			message: '#^Parameter \#3 \$data \(array\) of method Winter\\Storm\\Mail\\Mailer\:\:later\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Mail\\Mailer\:\:later\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Mail/Mailer.php
+
+		-
+			message: '#^Parameter \#3 \$view \(array\|string\) of method Winter\\Storm\\Mail\\Mailer\:\:laterOn\(\) should be compatible with parameter \$view \(Illuminate\\Contracts\\Mail\\Mailable\) of method Illuminate\\Mail\\Mailer\:\:laterOn\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Mail/Mailer.php
+
+		-
+			message: '#^PHPDoc tag @method for method Winter\\Storm\\Support\\Facades\\Url\:\:buildUrl\(\) parameter \#3 \$flags default value contains unresolvable type\.$#'
+			identifier: methodTag.unresolvableType
+			count: 1
+			path: src/Support/Facades/Url.php
+
+		-
+			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Contracts\\Mail\\MailQueue\:\:queue\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Support/Testing/Fakes/MailFake.php
+
+		-
+			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Support/Testing/Fakes/MailFake.php
+
+		-
+			message: '#^Return type \(void\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:send\(\) should be compatible with return type \(Illuminate\\Mail\\SentMessage\|null\) of method Illuminate\\Contracts\\Mail\\Mailer\:\:send\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/Support/Testing/Fakes/MailFake.php
