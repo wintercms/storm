@@ -73,8 +73,8 @@ parameters:
 			path: src/Database/Attach/File.php
 
 		-
-			message: '#^Call to an undefined method Winter\\Storm\\Database\\Behaviors\\Encryptable\:\:propertyExists\(\)\.$#'
-			identifier: method.notFound
+			message: '#^PHPDoc tag @var with type Winter\\Storm\\Database\\Model is not subtype of native type \$this\(Winter\\Storm\\Database\\Behaviors\\Encryptable\)\.$#'
+			identifier: varTag.nativeType
 			count: 1
 			path: src/Database/Behaviors/Encryptable.php
 
@@ -83,6 +83,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Database/Capsule/Manager.php
+
+		-
+			message: '#^Parameter \#1 \$resolver of method Illuminate\\Database\\Schema\\Builder\:\:blueprintResolver\(\) expects Closure\(string, Closure, string\)\: Illuminate\\Database\\Schema\\Blueprint, Closure\(Illuminate\\Database\\Connection, string, Closure\|null\)\: Winter\\Storm\\Database\\Schema\\Blueprint given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/DatabaseServiceProvider.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getName\(\)\.$#'
