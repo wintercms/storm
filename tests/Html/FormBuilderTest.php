@@ -7,13 +7,12 @@ use Winter\Storm\Html\FormBuilder;
 use Winter\Storm\Html\HtmlBuilder;
 use Winter\Storm\Router\UrlGenerator;
 use Winter\Storm\Tests\Assertions\AssertHtml;
-use Winter\Storm\Tests\TestCase;
 
 /**
  * @covers \Winter\Storm\Html\FormBuilder
  */
 #[TestDox('The FormBuilder utility')]
-class FormBuilderTest extends TestCase
+class FormBuilderTest extends \Winter\Storm\Tests\TestCase
 {
     use AssertHtml;
 

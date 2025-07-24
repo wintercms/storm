@@ -2,7 +2,7 @@
 
 use Winter\Storm\Database\Model;
 
-class PurgeableTraitTest extends DbTestCase
+class PurgeableTraitTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function setUp(): void
     {

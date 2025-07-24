@@ -10,7 +10,7 @@ use Winter\Storm\Tests\Database\Fixtures\Role;
 use Winter\Storm\Tests\Database\Fixtures\Author;
 use Winter\Storm\Tests\DbTestCase;
 
-class BelongsToManyTest extends DbTestCase
+class BelongsToManyTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testSetRelationValue()
     {

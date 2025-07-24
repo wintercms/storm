@@ -1,6 +1,6 @@
 <?php
 
-class HasSortableRelationsTest extends TestCase
+class HasSortableRelationsTest extends \Winter\Storm\Tests\TestCase
 {
     public function testForInfiniteLoop()
     {

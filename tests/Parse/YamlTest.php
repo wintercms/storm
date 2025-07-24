@@ -5,7 +5,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
 use Winter\Storm\Parse\Processor\Symfony3Processor;
 use Winter\Storm\Parse\Yaml as YamlParser;
 
-class YamlTest extends TestCase
+class YamlTest extends \Winter\Storm\Tests\TestCase
 {
     public function testParseWithoutProcessor()
     {

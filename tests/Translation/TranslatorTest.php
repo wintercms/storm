@@ -15,7 +15,7 @@ use Winter\Storm\Translation\Translator;
  *
  * Credits: https://github.com/laravel
  */
-class TranslatorTest extends TestCase
+class TranslatorTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * @var Translator

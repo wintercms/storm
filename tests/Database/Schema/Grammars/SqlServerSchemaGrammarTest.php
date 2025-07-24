@@ -6,7 +6,7 @@ use Illuminate\Database\Schema\SqlServerBuilder;
 use Winter\Storm\Database\Schema\Grammars\SqlServerGrammar;
 use Winter\Storm\Tests\GrammarTestCase;
 
-class SqlServerSchemaGrammarTest extends GrammarTestCase
+class SqlServerSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
 {
     public function setUp(): void
     {

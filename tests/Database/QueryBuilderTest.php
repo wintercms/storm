@@ -10,7 +10,7 @@ use Winter\Storm\Database\Query\Grammars\SQLiteGrammar;
 use Winter\Storm\Database\Query\Grammars\SqlServerGrammar;
 use Winter\Storm\Database\QueryBuilder;
 
-class QueryBuilderTest extends TestCase
+class QueryBuilderTest extends \Winter\Storm\Tests\TestCase
 {
     public function testSelectConcat()
     {

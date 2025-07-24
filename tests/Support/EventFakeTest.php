@@ -3,7 +3,7 @@
 use Winter\Storm\Events\Dispatcher;
 use Winter\Storm\Support\Testing\Fakes\EventFake;
 
-class EventFakeTest extends TestCase
+class EventFakeTest extends \Winter\Storm\Tests\TestCase
 {
     protected ?EventFake $faker = null;
 

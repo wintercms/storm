@@ -2,7 +2,7 @@
 
 use Winter\Storm\Support\Facades\Markdown;
 
-class MarkdownTest extends TestCase
+class MarkdownTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * Test fixtures that should be skipped by the data provider.

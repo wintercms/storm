@@ -6,7 +6,7 @@ use Illuminate\Database\Schema\PostgresBuilder;
 use Winter\Storm\Database\Schema\Grammars\PostgresGrammar;
 use Winter\Storm\Tests\GrammarTestCase;
 
-class PostgresSchemaGrammarTest extends GrammarTestCase
+class PostgresSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
 {
     public function setUp(): void
     {

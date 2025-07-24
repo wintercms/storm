@@ -6,7 +6,7 @@ use Winter\Storm\Mail\MailManager;
 use Winter\Storm\Support\Facades\Mail;
 use Winter\Storm\Support\Testing\Fakes\MailFake;
 
-class MailFakeTest extends TestCase
+class MailFakeTest extends \Winter\Storm\Tests\TestCase
 {
     protected ?MailManager $manager = null;
     protected string $recipient = '';

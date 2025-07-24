@@ -8,7 +8,7 @@ use Winter\Storm\Tests\Database\Fixtures\Post;
 use Winter\Storm\Tests\Database\Fixtures\Author;
 use Winter\Storm\Tests\DbTestCase;
 
-class DeferredBindingTest extends DbTestCase
+class DeferredBindingTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testNegatedBinding()
     {

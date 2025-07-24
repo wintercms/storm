@@ -2,9 +2,8 @@
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use Winter\Storm\Filesystem\Filesystem;
-use Winter\Storm\Tests\TestCase;
 
-class FilesystemTest extends TestCase
+class FilesystemTest extends \Winter\Storm\Tests\TestCase
 {
     protected ?Filesystem $filesystem = null;
 

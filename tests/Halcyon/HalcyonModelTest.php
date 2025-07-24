@@ -7,7 +7,7 @@ use Winter\Storm\Halcyon\Datasource\FileDatasource;
 use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Support\Facades\Input;
 
-class HalcyonModelTest extends TestCase
+class HalcyonModelTest extends \Winter\Storm\Tests\TestCase
 {
     protected $resolver;
 

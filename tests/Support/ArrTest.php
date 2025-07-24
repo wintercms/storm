@@ -2,7 +2,7 @@
 
 use Winter\Storm\Support\Arr;
 
-class ArrTest extends TestCase
+class ArrTest extends \Winter\Storm\Tests\TestCase
 {
     public function testMoveKeyToIndex()
     {

@@ -6,7 +6,7 @@ use Illuminate\Database\Schema\MySqlBuilder;
 use Winter\Storm\Database\Schema\Grammars\MySqlGrammar;
 use Winter\Storm\Tests\GrammarTestCase;
 
-class MySqlSchemaGrammarTest extends GrammarTestCase
+class MySqlSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
 {
     public function setUp(): void
     {

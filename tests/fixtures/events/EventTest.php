@@ -1,6 +1,6 @@
 <?php
 
-class EventTest extends TestCase
+class EventTest extends \Winter\Storm\Tests\TestCase
 {
     public function __construct()
     {

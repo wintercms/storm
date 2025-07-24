@@ -4,9 +4,8 @@ use EventTest;
 use Illuminate\Events\QueuedClosure;
 use Illuminate\Support\Facades\Event;
 use Winter\Storm\Events\Dispatcher;
-use Winter\Storm\Tests\TestCase;
 
-class DispatcherTest extends TestCase
+class DispatcherTest extends \Winter\Storm\Tests\TestCase
 {
     public function setUp(): void
     {

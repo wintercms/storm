@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
 /**
  * Adaptation of https://github.com/laravel/framework/pull/27206. Credit to @shrft for original implentation.
  */
-class CheckForTrustedHostTest extends TestCase
+class CheckForTrustedHostTest extends \Winter\Storm\Tests\TestCase
 {
     protected static $orignalTrustHosts;
 

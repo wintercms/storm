@@ -4,7 +4,6 @@ use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Translation\FileLoader;
 use Mockery as m;
-use Winter\Storm\Tests\TestCase;
 
 /**
  * These tests were adapted from the Laravel 9.x test cases to ensure our functionality still
@@ -12,7 +11,7 @@ use Winter\Storm\Tests\TestCase;
  *
  * Credits: https://github.com/laravel
  */
-class FileLoaderTest extends TestCase
+class FileLoaderTest extends \Winter\Storm\Tests\TestCase
 {
     protected function tearDown(): void
     {

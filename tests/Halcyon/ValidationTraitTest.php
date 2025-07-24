@@ -1,13 +1,11 @@
 <?php
 
-use Winter\Storm\Tests\TestCase;
-
 class ValidationTraitHost
 {
     use \Winter\Storm\Halcyon\Traits\Validation;
 }
 
-class ValidationTraitTest extends TestCase
+class ValidationTraitTest extends \Winter\Storm\Tests\TestCase
 {
     public function testArrayFieldNames()
     {

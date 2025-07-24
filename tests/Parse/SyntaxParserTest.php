@@ -10,7 +10,7 @@ class DropDownOptions
     }
 }
 
-class SyntaxParserTest extends TestCase
+class SyntaxParserTest extends \Winter\Storm\Tests\TestCase
 {
 
     public function testParseToTwig()

@@ -3,7 +3,7 @@
 use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Support\ClassLoader;
 
-class ClassLoaderTest extends TestCase
+class ClassLoaderTest extends \Winter\Storm\Tests\TestCase
 {
     /** @var ClassLoader */
     protected $classLoader;

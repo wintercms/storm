@@ -6,7 +6,7 @@ use Illuminate\Database\Schema\SQLiteBuilder;
 use Winter\Storm\Database\Schema\Grammars\SQLiteGrammar;
 use Winter\Storm\Tests\GrammarTestCase;
 
-class SQLiteSchemaGrammarTest extends GrammarTestCase
+class SQLiteSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
 {
     public function setUp(): void
     {

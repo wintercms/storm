@@ -1,11 +1,10 @@
 <?php
 
 use Illuminate\Events\QueuedClosure;
-use Winter\Storm\Tests\TestCase;
 
 include_once __DIR__.'/../fixtures/events/EventTest.php';
 
-class EmitterTest extends TestCase
+class EmitterTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * The object under test.

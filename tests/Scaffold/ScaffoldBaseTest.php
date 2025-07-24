@@ -14,7 +14,7 @@ class ScaffoldBaseTestCommand extends GeneratorCommand
     }
 }
 
-class ScaffoldBaseTest extends TestCase
+class ScaffoldBaseTest extends \Winter\Storm\Tests\TestCase
 {
     //
     // Helpers

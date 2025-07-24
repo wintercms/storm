@@ -2,7 +2,7 @@
 
 use Winter\Storm\Router\Helper;
 
-class RouterHelperTest extends TestCase
+class RouterHelperTest extends \Winter\Storm\Tests\TestCase
 {
     public function testSegmentIsOptional()
     {
