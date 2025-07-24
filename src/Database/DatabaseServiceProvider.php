@@ -1,9 +1,12 @@
 <?php namespace Winter\Storm\Database;
 
-use Winter\Storm\Database\Schema\Blueprint;
-use Winter\Storm\Database\Connectors\ConnectionFactory;
+use Illuminate\Database\Connection;
 use Illuminate\Database\DatabaseServiceProvider as DatabaseServiceProviderBase;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Database\DatabaseTransactionsManager;
+
+use Winter\Storm\Database\Schema\Blueprint;
+use Winter\Storm\Database\Connectors\ConnectionFactory;
 
 class DatabaseServiceProvider extends DatabaseServiceProviderBase
 {
@@ -33,10 +36,17 @@ class DatabaseServiceProvider extends DatabaseServiceProviderBase
         Model::flushDuplicateCache();
         Model::flushEventListeners();
 
-        $this->registerEloquentFactory();
-
+        $this->registerConnectionServices();
         $this->registerQueueableEntityResolver();
+    }
 
+    /**
+     * Register the primary database bindings.
+     *
+     * @return void
+     */
+    protected function registerConnectionServices()
+    {
         // The connection factory is used to create the actual connection instances on
         // the database. We will inject the factory into the manager so that it may
         // make the connections while they are actually needed and not of before.
@@ -61,6 +71,10 @@ class DatabaseServiceProvider extends DatabaseServiceProviderBase
             $app['events']->dispatch('db.schema.getBuilder', [$builder]);
 
             return $builder;
+        });
+
+        $this->app->singleton('db.transactions', function ($app) {
+            return new DatabaseTransactionsManager;
         });
 
         $this->app->singleton('db.dongle', function ($app) {
@@ -92,8 +106,8 @@ class DatabaseServiceProvider extends DatabaseServiceProviderBase
     protected function swapSchemaBuilderBlueprint()
     {
         $this->app['events']->listen('db.schema.getBuilder', function (\Illuminate\Database\Schema\Builder $builder) {
-            $builder->blueprintResolver(function ($table, $callback) {
-                return new Blueprint($table, $callback);
+            $builder->blueprintResolver(function (Connection $connection, string $table, \Closure|null $callback) {
+                return new Blueprint($connection, $table, $callback);
             });
         });
     }

@@ -19,7 +19,7 @@ use Winter\Storm\Events\Dispatcher;
  * @author Winter CMS Maintainers (updated)
  * @copyright Winter CMS
  */
-class DbTestCase extends TestCase
+class DbTestCase extends \Winter\Storm\Tests\TestCase
 {
     use RefreshDatabase;
 

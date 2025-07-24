@@ -2,7 +2,7 @@
 
 use Winter\Storm\Parse\EnvFile;
 
-class EnvFileTest extends TestCase
+class EnvFileTest extends \Winter\Storm\Tests\TestCase
 {
     public function testReadFile()
     {

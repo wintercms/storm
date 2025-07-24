@@ -1,17 +1,21 @@
 <?php namespace Winter\Storm\Database\Connections;
 
 use PDO;
-use Illuminate\Database\PDO\MySqlDriver;
+use Illuminate\Database\MySqlConnection as BaseMySqlConnection;
 use Illuminate\Database\Schema\MySqlBuilder;
 use Illuminate\Database\Query\Processors\MySqlProcessor;
-use Illuminate\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
+
+use Winter\Storm\Database\PDO\MySqlDriver;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
+use Winter\Storm\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class MySqlConnection extends Connection
+class MySqlConnection extends BaseMySqlConnection
 {
+    use HasConnection;
+
     /**
      * Get the default query grammar instance.
      *
@@ -19,7 +23,7 @@ class MySqlConnection extends Connection
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new QueryGrammar);
+        return new QueryGrammar($this);
     }
 
     /**
@@ -43,7 +47,7 @@ class MySqlConnection extends Connection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return $this->withTablePrefix(new SchemaGrammar);
+        return new SchemaGrammar($this);
     }
 
     /**
@@ -54,16 +58,6 @@ class MySqlConnection extends Connection
     protected function getDefaultPostProcessor()
     {
         return new MySqlProcessor;
-    }
-
-    /**
-     * Get the Doctrine DBAL driver.
-     *
-     * @return \Illuminate\Database\PDO\MySqlDriver
-     */
-    protected function getDoctrineDriver()
-    {
-        return new MySqlDriver;
     }
 
     /**
@@ -82,5 +76,15 @@ class MySqlConnection extends Connection
                 is_int($value) || is_float($value) ? PDO::PARAM_INT : PDO::PARAM_STR
             );
         }
+    }
+
+    /**
+     * Get the Doctrine DBAL driver.
+     *
+     * @return \Winter\Storm\Database\PDO\MySqlDriver
+     */
+    protected function getDoctrineDriver()
+    {
+        return new MySqlDriver;
     }
 }

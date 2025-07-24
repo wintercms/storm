@@ -4,7 +4,7 @@ use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Halcyon\Datasource\Resolver;
 use Winter\Storm\Halcyon\Datasource\FileDatasource;
 
-class DatasourceResolverTest extends TestCase
+class DatasourceResolverTest extends \Winter\Storm\Tests\TestCase
 {
 
     public function testConstruct()

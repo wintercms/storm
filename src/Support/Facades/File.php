@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Support\Facades;
 
 use Winter\Storm\Support\Facade;
+use Illuminate\Filesystem\FilesystemAdapter;
 
 /**
  * @method static bool exists(string $path)

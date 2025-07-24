@@ -3,9 +3,9 @@
 use Winter\Storm\Foundation\Application;
 use Winter\Storm\Filesystem\PathResolver;
 
-class ApplicationTest extends TestCase
+class ApplicationTest extends \Winter\Storm\Tests\TestCase
 {
-    protected string $basePath;
+    protected string $basePath = '';
 
     protected function setUp(): void
     {

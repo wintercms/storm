@@ -6,19 +6,15 @@ parameters:
     paths:
         - src
     level: 5
+    ignoreErrors:
+        - identifier: trait.unused
     excludePaths:
         # Exclude PHP Parser files
         - src/Parse/PHP/ArrayFile.php
-        - src/Parse/PHP/ArrayPrinter.php
         - src/Foundation/Console/KeyGenerateCommand.php
         - src/Scaffold/GeneratorCommand.php
-    ignoreErrors:
-        - message: '#Call to private method select\(\)#'
-          paths:
-            - src/Database/Relations/Concerns/CanBeCounted.php
     disableSchemaScan: true
     databaseMigrationsPath:
         - src/Auth/Migrations
         - src/Database/Migrations
-    stubFiles:
-        - tests/stubs/Facades.stub
+    treatPhpDocTypesAsCertain: false

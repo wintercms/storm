@@ -2,7 +2,7 @@
 
 use Winter\Storm\Support\Svg;
 
-class SvgTest extends TestCase
+class SvgTest extends \Winter\Storm\Tests\TestCase
 {
     public function testCleanSvg()
     {

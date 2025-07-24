@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Tests\DbTestCase;
 
-class ModelTest extends DbTestCase
+class ModelTest extends \Winter\Storm\Tests\DbTestCase
 {
     protected $seeded = [];
 

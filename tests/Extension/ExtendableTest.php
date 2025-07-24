@@ -4,7 +4,7 @@ use Winter\Storm\Extension\Extendable;
 use Winter\Storm\Extension\ExtensionBase;
 use Winter\Storm\Support\Testing\MocksClassLoader;
 
-class ExtendableTest extends TestCase
+class ExtendableTest extends \Winter\Storm\Tests\TestCase
 {
     use MocksClassLoader;
 

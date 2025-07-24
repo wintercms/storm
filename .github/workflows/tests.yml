@@ -3,8 +3,6 @@ name: Tests
 on:
   push:
     branches:
-      - "1.0"
-      - "1.1"
       - develop
   pull_request:
 
@@ -15,10 +13,10 @@ concurrency:
 jobs:
   unitTests:
     strategy:
-      max-parallel: 6
+      max-parallel: 4
       matrix:
         operatingSystem: [ubuntu-latest, windows-latest]
-        phpVersion: ['8.1', '8.2', '8.3', '8.4']
+        phpVersion: ['8.2', '8.3', '8.4']
       fail-fast: false
     runs-on: ${{ matrix.operatingSystem }}
     name: ${{ matrix.operatingSystem }} / PHP ${{ matrix.phpVersion }}
@@ -36,6 +34,9 @@ jobs:
           extensions: ${{ env.extensions }}
           coverage: none
 
+      - name: Configure Composer GitHub token
+        run: composer config --global --auth github-oauth.github.com ${{ secrets.COMPOSER_GITHUB_TOKEN }}
+
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --no-scripts
 
@@ -44,12 +45,4 @@ jobs:
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Run tests
-        run: ./vendor/bin/phpunit ./tests
-
-      - name: Upload test artifacts on failure
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-            name: ResizerTest-${{ matrix.operatingSystem }}-PHP${{ matrix.phpVersion }}
-            path: tests/artifacts/ResizerTest/
-            if-no-files-found: error
+        run: composer test

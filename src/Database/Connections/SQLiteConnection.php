@@ -1,16 +1,20 @@
 <?php namespace Winter\Storm\Database\Connections;
 
+use Illuminate\Database\SQLiteConnection as BaseSQLiteConnection;
 use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Database\Query\Processors\SQLiteProcessor;
-use Illuminate\Database\PDO\SQLiteDriver;
+
+use Winter\Storm\Database\PDO\SQLiteDriver;
 use Winter\Storm\Database\Query\Grammars\SQLiteGrammar as QueryGrammar;
-use Illuminate\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
+use Winter\Storm\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class SQLiteConnection extends Connection
+class SQLiteConnection extends BaseSQLiteConnection
 {
+    use HasConnection;
+
     /**
      * Get the default query grammar instance.
      *
@@ -18,7 +22,7 @@ class SQLiteConnection extends Connection
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new QueryGrammar);
+        return new QueryGrammar($this);
     }
 
     /**
@@ -42,7 +46,7 @@ class SQLiteConnection extends Connection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return $this->withTablePrefix(new SchemaGrammar);
+        return new SchemaGrammar($this);
     }
 
     /**
@@ -58,7 +62,7 @@ class SQLiteConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Illuminate\Database\PDO\SQLiteDriver
+     * @return \Winter\Storm\Database\PDO\SQLiteDriver
      */
     protected function getDoctrineDriver()
     {

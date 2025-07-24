@@ -976,6 +976,8 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
 
             return true;
         }
+
+        return null;
     }
 
     /**

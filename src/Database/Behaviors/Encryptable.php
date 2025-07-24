@@ -1,7 +1,9 @@
-<?php namespace Winter\Storm\Database\Behaviors;
+<?php
 
-use App;
+namespace Winter\Storm\Database\Behaviors;
+
 use Illuminate\Contracts\Encryption\Encrypter;
+use Illuminate\Support\Facades\App;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Extension\ExtensionBase;

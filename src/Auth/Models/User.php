@@ -54,7 +54,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     protected $dates = ['activated_at', 'last_login'];
 
     /**
-     * @var array<int, string> The attributes that should be hidden for arrays.
+     * @var array<string> The attributes that should be hidden for arrays.
      */
     protected $hidden = ['password', 'reset_password_code', 'activation_code', 'persist_code'];
 
@@ -109,6 +109,13 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
      * @var string The column name of the "remember me" token.
      */
     protected $rememberTokenName = 'persist_code';
+
+    /**
+     * The column name of the password field using during authentication.
+     *
+     * @var string
+     */
+    protected $authPasswordName = 'password';
 
     /**
      * @var array The user merged permissions.
@@ -248,7 +255,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
      */
     public function checkPassword($password)
     {
-        return Hash::check($password, $this->password);
+        return Hash::check($password, $this->getAuthPassword());
     }
 
     /**
@@ -285,7 +292,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     public function attemptResetPassword($resetCode, $newPassword)
     {
         if ($this->checkResetPasswordCode($resetCode)) {
-            $this->password = $newPassword;
+            $this->{$this->getAuthPasswordName()} = $newPassword;
             $this->reset_password_code = null;
             return $this->forceSave();
         }
@@ -601,12 +608,22 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     }
 
     /**
+     * Get the name of the password attribute for the user.
+     *
+     * @return string
+     */
+    public function getAuthPasswordName()
+    {
+        return $this->authPasswordName;
+    }
+
+    /**
      * Get the password for the user.
      * @return string
      */
     public function getAuthPassword()
     {
-        return $this->password;
+        return $this->{$this->getAuthPasswordName()};
     }
 
     /**

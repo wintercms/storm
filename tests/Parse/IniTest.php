@@ -2,7 +2,7 @@
 
 use Winter\Storm\Parse\Ini as IniParser;
 
-class IniTest extends TestCase
+class IniTest extends \Winter\Storm\Tests\TestCase
 {
 
     public function testBasic()

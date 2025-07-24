@@ -1,8 +1,9 @@
 <?php namespace Winter\Storm\Config;
 
 use PhpParser\Error;
-use PhpParser\Lexer\Emulative;
-use PhpParser\ParserFactory;
+use PhpParser\Lexer;
+use PhpParser\Parser\Php8;
+use PhpParser\PhpVersion;
 use Winter\Storm\Exception\SystemException;
 use Winter\Storm\Parse\PHP\ArrayFile;
 
@@ -26,23 +27,16 @@ class ConfigWriter
 
     public function toContent(string $contents, $newValues): string
     {
-        $lexer = new Emulative([
-            'usedAttributes' => [
-                'comments',
-                'startTokenPos',
-                'startLine',
-                'endTokenPos',
-                'endLine'
-            ]
-        ]);
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
+        $version = PhpVersion::getHostVersion();
+        $lexer = new Lexer\Emulative($version);
+        $parser = new Php8($lexer, $version);
 
         try {
-            $ast = $parser->parse($contents);
+                $ast = $parser->parse($contents);
         } catch (Error $e) {
-            throw new SystemException($e);
+                throw new SystemException($e);
         }
 
-        return (new ArrayFile($ast, $lexer, null))->set($newValues)->render();
+        return (new ArrayFile($ast, $parser))->set($newValues)->render();
     }
 }

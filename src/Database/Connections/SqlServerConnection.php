@@ -3,17 +3,22 @@
 use Closure;
 use Exception;
 use Throwable;
+
+use Illuminate\Database\SqlServerConnection as BaseSqlServerConnection;
 use Illuminate\Database\Schema\SqlServerBuilder;
-use Illuminate\Database\PDO\SqlServerDriver;
 use Illuminate\Database\Query\Processors\SqlServerProcessor;
-use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
+
+use Winter\Storm\Database\PDO\SqlServerDriver;
 use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
+use Winter\Storm\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class SqlServerConnection extends Connection
+class SqlServerConnection extends BaseSqlServerConnection
 {
+    use HasConnection;
+
     /**
      * Execute a Closure within a transaction.
      *
@@ -64,7 +69,7 @@ class SqlServerConnection extends Connection
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new QueryGrammar);
+        return new QueryGrammar($this);
     }
 
     /**
@@ -88,7 +93,7 @@ class SqlServerConnection extends Connection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return $this->withTablePrefix(new SchemaGrammar);
+        return new SchemaGrammar($this);
     }
 
     /**
@@ -104,7 +109,7 @@ class SqlServerConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Illuminate\Database\PDO\SqlServerDriver
+     * @return \Winter\Storm\Database\PDO\SqlServerDriver
      */
     protected function getDoctrineDriver()
     {

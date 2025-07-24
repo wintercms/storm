@@ -2,7 +2,7 @@
 
 use Winter\Storm\Parse\PHP\ArrayFile;
 
-class ArrayFileTest extends TestCase
+class ArrayFileTest extends \Winter\Storm\Tests\TestCase
 {
     public function testReadFile()
     {

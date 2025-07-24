@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Translation\FileLoader;
 use Mockery as m;
@@ -10,11 +11,12 @@ use Mockery as m;
  *
  * Credits: https://github.com/laravel
  */
-class FileLoaderTest extends TestCase
+class FileLoaderTest extends \Winter\Storm\Tests\TestCase
 {
     protected function tearDown(): void
     {
         m::close();
+        HandleExceptions::flushState();
     }
 
     public function testLoadMethodWithoutNamespacesProperlyCallsLoader()
@@ -31,6 +33,7 @@ class FileLoaderTest extends TestCase
         $loader = new FileLoader($files = m::mock(Filesystem::class), __DIR__);
         $files->shouldReceive('exists')->once()->with('bar/en/foo.php')->andReturn(true);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/en/namespace/foo.php')->andReturn(false);
+        $files->shouldReceive('exists')->once()->with(__DIR__.'/vendor/namespace/en/foo.php')->andReturn(false);
         $files->shouldReceive('getRequire')->once()->with('bar/en/foo.php')->andReturn(['foo' => 'bar']);
         $loader->addNamespace('namespace', 'bar');
 

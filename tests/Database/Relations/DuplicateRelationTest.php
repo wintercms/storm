@@ -8,7 +8,7 @@ use Winter\Storm\Tests\Database\Fixtures\Author;
 use Winter\Storm\Tests\Database\Fixtures\DuplicateRelationNote;
 use Winter\Storm\Tests\DbTestCase;
 
-class DuplicateRelationTest extends DbTestCase
+class DuplicateRelationTest extends \Winter\Storm\Tests\DbTestCase
 {
     /** Note that we cannot stop people getting the method-style relation in this instance */
     public function testMethodRelationWhenPropertyRelationExists()

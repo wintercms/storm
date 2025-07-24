@@ -7,7 +7,7 @@ use Winter\Storm\Tests\Database\Fixtures\Author;
 use Winter\Storm\Tests\Database\Fixtures\Post;
 use Winter\Storm\Tests\DbTestCase;
 
-class BelongsToTest extends DbTestCase
+class BelongsToTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testSetRelationValue()
     {

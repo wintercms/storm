@@ -2,7 +2,7 @@
 
 use Winter\Storm\Extension\Extendable;
 
-class ExtensionAndEmitterSerializationTest extends TestCase
+class ExtensionAndEmitterSerializationTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * Test whether nested closures in two different traits get serialized properly.

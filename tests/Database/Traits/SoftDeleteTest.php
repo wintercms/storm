@@ -18,7 +18,7 @@ use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftAuthorAndSoftDelete;
 use Winter\Storm\Tests\Database\Fixtures\UserLaravelWithSoftDelete;
 use Winter\Storm\Tests\DbTestCase;
 
-class SoftDeleteTest extends DbTestCase
+class SoftDeleteTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testDeleteOptionOnHardModel()
     {

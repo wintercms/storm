@@ -2,9 +2,9 @@
 
 use Winter\Storm\Html\BlockBuilder;
 
-class BlockBuilderTest extends TestCase
+class BlockBuilderTest extends \Winter\Storm\Tests\TestCase
 {
-    protected BlockBuilder $Block;
+    protected ?BlockBuilder $Block = null;
 
     public function setUp(): void
     {

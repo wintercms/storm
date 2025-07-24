@@ -277,7 +277,7 @@ class Builder
      * Execute the query as a fresh "select" statement.
      *
      * @param  array  $columns
-     * @return \Winter\Storm\Halcyon\Collection|static[]
+     * @return array|null
      */
     public function getFresh($columns = ['*'])
     {
@@ -703,7 +703,6 @@ class Builder
      */
     protected function getCache()
     {
-        /** @var \Illuminate\Cache\Repository */
         $cache = $this->model->getCacheManager()->driver($this->cacheDriver);
 
         return $this->cacheTags ? $cache->tags($this->cacheTags) : $cache;
