@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Connection;
-use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar;
@@ -101,11 +100,8 @@ class QueryBuilderTest extends \Winter\Storm\Tests\TestCase
             return parent::getConnection($connection, $table);
         }
 
-        $connection = $this->getMockBuilder(ConnectionInterface::class)
+        $connection = $this->getMockBuilder(\Illuminate\Database\Connection::class)
             ->disableOriginalConstructor()
-            ->disableOriginalClone()
-            ->disableArgumentCloning()
-            ->disallowMockingUnknownTypes()
             ->onlyMethods([
                 'table',
                 'raw',
@@ -127,8 +123,6 @@ class QueryBuilderTest extends \Winter\Storm\Tests\TestCase
                 'transactionLevel',
                 'pretend',
                 'getDatabaseName',
-            ])
-            ->addMethods([
                 'getConfig',
             ])
             ->getMock();
@@ -141,7 +135,7 @@ class QueryBuilderTest extends \Winter\Storm\Tests\TestCase
 
     protected function getBuilder()
     {
-        $grammar = new Grammar;
+        $grammar = new Grammar($this->getConnection());
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);

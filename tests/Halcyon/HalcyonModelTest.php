@@ -377,19 +377,13 @@ ESC;
 
     protected function setValidatorOnModel()
     {
-        $translator = $this->getMockBuilder('Illuminate\Contracts\Translation\Translator')
-        ->onlyMethods([
-            'get',
-            'choice',
-            'setLocale',
-            'getLocale'
-        ])
-        ->addMethods([
-            'trans',
-            'transChoice',
-        ])->getMock();
+        $translator = $this->getMockBuilder(\Illuminate\Contracts\Translation\Translator::class)
+            ->onlyMethods(['get','choice','setLocale','getLocale']) // existing ones
+            ->getMock();
 
-        $translator->expects($this->any())->method('get')->will($this->returnArgument(0));
+        $translator->expects($this->any())
+            ->method('get')
+            ->willReturnArgument(0);
 
         $factory = new \Winter\Storm\Validation\Factory($translator);
 

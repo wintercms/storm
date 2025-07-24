@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  * @see https://github.com/laravel/framework/blob/6.x/tests/Routing/RoutingUrlGeneratorTest.php
  * Replicated here to verify Winter does not break compatibility with Laravel
  */
-class RoutingUrlGeneratorTest extends \Winter\Storm\Tests\TestCase
+class RoutingUrlGeneratorTest extends TestCase
 {
     public function testBasicGeneration()
     {

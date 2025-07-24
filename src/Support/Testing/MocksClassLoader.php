@@ -55,7 +55,7 @@ trait MocksClassLoader
 
         $subject->expects($this->any())
             ->method('extensionGetClassLoader')
-            ->will($this->returnValue($this->classLoader));
+            ->willReturn($this->classLoader);
 
         // Run construction
         $subject->__construct();

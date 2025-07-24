@@ -122,7 +122,9 @@ class ValidationTest extends \Winter\Storm\Tests\TestCase
 
     public function testArrayFieldNames()
     {
-        $mock = $this->getMockForTrait('Winter\Storm\Database\Traits\Validation');
+        $mock = new class {
+            use \Winter\Storm\Database\Traits\Validation;
+        };
 
         $rules = [
             'field' => 'required',
