@@ -2,9 +2,12 @@
 
 use DirectoryIterator;
 use FilesystemIterator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Filesystem\Filesystem as FilesystemBase;
+use Illuminate\Filesystem\FilesystemAdapter;
+use InvalidArgumentException;
 use ReflectionClass;
 use Winter\Storm\Support\Facades\Config;
-use Illuminate\Filesystem\Filesystem as FilesystemBase;
 
 /**
  * File helper
@@ -83,6 +86,68 @@ class Filesystem extends FilesystemBase
         }
 
         return '0 bytes';
+    }
+
+    /**
+     * Converts a file size string (e.g., "1 GB", "500 MB", "512K", "2M") to bytes.
+     * Returns the result as a string to handle large sizes safely.
+     * @throws InvalidArgumentException if it is unable to parse the provided string
+     */
+    public function sizeToBytes(string $size): string
+    {
+        // Trim whitespace and convert to lowercase for consistency
+        $size = strtolower(trim($size));
+
+        // Regular expression to match both human-readable (e.g., "1 GB") and PHP shorthand (e.g., "1G")
+        if (preg_match('/^(\d+(?:\.\d+)?)\s*(gb|g|mb|m|kb|k|bytes|byte)?$/', $size, $matches)) {
+            $value = (float) $matches[1]; // Numeric part of the size
+            $unit = $matches[2] ?? 'bytes'; // Default to bytes if no unit is provided
+
+            switch ($unit) {
+                case 'gb':
+                case 'g':
+                    $value *= 1024 * 1024 * 1024;
+                    break;
+                case 'mb':
+                case 'm':
+                    $value *= 1024 * 1024;
+                    break;
+                case 'kb':
+                case 'k':
+                    $value *= 1024;
+                    break;
+                case 'byte':
+                case 'bytes':
+                    // No multiplication needed; already in bytes
+                    break;
+                default:
+                    throw new InvalidArgumentException("Unknown size unit '$unit'");
+            }
+
+            return (string) $value;
+        }
+
+        throw new InvalidArgumentException("Invalid size format '$size'");
+    }
+
+    /**
+     * Retrieves the maximum file upload size allowed by the server configuration.
+     * Compares `upload_max_filesize` and `post_max_size` and returns the smaller value.
+     *
+     * @return string The maximum upload size in bytes as a string.
+     */
+    public function getMaxUploadSize(): string
+    {
+        // Get `upload_max_filesize` and `post_max_size` from PHP configuration
+        $uploadMaxSize = ini_get('upload_max_filesize');
+        $postMaxSize = ini_get('post_max_size');
+
+        // Convert both values to bytes using sizeToBytes
+        $uploadMaxSizeBytes = $this->sizeToBytes($uploadMaxSize);
+        $postMaxSizeBytes = $this->sizeToBytes($postMaxSize);
+
+        // Compare as floats and return the smaller value as a string
+        return (float) $uploadMaxSizeBytes > (float) $postMaxSizeBytes ? $postMaxSizeBytes : $uploadMaxSizeBytes;
     }
 
     /**
@@ -464,5 +529,68 @@ class Filesystem extends FilesystemBase
         $iterator($basePath);
 
         $this->symlinks = $symlinks;
+    }
+
+    /**
+     * Copies a file from one storage disk to another.
+     *
+     * @param string|FilesystemAdapter $sourceDisk      The source disk name or instance.
+     * @param string|FilesystemAdapter $destinationDisk The destination disk name or instance.
+     * @param string                   $filePath        The path to the file on the source disk.
+     * @param string|null              $targetPath      The path to the file on the destination disk. If null, uses the same as $filePath.
+     * @return bool Returns true if the file was copied successfully, false otherwise.
+     */
+    public function copyBetweenDisks(string|FilesystemAdapter $sourceDisk, string|FilesystemAdapter $destinationDisk, string $filePath, ?string $targetPath = null): bool
+    {
+        // Resolve source disk
+        if (is_string($sourceDisk)) {
+            $sourceDisk = Storage::disk($sourceDisk);
+        }
+
+        // Resolve destination disk
+        if (is_string($destinationDisk)) {
+            $destinationDisk = Storage::disk($destinationDisk);
+        }
+
+        // Open a read stream from the source disk
+        $readStream = $sourceDisk->readStream($filePath);
+        if (!$readStream) {
+            return false;
+        }
+
+        // Write the stream to the destination disk
+        $result = $destinationDisk->put($targetPath ?? $filePath, $readStream);
+
+        // Close the read stream
+        if (is_resource($readStream)) {
+            fclose($readStream);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Moves a file from one storage disk to another.
+     *
+     * @param string|FilesystemAdapter $sourceDisk      The source disk name or instance.
+     * @param string|FilesystemAdapter $destinationDisk The destination disk name or instance.
+     * @param string                   $filePath        The path to the file on the source disk.
+     * @param string|null              $targetPath      The path to the file on the destination disk. If null, uses the same as $filePath.
+     * @return bool Returns true if the file was moved successfully, false otherwise.
+     */
+    public function moveBetweenDisks(string|FilesystemAdapter $sourceDisk, string|FilesystemAdapter $destinationDisk, string $filePath, ?string $targetPath = null): bool
+    {
+        $copied = $this->copyBetweenDisks($sourceDisk, $destinationDisk, $filePath, $targetPath);
+
+        if ($copied) {
+            // Delete the original file from the source disk
+            if (is_string($sourceDisk)) {
+                $sourceDisk = Storage::disk($sourceDisk);
+            }
+
+            return $sourceDisk->delete($filePath);
+        }
+
+        return false;
     }
 }

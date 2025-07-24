@@ -1,35 +1,38 @@
-<?php namespace Winter\Storm\Database\Relations;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
+namespace Winter\Storm\Database\Relations;
+
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 
 /**
  * @phpstan-property \Winter\Storm\Database\Model $parent
  */
-class HasOne extends HasOneBase
+class HasOne extends HasOneBase implements RelationInterface
 {
     use Concerns\HasOneOrMany;
+    use Concerns\CanBeCounted;
+    use Concerns\CanBeDependent;
+    use Concerns\CanBeExtended;
+    use Concerns\CanBePushed;
+    use Concerns\CanBeSoftDeleted;
     use Concerns\DefinedConstraints;
+    use Concerns\HasRelationName;
 
     /**
-     * Create a new "hasOne" relationship.
-     * @return void
+     * {@inheritDoc}
      */
-    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey, $relationName = null)
+    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey)
     {
-        $this->relationName = $relationName;
-
         parent::__construct($query, $parent, $foreignKey, $localKey);
-
-        $this->addDefinedConstraints();
+        $this->extendableRelationConstruct();
     }
 
     /**
-     * Helper for setting this relationship using various expected
-     * values. For example, $model->relation = $value;
+     * {@inheritDoc}
      */
-    public function setSimpleValue($value)
+    public function setSimpleValue($value): void
     {
         if (is_array($value)) {
             return;
@@ -75,8 +78,7 @@ class HasOne extends HasOneBase
     }
 
     /**
-     * Helper for getting this relationship simple value,
-     * generally useful with form values.
+     * {@inheritDoc}
      */
     public function getSimpleValue()
     {
@@ -89,5 +91,20 @@ class HasOne extends HasOneBase
         }
 
         return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArrayDefinition(): array
+    {
+        return [
+            get_class($this->query->getModel()),
+            'key' => $this->getForeignKeyName(),
+            'otherKey' => $this->getOtherKey(),
+            'delete' => $this->isDependent(),
+            'push' => $this->isPushable(),
+            'count' => $this->isCountOnly(),
+        ];
     }
 }

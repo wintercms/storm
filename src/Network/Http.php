@@ -275,6 +275,7 @@ class Http
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Winter Storm');
 
         if (defined('CURLOPT_FOLLOWLOCATION') && !ini_get('open_basedir')) {
             curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
@@ -462,7 +463,7 @@ class Http
     /**
      * Add a data to the request.
      */
-    public function data(array|string $key, array|string $value = null): self
+    public function data(array|string $key, array|string|null $value = null): self
     {
         if (is_array($key)) {
             foreach ($key as $_key => $_value) {

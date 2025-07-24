@@ -2,6 +2,8 @@
 
 use Illuminate\Events\QueuedClosure;
 
+include_once __DIR__.'/../fixtures/events/EventTest.php';
+
 class EmitterTest extends TestCase
 {
     /**
@@ -57,6 +59,24 @@ class EmitterTest extends TestCase
         $emitter->fireEvent('event.test');
         $emitter->fireEvent('event.test');
         $emitter->fireEvent('event.test');
+
+        $this->assertEquals(2, $result);
+    }
+
+    public function testHaltingBindOnce()
+    {
+        $emitter = $this->traitObject;
+        $result = 1;
+
+        $callback = function () use (&$result) {
+            $result++;
+            return false;
+        };
+
+        $emitter->bindEventOnce('event.test', $callback);
+        $emitter->fireEvent('event.test', halt:true);
+        $emitter->fireEvent('event.test', halt:true);
+        $emitter->fireEvent('event.test', halt:true);
 
         $this->assertEquals(2, $result);
     }

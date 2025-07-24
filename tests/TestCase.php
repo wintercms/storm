@@ -1,5 +1,8 @@
 <?php
 
+namespace Winter\Storm\Tests;
+
+use ReflectionClass;
 use Orchestra\Testbench\Foundation\PackageManifest;
 use Orchestra\Testbench\TestCase as TestbenchTestCase;
 use PHPUnit\Framework\Assert;
@@ -14,14 +17,23 @@ class TestCase extends TestbenchTestCase
      */
     protected function resolveApplication()
     {
-        return tap(new Application($this->getBasePath()), function ($app) {
-            $app->bind(
-                \Winter\Storm\Foundation\Bootstrap\LoadConfiguration::class,
-                \Orchestra\Testbench\Bootstrap\LoadConfiguration::class
-            );
+        return new Application(static::applicationBasePath());
+    }
+    
+    /**
+     * Resolve application resolving callback.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return void
+     */
+    protected function resolveApplicationResolvingCallback($app): void
+    {
+        $app->bind(
+            \Winter\Storm\Foundation\Bootstrap\LoadConfiguration::class,
+            \Orchestra\Testbench\Bootstrap\LoadConfiguration::class
+        );
 
-            PackageManifest::swap($app, $this);
-        });
+        PackageManifest::swap($app, $this);
     }
 
     protected static function callProtectedMethod($object, $name, $params = [])

@@ -2,10 +2,12 @@
 
 namespace Tests\Database;
 
+use Mockery;
 use Illuminate\Support\Facades\DB;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Tests\DbTestCase;
 
-class ModelTest extends \DbTestCase
+class ModelTest extends DbTestCase
 {
     protected $seeded = [];
 
@@ -471,7 +473,7 @@ class ModelTest extends \DbTestCase
     public function testStringIsTrimmed()
     {
         $name = "Name";
-        $nameWithSpace = "  ${name}  ";
+        $nameWithSpace = "  {$name}  ";
         $model = new TestModelGuarded();
 
         $model->name = $nameWithSpace;
@@ -634,6 +636,69 @@ class ModelTest extends \DbTestCase
 
         $this->assertEquals('2', $modelMiddleRow->value);
     }
+
+    public function testHasXThroughSoftDelete()
+    {
+        $this->getBuilder()->create('test_model1', function ($table) {
+            $table->increments('id');
+            $table->timestamps();
+        });
+
+        $this->getBuilder()->create('test_model_middle_soft_delete', function ($table) {
+            $table->increments('id');
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->integer('model1_id')->unsigned();
+            $table->foreign('model1_id')->references('id')->on('test_model1');
+        });
+
+        $this->getBuilder()->create('test_model2', function ($table) {
+            $table->increments('id');
+            $table->string('name')->nullable();
+            $table->timestamps();
+
+            $table->integer('model_middle_id')->unsigned();
+            $table->foreign('model_middle_id')->references('id')->on('test_model_middle_soft_delete');
+        });
+
+        $model1Row = TestModel1::create();
+
+        $modelMiddleRow = TestModelMiddleSoftDelete::create([
+            'model1_id' => $model1Row->id,
+        ]);
+
+        TestModel2::create([
+            'model_middle_id' => $modelMiddleRow->id,
+            'name' => 'Test',
+        ]);
+
+        $rowResult = TestModel1::with(['test_model2', 'test_model2_one'])->first();
+
+        $this->assertEquals(1, $rowResult->test_model2->count());
+        $this->assertNotEquals(null, $rowResult->test_model2_one);
+
+        $modelMiddleRow->delete();
+
+        Db::flushDuplicateCache();
+        $rowResult = TestModel1::with(['test_model2', 'test_model2_one'])->first();
+
+        $this->assertEquals(0, $rowResult->test_model2->count());
+        $this->assertEquals(null, $rowResult->test_model2_one);
+    }
+
+    public function testNicerEventOnlyBoundOnce()
+    {
+        $model = new TestModelVisibleWithEvent();
+        $model->name = 'Ben Thomson';
+        $model->save();
+
+        $this->assertEquals(1, $model->calledCount);
+
+        $model->save();
+
+        $this->assertEquals(2, $model->calledCount);
+    }
 }
 
 class TestModelGuarded extends Model
@@ -674,6 +739,16 @@ class TestModelVisible extends Model
     public $table = 'test_model';
 }
 
+class TestModelVisibleWithEvent extends TestModelVisible
+{
+    public $calledCount = 0;
+
+    protected function afterSave()
+    {
+        $this->calledCount++;
+    }
+}
+
 class TestModelHidden extends Model
 {
     public $fillable = [
@@ -690,6 +765,32 @@ class TestModelHidden extends Model
     public $table = 'test_model';
 }
 
+class TestModel1 extends Model
+{
+    protected $guarded = [];
+
+    public $table = 'test_model1';
+
+    public $hasManyThrough = [
+        'test_model2' => [
+            TestModel2::class,
+            'key'        => 'model1_id',
+            'through'    => TestModelMiddleSoftDelete::class,
+            'throughKey' => 'model_middle_id',
+            'otherKey'   => 'id',
+        ],
+    ];
+    public $hasOneThrough = [
+        'test_model2_one' => [
+            TestModel2::class,
+            'key'        => 'model1_id',
+            'through'    => TestModelMiddleSoftDelete::class,
+            'throughKey' => 'model_middle_id',
+            'otherKey'   => 'id',
+        ],
+    ];
+}
+
 class TestModel2 extends Model
 {
     protected $guarded = [];
@@ -702,6 +803,15 @@ class TestModelMiddle extends Model
     protected $guarded = [];
 
     public $table = 'test_model_middle';
+}
+
+class TestModelMiddleSoftDelete extends Model
+{
+    use \Winter\Storm\Database\Traits\SoftDelete;
+
+    protected $guarded = [];
+
+    public $table = 'test_model_middle_soft_delete';
 }
 
 class BaseModel extends Model
