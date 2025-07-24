@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Events\QueuedClosure;
+use Winter\Storm\Tests\TestCase;
 
 include_once __DIR__.'/../fixtures/events/EventTest.php';
 
@@ -22,8 +23,9 @@ class EmitterTest extends TestCase
      */
     public function setUp(): void
     {
-        $traitName = 'Winter\Storm\Support\Traits\Emitter';
-        $this->traitObject = $this->getObjectForTrait($traitName);
+        $this->traitObject = new class {
+            use \Winter\Storm\Support\Traits\Emitter;
+        };
     }
 
     //

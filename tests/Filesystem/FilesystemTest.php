@@ -1,6 +1,8 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Winter\Storm\Filesystem\Filesystem;
+use Winter\Storm\Tests\TestCase;
 
 class FilesystemTest extends TestCase
 {
@@ -11,10 +13,8 @@ class FilesystemTest extends TestCase
         $this->filesystem = new Filesystem();
     }
 
-    /**
-     * @dataProvider providePathsForIsAbsolutePath
-     * @see Symfony\Component\Filesystem\Tests\FilesystemTest::testIsAbsolutePath
-     */
+    #[DataProvider('providePathsForIsAbsolutePath')]
+    /** @see Symfony\Component\Filesystem\Tests\FilesystemTest::testIsAbsolutePath */
     public function testIsAbsolutePath($path, $expectedResult)
     {
         $result = $this->filesystem->isAbsolutePath($path);
@@ -34,9 +34,7 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideSizesForSizeToBytes
-     */
+    #[DataProvider('provideSizesForSizeToBytes')]
     public function testSizeToBytes($input, $expectedBytes)
     {
         $result = $this->filesystem->sizeToBytes($input);
@@ -60,9 +58,7 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideBytesForSizeToString
-     */
+    #[DataProvider('provideBytesForSizeToString')]
     public function testSizeToString($bytes, $expectedString)
     {
         $result = $this->filesystem->sizeToString($bytes);
@@ -84,9 +80,7 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideInvalidSizesForSizeToBytes
-     */
+    #[DataProvider('provideInvalidSizesForSizeToBytes')]
     public function testSizeToBytesInvalidInput($input)
     {
         $this->expectException(\InvalidArgumentException::class);

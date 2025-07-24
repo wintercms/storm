@@ -11,6 +11,8 @@ use PHPUnit\Framework\TestCase;
 class GrammarTestCase extends TestCase
 {
     protected $connection = null;
+    protected $grammarClass = null;
+    protected $builderClass = null;
 
     public function setUp(): void
     {
@@ -34,7 +36,7 @@ class GrammarTestCase extends TestCase
 
     public function getConnection()
     {
-        return $this->connection();
+        return ($this->connection)();
     }
 
     protected function getBlueprint(string $table)
@@ -49,7 +51,7 @@ class GrammarTestCase extends TestCase
 
     protected function getSchemaGrammar()
     {
-        return new $this->grammarClass($this->connection);
+        return new ($this->grammarClass)($this->connection);
     }
 
     protected function getSchemaBuilder($blueprint)
@@ -58,7 +60,7 @@ class GrammarTestCase extends TestCase
             ->shouldReceive('getColumns')->andReturn($blueprint->getColumns())
             ->shouldReceive('getForeignKeys')->andReturn([])
             ->shouldReceive('getIndexes')->andReturn([])
-            ->shouldReceive('parseSchemaAndTable')->andReturnNull()
+            ->shouldReceive('parseSchemaAndTable')->andReturn([null, $blueprint->getTable()])
             ->getMock();
     }
 

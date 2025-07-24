@@ -2,11 +2,11 @@
 
 namespace Tests\Database\Schema\Grammars;
 
-use Illuminate\Database\Schema\Blueprint;
-use Winter\Storm\Database\Schema\Grammars\MySqlGrammar;
 use Illuminate\Database\Schema\MySqlBuilder;
+use Winter\Storm\Database\Schema\Grammars\MySqlGrammar;
+use Winter\Storm\Tests\GrammarTestCase;
 
-class MySqlSchemaGrammarTest extends \GrammarTestCase
+class MySqlSchemaGrammarTest extends GrammarTestCase
 {
     public function setUp(): void
     {

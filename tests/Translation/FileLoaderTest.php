@@ -4,6 +4,7 @@ use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Translation\FileLoader;
 use Mockery as m;
+use Winter\Storm\Tests\TestCase;
 
 /**
  * These tests were adapted from the Laravel 9.x test cases to ensure our functionality still

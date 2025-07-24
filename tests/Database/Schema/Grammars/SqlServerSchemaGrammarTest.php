@@ -4,8 +4,9 @@ namespace Winter\Storm\Tests\Database\Schema\Grammars;
 
 use Illuminate\Database\Schema\SqlServerBuilder;
 use Winter\Storm\Database\Schema\Grammars\SqlServerGrammar;
+use Winter\Storm\Tests\GrammarTestCase;
 
-class SqlServerSchemaGrammarTest extends \GrammarTestCase
+class SqlServerSchemaGrammarTest extends GrammarTestCase
 {
     public function setUp(): void
     {

@@ -1,21 +1,13 @@
 <?php namespace Events;
 
-use Winter\Storm\Foundation\Application;
-use Winter\Storm\Events\Dispatcher;
-use Illuminate\Events\QueuedClosure;
-use Illuminate\Bus\BusServiceProvider;
-use Illuminate\Queue\QueueServiceProvider;
-use Winter\Storm\Config\ConfigServiceProvider;
-use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Bus;
-
 use EventTest;
-use TestCase;
+use Illuminate\Events\QueuedClosure;
+use Illuminate\Support\Facades\Event;
+use Winter\Storm\Events\Dispatcher;
+use Winter\Storm\Tests\TestCase;
 
 class DispatcherTest extends TestCase
 {
-
     public function setUp(): void
     {
         include_once __DIR__.'/../fixtures/events/EventTest.php';

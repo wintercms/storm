@@ -98,7 +98,7 @@
         }
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit ./tests",
+        "test": "./vendor/bin/phpunit",
         "lint": "parallel-lint --exclude vendor .",
         "sniff": "phpcs --colors -nq --report=\"full\" --extensions=\"php\"",
         "analyze": "phpstan analyse --memory-limit=2G",

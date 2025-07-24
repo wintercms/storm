@@ -4,8 +4,9 @@ namespace Winter\Storm\Tests\Database\Schema\Grammars;
 
 use Illuminate\Database\Schema\PostgresBuilder;
 use Winter\Storm\Database\Schema\Grammars\PostgresGrammar;
+use Winter\Storm\Tests\GrammarTestCase;
 
-class PostgresSchemaGrammarTest extends \GrammarTestCase
+class PostgresSchemaGrammarTest extends GrammarTestCase
 {
     public function setUp(): void
     {
