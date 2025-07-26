@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Translation\FileLoader;
 use Mockery as m;
@@ -16,7 +15,7 @@ class FileLoaderTest extends \Winter\Storm\Tests\TestCase
     protected function tearDown(): void
     {
         m::close();
-        HandleExceptions::flushState();
+        parent::tearDown();
     }
 
     public function testLoadMethodWithoutNamespacesProperlyCallsLoader()
