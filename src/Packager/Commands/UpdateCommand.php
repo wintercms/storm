@@ -27,10 +27,6 @@ class UpdateCommand extends Update
         bool $dryRun = false,
         ?string $package = null
     ) {
-        if ($this->executed) {
-            return;
-        }
-
         $this->includeDev = $includeDev;
         $this->lockFileOnly = $lockFileOnly;
         $this->ignorePlatformReqs = $ignorePlatformReqs;

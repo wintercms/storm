@@ -33,8 +33,6 @@ class Composer
 
     protected static PackagerComposer $composer;
 
-    protected static array $winterPackages;
-
     public static function make(bool $fresh = false): PackagerComposer
     {
         if (!$fresh && isset(static::$composer)) {
@@ -48,7 +46,7 @@ class Composer
         static::$composer->setCommand('require', RequireCommand::class);
         static::$composer->setCommand('search', SearchCommand::class);
         static::$composer->setCommand('show', ShowCommand::class);
-        static::$composer->setCommand('info', InfoCommand::class);
+        static::$composer->setCommand('info', new InfoCommand(static::$composer));
         static::$composer->setCommand('update', UpdateCommand::class);
 
         return static::$composer;
@@ -65,8 +63,7 @@ class Composer
 
     public static function getWinterPackages(): array
     {
-        $key = static::COMPOSER_CACHE_KEY . File::lastModified(base_path('composer.lock'));
-        return static::$winterPackages = static::remember($key, function () {
+        return static::remember('packages', function () {
             $installed = static::info();
             $packages = [];
             foreach ($installed as $package) {
@@ -92,17 +89,45 @@ class Composer
 
     public static function getAvailableUpdates(): array
     {
-        $upgrades = static::remember(
-            static::COMPOSER_CACHE_KEY . '.updates',
-            fn () => static::update(dryRun: true)->getUpgraded(),
-            60 * 5
-        );
+        return static::remember(__METHOD__, function () {
+            $upgrades = static::update(dryRun: true)->getUpgraded();
+            $packages = static::getWinterPackageNames();
 
-        $packages = static::getWinterPackageNames();
+            $winterPackages = array_filter($upgrades, function ($key) use ($packages) {
+                return in_array($key, $packages);
+            }, ARRAY_FILTER_USE_KEY);
 
-        return array_filter($upgrades, function ($key) use ($packages) {
-            return in_array($key, $packages);
-        }, ARRAY_FILTER_USE_KEY);
+            foreach ($winterPackages as $name => $details) {
+                $winterPackages[$name] = [
+                    'from' => $details[0],
+                    'to' => $details[1],
+                ];
+
+                $info = static::info($name, all: true, latest: true);
+
+                $winterPackages[$name] = [
+                    'from' => $details[0],
+                    'to' => $details[1],
+                    'ref' => $info['dist']['reference'] ?? null,
+                    'available' => static::filterProductionVersions($info['versions'], [$details[0]]),
+                ];
+            }
+
+            return $winterPackages;
+        });
+    }
+
+    public static function filterProductionVersions(array $versions, array $keep = []): array
+    {
+        foreach ($versions as $index => $version) {
+            if ((!str_starts_with($version, 'v') || str_ends_with($version, '-dev')) && !in_array($version, $keep)) {
+                unset($versions[$index]);
+            }
+        }
+
+        usort($versions, fn (string $a, string $b): int => version_compare($a, $b, '<'));
+
+        return $versions;
     }
 
     public static function updateAvailable(string $package): bool
@@ -153,10 +178,10 @@ class Composer
      *
      * @param string $key
      * @param callable $callable
-     * @param int|null $expires
+     * @param int $expires
      * @return mixed
      */
-    protected static function remember(string $key, callable $callable, ?int $expires = null): mixed
+    protected static function remember(string $key, callable $callable, int $expires = 60 * 5): mixed
     {
         $dir = temp_path('composer');
 
@@ -164,6 +189,7 @@ class Composer
             File::makeDirectory($dir);
         }
 
+        $key = static::COMPOSER_CACHE_KEY . $key . File::lastModified(base_path('composer.lock'));
         $file = $dir . '/' . md5($key) . '.cache';
 
         if (File::exists($file)) {
