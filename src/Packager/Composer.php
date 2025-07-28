@@ -45,7 +45,7 @@ class Composer
         static::$composer->setCommand('remove', RemoveCommand::class);
         static::$composer->setCommand('require', RequireCommand::class);
         static::$composer->setCommand('search', SearchCommand::class);
-        static::$composer->setCommand('show', ShowCommand::class);
+        static::$composer->setCommand('show', new ShowCommand(static::$composer));
         static::$composer->setCommand('info', new InfoCommand(static::$composer));
         static::$composer->setCommand('update', UpdateCommand::class);
 

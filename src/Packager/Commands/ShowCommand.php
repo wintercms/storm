@@ -3,6 +3,7 @@
 namespace Winter\Storm\Packager\Commands;
 
 use Winter\Packager\Commands\Show;
+use Winter\Packager\Enums\ShowMode;
 
 class ShowCommand extends Show
 {
@@ -28,11 +29,12 @@ class ShowCommand extends Show
      * @param boolean $path
      * @return void
      */
-    public function handle(?string $mode = 'installed', ?string $package = null, bool $noDev = false, bool $path = false): void
+    public function handle(string|ShowMode $mode = 'installed', ?string $package = null, bool $noDev = false, bool $path = false): void
     {
-        parent::handle($mode, $package, $noDev);
-
+        $this->mode = is_string($mode) ? ShowMode::from($mode) : $mode;
+        $this->package = $package;
         $this->path = $path;
+        $this->noDev = $noDev;
     }
 
     /**
@@ -47,7 +49,7 @@ class ShowCommand extends Show
         }
 
         if ($this->mode !== 'installed') {
-            $arguments['--' . $this->mode] = true;
+            $arguments['--' . $this->mode->value] = true;
         }
 
         if ($this->noDev) {
