@@ -31,6 +31,11 @@ abstract class Command extends BaseCommand implements PromptsForMissingInput, Si
     use Emitter;
 
     /**
+     * @var string|array|null Extensions implemented by this class.
+     */
+    public $implement = null;
+
+    /**
      * @var \Winter\Storm\Foundation\Application
      */
     protected $laravel;

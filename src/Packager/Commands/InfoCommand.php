@@ -66,7 +66,7 @@ class InfoCommand extends BaseCommand
             throw new CommandException($message);
         }
 
-        $result = json_decode($message, JSON_OBJECT_AS_ARRAY);
+        $result = json_decode($message, flags: JSON_OBJECT_AS_ARRAY);
 
         return $this->package
             ? $result ?? []

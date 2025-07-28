@@ -3,7 +3,6 @@
 namespace Winter\Storm\Packager\Commands;
 
 use Winter\Packager\Commands\Show;
-use Winter\Packager\Exceptions\CommandException;
 
 class ShowCommand extends Show
 {
@@ -29,7 +28,7 @@ class ShowCommand extends Show
      * @param boolean $path
      * @return void
      */
-    public function handle(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $path = false): void
+    public function handle(?string $mode = 'installed', ?string $package = null, bool $noDev = false, bool $path = false): void
     {
         parent::handle($mode, $package, $noDev);
 
