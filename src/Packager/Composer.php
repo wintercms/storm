@@ -45,7 +45,6 @@ class Composer
         static::$composer->setCommand('remove', RemoveCommand::class);
         static::$composer->setCommand('require', RequireCommand::class);
         static::$composer->setCommand('search', SearchCommand::class);
-        static::$composer->setCommand('show', new ShowCommand(static::$composer));
         static::$composer->setCommand('info', new InfoCommand(static::$composer));
         static::$composer->setCommand('update', UpdateCommand::class);
 
@@ -63,7 +62,7 @@ class Composer
 
     public static function getWinterPackages(): array
     {
-        return static::remember('packages', function () {
+        return static::remember(__METHOD__, function () {
             $installed = static::info();
             $packages = [];
             foreach ($installed as $package) {
@@ -201,6 +200,11 @@ class Composer
         }
 
         $result = $callable();
+
+        // We don't save nothing
+        if (!$result) {
+            return $result;
+        }
 
         File::put($file, serialize([
             'expires' => $expires ? time() + $expires : null,
