@@ -67,4 +67,9 @@ class RemoveCommand extends BaseCommand
     {
         return 'remove';
     }
+
+    public function requiresWorkDir(): bool
+    {
+        return true;
+    }
 }

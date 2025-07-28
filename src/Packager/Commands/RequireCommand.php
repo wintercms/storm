@@ -79,4 +79,9 @@ class RequireCommand extends BaseCommand
     {
         return 'require';
     }
+
+    public function requiresWorkDir(): bool
+    {
+        return true;
+    }
 }

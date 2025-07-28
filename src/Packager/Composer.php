@@ -44,12 +44,12 @@ class Composer
         static::$composer = new PackagerComposer();
         static::$composer->setWorkDir(base_path());
 
-        static::$composer->setCommand('remove', new RemoveCommand(static::$composer));
-        static::$composer->setCommand('require', new RequireCommand(static::$composer));
-        static::$composer->setCommand('search', new SearchCommand(static::$composer));
-        static::$composer->setCommand('show', new ShowCommand(static::$composer));
-        static::$composer->setCommand('info', new InfoCommand(static::$composer));
-        static::$composer->setCommand('update', new UpdateCommand(static::$composer));
+        static::$composer->setCommand('remove', RemoveCommand::class);
+        static::$composer->setCommand('require', RequireCommand::class);
+        static::$composer->setCommand('search', SearchCommand::class);
+        static::$composer->setCommand('show', ShowCommand::class);
+        static::$composer->setCommand('info', InfoCommand::class);
+        static::$composer->setCommand('update', UpdateCommand::class);
 
         return static::$composer;
     }

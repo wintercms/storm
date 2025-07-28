@@ -80,4 +80,9 @@ class InfoCommand extends BaseCommand
     {
         return 'info';
     }
+
+    public function requiresWorkDir(): bool
+    {
+        return false;
+    }
 }
