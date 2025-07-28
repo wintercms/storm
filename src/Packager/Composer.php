@@ -20,7 +20,7 @@ use Winter\Storm\Support\Facades\File;
  * @method static i(): array
  * @method static install(): array
  * @method static search(string $query, ?string $type = null, bool $onlyNames = false, bool $onlyVendors = false): \Winter\Packager\Commands\Search
- * @method static info(?string $package = null): array
+ * @method static info(?string $package = null, bool $all = false, bool $latest = false): array
  * @method static show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $path = false): object
  * @method static update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null): \Winter\Packager\Commands\Update
  * @method static remove(?string $package = null, bool $dryRun = false): array
@@ -133,6 +133,19 @@ class Composer
                 array_merge(...array_values(static::getWinterPackages()))
             )
         );
+    }
+
+    public static function getWinterPackagesWithVersion(): array
+    {
+        $packages = [];
+        foreach (array_merge(...array_values(static::getWinterPackages())) as $package) {
+            $packages[$package['name']] = [
+                'version' => $package['versions'][0] ?? null,
+                'ref' => $package['dist']['reference'] ?? null
+            ];
+        }
+
+        return $packages;
     }
 
     /**

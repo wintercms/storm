@@ -2,8 +2,6 @@
 
 namespace Winter\Storm\Packager\Commands;
 
-use Illuminate\Support\Facades\Cache;
-use System\Classes\Packager\Composer;
 use Winter\Packager\Commands\BaseCommand;
 use Winter\Packager\Exceptions\CommandException;
 use Winter\Packager\Exceptions\WorkDirException;
@@ -11,19 +9,22 @@ use Winter\Packager\Exceptions\WorkDirException;
 class InfoCommand extends BaseCommand
 {
     protected ?string $package = null;
+    protected bool $all = false;
+    protected bool $latest = false;
 
     /**
      * Command handler.
      *
      * @param string|null $package
-     * @param boolean $dryRun
-     * @param boolean $dev
+     * @param boolean $all
      * @return void
      * @throws CommandException
      */
-    public function handle(?string $package = null): void
+    public function handle(?string $package = null, bool $all = false, bool $latest = false): void
     {
         $this->package = $package;
+        $this->all = $all;
+        $this->latest = $latest;
     }
 
     /**
@@ -40,6 +41,14 @@ class InfoCommand extends BaseCommand
         }
 
         $arguments['package'] = $this->package;
+
+        if ($this->all) {
+            $arguments['--all'] = true;
+        }
+
+        if ($this->latest) {
+            $arguments['--latest'] = true;
+        }
 
         return $arguments;
     }
