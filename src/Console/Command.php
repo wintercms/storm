@@ -65,7 +65,8 @@ abstract class Command extends BaseCommand implements PromptsForMissingInput, Si
     public function run(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $this->laravel->make(
-            OutputStyle::class, ['input' => $input, 'output' => $output]
+            OutputStyle::class,
+            ['input' => $input, 'output' => $output]
         );
 
         $this->components = $this->laravel->make(Factory::class, ['output' => $this->output]);
@@ -78,7 +79,8 @@ abstract class Command extends BaseCommand implements PromptsForMissingInput, Si
         try {
             // Calling the grandparent run() method, see: https://www.php.net/manual/en/language.oop5.inheritance.php#100005
             return SymfonyCommand::run(
-                $this->input = $input, $this->output
+                $this->input = $input,
+                $this->output
             );
         } finally {
             $this->untrap();
