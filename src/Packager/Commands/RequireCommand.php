@@ -13,6 +13,7 @@ class RequireCommand extends BaseCommand
     protected ?string $package = null;
     protected bool $dryRun = false;
     protected bool $dev = false;
+    protected bool $returnRequired = false;
 
     /**
      * Command handler.
@@ -23,8 +24,12 @@ class RequireCommand extends BaseCommand
      * @return void
      * @throws CommandException
      */
-    public function handle(?string $package = null, bool $dryRun = false, bool $dev = false): void
-    {
+    public function handle(
+        ?string $package = null,
+        bool $dryRun = false,
+        bool $dev = false,
+        bool $returnRequired = false
+    ): void {
         if (!$package) {
             throw new CommandException('Must provide a package');
         }
@@ -32,6 +37,7 @@ class RequireCommand extends BaseCommand
         $this->package = $package;
         $this->dryRun = $dryRun;
         $this->dev = $dev;
+        $this->returnRequired = $returnRequired;
     }
 
     /**
@@ -67,7 +73,14 @@ class RequireCommand extends BaseCommand
             throw new CommandException($message);
         }
 
-        Cache::forget(Composer::COMPOSER_CACHE_KEY);
+        if (!$this->dryRun) {
+            Cache::forget(Composer::COMPOSER_CACHE_KEY);
+        }
+
+        if ($this->returnRequired) {
+            preg_match('/Using version (.*?) /', $output['output'][count($output['output']) - 1], $matches);
+            return $matches[1] ?? throw new CommandException('Unable to determine required version');
+        }
 
         return $message;
     }

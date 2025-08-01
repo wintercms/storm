@@ -8,6 +8,8 @@ class UpdateCommand extends Update
 {
     protected ?string $package = null;
 
+    protected bool $withAllDependencies = false;
+
     /**
      * Handle options before execution.
      *
@@ -25,7 +27,8 @@ class UpdateCommand extends Update
         string $installPreference = 'none',
         bool $ignoreScripts = false,
         bool $dryRun = false,
-        ?string $package = null
+        ?string $package = null,
+        bool $withAllDependencies = false
     ) {
         $this->includeDev = $includeDev;
         $this->lockFileOnly = $lockFileOnly;
@@ -33,6 +36,7 @@ class UpdateCommand extends Update
         $this->ignoreScripts = $ignoreScripts;
         $this->dryRun = $dryRun;
         $this->package = $package;
+        $this->withAllDependencies = $withAllDependencies;
 
         if (in_array($installPreference, [self::PREFER_NONE, self::PREFER_DIST, self::PREFER_SOURCE])) {
             $this->installPreference = $installPreference;
@@ -64,6 +68,10 @@ class UpdateCommand extends Update
 
         if ($this->ignoreScripts) {
             $arguments['--no-scripts'] = true;
+        }
+
+        if ($this->withAllDependencies) {
+            $arguments['--with-all-dependencies'] = true;
         }
 
         if (in_array($this->installPreference, [self::PREFER_DIST, self::PREFER_SOURCE])) {

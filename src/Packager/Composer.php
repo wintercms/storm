@@ -24,7 +24,7 @@ use Winter\Storm\Support\Facades\File;
  * @method static show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $path = false): object
  * @method static update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null): \Winter\Packager\Commands\Update
  * @method static remove(?string $package = null, bool $dryRun = false): array
- * @method static require(?string $package = null, bool $dryRun = false, bool $dev = false): string
+ * @method static require(?string $package = null, bool $dryRun = false, bool $dev = false, bool $returnRequired = false): string
  * @method static version(string $detail = 'version'): array<string, string>|string
  */
 class Composer
@@ -43,7 +43,7 @@ class Composer
         static::$composer->setWorkDir(base_path());
 
         static::$composer->setCommand('remove', RemoveCommand::class);
-        static::$composer->setCommand('require', RequireCommand::class);
+        static::$composer->setCommand('require', new RequireCommand(static::$composer));
         static::$composer->setCommand('search', SearchCommand::class);
         static::$composer->setCommand('info', new InfoCommand(static::$composer));
         static::$composer->setCommand('update', UpdateCommand::class);
@@ -172,6 +172,31 @@ class Composer
         return $packages;
     }
 
+    public static function setPackageRequirement(string $package, string $version): bool
+    {
+        $composerJsonPath = base_path('composer.json');
+        if (!File::exists($composerJsonPath)) {
+            throw new ApplicationException('composer.json file does not exist.');
+        }
+
+        $json = json_decode(File::get($composerJsonPath), JSON_OBJECT_AS_ARRAY);
+
+        $set = false;
+        foreach (['require', 'require-dev'] as $mode) {
+            if (isset($json[$mode][$package])) {
+                $json[$mode][$package] = $version;
+                $set = true;
+                break;
+            }
+        }
+
+        if ($set) {
+            File::put($composerJsonPath, json_encode($json, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        }
+
+        return $set;
+    }
+
     /**
      * This method moves the composer caching out of cache, this is so it is not invalidated during tests. @TODO: fix.
      *
@@ -180,7 +205,7 @@ class Composer
      * @param int $expires
      * @return mixed
      */
-    protected static function remember(string $key, callable $callable, int $expires = 60 * 5): mixed
+    protected static function remember(string $key, callable $callable, int $expires = 60 * 15): mixed
     {
         $dir = temp_path('composer');
 
@@ -188,7 +213,9 @@ class Composer
             File::makeDirectory($dir);
         }
 
-        $key = static::COMPOSER_CACHE_KEY . $key . File::lastModified(base_path('composer.lock'));
+        $key = static::COMPOSER_CACHE_KEY . $key;
+        $key .= File::lastModified(base_path('composer.lock')) . File::lastModified(base_path('composer.json'));
+
         $file = $dir . '/' . md5($key) . '.cache';
 
         if (File::exists($file)) {
