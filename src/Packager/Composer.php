@@ -9,7 +9,6 @@ use Winter\Packager\Exceptions\CommandException;
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Foundation\Extension\WinterExtension;
 use Winter\Storm\Network\Http;
-use Winter\Storm\Packager\Commands\UpdateCommand;
 use Winter\Storm\Support\Facades\File;
 
 /**
@@ -35,8 +34,6 @@ class Composer
 
         static::$composer = new PackagerComposer();
         static::$composer->setWorkDir(realpath(base_path()));
-
-        static::$composer->setCommand('update', UpdateCommand::class);
 
         return static::$composer;
     }
