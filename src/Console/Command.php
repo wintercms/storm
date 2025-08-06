@@ -76,7 +76,20 @@ abstract class Command extends BaseCommand implements PromptsForMissingInput, Si
 
         $this->components = $this->laravel->make(Factory::class, ['output' => $this->output]);
 
-        $this->fireEvent('beforeRun', [$this]);
+        /**
+         * @event command.beforeRun
+         * Called before the command is run; useful for intercepting the output of the command or auditing the commands run
+         *
+         * Example usage:
+         *
+         *     Command::extend(function (Command $command) {
+         *         $command->bindEvent('command.beforeRun', function () use ($command) {
+         *             MyTaskManager::instance()->setOutput($command->getOutput());
+         *         });
+         *     });
+         *
+         */
+        $this->fireEvent('command.beforeRun', [$this]);
 
         $renderer = Termwind::getRenderer();
         renderUsing($this->output->getOutput());
