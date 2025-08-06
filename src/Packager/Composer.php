@@ -5,10 +5,10 @@ namespace Winter\Storm\Packager;
 use Illuminate\Support\Facades\Cache;
 use Winter\Packager\Composer as PackagerComposer;
 use Winter\Packager\Enums\ShowMode;
+use Winter\Packager\Exceptions\CommandException;
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Foundation\Extension\WinterExtension;
 use Winter\Storm\Network\Http;
-use Winter\Storm\Packager\Commands\RequireCommand;
 use Winter\Storm\Packager\Commands\UpdateCommand;
 use Winter\Storm\Support\Facades\File;
 
@@ -19,7 +19,6 @@ use Winter\Storm\Support\Facades\File;
  * @method static show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $latest = false): mixed
  * @method static update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null): \Winter\Packager\Commands\Update
  * @method static remove(?string $package = null, bool $dryRun = false): array
- * @method static require(?string $package = null, bool $dryRun = false, bool $dev = false, bool $returnRequired = false): string
  * @method static version(string $detail = 'version'): array<string, string>|string
  */
 class Composer
@@ -37,7 +36,6 @@ class Composer
         static::$composer = new PackagerComposer();
         static::$composer->setWorkDir(realpath(base_path()));
 
-        static::$composer->setCommand('require', new RequireCommand(static::$composer));
         static::$composer->setCommand('update', UpdateCommand::class);
 
         return static::$composer;
@@ -124,6 +122,15 @@ class Composer
         usort($versions, fn (string $a, string $b): int => version_compare($a, $b, '<'));
 
         return $versions;
+    }
+
+    public static function getLatestSupportedVersion(string $package): string
+    {
+        $message = static::require(package: $package, dryRun: true);
+        $output = explode(PHP_EOL, $message);
+        preg_match('/Using version (.*?) /', $output[count($output) - 1], $matches);
+
+        return $matches[1] ?? throw new CommandException('Unable to determine required version');
     }
 
     public static function updateAvailable(string $package): bool
