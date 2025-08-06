@@ -9,7 +9,6 @@ use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Foundation\Extension\WinterExtension;
 use Winter\Storm\Network\Http;
 use Winter\Storm\Packager\Commands\RequireCommand;
-use Winter\Storm\Packager\Commands\SearchCommand;
 use Winter\Storm\Packager\Commands\UpdateCommand;
 use Winter\Storm\Support\Facades\File;
 
@@ -17,7 +16,6 @@ use Winter\Storm\Support\Facades\File;
  * @class Composer
  * @method static i(): array
  * @method static install(): array
- * @method static search(string $query, ?string $type = null, bool $onlyNames = false, bool $onlyVendors = false): \Winter\Packager\Commands\Search
  * @method static show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $latest = false): mixed
  * @method static update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null): \Winter\Packager\Commands\Update
  * @method static remove(?string $package = null, bool $dryRun = false): array
@@ -40,7 +38,6 @@ class Composer
         static::$composer->setWorkDir(realpath(base_path()));
 
         static::$composer->setCommand('require', new RequireCommand(static::$composer));
-        static::$composer->setCommand('search', SearchCommand::class);
         static::$composer->setCommand('update', UpdateCommand::class);
 
         return static::$composer;
