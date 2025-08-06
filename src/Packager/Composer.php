@@ -4,14 +4,12 @@ namespace Winter\Storm\Packager;
 
 use Illuminate\Support\Facades\Cache;
 use Winter\Packager\Composer as PackagerComposer;
+use Winter\Packager\Enums\ShowMode;
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Foundation\Extension\WinterExtension;
 use Winter\Storm\Network\Http;
-use Winter\Storm\Packager\Commands\InfoCommand;
-use Winter\Storm\Packager\Commands\RemoveCommand;
 use Winter\Storm\Packager\Commands\RequireCommand;
 use Winter\Storm\Packager\Commands\SearchCommand;
-use Winter\Storm\Packager\Commands\ShowCommand;
 use Winter\Storm\Packager\Commands\UpdateCommand;
 use Winter\Storm\Support\Facades\File;
 
@@ -20,8 +18,7 @@ use Winter\Storm\Support\Facades\File;
  * @method static i(): array
  * @method static install(): array
  * @method static search(string $query, ?string $type = null, bool $onlyNames = false, bool $onlyVendors = false): \Winter\Packager\Commands\Search
- * @method static info(?string $package = null, bool $all = false, bool $latest = false): array
- * @method static show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $path = false): object
+ * @method static show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $latest = false): mixed
  * @method static update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null): \Winter\Packager\Commands\Update
  * @method static remove(?string $package = null, bool $dryRun = false): array
  * @method static require(?string $package = null, bool $dryRun = false, bool $dev = false, bool $returnRequired = false): string
@@ -40,12 +37,10 @@ class Composer
         }
 
         static::$composer = new PackagerComposer();
-        static::$composer->setWorkDir(base_path());
+        static::$composer->setWorkDir(realpath(base_path()));
 
-        static::$composer->setCommand('remove', RemoveCommand::class);
         static::$composer->setCommand('require', new RequireCommand(static::$composer));
         static::$composer->setCommand('search', SearchCommand::class);
-        static::$composer->setCommand('info', new InfoCommand(static::$composer));
         static::$composer->setCommand('update', UpdateCommand::class);
 
         return static::$composer;
@@ -63,10 +58,10 @@ class Composer
     public static function getWinterPackages(): array
     {
         return static::remember(__METHOD__, function () {
-            $installed = static::info();
+            $installed = static::show(returnArray: true);
             $packages = [];
             foreach ($installed as $package) {
-                $details = static::info($package['name']);
+                $details = static::show(package: $package['name'], returnArray: true);
 
                 $type = match ($details['type']) {
                     'winter-plugin', 'october-plugin' => 'plugins',
@@ -102,7 +97,12 @@ class Composer
                     'to' => $details[1],
                 ];
 
-                $info = static::info($name, all: true, latest: true);
+                $info = static::show(
+                    package: $name,
+                    mode: ShowMode::AVAILABLE,
+                    latest: true,
+                    returnArray: true
+                );
 
                 $winterPackages[$name] = [
                     'from' => $details[0],
