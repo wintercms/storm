@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Cache;
 use Winter\Packager\Composer as PackagerComposer;
 use Winter\Packager\Enums\ShowMode;
 use Winter\Packager\Exceptions\CommandException;
+use Winter\Packager\Package\Collection;
+use Winter\Packager\Package\DetailedPackage;
+use Winter\Packager\Package\DetailedVersionedPackage;
+use Winter\Packager\Package\Package;
+use Winter\Packager\Package\VersionedPackage;
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Foundation\Extension\WinterExtension;
 use Winter\Storm\Network\Http;
@@ -13,12 +18,10 @@ use Winter\Storm\Support\Facades\File;
 
 /**
  * @class Composer
- * @method static i(): array
- * @method static install(): array
- * @method static show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $latest = false): mixed
- * @method static update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null): \Winter\Packager\Commands\Update
- * @method static remove(?string $package = null, bool $dryRun = false): array
- * @method static version(string $detail = 'version'): array<string, string>|string
+ * @method static Collection|DetailedVersionedPackage|DetailedPackage|VersionedPackage|Package|array|null show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $latest = false)
+ * @method static string require(string $package, bool $dryRun = false, bool $dev = false)
+ * @method static \Winter\Packager\Commands\Update update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null)
+ * @method static string remove(?string $package = null, bool $dryRun = false)
  */
 class Composer
 {

@@ -1,7 +1,7 @@
 <?php namespace Winter\Storm\Support;
 
 use Illuminate\Support\ServiceProvider as ServiceProviderBase;
-use Winter\Storm\Foundation\Application;
+use ReflectionClass;
 use Winter\Storm\Foundation\Extension\WinterExtension;
 use Winter\Storm\Packager\Composer;
 use Winter\Storm\Support\ClassLoader;
@@ -114,12 +114,12 @@ abstract class ModuleServiceProvider extends ServiceProviderBase implements Wint
 
     public function getPath(): string
     {
-        return $this->path ?? $this->path = dirname((new \ReflectionClass(get_called_class()))->getFileName());
+        return $this->path ?? $this->path = dirname((new ReflectionClass(get_called_class()))->getFileName());
     }
 
     public function getIdentifier(): string
     {
-        return $this->identifier ?? $this->identifier = (new \ReflectionClass(get_called_class()))->getNamespaceName();
+        return $this->identifier ?? $this->identifier = (new ReflectionClass(get_called_class()))->getNamespaceName();
     }
 
     public function __toString(): string
