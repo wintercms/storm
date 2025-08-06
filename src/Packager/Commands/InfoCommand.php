@@ -6,6 +6,9 @@ use Winter\Packager\Commands\BaseCommand;
 use Winter\Packager\Exceptions\CommandException;
 use Winter\Packager\Exceptions\WorkDirException;
 
+/**
+ * @TODO: Relocate to Winter\Packager
+ */
 class InfoCommand extends BaseCommand
 {
     protected ?string $package = null;
