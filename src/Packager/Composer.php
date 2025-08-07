@@ -16,9 +16,9 @@ use Winter\Storm\Support\Facades\File;
 
 /**
  * Helper class for interacting with Composer through Winter\Packager
- * @method static Collection|DetailedVersionedPackage|DetailedPackage|VersionedPackage|Package|array|null show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $latest = false, bool $returnArray = false)
+ * @method static Collection|DetailedVersionedPackage|DetailedPackage|VersionedPackage|Package|array|null show(ShowMode $mode = ShowMode::INSTALLED, string $package = null, bool $noDev = false, bool $latest = false, bool $returnArray = false)
  * @method static string require(string $package, bool $dryRun = false, bool $dev = false)
- * @method static \Winter\Packager\Commands\Update update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null)
+ * @method static \Winter\Packager\Commands\Update update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null, bool $withAllDependencies = false)
  * @method static string remove(?string $package = null, bool $dryRun = false)
  */
 class Composer
@@ -129,7 +129,7 @@ class Composer
             }
         }
 
-        usort($versions, fn (string $a, string $b): int => version_compare($a, $b, '<'));
+        usort($versions, fn (string $a, string $b): bool => version_compare($a, $b, '<'));
 
         return $versions;
     }
@@ -193,7 +193,7 @@ class Composer
             throw new ApplicationException('composer.json file does not exist.');
         }
 
-        $json = json_decode(File::get($composerJsonPath), JSON_OBJECT_AS_ARRAY);
+        $json = json_decode(File::get($composerJsonPath), flags: JSON_OBJECT_AS_ARRAY);
 
         $set = false;
         foreach (['require', 'require-dev'] as $mode) {
@@ -212,7 +212,8 @@ class Composer
     }
 
     /**
-     * This method moves the composer caching out of cache, this is so it is not invalidated during tests. @TODO: fix.
+     * This method moves the composer caching out of cache, this is so it is not invalidated during tests.
+     * @TODO: fix.
      *
      * @param string $key
      * @param callable $callable
