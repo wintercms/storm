@@ -16,7 +16,7 @@ use Winter\Storm\Support\Facades\File;
 
 /**
  * @class Composer
- * @method static Collection|DetailedVersionedPackage|DetailedPackage|VersionedPackage|Package|array|null show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $latest = false)
+ * @method static Collection|DetailedVersionedPackage|DetailedPackage|VersionedPackage|Package|array|null show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $latest = false, bool $returnArray = false)
  * @method static string require(string $package, bool $dryRun = false, bool $dev = false)
  * @method static \Winter\Packager\Commands\Update update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null)
  * @method static string remove(?string $package = null, bool $dryRun = false)
