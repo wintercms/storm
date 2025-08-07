@@ -15,7 +15,7 @@ use Winter\Storm\Foundation\Extension\WinterExtension;
 use Winter\Storm\Support\Facades\File;
 
 /**
- * @class Composer
+ * Helper class for interacting with Composer through Winter\Packager
  * @method static Collection|DetailedVersionedPackage|DetailedPackage|VersionedPackage|Package|array|null show(?string $mode = 'installed', string $package = null, bool $noDev = false, bool $latest = false, bool $returnArray = false)
  * @method static string require(string $package, bool $dryRun = false, bool $dev = false)
  * @method static \Winter\Packager\Commands\Update update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null)
@@ -48,6 +48,10 @@ class Composer
         return static::$composer->{$name}(...$args);
     }
 
+    /**
+     * Get the Winter extensions present in the current project
+     * @return array $packages List of packages ['type' => ['path' => $details]]
+     */
     public static function getWinterPackages(): array
     {
         return static::remember(__METHOD__, function () {
@@ -55,6 +59,10 @@ class Composer
             $packages = [];
             foreach ($installed as $package) {
                 $details = static::show(package: $package['name'], returnArray: true);
+
+                if ($package['name'] === 'winter/storm') {
+                    $packages['core'][$details['path']] = $details;
+                }
 
                 $type = match ($details['type']) {
                     'winter-plugin', 'october-plugin' => 'plugins',
@@ -74,10 +82,14 @@ class Composer
         });
     }
 
+    /**
+     * Get the available updates for the project
+     * @return array [$package => ['from' => string, 'to' => string, 'ref' => string, 'available' => array]]
+     */
     public static function getAvailableUpdates(): array
     {
         return static::remember(__METHOD__, function () {
-            $upgrades = static::update(dryRun: true)->getUpgraded();
+            $upgrades = static::update(dryRun: true, withAllDependencies: true)->getUpgraded();
             $packages = static::getWinterPackageNames();
 
             $winterPackages = array_filter($upgrades, function ($key) use ($packages) {
@@ -218,10 +230,10 @@ class Composer
         $key = static::COMPOSER_CACHE_KEY . $key;
         $key .= File::lastModified(base_path('composer.lock')) . File::lastModified(base_path('composer.json'));
 
-        $file = $dir . '/' . md5($key) . '.cache';
+        $file = $dir . '/' . md5($key) . '.json';
 
         if (File::exists($file)) {
-            $cache = unserialize(File::get($file));
+            $cache = json_decode(File::get($file), flags: JSON_OBJECT_AS_ARRAY);
 
             if (is_null($cache['expires']) || time() < $cache['expires']) {
                 return $cache['result'];
@@ -235,7 +247,7 @@ class Composer
             return $result;
         }
 
-        File::put($file, serialize([
+        File::put($file, json_encode([
             'expires' => $expires ? time() + $expires : null,
             'result' => $result
         ]));

@@ -9,4 +9,10 @@ interface WinterExtension
     public function getVersion(): string;
 
     public function getIdentifier(): string;
+
+    public function setComposerPackage(?array $package): void;
+
+    public function getComposerPackage(): ?array;
+
+    public function getComposerPackageName(): ?string;
 }
