@@ -212,7 +212,7 @@ class Composer
             }
         }
 
-        usort($versions, fn (string $a, string $b): bool => version_compare($a, $b, '<'));
+        usort($versions, fn (string $a, string $b): int => version_compare($b, $a));
 
         return $versions;
     }
