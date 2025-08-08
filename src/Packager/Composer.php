@@ -90,7 +90,13 @@ class Composer
     {
         return static::remember(__METHOD__, function () {
             $upgrades = static::update(dryRun: true, withAllDependencies: true)->getUpgraded();
-            $packages = static::getWinterPackageNames();
+            // Get an array of package names that are winter packages
+            $packages = array_values(
+                array_map(
+                    fn ($package) => $package['name'],
+                    array_merge(...array_values(static::getWinterPackages()))
+                )
+            );
 
             $winterPackages = array_filter($upgrades, function ($key) use ($packages) {
                 return in_array($key, $packages);
@@ -121,19 +127,9 @@ class Composer
         });
     }
 
-    public static function filterProductionVersions(array $versions, array $keep = []): array
-    {
-        foreach ($versions as $index => $version) {
-            if ((!str_starts_with($version, 'v') || str_ends_with($version, '-dev')) && !in_array($version, $keep)) {
-                unset($versions[$index]);
-            }
-        }
-
-        usort($versions, fn (string $a, string $b): bool => version_compare($a, $b, '<'));
-
-        return $versions;
-    }
-
+    /**
+     * Gets the latest supported version constraints for the provided package that Composer would use under the current conditions
+     */
     public static function getLatestSupportedVersion(string $package): string
     {
         $message = static::require(package: $package, dryRun: true);
@@ -143,36 +139,42 @@ class Composer
         return $matches[1] ?? throw new CommandException('Unable to determine required version');
     }
 
+    /**
+     * Check if there is an update available for the provided package
+     */
     public static function updateAvailable(string $package): bool
     {
         return isset(static::getAvailableUpdates()[$package]);
     }
 
+    /**
+     * Get the package info for the provided WinterExtension
+     */
     public static function getPackageInfoByExtension(WinterExtension $extension): array
     {
         return static::getPackageInfoByPath($extension->getPath());
     }
 
+    /**
+     * Get the package name for the provided WinterExtension
+     */
     public static function getPackageNameByExtension(WinterExtension $extension): ?string
     {
         return static::getPackageInfoByPath($extension->getPath())['name'];
     }
 
+    /**
+     * Get the package info from the provided path
+     */
     public static function getPackageInfoByPath(string $path): array
     {
         return array_merge(...array_values(static::getWinterPackages()))[$path] ?? [];
     }
 
-    public static function getWinterPackageNames(): array
-    {
-        return array_values(
-            array_map(
-                fn ($package) => $package['name'],
-                array_merge(...array_values(static::getWinterPackages()))
-            )
-        );
-    }
-
+    /**
+     * Get list of Winter packages that are present on the system with their current version
+     * @return array [$package => ['version' => string, 'ref' => string]]
+     */
     public static function getWinterPackagesWithVersion(): array
     {
         $packages = [];
@@ -205,10 +207,26 @@ class Composer
         }
 
         if ($set) {
-            File::put($composerJsonPath, json_encode($json, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+            File::put($composerJsonPath, json_encode($json, flags: JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
         }
 
         return $set;
+    }
+
+    /**
+     * Removes all dev versions not present in the keep paramater
+     */
+    protected static function filterProductionVersions(array $versions, array $keep = []): array
+    {
+        foreach ($versions as $index => $version) {
+            if ((!str_starts_with($version, 'v') || str_ends_with($version, '-dev')) && !in_array($version, $keep)) {
+                unset($versions[$index]);
+            }
+        }
+
+        usort($versions, fn (string $a, string $b): bool => version_compare($a, $b, '<'));
+
+        return $versions;
     }
 
     /**
