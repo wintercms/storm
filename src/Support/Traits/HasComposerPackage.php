@@ -35,6 +35,6 @@ trait HasComposerPackage
      */
     public function getComposerPackageVersion(): ?string
     {
-        return $this->getComposerPackage()['versions'][0] ?? null;
+        return $this->getComposerPackage()['version'] ?? null;
     }
 }
