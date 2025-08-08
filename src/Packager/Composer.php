@@ -193,7 +193,7 @@ class Composer
         $packages = [];
         foreach (array_merge(...array_values(static::getWinterPackages())) as $package) {
             $packages[$package['name']] = [
-                'version' => $package['versions'][0] ?? null,
+                'version' => $package['version'] ?? null,
                 'ref' => $package['dist']['reference'] ?? null
             ];
         }
