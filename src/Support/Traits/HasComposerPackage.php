@@ -2,27 +2,24 @@
 
 namespace Winter\Storm\Support\Traits;
 
+use Winter\Storm\Packager\Composer;
+
 trait HasComposerPackage
 {
     /**
      * @var ?array The composer package details for this plugin.
+     * [
+     *  'name' => '',
+     * ]
      */
     protected ?array $composerPackage = null;
 
     /**
-     * Set the composer package property for the plugin
-     */
-    public function setComposerPackage(?array $package): void
-    {
-        $this->composerPackage = $package;
-    }
-
-    /**
      * Get the composer package details
      */
-    public function getComposerPackage(): ?array
+    protected function getComposerPackage(): ?array
     {
-        return $this->composerPackage;
+        return $this->composerPackage ?? $this->composerPackage = Composer::getPackageInfoByExtension($this);
     }
 
     /**
@@ -30,6 +27,14 @@ trait HasComposerPackage
      */
     public function getComposerPackageName(): ?string
     {
-        return $this->composerPackage['name'] ?? null;
+        return $this->getComposerPackage()['name'] ?? null;
+    }
+
+    /**
+     * Get the composer package version
+     */
+    public function getComposerPackageVersion(): ?string
+    {
+        return $this->getComposerPackage()['versions'][0] ?? null;
     }
 }

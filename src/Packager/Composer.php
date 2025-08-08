@@ -10,21 +10,17 @@ use Winter\Packager\Package\DetailedPackage;
 use Winter\Packager\Package\DetailedVersionedPackage;
 use Winter\Packager\Package\Package;
 use Winter\Packager\Package\VersionedPackage;
-use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Foundation\Extension\WinterExtension;
-use Winter\Storm\Support\Facades\File;
 
 /**
  * Helper class for interacting with Composer through Winter\Packager
  * @method static Collection|DetailedVersionedPackage|DetailedPackage|VersionedPackage|Package|array|null show(ShowMode $mode = ShowMode::INSTALLED, string $package = null, bool $noDev = false, bool $latest = false, bool $returnArray = false)
- * @method static string require(string $package, bool $dryRun = false, bool $dev = false)
+ * @method static string require(string $package, bool $dryRun = false, bool $dev = false, bool $noUpdate = false, bool $noScripts = false)
  * @method static \Winter\Packager\Commands\Update update(bool $includeDev = true, bool $lockFileOnly = false, bool $ignorePlatformReqs = false, string $installPreference = 'none', bool $ignoreScripts = false, bool $dryRun = false, ?string $package = null, bool $withAllDependencies = false)
  * @method static string remove(?string $package = null, bool $dryRun = false)
  */
 class Composer
 {
-    public const COMPOSER_CACHE_KEY = 'winter.system.composer';
-
     protected static PackagerComposer $composer;
 
     public static function make(bool $fresh = false): PackagerComposer
@@ -49,86 +45,103 @@ class Composer
     }
 
     /**
+     * Pin the provided package to the provided version range. If no version range is provided then
+     * Composer will use whatever it would use if require $package was run.
+     */
+    public static function pin(string $package, ?string $version = null): void
+    {
+        $requiredPackage = $package;
+        if (!is_null($version)) {
+            $requiredPackage .= ":$version";
+        }
+        static::require($requiredPackage, noUpdate: true, noScripts: true);
+    }
+
+    /**
      * Get the Winter extensions present in the current project
      * @return array $packages List of packages ['type' => ['path' => $details]]
      */
     public static function getWinterPackages(): array
     {
-        return static::remember(__METHOD__, function () {
-            $installed = static::show(returnArray: true);
-            $packages = [];
-            foreach ($installed as $package) {
-                $details = static::show(package: $package['name'], returnArray: true);
-
-                if ($package['name'] === 'winter/storm') {
-                    $packages['core'][$details['path']] = $details;
-                }
-
-                $type = match ($details['type']) {
-                    'winter-plugin', 'october-plugin' => 'plugins',
-                    'winter-module', 'october-module' => 'modules',
-                    'winter-theme', 'october-theme' => 'themes',
-                    default => null
-                };
-
-                if (!$type) {
-                    continue;
-                }
-
-                $packages[$type][$details['path']] = $details;
+        $installed = static::make()->getInstalledFile()->packages;
+        $packages = [];
+        foreach ($installed as $name => $details) {
+            $type = null;
+            if ($name === 'winter/storm') {
+                $type = 'core';
             }
 
-            return $packages;
-        });
+            $type = $type ?? match ($details['type']) {
+                'winter-plugin', 'october-plugin' => 'plugins',
+                'winter-module', 'october-module' => 'modules',
+                'winter-theme', 'october-theme' => 'themes',
+                default => null
+            };
+
+            if (!$type) {
+                continue;
+            }
+
+            $details['path'] = realpath(
+                static::make()->getComposerVendorDir()
+                . DIRECTORY_SEPARATOR
+                . $details['install-path']
+            );
+
+            $packages[$type][$details['path']] = $details;
+        }
+
+        return $packages;
     }
 
     /**
      * Get the available updates for the project
+     * @TODO: Check if we need to cache this
      * @return array [$package => ['from' => string, 'to' => string, 'ref' => string, 'available' => array]]
      */
     public static function getAvailableUpdates(): array
     {
-        return static::remember(__METHOD__, function () {
-            $upgrades = static::update(dryRun: true, withAllDependencies: true)->getUpgraded();
-            // Get an array of package names that are winter packages
-            $packages = array_values(
-                array_map(
-                    fn ($package) => $package['name'],
-                    array_merge(...array_values(static::getWinterPackages()))
-                )
+        $upgrades = static::update(dryRun: true, withAllDependencies: true)->getUpgraded();
+        // Get an array of package names that are winter packages
+        $packages = array_values(
+            array_map(
+                fn ($package) => $package['name'],
+                array_merge(...array_values(static::getWinterPackages()))
+            )
+        );
+
+        $winterPackages = array_filter($upgrades, function ($key) use ($packages) {
+            return in_array($key, $packages);
+        }, ARRAY_FILTER_USE_KEY);
+
+        foreach ($winterPackages as $name => $details) {
+            $winterPackages[$name] = [
+                'from' => $details[0],
+                'to' => $details[1],
+            ];
+
+            $info = static::show(
+                package: $name,
+                mode: ShowMode::AVAILABLE,
+                latest: true,
+                returnArray: true
             );
 
-            $winterPackages = array_filter($upgrades, function ($key) use ($packages) {
-                return in_array($key, $packages);
-            }, ARRAY_FILTER_USE_KEY);
+            $winterPackages[$name] = [
+                'from' => $details[0],
+                'to' => $details[1],
+                'ref' => $info['dist']['reference'] ?? null,
+                'available' => static::filterProductionVersions($info['versions'], [$details[0]]),
+            ];
+        }
 
-            foreach ($winterPackages as $name => $details) {
-                $winterPackages[$name] = [
-                    'from' => $details[0],
-                    'to' => $details[1],
-                ];
-
-                $info = static::show(
-                    package: $name,
-                    mode: ShowMode::AVAILABLE,
-                    latest: true,
-                    returnArray: true
-                );
-
-                $winterPackages[$name] = [
-                    'from' => $details[0],
-                    'to' => $details[1],
-                    'ref' => $info['dist']['reference'] ?? null,
-                    'available' => static::filterProductionVersions($info['versions'], [$details[0]]),
-                ];
-            }
-
-            return $winterPackages;
-        });
+        return $winterPackages;
     }
 
     /**
-     * Gets the latest supported version constraints for the provided package that Composer would use under the current conditions
+     * Gets the latest supported version constraints for the provided package that Composer
+     * would use under the current conditions
+     * @TODO: Evaluate for removal if it doesn't get used for the UI
      */
     public static function getLatestSupportedVersion(string $package): string
     {
@@ -188,31 +201,6 @@ class Composer
         return $packages;
     }
 
-    public static function setPackageRequirement(string $package, string $version): bool
-    {
-        $composerJsonPath = base_path('composer.json');
-        if (!File::exists($composerJsonPath)) {
-            throw new ApplicationException('composer.json file does not exist.');
-        }
-
-        $json = json_decode(File::get($composerJsonPath), flags: JSON_OBJECT_AS_ARRAY);
-
-        $set = false;
-        foreach (['require', 'require-dev'] as $mode) {
-            if (isset($json[$mode][$package])) {
-                $json[$mode][$package] = $version;
-                $set = true;
-                break;
-            }
-        }
-
-        if ($set) {
-            File::put($composerJsonPath, json_encode($json, flags: JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
-        }
-
-        return $set;
-    }
-
     /**
      * Removes all dev versions not present in the keep paramater
      */
@@ -227,50 +215,5 @@ class Composer
         usort($versions, fn (string $a, string $b): bool => version_compare($a, $b, '<'));
 
         return $versions;
-    }
-
-    /**
-     * This method moves the composer caching out of cache, this is so it is not invalidated during tests.
-     * @TODO: fix.
-     *
-     * @param string $key
-     * @param callable $callable
-     * @param int $expires
-     * @return mixed
-     */
-    protected static function remember(string $key, callable $callable, int $expires = 60 * 15): mixed
-    {
-        $dir = temp_path('composer');
-
-        if (!File::exists($dir)) {
-            File::makeDirectory($dir);
-        }
-
-        $key = static::COMPOSER_CACHE_KEY . $key;
-        $key .= File::lastModified(base_path('composer.lock')) . File::lastModified(base_path('composer.json'));
-
-        $file = $dir . '/' . md5($key) . '.json';
-
-        if (File::exists($file)) {
-            $cache = json_decode(File::get($file), flags: JSON_OBJECT_AS_ARRAY);
-
-            if (is_null($cache['expires']) || time() < $cache['expires']) {
-                return $cache['result'];
-            }
-        }
-
-        $result = $callable();
-
-        // We don't save nothing
-        if (!$result) {
-            return $result;
-        }
-
-        File::put($file, json_encode([
-            'expires' => $expires ? time() + $expires : null,
-            'result' => $result
-        ]));
-
-        return $result;
     }
 }

@@ -44,9 +44,6 @@ abstract class ModuleServiceProvider extends ServiceProviderBase implements Wint
 
         // Bind the service provider to the application container
         $this->app->instance($this::class, $this);
-
-        // Register the composer package if exists
-        $this->setComposerPackage(Composer::getPackageInfoByExtension($this));
     }
 
     /**
