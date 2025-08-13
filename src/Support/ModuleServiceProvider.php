@@ -3,7 +3,6 @@
 use Illuminate\Support\ServiceProvider as ServiceProviderBase;
 use ReflectionClass;
 use Winter\Storm\Foundation\Extension\WinterExtension;
-use Winter\Storm\Packager\Composer;
 use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Facades\File;
 use Winter\Storm\Support\Str;
