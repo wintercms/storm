@@ -151,9 +151,18 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     // Events
     //
 
-    public function beforeLogin() {}
+    /**
+     * Event method called before a user is logged in.
+     */
+    public function beforeLogin(): void
+    {
+        // Extend this method to define functionality before login
+    }
 
-    public function afterLogin()
+    /**
+     * Event method called after a user is logged in.
+     */
+    public function afterLogin(): void
     {
         $this->last_login = $this->freshTimestamp();
         $this->forceSave();
