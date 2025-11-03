@@ -6,6 +6,7 @@ composer.lock
 # Editor files
 .idea
 .vscode
+.zed
 *.code-workspace
 
 # Other files

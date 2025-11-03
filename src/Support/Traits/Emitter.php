@@ -90,7 +90,10 @@ trait Emitter
         if (isset($this->emitterEventCollection[$eventName])) {
             krsort($this->emitterEventCollection[$eventName]);
 
-            $this->emitterEventSorted[$eventName] = call_user_func_array('array_merge', $this->emitterEventCollection[$eventName]);
+            $this->emitterEventSorted[$eventName] = call_user_func_array(
+                'array_merge',
+                $this->emitterEventCollection[$eventName],
+            );
         }
     }
 
@@ -116,7 +119,9 @@ trait Emitter
         }
 
         if ($event === null) {
-            unset($this->emitterSingleEventCollection, $this->emitterEventCollection, $this->emitterEventSorted);
+            $this->emitterSingleEventCollection = [];
+            $this->emitterEventCollection = [];
+            $this->emitterEventSorted = [];
             return $this;
         }
 
@@ -148,7 +153,7 @@ trait Emitter
         // When the given "event" is actually an object we will assume it is an event
         // object and use the class as the event name and this event itself as the
         // payload to the handler, which makes object based events quite simple.
-        list($event, $params) = $this->parseEventAndPayload($event, $params);
+        [$event, $params] = $this->parseEventAndPayload($event, $params);
 
         $result = [];
 

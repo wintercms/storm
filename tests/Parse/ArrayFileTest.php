@@ -174,8 +174,7 @@ class ArrayFileTest extends \Winter\Storm\Tests\TestCase
          * Test alternative quoting
          */
         $arrayFile = ArrayFile::open(__DIR__ . '/../fixtures/parse/arrayfile/sample-array-file.php');
-        $arrayFile->set('timezone', 'The Fifth Dimension')
-            ->set('timezoneAgain', 'The "Sixth" Dimension');
+        $arrayFile->set('timezone', 'The Fifth Dimension')->set('timezoneAgain', 'The "Sixth" Dimension');
         $result = eval('?>' . $arrayFile->render());
 
         $this->assertArrayHasKey('timezone', $result);
@@ -187,7 +186,8 @@ class ArrayFileTest extends \Winter\Storm\Tests\TestCase
          * Rewrite a boolean
          */
         $arrayFile = ArrayFile::open(__DIR__ . '/../fixtures/parse/arrayfile/sample-array-file.php');
-        $arrayFile->set('debug', false)
+        $arrayFile
+            ->set('debug', false)
             ->set('debugAgain', true)
             ->set('bullyIan', true)
             ->set('booLeeIan', false)
@@ -239,15 +239,16 @@ class ArrayFileTest extends \Winter\Storm\Tests\TestCase
         $arrayFile = ArrayFile::open(__DIR__ . '/../fixtures/parse/arrayfile/import.php');
 
         $expected = <<<PHP
-<?php
+        <?php
 
-use Symfony\Component\HttpFoundation\Response;
-return [
-    'foo' => Response::HTTP_OK,
-    'bar' => Response::HTTP_I_AM_A_TEAPOT,
-];
+        use Symfony\Component\HttpFoundation\Response;
 
-PHP;
+        return [
+            'foo' => Response::HTTP_OK,
+            'bar' => Response::HTTP_I_AM_A_TEAPOT,
+        ];
+
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -258,15 +259,16 @@ PHP;
         $arrayFile->set('foo', $arrayFile->constant('Response::HTTP_CONFLICT'));
 
         $expected = <<<PHP
-<?php
+        <?php
 
-use Symfony\Component\HttpFoundation\Response;
-return [
-    'foo' => Response::HTTP_CONFLICT,
-    'bar' => Response::HTTP_I_AM_A_TEAPOT,
-];
+        use Symfony\Component\HttpFoundation\Response;
 
-PHP;
+        return [
+            'foo' => Response::HTTP_CONFLICT,
+            'bar' => Response::HTTP_I_AM_A_TEAPOT,
+        ];
+
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -276,14 +278,15 @@ PHP;
         $arrayFile = ArrayFile::open(__DIR__ . '/../fixtures/parse/arrayfile/expression.php');
 
         $expected = <<<PHP
-<?php
+        <?php
 
-\$bar = nl2br("Hello\\nWorld");
-return [
-    'foo' => \$bar,
-];
+        \$bar = nl2br("Hello\\nWorld");
 
-PHP;
+        return [
+            'foo' => \$bar,
+        ];
+
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -358,34 +361,34 @@ PHP;
         $contents = file_get_contents($file);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'w' => [
-        'i' => [
-            'n' => [
-                't' => [
-                    'e' => [
-                        'r' => 'Winter CMS',
+        return [
+            'w' => [
+                'i' => [
+                    'n' => [
+                        't' => [
+                            'e' => [
+                                'r' => 'Winter CMS',
+                            ],
+                            'a' => 'very',
+                        ],
+                        'b' => 'is',
+                        'c' => [
+                            'l' => 'good',
+                            'e' => 'and',
+                            'f' => 'awesome',
+                        ],
+                        'g' => 'for',
                     ],
-                    'a' => 'very',
+                    2 => [
+                        'g' => 'development',
+                    ],
                 ],
-                'b' => 'is',
-                'c' => [
-                    'l' => 'good',
-                    'e' => 'and',
-                    'f' => 'awesome',
-                ],
-                'g' => 'for',
             ],
-            2 => [
-                'g' => 'development',
-            ],
-        ],
-    ],
-];
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $contents);
 
@@ -407,26 +410,26 @@ PHP;
         $contents = file_get_contents($file);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'w' => [
-        'i' => [
-            'n' => [
-                't' => [
-                    'e' => [
-                        'r' => 'Winter CMS',
+        return [
+            'w' => [
+                'i' => [
+                    'n' => [
+                        't' => [
+                            'e' => [
+                                'r' => 'Winter CMS',
+                            ],
+                        ],
+                    ],
+                    2 => [
+                        'g' => 'development',
                     ],
                 ],
             ],
-            2 => [
-                'g' => 'development',
-            ],
-        ],
-    ],
-];
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $contents);
 
@@ -463,27 +466,24 @@ PHP;
         $arrayFile->set([
             'w' => [
                 'i' => 'n',
-                't' => [
-                    'e',
-                    'r'
-                ]
-            ]
+                't' => ['e', 'r'],
+            ],
         ]);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'w' => [
-        'i' => 'n',
-        't' => [
-            'e',
-            'r',
-        ],
-    ],
-];
+        return [
+            'w' => [
+                'i' => 'n',
+                't' => [
+                    'e',
+                    'r',
+                ],
+            ],
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -500,25 +500,25 @@ PHP;
             ],
             'cms' => [
                 0 => 'a',
-                1 => 'b'
-            ]
+                1 => 'b',
+            ],
         ]);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'winter' => [
-        1 => 'a',
-        2 => 'b',
-    ],
-    'cms' => [
-        'a',
-        'b',
-    ],
-];
+        return [
+            'winter' => [
+                1 => 'a',
+                2 => 'b',
+            ],
+            'cms' => [
+                'a',
+                'b',
+            ],
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -529,22 +529,22 @@ PHP;
         $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
-            'curl_port' => $arrayFile->constant('CURLOPT_PORT')
+            'curl_port' => $arrayFile->constant('CURLOPT_PORT'),
         ]);
 
         $arrayFile->set([
-            'curl_return' => new \Winter\Storm\Parse\PHP\PHPConstant('CURLOPT_RETURNTRANSFER')
+            'curl_return' => new \Winter\Storm\Parse\PHP\PHPConstant('CURLOPT_RETURNTRANSFER'),
         ]);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'curl_port' => CURLOPT_PORT,
-    'curl_return' => CURLOPT_RETURNTRANSFER,
-];
+        return [
+            'curl_port' => CURLOPT_PORT,
+            'curl_return' => CURLOPT_RETURNTRANSFER,
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -562,34 +562,34 @@ PHP;
                     'test2',
                     'additional' => [
                         $arrayFile->constant('\Winter\Storm\Parse\PHP\ArrayFile::SORT_ASC'),
-                        $arrayFile->constant('\Winter\Storm\Parse\PHP\ArrayFile::SORT_DESC')
-                    ]
-                ]
-            ]
-        ]);
-
-        $expected = <<<PHP
-<?php
-
-return [
-    'path' => [
-        'to' => [
-            'config' => [
-                'test' => env('TEST_KEY', 'default'),
-                'details' => [
-                    'test1',
-                    'test2',
-                    'additional' => [
-                        \Winter\Storm\Parse\PHP\ArrayFile::SORT_ASC,
-                        \Winter\Storm\Parse\PHP\ArrayFile::SORT_DESC,
+                        $arrayFile->constant('\Winter\Storm\Parse\PHP\ArrayFile::SORT_DESC'),
                     ],
                 ],
             ],
-        ],
-    ],
-];
+        ]);
 
-PHP;
+        $expected = <<<PHP
+        <?php
+
+        return [
+            'path' => [
+                'to' => [
+                    'config' => [
+                        'test' => env('TEST_KEY', 'default'),
+                        'details' => [
+                            'test1',
+                            'test2',
+                            'additional' => [
+                                \Winter\Storm\Parse\PHP\ArrayFile::SORT_ASC,
+                                \Winter\Storm\Parse\PHP\ArrayFile::SORT_DESC,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -600,22 +600,22 @@ PHP;
         $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
-            'key' => $arrayFile->function('env', ['KEY_A', true])
+            'key' => $arrayFile->function('env', ['KEY_A', true]),
         ]);
 
         $arrayFile->set([
-            'key2' => new \Winter\Storm\Parse\PHP\PHPFunction('nl2br', ['KEY_B', false])
+            'key2' => new \Winter\Storm\Parse\PHP\PHPFunction('nl2br', ['KEY_B', false]),
         ]);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'key' => env('KEY_A', true),
-    'key2' => nl2br('KEY_B', false),
-];
+        return [
+            'key' => env('KEY_A', true),
+            'key2' => nl2br('KEY_B', false),
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -626,21 +626,21 @@ PHP;
         $arrayFile = ArrayFile::open($file);
 
         $arrayFile->set([
-            'key' => $arrayFile->function('env', ['KEY_A', true])
+            'key' => $arrayFile->function('env', ['KEY_A', true]),
         ]);
 
         $arrayFile->set([
-            'key' => new \Winter\Storm\Parse\PHP\PHPFunction('nl2br', ['KEY_B', false])
+            'key' => new \Winter\Storm\Parse\PHP\PHPFunction('nl2br', ['KEY_B', false]),
         ]);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'key' => nl2br('KEY_B', false),
-];
+        return [
+            'key' => nl2br('KEY_B', false),
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -652,18 +652,18 @@ PHP;
 
         $arrayFile->set([
             'key' => $arrayFile->function('env', ['KEY_A', null]),
-            'key2' => null
+            'key2' => null,
         ]);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'key' => env('KEY_A', null),
-    'key2' => null,
-];
+        return [
+            'key' => env('KEY_A', null),
+            'key2' => null,
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -685,28 +685,27 @@ PHP;
         $arrayFile->sort();
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'a' => [
-        'a' => [
-            'a' => 'a',
-            'b' => 'b',
-        ],
-        'b' => 'b',
-        'c' => 'c',
-    ],
-    'b' => [
-        'a' => 'a',
-        'b' => 'b',
-    ],
-];
+        return [
+            'a' => [
+                'a' => [
+                    'a' => 'a',
+                    'b' => 'b',
+                ],
+                'b' => 'b',
+                'c' => 'c',
+            ],
+            'b' => [
+                'a' => 'a',
+                'b' => 'b',
+            ],
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
-
 
     public function testSortDesc()
     {
@@ -725,24 +724,24 @@ PHP;
         $arrayFile->sort(ArrayFile::SORT_DESC);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'b' => [
-        'b' => 'b',
-        'a' => 'a',
-    ],
-    'a' => [
-        'c' => 'c',
-        'b' => 'b',
-        'a' => [
-            'b' => 'b',
-            'a' => 'a',
-        ],
-    ],
-];
+        return [
+            'b' => [
+                'b' => 'b',
+                'a' => 'a',
+            ],
+            'a' => [
+                'c' => 'c',
+                'b' => 'b',
+                'a' => [
+                    'b' => 'b',
+                    'a' => 'a',
+                ],
+            ],
+        ];
 
-PHP;
+        PHP;
 
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
@@ -754,7 +753,7 @@ PHP;
 
         $arrayFile->set([
             'a' => 'a',
-            'b' => 'b'
+            'b' => 'b',
         ]);
 
         $arrayFile->sort(function ($a, $b) {
@@ -766,14 +765,14 @@ PHP;
         });
 
         $expected = <<<PHP
-<?php
+        <?php
 
-return [
-    'b' => 'b',
-    'a' => 'a',
-];
+        return [
+            'b' => 'b',
+            'a' => 'a',
+        ];
 
-PHP;
+        PHP;
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
@@ -783,20 +782,21 @@ PHP;
         $arrayFile = ArrayFile::open($file);
 
         $expected = <<<PHP
-<?php
+        <?php
 
-include(__DIR__ . '/sample-array-file.php');
-include_once(__DIR__ . '/sample-array-file.php');
-require(__DIR__ . '/sample-array-file.php');
-require_once(__DIR__ . '/sample-array-file.php');
-return [
-    'foo' => array_merge(include(__DIR__ . '/sample-array-file.php'), [
-        'bar' => 'foo',
-    ]),
-    'bar' => 'foo',
-];
+        include(__DIR__ . '/sample-array-file.php');
+        include_once(__DIR__ . '/sample-array-file.php');
+        require(__DIR__ . '/sample-array-file.php');
+        require_once(__DIR__ . '/sample-array-file.php');
 
-PHP;
+        return [
+            'foo' => array_merge(include(__DIR__ . '/sample-array-file.php'), [
+                'bar' => 'foo',
+            ]),
+            'bar' => 'foo',
+        ];
+
+        PHP;
         $this->assertEquals(str_replace("\r", '', $expected), $arrayFile->render());
     }
 
@@ -828,7 +828,7 @@ PHP;
 
         $this->assertEquals(
             str_replace("\r", '', file_get_contents($file)),
-            str_replace("\r", '', $arrayFile->render())
+            str_replace("\r", '', $arrayFile->render()),
         );
     }
 
@@ -839,7 +839,7 @@ PHP;
 
         $this->assertEquals(
             str_replace("\r", '', file_get_contents($file)),
-            str_replace("\r", '', $arrayFile->render())
+            str_replace("\r", '', $arrayFile->render()),
         );
     }
 }
