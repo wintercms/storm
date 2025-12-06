@@ -484,6 +484,70 @@ class FormBuilderTest extends TestCase
     }
 
     /**
+     * @testdox can create a select element with backward compatibility for optgroup integer keys
+     */
+    public function testSelectBackwardCompatibilityOptgroupIdItemsKeys()
+    {
+        // this simulates grouped options base on a model with ids as keys
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: [
+                'Group1' => [
+                    1 => 'Option 1',
+                    2 => 'Option 2',
+                ],
+                'Group2' => [
+                    3 => 'Option 3',
+                    4 => 'Option 4',
+                ],
+            ],
+            selected: 2,
+            options: []
+        );
+
+        $this->assertElementIs('select', $result);
+        $this->assertElementAttributeEquals('name', 'my-select', $result);
+
+        // Optgroups
+        $this->assertStringContainsString('<optgroup label="Group1">', $result);
+        $this->assertStringContainsString('<optgroup label="Group2">', $result);
+
+        // Options inside optgroups
+        $this->assertStringContainsString('<option value="1">Option 1</option>', $result);
+        $this->assertStringContainsString('<option value="2" selected="selected">Option 2</option>', $result);
+        $this->assertStringContainsString('<option value="3">Option 3</option>', $result);
+        $this->assertStringContainsString('<option value="4">Option 4</option>', $result);
+        $this->assertStringNotContainsString('data-icon', $result);
+        $this->assertStringNotContainsString('data-image', $result);
+    }
+
+    /**
+     * @testdox show case where backward compatibility is broken (expected)
+     */
+    public function testSelectBackwardCompatibilityBrokenOptGroup()
+    {
+        // optgroup syntax with two items with integer keys starting at zero are seen as a regular option with an icon
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: [
+                'Group1' => [
+                    0 => 'Option 1',
+                    1 => 'Option 2',
+                ],
+            ],
+            selected: 1,
+            options: []
+        );
+
+        $this->assertElementIs('select', $result);
+        $this->assertElementAttributeEquals('name', 'my-select', $result);
+
+        // Options inside optgroups
+        $this->assertStringContainsString('<option value="Group1" data-icon="Option 2">Option 1</option>', $result);
+        $this->assertStringContainsString('data-icon', $result);
+    }
+
+    /**
      * @testdox properly escapes HTML in option labels and values.
      */
     public function testSelectHtmlEscaping()
