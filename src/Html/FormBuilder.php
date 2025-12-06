@@ -412,6 +412,7 @@ class FormBuilder
     {
         if (array_key_exists('emptyOption', $options)) {
             $list = ['' => $options['emptyOption']] + $list;
+            unset($options['emptyOption']);
         }
 
         // When building a select box the "value" attribute is really the selected one
