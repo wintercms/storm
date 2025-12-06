@@ -532,7 +532,7 @@ class FormBuilder
         $selectedAttr = $this->getSelectedValue($value, $selected);
 
         $options = [
-            'value' => e($value),
+            'value' => $value,
             'selected' => $selectedAttr
         ];
 
