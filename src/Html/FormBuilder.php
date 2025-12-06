@@ -522,7 +522,7 @@ class FormBuilder
         ];
 
         if (is_array($display)) {
-            $data = array_get($display, 1);
+            $data = array_get($display, 1, 'icon-snowflake');
             $display = array_get($display, 0);
             if (strpos($data, '.')) {
                 $options['data-image'] = $data;
