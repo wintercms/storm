@@ -537,13 +537,17 @@ class FormBuilder
         ];
 
         if (is_array($display)) {
-            $data = array_get($display, 1, '');
-            $display = array_get($display, 0);
-            if (strpos($data, '.') !== false) {
-                $options['data-image'] = $data;
-            } else {
-                $options['data-icon'] = $data;
+            $label = array_get($display, 0);
+            $data = array_get($display, 1);
+
+            if (is_string($data) && $data !== '') {
+                if (strpos($data, '.') !== false) {
+                    $options['data-image'] = $data;
+                } else {
+                    $options['data-icon'] = $data;
+                }
             }
+            $display = $label;
         }
         return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
     }
