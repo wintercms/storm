@@ -583,9 +583,10 @@ class FormBuilderTest extends TestCase
         );
 
         $this->assertElementIs('select', $result);
-        // The value attribute is escaped by the HtmlBuilder, resulting in double encoding
+
         $this->assertStringContainsString('value="&lt;script&gt;"', $result);
         $this->assertStringContainsString('&lt;b&gt;Bold Label&lt;/b&gt;', $result);
+
         // Ensure dangerous tags are not rendered as raw HTML
         $this->assertStringNotContainsString('value="<script>"', $result);
         $this->assertStringNotContainsString('<b>Bold Label</b>', $result);
