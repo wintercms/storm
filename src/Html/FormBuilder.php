@@ -499,11 +499,8 @@ class FormBuilder
      */
     public function getSelectOption(string|array $display, string $value, string|array|null $selected = null): string
     {
-        if (is_array($display)) {
-            $keys = array_keys($display);
-            if (count($keys) && is_string($keys[0])) {
-                return $this->optionGroup($display, $value, $selected);
-            }
+        if (is_array($display) && array_keys($display) !== [0,1]) {
+            return $this->optionGroup($display, $value, $selected);
         }
 
         return $this->option($display, $value, $selected);
