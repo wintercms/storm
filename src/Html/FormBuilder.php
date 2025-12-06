@@ -486,7 +486,7 @@ class FormBuilder
     {
         if (is_array($display)) {
             $keys = array_keys($display);
-            if (count($keys) && gettype($keys[0]) === 'string') {
+            if (count($keys) && is_string($keys[0])) {
                 return $this->optionGroup($display, $value, $selected);
             }
         }
