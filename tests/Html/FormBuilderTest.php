@@ -535,7 +535,6 @@ class FormBuilderTest extends TestCase
                     1 => 'Option 2',
                 ],
             ],
-            selected: 1,
             options: []
         );
 
