@@ -408,7 +408,7 @@ class FormBuilder
     /**
      * Create a select box field with empty option support.
      */
-    public function select(string $name, array $list = [], string|array|null $selected = null, array $options = []): string
+    public function select(string $name, array $list = [], string|array|null $selected = null, array $options = [], bool $legacyOptGroup = true): string
     {
         if (array_key_exists('emptyOption', $options)) {
             $list = ['' => $options['emptyOption']] + $list;
@@ -431,7 +431,7 @@ class FormBuilder
         $html = [];
 
         foreach ($list as $value => $display) {
-            $html[] = $this->getSelectOption($display, $value, $selected);
+            $html[] = $this->getSelectOption($display, $value, $selected, $legacyOptGroup);
         }
 
         // Once we have all of this HTML, we can join this into a single element after
@@ -482,10 +482,14 @@ class FormBuilder
     /**
      * Get the select option for the given value.
      */
-    public function getSelectOption(string|array $display, string $value, string|array|null $selected = null): string
+    public function getSelectOption(string|array $display, string $value, string|array|null $selected = null, bool $legacyOptGroup = true): string
     {
         if (is_array($display)) {
-            return $this->optionGroup($display, $value, $selected);
+            if ($legacyOptGroup) {
+                return $this->optionGroup($display, $value, $selected);
+            } elseif ($items = array_get($display, 'items')) {
+                return $this->optionGroup($items, $value, $selected);
+            }
         }
 
         return $this->option($display, $value, $selected);
@@ -508,7 +512,7 @@ class FormBuilder
     /**
      * Create a select element option.
      */
-    protected function option(string $display, string $value, string|array|null $selected = null): string
+    protected function option(string|array $display, string $value, string|array|null $selected = null): string
     {
         $selectedAttr = $this->getSelectedValue($value, $selected);
 
@@ -517,6 +521,15 @@ class FormBuilder
             'selected' => $selectedAttr
         ];
 
+        if (is_array($display)) {
+            $data = array_get($display, 1);
+            $display = array_get($display, 0);
+            if (strpos($data, '.')) {
+                $options['data-image'] = $data;
+            } else {
+                $options['data-icon'] = $data;
+            }
+        }
         return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
     }
 
