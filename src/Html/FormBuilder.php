@@ -523,7 +523,7 @@ class FormBuilder
         if (is_array($display)) {
             $data = array_get($display, 1, '');
             $display = array_get($display, 0);
-            if (strpos($data, '.')) {
+            if (strpos($data, '.') !== false) {
                 $options['data-image'] = $data;
             } else {
                 $options['data-icon'] = $data;
