@@ -408,7 +408,7 @@ class FormBuilder
     /**
      * Create a select box field with empty option support.
      */
-    public function select(string $name, array $list = [], string|array|null $selected = null, array $options = [], bool $legacyOptGroup = true): string
+    public function select(string $name, array $list = [], string|array|null $selected = null, array $options = []): string
     {
         if (array_key_exists('emptyOption', $options)) {
             $list = ['' => $options['emptyOption']] + $list;
@@ -431,7 +431,7 @@ class FormBuilder
         $html = [];
 
         foreach ($list as $value => $display) {
-            $html[] = $this->getSelectOption($display, $value, $selected, $legacyOptGroup);
+            $html[] = $this->getSelectOption($display, $value, $selected);
         }
 
         // Once we have all of this HTML, we can join this into a single element after
@@ -482,13 +482,12 @@ class FormBuilder
     /**
      * Get the select option for the given value.
      */
-    public function getSelectOption(string|array $display, string $value, string|array|null $selected = null, bool $legacyOptGroup = true): string
+    public function getSelectOption(string|array $display, string $value, string|array|null $selected = null): string
     {
         if (is_array($display)) {
-            if ($legacyOptGroup) {
+            $keys = array_keys($display);
+            if (count($keys) && gettype($keys[0]) === 'string') {
                 return $this->optionGroup($display, $value, $selected);
-            } elseif ($items = array_get($display, 'items')) {
-                return $this->optionGroup($items, $value, $selected);
             }
         }
 
@@ -522,7 +521,7 @@ class FormBuilder
         ];
 
         if (is_array($display)) {
-            $data = array_get($display, 1, 'icon-snowflake');
+            $data = array_get($display, 1, '');
             $display = array_get($display, 0);
             if (strpos($data, '.')) {
                 $options['data-image'] = $data;
