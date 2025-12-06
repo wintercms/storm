@@ -319,4 +319,25 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('type', 'submit', $result);
         $this->assertElementContainsText('Apply', $result);
     }
+
+    /**
+     * @testdox can create a select element with an empty option without emptyOption appearing as an attribute.
+     */
+    public function testSelectWithEmptyOption()
+    {
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: ['1' => 'Option 1', '2' => 'Option 2'],
+            selected: null,
+            options: ['emptyOption' => 'Please select', 'class' => 'form-control']
+        );
+
+        $this->assertElementIs('select', $result);
+        $this->assertElementAttributeEquals('name', 'my-select', $result);
+        $this->assertElementAttributeEquals('class', 'form-control', $result);
+        $this->assertElementDoesntHaveAttribute('emptyOption', $result);
+        $this->assertStringContainsString('<option value="">Please select</option>', $result);
+        $this->assertStringContainsString('<option value="1">Option 1</option>', $result);
+        $this->assertStringContainsString('<option value="2">Option 2</option>', $result);
+    }
 }
