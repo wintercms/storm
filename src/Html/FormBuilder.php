@@ -416,12 +416,6 @@ class FormBuilder
      *
      * Icons are detected when the second array element doesn't contain a dot (.).
      * Images are detected when the second array element contains a dot (.).
-     *
-     * @param string $name The name attribute for the select element
-     * @param array $list The options list (see above for supported formats)
-     * @param string|array|null $selected The selected value(s)
-     * @param array $options Additional HTML attributes for the select element
-     * @return string The generated HTML select element
      */
     public function select(string $name, array $list = [], string|array|null $selected = null, array $options = []): string
     {
@@ -502,11 +496,6 @@ class FormBuilder
      * - If $display is an array with string keys, creates an optgroup
      * - If $display is an array with numeric keys (e.g., ['Label', 'icon']), creates a single option with icon/image
      * - If $display is a string, creates a simple option
-     *
-     * @param string|array $display The display value or array for optgroup/icon/image
-     * @param string $value The option value attribute
-     * @param string|array|null $selected The selected value(s)
-     * @return string The generated HTML option or optgroup element
      */
     public function getSelectOption(string|array $display, string $value, string|array|null $selected = null): string
     {
@@ -540,11 +529,6 @@ class FormBuilder
      * If $display is an array in the format ['Label', 'icon-or-image'], adds data attributes:
      * - data-icon: added if the second element doesn't contain a dot (e.g., 'icon-refresh')
      * - data-image: added if the second element contains a dot (e.g., 'image.png')
-     *
-     * @param string|array $display The display label or array with label and icon/image
-     * @param string $value The option value attribute
-     * @param string|array|null $selected The selected value(s)
-     * @return string The generated HTML option element
      */
     protected function option(string|array $display, string $value, string|array|null $selected = null): string
     {
