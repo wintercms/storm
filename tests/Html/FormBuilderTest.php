@@ -340,4 +340,170 @@ class FormBuilderTest extends TestCase
         $this->assertStringContainsString('<option value="1">Option 1</option>', $result);
         $this->assertStringContainsString('<option value="2">Option 2</option>', $result);
     }
+
+    /**
+     * @testdox can create a select element with icon data attributes.
+     */
+    public function testSelectWithIcon()
+    {
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: [
+                '1' => 'Regular Option',
+                '2' => ['Option With Icon', 'icon-refresh'],
+            ],
+            selected: null,
+            options: []
+        );
+
+        $this->assertElementIs('select', $result);
+        $this->assertElementAttributeEquals('name', 'my-select', $result);
+        $this->assertStringContainsString('<option value="1">Regular Option</option>', $result);
+        $this->assertStringContainsString('<option value="2" data-icon="icon-refresh">Option With Icon</option>', $result);
+    }
+
+    /**
+     * @testdox can create a select element with image data attributes.
+     */
+    public function testSelectWithImage()
+    {
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: [
+                '1' => 'Regular Option',
+                '2' => ['Option With Image', 'myImage.jpeg'],
+            ],
+            selected: null,
+            options: []
+        );
+
+        $this->assertElementIs('select', $result);
+        $this->assertElementAttributeEquals('name', 'my-select', $result);
+        $this->assertStringContainsString('<option value="1">Regular Option</option>', $result);
+        $this->assertStringContainsString('<option value="2" data-image="myImage.jpeg">Option With Image</option>', $result);
+    }
+
+    /**
+     * @testdox can create a select element with optgroups.
+     */
+    public function testSelectWithOptgroups()
+    {
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: [
+                'Group 1' => [
+                    'g1-opt1' => 'Group 1 Option 1',
+                    'g1-opt2' => 'Group 1 Option 2',
+                ],
+                'Group 2' => [
+                    'g2-opt1' => 'Group 2 Option 1',
+                    'g2-opt2' => 'Group 2 Option 2',
+                ],
+            ],
+            selected: null,
+            options: []
+        );
+
+        $this->assertElementIs('select', $result);
+        $this->assertElementAttributeEquals('name', 'my-select', $result);
+        $this->assertStringContainsString('<optgroup label="Group 1">', $result);
+        $this->assertStringContainsString('<optgroup label="Group 2">', $result);
+        $this->assertStringContainsString('<option value="g1-opt1">Group 1 Option 1</option>', $result);
+        $this->assertStringContainsString('<option value="g1-opt2">Group 1 Option 2</option>', $result);
+        $this->assertStringContainsString('<option value="g2-opt1">Group 2 Option 1</option>', $result);
+        $this->assertStringContainsString('<option value="g2-opt2">Group 2 Option 2</option>', $result);
+        $this->assertStringContainsString('</optgroup>', $result);
+    }
+
+    /**
+     * @testdox can create a select element with optgroups containing icons and images.
+     */
+    public function testSelectWithOptgroupsAndIconsImages()
+    {
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: [
+                'option1' => 'Regular option',
+                'option2' => ['Option With Image', 'myImage.jpeg'],
+                'Group1' => [
+                    'group1-opt1' => 'OptGroup Option1 regular option',
+                    'group1-opt2' => ['OptGroup Option2 with icon', 'icon-refresh'],
+                    'group1-opt3' => ['OptGroup Option3 with image', 'otherImage.png'],
+                ],
+                'Group2' => [
+                    'group2-opt1' => 'OptGroup2 Option1',
+                    'group2-opt2' => 'OptGroup2 Option2',
+                ],
+            ],
+            selected: null,
+            options: []
+        );
+
+        $this->assertElementIs('select', $result);
+        $this->assertElementAttributeEquals('name', 'my-select', $result);
+
+        // Regular options
+        $this->assertStringContainsString('<option value="option1">Regular option</option>', $result);
+        $this->assertStringContainsString('<option value="option2" data-image="myImage.jpeg">Option With Image</option>', $result);
+
+        // Optgroups
+        $this->assertStringContainsString('<optgroup label="Group1">', $result);
+        $this->assertStringContainsString('<optgroup label="Group2">', $result);
+
+        // Options inside optgroups
+        $this->assertStringContainsString('<option value="group1-opt1">OptGroup Option1 regular option</option>', $result);
+        $this->assertStringContainsString('<option value="group1-opt2" data-icon="icon-refresh">OptGroup Option2 with icon</option>', $result);
+        $this->assertStringContainsString('<option value="group1-opt3" data-image="otherImage.png">OptGroup Option3 with image</option>', $result);
+        $this->assertStringContainsString('<option value="group2-opt1">OptGroup2 Option1</option>', $result);
+        $this->assertStringContainsString('<option value="group2-opt2">OptGroup2 Option2</option>', $result);
+    }
+
+    /**
+     * @testdox can create a select element with backward compatibility for simple string options.
+     */
+    public function testSelectBackwardCompatibility()
+    {
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: [
+                '1' => 'Option 1',
+                '2' => 'Option 2',
+                '3' => 'Option 3',
+            ],
+            selected: '2',
+            options: []
+        );
+
+        $this->assertElementIs('select', $result);
+        $this->assertElementAttributeEquals('name', 'my-select', $result);
+        $this->assertStringContainsString('<option value="1">Option 1</option>', $result);
+        $this->assertStringContainsString('<option value="2" selected="selected">Option 2</option>', $result);
+        $this->assertStringContainsString('<option value="3">Option 3</option>', $result);
+        $this->assertStringNotContainsString('data-icon', $result);
+        $this->assertStringNotContainsString('data-image', $result);
+    }
+
+    /**
+     * @testdox properly escapes HTML in option labels and values.
+     */
+    public function testSelectHtmlEscaping()
+    {
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: [
+                '<script>' => 'Normal Label',
+                'safe-value' => ['<b>Bold Label</b>', 'icon-test'],
+            ],
+            selected: null,
+            options: []
+        );
+
+        $this->assertElementIs('select', $result);
+        // The value attribute is escaped by the HtmlBuilder, resulting in double encoding
+        $this->assertStringContainsString('value="&amp;lt;script&amp;gt;"', $result);
+        $this->assertStringContainsString('&lt;b&gt;Bold Label&lt;/b&gt;', $result);
+        // Ensure dangerous tags are not rendered as raw HTML
+        $this->assertStringNotContainsString('value="<script>"', $result);
+        $this->assertStringNotContainsString('<b>Bold Label</b>', $result);
+    }
 }
