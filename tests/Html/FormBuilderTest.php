@@ -384,6 +384,27 @@ class FormBuilderTest extends TestCase
     }
 
     /**
+     * @testdox can create a select element with image data attributes.
+     */
+    public function testSelectWithSelectedImage()
+    {
+        $result = $this->formBuilder->select(
+            name: 'my-select',
+            list: [
+                '1' => 'Regular Option',
+                '2' => ['Option With Image', 'myImage.jpeg'],
+            ],
+            selected: '2',
+            options: []
+        );
+
+        $this->assertElementIs('select', $result);
+        $this->assertElementAttributeEquals('name', 'my-select', $result);
+        $this->assertStringContainsString('<option value="1">Regular Option</option>', $result);
+        $this->assertStringContainsString('<option value="2" selected="selected" data-image="myImage.jpeg">Option With Image</option>', $result);
+    }
+
+    /**
      * @testdox can create a select element with optgroups.
      */
     public function testSelectWithOptgroups()
