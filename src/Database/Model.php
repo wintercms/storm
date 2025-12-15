@@ -1174,6 +1174,7 @@ class Model extends EloquentModel implements ModelInterface
     public function attributesToArray()
     {
         $attributes = $this->getArrayableAttributes();
+        $mutatedAttributes = $this->getMutatedAttributes();
 
         /*
          * Before Event
@@ -1186,13 +1187,9 @@ class Model extends EloquentModel implements ModelInterface
 
         $attributes = $this->addDateAttributesToArray($attributes);
 
-        $attributes = $this->addMutatedAttributesToArray(
-            $attributes, $mutatedAttributes = $this->getMutatedAttributes()
-        );
+        $attributes = $this->addMutatedAttributesToArray($attributes, $mutatedAttributes);
 
-        $attributes = $this->addCastAttributesToArray(
-            $attributes, $mutatedAttributes
-        );
+        $attributes = $this->addCastAttributesToArray($attributes, $mutatedAttributes);
 
         foreach ($this->getArrayableAppends() as $key) {
             $attributes[$key] = $this->mutateAttributeForArray($key, null);
