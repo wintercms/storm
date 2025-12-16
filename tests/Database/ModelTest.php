@@ -489,7 +489,8 @@ class ModelTest extends DbTestCase
         $this->assertInstanceOf(\Winter\Storm\Argon\Argon::class, $model->updated_at);
         $this->assertInstanceOf(\Winter\Storm\Argon\Argon::class, $model->deleted_at);
 
-        $this->assertEquals([
+        $this->assertEquals(
+            [
                 'created_at' => '2025/10/31',
                 'updated_at' => '2025_12_31 @ 23:59',
                 'deleted_at' => '2026-01-01T00:00:00.000000Z',
