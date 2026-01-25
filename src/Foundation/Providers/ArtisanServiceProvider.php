@@ -1,4 +1,6 @@
-<?php namespace Winter\Storm\Foundation\Providers;
+<?php
+
+namespace Winter\Storm\Foundation\Providers;
 
 use Winter\Storm\Foundation\Console\KeyGenerateCommand;
 use Winter\Storm\Foundation\Console\ClearCompiledCommand;
@@ -41,7 +43,10 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'RouteClear'            => \Illuminate\Foundation\Console\RouteClearCommand::class,
         'RouteList'             => \Illuminate\Foundation\Console\RouteListCommand::class,
         'ScheduleFinish'        => \Illuminate\Console\Scheduling\ScheduleFinishCommand::class,
+        'ScheduleList'          => \Illuminate\Console\Scheduling\ScheduleListCommand::class,
         'ScheduleRun'           => \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
+        'ScheduleTest'          => \Illuminate\Console\Scheduling\ScheduleTestCommand::class,
+        'ScheduleWork'          => \Illuminate\Console\Scheduling\ScheduleWorkCommand::class,
         'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
         'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
 
@@ -54,10 +59,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'OptimizeClear' => OptimizeClearCommand::class,
         // 'QueueClear' => QueueClearCommand::class,
         // 'SchemaDump' => DumpCommand::class,
-        // 'ScheduleList' => \Illuminate\Console\Scheduling\ScheduleListCommand::class,
         // 'ScheduleClearCache' => ScheduleClearCacheCommand::class,
-        // 'ScheduleTest' => ScheduleTestCommand::class,
-        // 'ScheduleWork' => ScheduleWorkCommand::class,
         // 'ViewCache' => ViewCacheCommand::class,
 
         // Explicitly unsupported in Winter:
