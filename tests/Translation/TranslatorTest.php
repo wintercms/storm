@@ -2,7 +2,6 @@
 
 use Illuminate\Contracts\Translation\Loader;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use Illuminate\Support\Collection;
 use Illuminate\Translation\MessageSelector;
 use Mockery as m;
@@ -36,7 +35,7 @@ class TranslatorTest extends \Winter\Storm\Tests\TestCase
     protected function tearDown(): void
     {
         m::close();
-        HandleExceptions::flushState();
+        parent::tearDown();
     }
 
     protected function getLoader()

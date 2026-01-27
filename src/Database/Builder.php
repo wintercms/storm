@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Database;
 
+use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder as BuilderModel;
 use Winter\Storm\Support\Facades\DbDongle;
@@ -102,6 +103,9 @@ class Builder extends BuilderModel
                         foreach ($words as $word) {
                             if (!strlen($word)) {
                                 continue;
+                            }
+                            if ($field instanceof Expression) {
+                                $field = $field->getValue($query->getQuery()->getGrammar());
                             }
                             $fieldSql = $this->query->raw(sprintf("lower(%s)", DbDongle::cast($field, 'text')));
                             $wordSql = '%' . trim(mb_strtolower($word)) . '%';
