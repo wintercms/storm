@@ -20,7 +20,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'ClearCompiled'         => \Winter\Storm\Foundation\Console\ClearCompiledCommand::class,
         'ConfigCache'           => \Winter\Storm\Foundation\Console\ConfigCacheCommand::class,
         'ConfigClear'           => \Winter\Storm\Foundation\Console\ConfigClearCommand::class,
-        'Down'                  => \Illuminate\Foundation\Console\DownCommand::class,
+        'Down'                  => \Winter\Storm\Foundation\Console\DownCommand::class,
         'Environment'           => \Illuminate\Foundation\Console\EnvironmentCommand::class,
         'EventCache'            => \Illuminate\Foundation\Console\EventCacheCommand::class,
         'EventClear'            => \Illuminate\Foundation\Console\EventClearCommand::class,
