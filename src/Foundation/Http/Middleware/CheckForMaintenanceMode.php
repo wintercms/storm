@@ -3,9 +3,8 @@
 namespace Winter\Storm\Foundation\Http\Middleware;
 
 use Closure;
-use Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode as Middleware;
+use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance as Middleware;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Response;
 
 class CheckForMaintenanceMode extends Middleware
@@ -21,28 +20,13 @@ class CheckForMaintenanceMode extends Middleware
      */
     public function handle($request, Closure $next)
     {
-        try {
-            return parent::handle($request, $next);
-        } catch (\Illuminate\Foundation\Http\Exceptions\MaintenanceModeException $ex) {
-            // Smoothly handle AJAX requests
-            if (request()->ajax()) {
-                return Response::make(Lang::get('system::lang.page.maintenance.help') . "\r\n" . $ex->getMessage(), 503);
-            }
-
-            // Check if there is a project level view to override the system one
-            View::addNamespace('base', base_path());
-            if (View::exists('base::maintenance')) {
-                $view = 'base::maintenance';
-            } else {
-                $view = 'system::maintenance';
-            }
-
-            return Response::make(View::make($view, [
-                'message'           => $ex->getMessage(),
-                'wentDownAt'        => $ex->wentDownAt,
-                'retryAfter'        => $ex->retryAfter,
-                'willBeAvailableAt' => $ex->willBeAvailableAt,
-            ]), 503);
+        if ($this->app->maintenanceMode()->active() && request()->ajax()) {
+            return Response::make(
+                Lang::get('system::lang.page.maintenance.help'),
+                503
+            );
         }
+
+        return parent::handle($request, $next);
     }
 }
