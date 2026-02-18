@@ -249,10 +249,11 @@ class Model extends EloquentModel implements ModelInterface
              *
              * Example usage:
              *
-             *     $model->bindEvent('model.afterBoot', function () use (\Winter\Storm\Database\Model $model) {
-             *         \Log::info(get_class($model) . ' has booted');
-             *     });
-             *
+             * ```php
+             * $model->bindEvent('model.afterBoot', function () use (\Winter\Storm\Database\Model $model) {
+             *     \Log::info(get_class($model) . ' has booted');
+             * });
+             * ```
              */
             $model->fireEvent('model.afterBoot');
 
@@ -290,12 +291,13 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeCreate', function () use (\Winter\Storm\Database\Model $model) {
-         *         if (!$model->isValid()) {
-         *             throw new \Exception("Invalid Model!");
-         *         }
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.beforeCreate', function () use (\Winter\Storm\Database\Model $model) {
+         *     if (!$model->isValid()) {
+         *         throw new \Exception("Invalid Model!");
+         *     }
+         * });
+         * ```
          */
     }
 
@@ -311,10 +313,11 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterCreate', function () use (\Winter\Storm\Database\Model $model) {
-         *         \Log::info("{$model->name} was created!");
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.afterCreate', function () use (\Winter\Storm\Database\Model $model) {
+         *     \Log::info("{$model->name} was created!");
+         * });
+         * ```
          */
     }
 
@@ -330,12 +333,13 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeUpdate', function () use (\Winter\Storm\Database\Model $model) {
-         *         if (!$model->isValid()) {
-         *             throw new \Exception("Invalid Model!");
-         *         }
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.beforeUpdate', function () use (\Winter\Storm\Database\Model $model) {
+         *     if (!$model->isValid()) {
+         *         throw new \Exception("Invalid Model!");
+         *     }
+         * });
+         * ```
          */
     }
 
@@ -351,12 +355,13 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterUpdate', function () use (\Winter\Storm\Database\Model $model) {
-         *         if (!$model->originalIsEquivalent('title') {
-         *             \Log::info("{$model->name} updated its title!");
-         *         }
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.afterUpdate', function () use (\Winter\Storm\Database\Model $model) {
+         *     if (!$model->originalIsEquivalent('title') {
+         *         \Log::info("{$model->name} updated its title!");
+         *     }
+         * });
+         * ```
          */
     }
 
@@ -372,12 +377,13 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeSave', function () use (\Winter\Storm\Database\Model $model) {
-         *         if (!$model->isValid()) {
-         *             throw new \Exception("Invalid Model!");
-         *         }
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.beforeSave', function () use (\Winter\Storm\Database\Model $model) {
+         *     if (!$model->isValid()) {
+         *         throw new \Exception("Invalid Model!");
+         *     }
+         * });
+         * ```
          */
     }
 
@@ -393,12 +399,13 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterSave', function () use (\Winter\Storm\Database\Model $model) {
-         *         if (!$model->originalIsEquivalent('title') {
-         *             \Log::info("{$model->name} updated its title!");
-         *         }
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.afterSave', function () use (\Winter\Storm\Database\Model $model) {
+         *     if (!$model->originalIsEquivalent('title') {
+         *         \Log::info("{$model->name} updated its title!");
+         *     }
+         * });
+         * ```
          */
     }
 
@@ -414,12 +421,13 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeDelete', function () use (\Winter\Storm\Database\Model $model) {
-         *         if (!$model->isAllowedToBeDeleted()) {
-         *             throw new \Exception("You cannot delete me!");
-         *         }
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.beforeDelete', function () use (\Winter\Storm\Database\Model $model) {
+         *     if (!$model->isAllowedToBeDeleted()) {
+         *         throw new \Exception("You cannot delete me!");
+         *     }
+         * });
+         * ```
          */
     }
 
@@ -435,10 +443,11 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterDelete', function () use (\Winter\Storm\Database\Model $model) {
-         *         \Log::info("{$model->name} was deleted");
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.afterDelete', function () use (\Winter\Storm\Database\Model $model) {
+         *     \Log::info("{$model->name} was deleted");
+         * });
+         * ```
          */
     }
 
@@ -454,12 +463,13 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.beforeFetch', function () use (\Winter\Storm\Database\Model $model) {
-         *         if (!\Auth::getUser()->hasAccess('fetch.this.model')) {
-         *             throw new \Exception("You shall not pass!");
-         *         }
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.beforeFetch', function () use (\Winter\Storm\Database\Model $model) {
+         *     if (!\Auth::getUser()->hasAccess('fetch.this.model')) {
+         *         throw new \Exception("You shall not pass!");
+         *     }
+         * });
+         * ```
          */
     }
 
@@ -475,10 +485,11 @@ class Model extends EloquentModel implements ModelInterface
          *
          * Example usage:
          *
-         *     $model->bindEvent('model.afterFetch', function () use (\Winter\Storm\Database\Model $model) {
-         *         \Log::info("{$model->name} was retrieved from the database");
-         *     });
-         *
+         * ```php
+         * $model->bindEvent('model.afterFetch', function () use (\Winter\Storm\Database\Model $model) {
+         *     \Log::info("{$model->name} was retrieved from the database");
+         * });
+         * ```
          */
     }
 
