@@ -407,11 +407,21 @@ class FormBuilder
 
     /**
      * Create a select box field with empty option support.
+     *
+     * Supports several formats for the $list parameter:
+     * - Simple format: ['value' => 'Label']
+     * - With icon/image: ['value' => ['Label', 'icon-name']] or ['value' => ['Label', 'image.png']]
+     * - With optgroups: ['Group Name' => ['value' => 'Label', ...]]
+     * - Mixed format combining all of the above
+     *
+     * Icons are detected when the second array element doesn't contain a dot (.).
+     * Images are detected when the second array element contains a dot (.).
      */
     public function select(string $name, array $list = [], string|array|null $selected = null, array $options = []): string
     {
         if (array_key_exists('emptyOption', $options)) {
             $list = ['' => $options['emptyOption']] + $list;
+            unset($options['emptyOption']);
         }
 
         // When building a select box the "value" attribute is really the selected one
@@ -431,7 +441,7 @@ class FormBuilder
         $html = [];
 
         foreach ($list as $value => $display) {
-            $html[] = $this->getSelectOption($display, $value, $selected);
+            $html[] = $this->getSelectOption($display ?? $value, $value, $selected);
         }
 
         // Once we have all of this HTML, we can join this into a single element after
@@ -481,10 +491,15 @@ class FormBuilder
 
     /**
      * Get the select option for the given value.
+     *
+     * Determines whether to create a single option or an optgroup based on the $display parameter:
+     * - If $display is an array with string keys, creates an optgroup
+     * - If $display is an array with numeric keys (e.g., ['Label', 'icon']), creates a single option with icon/image
+     * - If $display is a string, creates a simple option
      */
     public function getSelectOption(string|array $display, string $value, string|array|null $selected = null): string
     {
-        if (is_array($display)) {
+        if (is_array($display) && array_keys($display) !== [0,1]) {
             return $this->optionGroup($display, $value, $selected);
         }
 
@@ -507,16 +522,33 @@ class FormBuilder
 
     /**
      * Create a select element option.
+     *
+     * If $display is an array in the format ['Label', 'icon-or-image'], adds data attributes:
+     * - data-icon: added if the second element doesn't contain a dot (e.g., 'icon-refresh')
+     * - data-image: added if the second element contains a dot (e.g., 'image.png')
      */
-    protected function option(string $display, string $value, string|array|null $selected = null): string
+    protected function option(string|array $display, string $value, string|array|null $selected = null): string
     {
         $selectedAttr = $this->getSelectedValue($value, $selected);
 
         $options = [
-            'value' => e($value),
+            'value' => $value,
             'selected' => $selectedAttr
         ];
 
+        if (is_array($display)) {
+            $label = array_get($display, 0);
+            $data = array_get($display, 1);
+
+            if (is_string($data) && $data !== '') {
+                if (strpos($data, '.') !== false) {
+                    $options['data-image'] = $data;
+                } else {
+                    $options['data-icon'] = $data;
+                }
+            }
+            $display = $label;
+        }
         return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
     }
 
@@ -973,7 +1005,7 @@ class FormBuilder
     /**
      * Returns a hidden HTML input, supplying the session key value.
      */
-    protected function requestHandler(string $name = null): string
+    protected function requestHandler(?string $name = null): string
     {
         if (!strlen($name)) {
             return '';

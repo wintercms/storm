@@ -1,15 +1,19 @@
-<?php namespace Winter\Storm\Database\Attach;
+<?php
+
+namespace Winter\Storm\Database\Attach;
 
 use Exception;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\File\File as FileObj;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Network\Http;
+use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Facades\File as FileHelper;
 use Winter\Storm\Support\Svg;
 
@@ -22,6 +26,7 @@ use Winter\Storm\Support\Svg;
  * @property int $file_size The size of the file
  * @property string $content_type The MIME type of the file
  * @property string $disk_name The generated disk name of the file
+ * @property array $metadata Array for storing metadata about the file
  */
 class File extends Model
 {
@@ -51,6 +56,7 @@ class File extends Model
         'attachment_type',
         'is_public',
         'sort_order',
+        'metadata',
         'data',
     ];
 
@@ -58,6 +64,11 @@ class File extends Model
      * @var string[] The attributes that aren't mass assignable.
      */
     protected $guarded = [];
+
+    /**
+     * @var string[] The attributes that should be cast to JSON
+     */
+    protected $jsonable = ['metadata'];
 
     /**
      * @var string[] Known image extensions.
@@ -102,16 +113,13 @@ class File extends Model
 
     /**
      * Creates a file object from a file an uploaded file.
-     *
-     * @param UploadedFile $uploadedFile The uploaded file.
-     * @return static
      */
-    public function fromPost($uploadedFile)
+    public function fromPost(UploadedFile $uploadedFile): static
     {
         $this->file_name = $uploadedFile->getClientOriginalName();
         $this->file_size = $uploadedFile->getSize();
         $this->content_type = $uploadedFile->getMimeType();
-        $this->disk_name = $this->getDiskName();
+        $this->disk_name = $this->generateFilenameForDisk();
 
         /*
          * getRealPath() can be empty for some environments (IIS)
@@ -129,17 +137,14 @@ class File extends Model
 
     /**
      * Creates a file object from a file on the local filesystem.
-     *
-     * @param string $filePath The path to the file.
-     * @return static
      */
-    public function fromFile($filePath, $filename = null)
+    public function fromFile(string $filePath, ?string $filename = null): static
     {
         $file = new FileObj($filePath);
         $this->file_name = empty($filename) ? $file->getFilename() : $filename;
         $this->file_size = $file->getSize();
         $this->content_type = $file->getMimeType();
-        $this->disk_name = $this->getDiskName();
+        $this->disk_name = $this->generateFilenameForDisk();
 
         $this->putFile($file->getRealPath(), $this->disk_name);
 
@@ -154,7 +159,7 @@ class File extends Model
         $disk = $this->getDisk();
 
         if (!$disk->exists($filePath)) {
-            throw new \InvalidArgumentException(sprintf('File `%s` was not found on the storage disk', $filePath));
+            throw new InvalidArgumentException(sprintf('File `%s` was not found on the storage disk', $filePath));
         }
 
         if (empty($this->file_name)) {
@@ -165,7 +170,7 @@ class File extends Model
         }
 
         $this->file_size = $disk->size($filePath);
-        $this->disk_name = $this->getDiskName();
+        $this->disk_name = $this->generateFilenameForDisk();
 
         if (!$disk->copy($filePath, $this->getDiskPath())) {
             throw new ApplicationException(sprintf('Unable to copy `%s` to `%s`', $filePath, $this->getDiskPath()));
@@ -176,12 +181,8 @@ class File extends Model
 
     /**
      * Creates a file object from raw data.
-     *
-     * @param string $data The raw data.
-     * @param string $filename The name of the file.
-     * @return static
      */
-    public function fromData($data, $filename)
+    public function fromData(mixed $data, string $filename): static
     {
         $tempName = str_replace('.', '', uniqid('', true)) . '.tmp';
         $tempPath = temp_path($tempName);
@@ -195,12 +196,8 @@ class File extends Model
 
     /**
      * Creates a file object from url
-     *
-     * @param string $url The URL to retrieve and store.
-     * @param string|null $filename The name of the file. If null, the filename will be extracted from the URL.
-     * @return static
      */
-    public function fromUrl($url, $filename = null)
+    public function fromUrl(string $url, ?string $filename = null): static
     {
         $data = Http::get($url);
 
@@ -237,48 +234,39 @@ class File extends Model
     }
 
     //
-    // Attribute mutators
+    // Attribute accessors & mutators
     //
 
     /**
-     * Helper attribute for getPath.
-     *
-     * @return string
+     * Accessor for $this->path
      */
-    public function getPathAttribute()
+    public function getPathAttribute(): string
     {
         return $this->getPath();
     }
 
     /**
-     * Helper attribute for getExtension.
-     *
-     * @return string
+     * Accessor for $this->extension
      */
-    public function getExtensionAttribute()
+    public function getExtensionAttribute(): string
     {
         return $this->getExtension();
     }
 
     /**
      * Used only when filling attributes.
-     *
-     * @param mixed $value
-     * @return void
      */
-    public function setDataAttribute($value)
+    public function setDataAttribute(mixed $value): void
     {
         $this->data = $value;
     }
 
     /**
-     * Helper attribute for get image width.
+     * Accessor for $this->width
      *
      * Returns `null` if this file is not an image.
-     *
-     * @return string|int|null
      */
-    public function getWidthAttribute()
+    public function getWidthAttribute(): string|int|null
     {
         if ($this->isImage()) {
             $dimensions = $this->getImageDimensions();
@@ -290,13 +278,11 @@ class File extends Model
     }
 
     /**
-     * Helper attribute for get image height.
+     * Accessor for $this->height
      *
      * Returns `null` if this file is not an image.
-     *
-     * @return string|int|null
      */
-    public function getHeightAttribute()
+    public function getHeightAttribute(): string|int|null
     {
         if ($this->isImage()) {
             $dimensions = $this->getImageDimensions();
@@ -308,11 +294,9 @@ class File extends Model
     }
 
     /**
-     * Helper attribute for file size in human format.
-     *
-     * @return string
+     * Accessor for $this->size, returns file size in human format.
      */
-    public function getSizeAttribute()
+    public function getSizeAttribute(): string
     {
         return $this->sizeToString();
     }
@@ -395,11 +379,8 @@ class File extends Model
 
     /**
      * Returns the cache key used for the hasFile method
-     *
-     * @param string|null $path The path to get the cache key for
-     * @return string
      */
-    public function getCacheKey($path = null)
+    public function getCacheKey(?string $path = null): string
     {
         if (empty($path)) {
             $path = $this->getDiskPath();
@@ -410,31 +391,24 @@ class File extends Model
 
     /**
      * Returns the file name without path
-     *
-     * @return string
      */
-    public function getFilename()
+    public function getFilename(): string
     {
         return $this->file_name;
     }
 
     /**
      * Returns the file extension.
-     *
-     * @return string
      */
-    public function getExtension()
+    public function getExtension(): string
     {
         return FileHelper::extension($this->file_name);
     }
 
     /**
      * Returns the last modification date as a UNIX timestamp.
-     *
-     * @param string|null $fileName
-     * @return int
      */
-    public function getLastModified($fileName = null)
+    public function getLastModified(?string $fileName = null): int
     {
         return $this->storageCmd('lastModified', $this->getDiskPath($fileName));
     }
@@ -443,10 +417,8 @@ class File extends Model
      * Returns the file content type.
      *
      * Returns `null` if the file content type cannot be determined.
-     *
-     * @return string|null
      */
-    public function getContentType()
+    public function getContentType(): ?string
     {
         if ($this->content_type !== null) {
             return $this->content_type;
@@ -462,22 +434,16 @@ class File extends Model
 
     /**
      * Get file contents from storage device.
-     *
-     * @param string|null $fileName
-     * @return string
      */
-    public function getContents($fileName = null)
+    public function getContents(?string $fileName = null): mixed
     {
         return $this->storageCmd('get', $this->getDiskPath($fileName));
     }
 
     /**
      * Returns the public address to access the file.
-     *
-     * @param string|null $fileName
-     * @return string
      */
-    public function getPath($fileName = null)
+    public function getPath(?string $fileName = null): string
     {
         if (empty($fileName)) {
             $fileName = $this->disk_name;
@@ -488,10 +454,8 @@ class File extends Model
     /**
      * Returns a local path to this file. If the file is stored remotely,
      * it will be downloaded to a temporary directory.
-     *
-     * @return string
      */
-    public function getLocalPath()
+    public function getLocalPath(): string
     {
         if ($this->isLocalStorage()) {
             return $this->getLocalRootPath() . '/' . $this->getDiskPath();
@@ -510,11 +474,8 @@ class File extends Model
 
     /**
      * Returns the path to the file, relative to the storage disk.
-     *
-     * @param string|null $fileName
-     * @return string
      */
-    public function getDiskPath($fileName = null)
+    public function getDiskPath(?string $fileName = null): string
     {
         if (empty($fileName)) {
             $fileName = $this->disk_name;
@@ -524,10 +485,8 @@ class File extends Model
 
     /**
      * Determines if the file is flagged "public" or not.
-     *
-     * @return bool
      */
-    public function isPublic()
+    public function isPublic(): bool
     {
         if (array_key_exists('is_public', $this->attributes)) {
             return (bool) $this->attributes['is_public'];
@@ -542,10 +501,8 @@ class File extends Model
 
     /**
      * Returns the file size as string.
-     *
-     * @return string
      */
-    public function sizeToString()
+    public function sizeToString(): string
     {
         return FileHelper::sizeToString($this->file_size);
     }
@@ -599,22 +556,27 @@ class File extends Model
 
     /**
      * Checks if the file extension is an image and returns true or false.
-     *
-     * @return bool
      */
-    public function isImage()
+    public function isImage(): bool
     {
         return in_array(strtolower($this->getExtension()), static::$imageExtensions);
     }
 
     /**
      * Get image dimensions
-     *
-     * @return array|false
      */
-    protected function getImageDimensions()
+    protected function getImageDimensions(): array|false
     {
-        return getimagesize($this->getLocalPath());
+        if (!empty($this->metadata['internal']['dimensions'])) {
+            return $this->metadata['internal']['dimensions'];
+        }
+
+        $metadata = $this->metadata ?? [];
+        Arr::set($metadata, 'internal.dimensions', getimagesize($this->getLocalPath()));
+        $this->metadata = $metadata;
+        $this->save();
+
+        return $this->metadata['internal']['dimensions'];
     }
 
     /**
@@ -760,10 +722,8 @@ class File extends Model
 
     /**
      * Delete all thumbnails for this file.
-     *
-     * @return void
      */
-    public function deleteThumbs()
+    public function deleteThumbs(): void
     {
         $pattern = 'thumb_'.$this->id.'_';
 
@@ -793,9 +753,9 @@ class File extends Model
     //
 
     /**
-     * Generates a disk name from the supplied file name.
+     * Generates a unique filename to use for storing the file on the disk
      */
-    protected function getDiskName(): string
+    protected function generateFilenameForDisk(): string
     {
         if ($this->disk_name !== null) {
             return $this->disk_name;
@@ -810,7 +770,7 @@ class File extends Model
 
         $name = str_replace('.', '', uniqid('', true));
 
-        return $this->disk_name = !empty($ext) ? $name.'.'.$ext : $name;
+        return !empty($ext) ? $name . '.' . $ext : $name;
     }
 
     /**
@@ -827,12 +787,8 @@ class File extends Model
 
     /**
      * Saves a file
-     *
-     * @param string $sourcePath An absolute local path to a file name to read from.
-     * @param string|null $destinationFileName A storage file name to save to.
-     * @return bool
      */
-    protected function putFile($sourcePath, $destinationFileName = null)
+    protected function putFile(string $sourcePath, ?string $destinationFileName = null): bool
     {
         if (!$destinationFileName) {
             $destinationFileName = $this->disk_name;
@@ -874,11 +830,8 @@ class File extends Model
 
     /**
      * Delete file contents from storage device.
-     *
-     * @param string|null $fileName
-     * @return void
      */
-    protected function deleteFile($fileName = null)
+    protected function deleteFile(?string $fileName = null): void
     {
         if (!$fileName) {
             $fileName = $this->disk_name;
@@ -897,11 +850,8 @@ class File extends Model
 
     /**
      * Check file exists on storage device.
-     *
-     * @param string|null $fileName
-     * @return bool
      */
-    protected function hasFile($fileName = null)
+    protected function hasFile(?string $fileName = null): bool
     {
         $filePath = $this->getDiskPath($fileName);
 
@@ -919,11 +869,8 @@ class File extends Model
 
     /**
      * Checks if directory is empty then deletes it, three levels up to match the partition directory.
-     *
-     * @param string|null $dir Directory to check and delete if empty.
-     * @return void
      */
-    protected function deleteEmptyDirectory($dir = null)
+    protected function deleteEmptyDirectory(?string $dir = null): void
     {
         if (!$this->isDirectoryEmpty($dir)) {
             return;
@@ -950,9 +897,8 @@ class File extends Model
      * Returns true if a directory contains no files.
      *
      * @param string|null $dir Directory to check.
-     * @return bool
      */
-    protected function isDirectoryEmpty($dir = null)
+    protected function isDirectoryEmpty(?string $dir = null): bool
     {
         return count($this->storageCmd('allFiles', $dir)) === 0;
     }
@@ -1034,30 +980,22 @@ class File extends Model
 
     /**
      * Define the internal storage path, override this method to define.
-     *
-     * @return string
      */
-    public function getStorageDirectory()
+    public function getStorageDirectory(): string
     {
         if ($this->isPublic()) {
-            return 'uploads/public/';
+            return 'public/';
         }
 
-        return 'uploads/protected/';
+        return 'protected/';
     }
 
     /**
-     * Define the public address for the storage path.
-     *
-     * @return string
+     * Returns the public URL to the storage directory folder for this model.
      */
-    public function getPublicPath()
+    public function getPublicPath(): string
     {
-        if ($this->isPublic()) {
-            return 'http://localhost/uploads/public/';
-        }
-
-        return 'http://localhost/uploads/protected/';
+        return $this->getDisk()->url($this->getStorageDirectory());
     }
 
     /**
@@ -1077,21 +1015,25 @@ class File extends Model
     }
 
     /**
-     * Returns the storage disk the file is stored on
-     *
-     * @return FilesystemAdapter
+     * Returns the name of the storage disk the file is stored on
      */
-    public function getDisk()
+    public function getDiskName(): string
     {
-        return Storage::disk();
+        return 'local';
+    }
+
+    /**
+     * Returns the storage disk the file is stored on
+     */
+    public function getDisk(): FilesystemAdapter
+    {
+        return Storage::disk($this->getDiskName());
     }
 
     /**
      * Returns true if the storage engine is local.
-     *
-     * @return bool
      */
-    protected function isLocalStorage()
+    protected function isLocalStorage(): bool
     {
         return FileHelper::isLocalDisk($this->getDisk());
     }
@@ -1100,10 +1042,8 @@ class File extends Model
      * Generates a partition for the file.
      *
      * For example, returns `/ABC/DE1/234` for an name of `ABCDE1234`.
-     *
-     * @return string
      */
-    protected function getPartitionDirectory()
+    protected function getPartitionDirectory(): string
     {
         return implode('/', array_slice(str_split($this->disk_name, 3), 0, 3)) . '/';
     }
