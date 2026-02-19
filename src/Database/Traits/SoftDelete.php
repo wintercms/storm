@@ -304,6 +304,28 @@ trait SoftDelete
     }
 
     /**
+     * Register a "forceDeleting" model event callback with the dispatcher.
+     *
+     * @param  \Closure|string  $callback
+     * @return void
+     */
+    public static function forceDeleting($callback)
+    {
+        static::registerModelEvent('forceDeleting', $callback);
+    }
+
+    /**
+     * Register a "forceDeleted" model event callback with the dispatcher.
+     *
+     * @param  \Closure|string  $callback
+     * @return void
+     */
+    public static function forceDeleted($callback)
+    {
+        static::registerModelEvent('forceDeleted', $callback);
+    }
+
+    /**
      * Get the name of the "deleted at" column.
      *
      * @return string
