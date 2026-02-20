@@ -84,7 +84,7 @@ trait ExtendableTrait
             return;
         }
 
-        foreach ($uses as $use) {
+        foreach (array_unique($uses) as $use) {
             $useClass = $this->extensionNormalizeClassName($use);
 
             /*
