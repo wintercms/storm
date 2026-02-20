@@ -84,7 +84,7 @@ trait ExtendableTrait
             return;
         }
 
-        foreach ($uses as $use) {
+        foreach (array_unique($uses) as $use) {
             $useClass = $this->extensionNormalizeClassName($use);
 
             /*
@@ -489,7 +489,7 @@ trait ExtendableTrait
                     throw new Exception(sprintf('Class %s contains an invalid $implement value', $className));
                 }
 
-                foreach ($uses as $use) {
+                foreach (array_unique($uses) as $use) {
                     // Class alias checks not required here as the current name of the extension class doesn't
                     // matter because as long as $useClassName is able to be instantiated the method will resolve
                     $useClassName = str_replace('.', '\\', trim($use));

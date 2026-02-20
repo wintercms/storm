@@ -21,7 +21,7 @@ class DownCommand extends BaseCommand
             'retry' => $this->getRetryTime(),
             'refresh' => $this->option('refresh'),
             'secret' => $this->option('secret'),
-            'status' => (int) $this->option('status', 503),
+            'status' => (int) $this->option('status'),
             'template' => $this->prerenderView(),
         ];
     }
