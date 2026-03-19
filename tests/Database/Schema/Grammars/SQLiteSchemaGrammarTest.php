@@ -2,11 +2,13 @@
 
 namespace Winter\Storm\Tests\Database\Schema\Grammars;
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\SQLiteBuilder;
+use Illuminate\Database\SQLiteConnection;
 use Winter\Storm\Database\Schema\Grammars\SQLiteGrammar;
 use Winter\Storm\Tests\GrammarTestCase;
 
-class SQLiteSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
+class SQLiteSchemaGrammarTest extends GrammarTestCase
 {
     public function setUp(): void
     {
@@ -59,5 +61,26 @@ class SQLiteSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
 
         $statements = $this->runBlueprint($changedBlueprint);
         $this->assertStringContainsString("\"name\" varchar not null default 'admin'", $statements[0]);
+    }
+
+    public function testTypeTinyintTypeIsValid(): void
+    {
+        $pdo = new \PDO('sqlite::memory:');
+        $pdo->exec('CREATE TABLE users (is_active tinyint not null, name varchar not null)');
+
+        $connection = new SQLiteConnection($pdo, ':memory:', '');
+        $grammar = new SQLiteGrammar($connection);
+        $connection->setSchemaGrammar($grammar);
+
+        $blueprint = new Blueprint($connection, 'users');
+        $blueprint->string('name')->nullable()->change();
+
+        // Prior to the typeTinyint fix, this would throw:
+        // BadMethodCallException: Method SQLiteGrammar::typeTinyint does not exist
+        $statements = $blueprint->toSql();
+
+        // compileChange maps 'tinyint' (SQLite's introspected type_name) to 'integer'.
+        $this->assertNotEmpty($statements);
+        $this->assertStringContainsString('"is_active" integer', $statements[0]);
     }
 }
