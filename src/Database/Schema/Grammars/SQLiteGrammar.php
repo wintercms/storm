@@ -156,7 +156,7 @@ class SQLiteGrammar extends BaseSQLiteGrammar
 
         return parent::getDefaultValue($value);
     }
-    
+
     /**
      * Create the column definition for a tinyint type.
      *
