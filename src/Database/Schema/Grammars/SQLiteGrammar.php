@@ -156,6 +156,21 @@ class SQLiteGrammar extends BaseSQLiteGrammar
 
         return parent::getDefaultValue($value);
     }
+    
+    /**
+     * Create the column definition for a tinyint type.
+     *
+     * SQLite's column introspection returns 'tinyint' as the type_name for boolean and tinyInteger
+     * columns. The base grammar only has typeTinyInteger, so we need this alias to avoid
+     * BadMethodCallException when compileChange rebuilds a table that contains boolean columns.
+     *
+     * @param  \Illuminate\Support\Fluent  $column
+     * @return string
+     */
+    protected function typeTinyint(Fluent $column)
+    {
+        return 'integer';
+    }
 
     /**
      * Create the column definition for a varchar type.
