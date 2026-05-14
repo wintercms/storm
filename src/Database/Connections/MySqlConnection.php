@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Database\Connections;
 
+use Illuminate\Database\Schema\MySqlSchemaState;
+use Illuminate\Filesystem\Filesystem;
 use PDO;
 use Illuminate\Database\PDO\MySqlDriver;
 use Illuminate\Database\Schema\MySqlBuilder;
@@ -82,5 +84,27 @@ class MySqlConnection extends Connection
                 is_int($value) || is_float($value) ? PDO::PARAM_INT : PDO::PARAM_STR
             );
         }
+    }
+
+    /**
+     * Determine if the connected database is a MariaDB database.
+     *
+     * @return bool
+     */
+    public function isMaria()
+    {
+        return str_contains($this->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION), 'MariaDB');
+    }
+
+    /**
+     * Get the schema state for the connection.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem|null  $files
+     * @param  callable|null  $processFactory
+     * @return \Illuminate\Database\Schema\MySqlSchemaState
+     */
+    public function getSchemaState(Filesystem $files = null, callable $processFactory = null)
+    {
+        return new MySqlSchemaState($this, $files, $processFactory);
     }
 }
