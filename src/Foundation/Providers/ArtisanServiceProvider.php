@@ -49,16 +49,17 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'ScheduleWork'          => \Illuminate\Console\Scheduling\ScheduleWorkCommand::class,
         'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
         'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
+        'SchemaDump'            => \Illuminate\Database\Console\DumpCommand::class,
 
         // Currently unsupported in Winter:
         // @TODO: Assess for inclusion
         // 'ClearResets' => ClearResetsCommand::class,
-        // 'Db' => DbCommand::class,
+        //'Db' => DbCommand::class,
         // 'DbPrune' => PruneCommand::class,
         // 'DbWipe' => WipeCommand::class,
         // 'OptimizeClear' => OptimizeClearCommand::class,
         // 'QueueClear' => QueueClearCommand::class,
-        // 'SchemaDump' => DumpCommand::class,
+        'SchemaDump' => DumpCommand::class,
         // 'ScheduleClearCache' => ScheduleClearCacheCommand::class,
         // 'ViewCache' => ViewCacheCommand::class,
 

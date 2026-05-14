@@ -2,6 +2,7 @@
 
 use Closure;
 use Exception;
+use Illuminate\Filesystem\Filesystem;
 use Throwable;
 use Illuminate\Database\Schema\SqlServerBuilder;
 use Illuminate\Database\PDO\SqlServerDriver;
@@ -109,5 +110,18 @@ class SqlServerConnection extends Connection
     protected function getDoctrineDriver()
     {
         return new SqlServerDriver;
+    }
+
+    /**
+     * Get the schema state for the connection.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem|null  $files
+     * @param  callable|null  $processFactory
+     *
+     * @throws \RuntimeException
+     */
+    public function getSchemaState(Filesystem $files = null, callable $processFactory = null)
+    {
+        throw new RuntimeException('Schema dumping is not supported when using SQL Server.');
     }
 }
