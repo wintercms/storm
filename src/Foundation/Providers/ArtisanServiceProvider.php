@@ -49,6 +49,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'ScheduleWork'          => \Illuminate\Console\Scheduling\ScheduleWorkCommand::class,
         'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
         'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
+        'SchemaDump'            => \Illuminate\Database\Console\DumpCommand::class,
 
         // Currently unsupported in Winter:
         // @TODO: Assess for inclusion
