@@ -54,7 +54,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // Currently unsupported in Winter:
         // @TODO: Assess for inclusion
         // 'ClearResets' => ClearResetsCommand::class,
-        //'Db' => DbCommand::class,
+        // 'Db' => DbCommand::class,
         // 'DbPrune' => PruneCommand::class,
         // 'DbWipe' => WipeCommand::class,
         // 'OptimizeClear' => OptimizeClearCommand::class,
