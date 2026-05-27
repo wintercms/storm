@@ -79,7 +79,7 @@ class SQLiteSchemaGrammarTest extends GrammarTestCase
         // BadMethodCallException: Method SQLiteGrammar::typeTinyint does not exist
         $statements = $blueprint->toSql();
 
-        // compileChange maps 'tinyint' (SQLite's introspected type_name) to 'integer'.
+        // compileChange maps 'tinyint' (SQLite's introspected type_name) to 'integer'
         $this->assertNotEmpty($statements);
         $this->assertStringContainsString('"is_active" integer', $statements[0]);
     }
