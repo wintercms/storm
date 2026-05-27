@@ -47,16 +47,9 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'ScheduleRun'           => \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
         'ScheduleTest'          => \Illuminate\Console\Scheduling\ScheduleTestCommand::class,
         'ScheduleWork'          => \Illuminate\Console\Scheduling\ScheduleWorkCommand::class,
+        'SchemaDump'            => \Illuminate\Database\Console\DumpCommand::class,
         'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
         'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
-'ScheduleFinish'        => \Illuminate\Console\Scheduling\ScheduleFinishCommand::class,
-'ScheduleList'          => \Illuminate\Console\Scheduling\ScheduleListCommand::class,
-'ScheduleRun'           => \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
-'ScheduleTest'          => \Illuminate\Console\Scheduling\ScheduleTestCommand::class,
-'ScheduleWork'          => \Illuminate\Console\Scheduling\ScheduleWorkCommand::class,
-'SchemaDump'            => \Illuminate\Database\Console\DumpCommand::class,
-'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
-'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
 
         // Currently unsupported in Winter:
         // @TODO: Assess for inclusion
