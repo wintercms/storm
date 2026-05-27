@@ -49,7 +49,14 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'ScheduleWork'          => \Illuminate\Console\Scheduling\ScheduleWorkCommand::class,
         'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
         'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
-        'SchemaDump'            => \Illuminate\Database\Console\DumpCommand::class,
+'ScheduleFinish'        => \Illuminate\Console\Scheduling\ScheduleFinishCommand::class,
+'ScheduleList'          => \Illuminate\Console\Scheduling\ScheduleListCommand::class,
+'ScheduleRun'           => \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
+'ScheduleTest'          => \Illuminate\Console\Scheduling\ScheduleTestCommand::class,
+'ScheduleWork'          => \Illuminate\Console\Scheduling\ScheduleWorkCommand::class,
+'SchemaDump'            => \Illuminate\Database\Console\DumpCommand::class,
+'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
+'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
 
         // Currently unsupported in Winter:
         // @TODO: Assess for inclusion
@@ -59,7 +66,6 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'DbWipe' => WipeCommand::class,
         // 'OptimizeClear' => OptimizeClearCommand::class,
         // 'QueueClear' => QueueClearCommand::class,
-        'SchemaDump' => DumpCommand::class,
         // 'ScheduleClearCache' => ScheduleClearCacheCommand::class,
         // 'ViewCache' => ViewCacheCommand::class,
 
