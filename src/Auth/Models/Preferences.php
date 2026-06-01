@@ -13,8 +13,8 @@ use Winter\Storm\Auth\Manager;
  * @property string|null $item Represents the item name of the preference.
  * @property int|null $user_id Represents the user ID that this preference belongs to.
  *
- * @method static \Winter\Storm\Database\QueryBuilder applyKeyAndUser($key, $user = null) Scope to find a setting record
- *  for the specified module (or plugin) name, setting name and user.
+ * @method static \Illuminate\Database\Eloquent\Builder<static> applyKeyAndUser($key, $user = null) Scope to find a
+ *  setting record for the specified module (or plugin) name, setting name and user.
  */
 class Preferences extends Model
 {
@@ -167,10 +167,10 @@ class Preferences extends Model
 
     /**
      * Scope to find a setting record for the specified module (or plugin) name, setting name and user.
-     * @param \Winter\Storm\Database\QueryBuilder $query
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
      * @param string $key Specifies the setting key value, for example 'backend:items.perpage'
      * @param mixed $user An optional user object.
-     * @return mixed Returns the found record or null.
+     * @return \Illuminate\Database\Eloquent\Builder<static> Returns the scoped query builder.
      */
     public function scopeApplyKeyAndUser($query, $key, $user = null)
     {
