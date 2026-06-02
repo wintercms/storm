@@ -19,7 +19,7 @@ class Processor
 
         $fileName = array_get($result, 'fileName');
 
-        return [$fileName => $this->parseTemplateContent($query, $result, $fileName)];
+        return [($fileName ?? '') => $this->parseTemplateContent($query, $result, $fileName)];
     }
 
     /**
@@ -39,7 +39,7 @@ class Processor
 
         foreach ($results as $result) {
             $fileName = array_get($result, 'fileName');
-            $items[$fileName] = $this->parseTemplateContent($query, $result, $fileName);
+            $items[$fileName ?? ''] = $this->parseTemplateContent($query, $result, $fileName);
         }
 
         return $items;

@@ -194,7 +194,7 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
         // If we've already loaded this collection, we will just bail out since we do
         // not want to load it again. Once items are loaded a first time they will
         // stay kept in memory within this class and not loaded from disk again.
-        if (isset($this->afterLoad[$namespace])) {
+        if (isset($this->afterLoad[$namespace ?? ''])) {
             $items = $this->callAfterLoad($namespace, $group, $items);
         }
 
@@ -211,7 +211,7 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
      */
     protected function callAfterLoad($namespace, $group, $items)
     {
-        $callback = $this->afterLoad[$namespace];
+        $callback = $this->afterLoad[$namespace ?? ''];
 
         return call_user_func($callback, $this, $group, $items);
     }
@@ -314,7 +314,7 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
      */
     public function afterLoading($namespace, Closure $callback)
     {
-        $this->afterLoad[$namespace] = $callback;
+        $this->afterLoad[$namespace ?? ''] = $callback;
     }
 
     /**
