@@ -19,7 +19,12 @@ class Processor
 
         $fileName = array_get($result, 'fileName');
 
-        return [($fileName ?? '') => $this->parseTemplateContent($query, $result, $fileName)];
+        // A record without a filename is not a valid template, so treat it as no result.
+        if ($fileName === null) {
+            return null;
+        }
+
+        return [$fileName => $this->parseTemplateContent($query, $result, $fileName)];
     }
 
     /**
@@ -39,7 +44,13 @@ class Processor
 
         foreach ($results as $result) {
             $fileName = array_get($result, 'fileName');
-            $items[$fileName ?? ''] = $this->parseTemplateContent($query, $result, $fileName);
+
+            // Skip records without a filename so they cannot collide on an empty key.
+            if ($fileName === null) {
+                continue;
+            }
+
+            $items[$fileName] = $this->parseTemplateContent($query, $result, $fileName);
         }
 
         return $items;
