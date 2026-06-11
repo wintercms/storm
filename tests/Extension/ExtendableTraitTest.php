@@ -42,6 +42,58 @@ class ExtendableTraitTest extends TestCase
         $this->assertEquals(Level1NonExtendable::class, $this->callProtectedMethod($level2NonExtendable, 'extensionGetParentClass')->getName());
         $this->assertEquals(Level1NonExtendable::class, $this->callProtectedMethod($level3NonExtendable, 'extensionGetParentClass')->getName());
     }
+
+    /**
+     * @testdox will reuse the parent class reflection across calls and instances of the same class
+     *
+     * The parent class resolution depends only on the class, so the reflection should be resolved once per class
+     * instead of being rebuilt on every magic method call.
+     */
+    public function testParentClassReflectionIsMemoized()
+    {
+        $level2 = new Level2NonExtendable;
+
+        $first = $this->callProtectedMethod($level2, 'extensionGetParentClass');
+        $second = $this->callProtectedMethod($level2, 'extensionGetParentClass');
+
+        $this->assertInstanceOf(\ReflectionClass::class, $first);
+        $this->assertSame($first, $second);
+
+        // Instances of the same class share the resolved reflection
+        $third = $this->callProtectedMethod(new Level2NonExtendable, 'extensionGetParentClass');
+        $this->assertSame($first, $third);
+
+        // Subclasses are memoized under their own class and still resolve correctly
+        $level3First = $this->callProtectedMethod(new Level3NonExtendable, 'extensionGetParentClass');
+        $level3Second = $this->callProtectedMethod(new Level3NonExtendable, 'extensionGetParentClass');
+
+        $this->assertEquals(Level1NonExtendable::class, $level3First->getName());
+        $this->assertSame($level3First, $level3Second);
+    }
+
+    /**
+     * @testdox routes magic methods consistently across repeated calls and instances
+     */
+    public function testRepeatedMagicAccessBehavesConsistently()
+    {
+        $a = new Level2NonExtendable;
+        $b = new Level2NonExtendable;
+
+        // No parent __get exists, so undefined properties resolve to null - repeatedly
+        $this->assertNull($a->undefinedProperty);
+        $this->assertNull($a->undefinedProperty);
+        $this->assertNull($b->undefinedProperty);
+
+        // Undefined methods throw consistently on every call
+        foreach ([$a, $b, $a] as $instance) {
+            try {
+                $instance->undefinedMethod();
+                $this->fail('Expected BadMethodCallException was not thrown');
+            } catch (\BadMethodCallException $e) {
+                $this->assertStringContainsString('undefinedMethod', $e->getMessage());
+            }
+        }
+    }
 }
 
 class ExtendableRoot extends Extendable

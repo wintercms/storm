@@ -50,6 +50,21 @@ trait ExtendableTrait
     protected static $extendableClassLoader = null;
 
     /**
+     * @var array Cache of parent class reflections (or `false` when there is none), keyed by class name.
+     */
+    protected static $extensionParentClassCache = [];
+
+    /**
+     * @var array Cache of magic method reflections (or `false` when unavailable), keyed by "Class::method".
+     */
+    protected static $extensionMethodReflectionCache = [];
+
+    /**
+     * @var array Cache of property accessibility checks, keyed by class name and property name.
+     */
+    protected static $extensionAccessiblePropertyCache = [];
+
+    /**
      * This method should be called as part of the constructor.
      */
     public function extendableConstruct()
@@ -349,9 +364,10 @@ trait ExtendableTrait
      */
     protected function extendableIsAccessible($class, $propertyName)
     {
-        $reflector = new ReflectionClass($class);
-        $property = $reflector->getProperty($propertyName);
-        return $property->isPublic();
+        $className = is_object($class) ? get_class($class) : $class;
+
+        return self::$extensionAccessiblePropertyCache[$className][$propertyName]
+            ??= (new ReflectionClass($class))->getProperty($propertyName)->isPublic();
     }
 
     /**
@@ -554,12 +570,32 @@ trait ExtendableTrait
             return false;
         }
 
-        // Find if any parent uses the Extendable trait
+        // Intermediate steps of the recursive resolution are not cached.
         if (!is_null($instance)) {
-            $reflector = $instance;
-        } else {
-            $reflector = new ReflectionClass($this);
+            return $this->extensionResolveParentClass($instance);
         }
+
+        // The resolution depends only on the class, so cache it per class to avoid repeating the
+        // reflection walk on every magic method call.
+        $className = static::class;
+
+        if (!array_key_exists($className, self::$extensionParentClassCache)) {
+            self::$extensionParentClassCache[$className] = $this->extensionResolveParentClass(
+                new ReflectionClass($this)
+            );
+        }
+
+        return self::$extensionParentClassCache[$className];
+    }
+
+    /**
+     * Resolves the first parent class that does not use the Extendable trait.
+     *
+     * @return ReflectionClass|false
+     */
+    protected function extensionResolveParentClass(object $reflector)
+    {
+        // Find if any parent uses the Extendable trait
         $parent = $reflector->getParentClass();
 
         // If there's no parent, stop here.
@@ -583,7 +619,7 @@ trait ExtendableTrait
         }
 
         // Otherwise, we need to loop through until we find the parent class that doesn't use the Extendable trait
-        return $this->extensionGetParentClass($parent);
+        return $this->extensionResolveParentClass($parent);
     }
 
     /**
@@ -591,17 +627,30 @@ trait ExtendableTrait
      */
     protected function extensionMethodExists(ReflectionClass $class, string $methodName): bool
     {
-        try {
-            $method = $class->getMethod($methodName);
+        return $this->extensionGetMethodReflection($class, $methodName) !== false;
+    }
 
-            if (!$method->isPublic()) {
-                return false;
+    /**
+     * Gets the reflection for a public method on the given class reflection, or `false` if the method is
+     * unavailable. The result is cached per class, as it cannot change at runtime.
+     *
+     * @return ReflectionMethod|false
+     */
+    protected function extensionGetMethodReflection(ReflectionClass $class, string $methodName)
+    {
+        $cacheKey = $class->getName() . '::' . $methodName;
+
+        if (!array_key_exists($cacheKey, self::$extensionMethodReflectionCache)) {
+            try {
+                $method = $class->getMethod($methodName);
+
+                self::$extensionMethodReflectionCache[$cacheKey] = $method->isPublic() ? $method : false;
+            } catch (ReflectionException $e) {
+                self::$extensionMethodReflectionCache[$cacheKey] = false;
             }
-        } catch (ReflectionException $e) {
-            return false;
         }
 
-        return true;
+        return self::$extensionMethodReflectionCache[$cacheKey];
     }
 
     /**
@@ -609,7 +658,14 @@ trait ExtendableTrait
      */
     protected function extensionCallMethod(ReflectionClass $class, string $method, array $params)
     {
-        $method = $class->getMethod($method);
-        return $method->invokeArgs($this, $params);
+        $reflection = $this->extensionGetMethodReflection($class, $method);
+
+        // Fall back to an uncached reflection for non-public methods, retaining the previous behaviour
+        // of this method for direct calls that are not guarded by extensionMethodExists().
+        if ($reflection === false) {
+            $reflection = $class->getMethod($method);
+        }
+
+        return $reflection->invokeArgs($this, $params);
     }
 }
