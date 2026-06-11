@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Tests\Database\Traits;
 
+use Illuminate\Support\Facades\DB;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Tests\Database\Fixtures\CategoryNested;
 use Winter\Storm\Tests\DbTestCase;
@@ -441,6 +442,88 @@ class NestedTreeTest extends \Winter\Storm\Tests\DbTestCase
                 ],
             ],
         ], $array);
+    }
+
+    public function testMoveSubtreeRealignsDescendantDepths()
+    {
+        $autumn = CategoryNested::where('name', 'Autumn Leaves')->first();
+        $winter = CategoryNested::where('name', 'Winter Snow')->first();
+
+        // Move the 'Autumn Leaves' subtree (three children) one level deeper, under 'Winter Snow'.
+        $autumn->makeChildOf($winter);
+        CategoryNested::flushDuplicateCache();
+
+        $this->assertEquals(2, CategoryNested::where('name', 'Autumn Leaves')->value('nest_depth'));
+        foreach (['September', 'October', 'November'] as $name) {
+            $this->assertEquals(3, CategoryNested::where('name', $name)->value('nest_depth'));
+        }
+
+        // Move the subtree back to the root level (two levels shallower).
+        CategoryNested::flushDuplicateCache();
+        CategoryNested::where('name', 'Autumn Leaves')->first()->makeRoot();
+        CategoryNested::flushDuplicateCache();
+
+        $this->assertEquals(0, CategoryNested::where('name', 'Autumn Leaves')->value('nest_depth'));
+        foreach (['September', 'October', 'November'] as $name) {
+            $this->assertEquals(1, CategoryNested::where('name', $name)->value('nest_depth'));
+        }
+    }
+
+    public function testParentIdChangeRealignsDescendantDepths()
+    {
+        $autumn = CategoryNested::where('name', 'Autumn Leaves')->first();
+        $winter = CategoryNested::where('name', 'Winter Snow')->first();
+
+        // Reassign the parent through the attribute, as a form submission would.
+        $autumn->parent_id = $winter->id;
+        $autumn->save();
+        CategoryNested::flushDuplicateCache();
+
+        $this->assertEquals(2, CategoryNested::where('name', 'Autumn Leaves')->value('nest_depth'));
+        foreach (['September', 'October', 'November'] as $name) {
+            $this->assertEquals(3, CategoryNested::where('name', $name)->value('nest_depth'));
+        }
+    }
+
+    public function testSaveWithoutMoveSkipsDepthRecompute()
+    {
+        $september = CategoryNested::where('name', 'September')->first();
+
+        // Plant a sentinel depth value behind the model's back.
+        DB::table('database_tester_categories_nested')
+            ->where('id', $september->id)
+            ->update(['nest_depth' => 42]);
+
+        // A save that does not move the node must not pay for a depth recompute.
+        $september = CategoryNested::find($september->id);
+        $september->name = 'September (renamed)';
+        $september->save();
+        CategoryNested::flushDuplicateCache();
+
+        $this->assertEquals(42, CategoryNested::where('id', $september->id)->value('nest_depth'));
+
+        // Moving the node realigns the depth from its ancestry again.
+        $green = CategoryNested::where('name', 'Category Green')->first();
+        $september->parent_id = $green->id;
+        $september->save();
+        CategoryNested::flushDuplicateCache();
+
+        $this->assertEquals(1, CategoryNested::where('id', $september->id)->value('nest_depth'));
+    }
+
+    public function testMoveSubtreeQueryCountIsConstant()
+    {
+        $autumn = CategoryNested::where('name', 'Autumn Leaves')->first();
+        $winter = CategoryNested::where('name', 'Winter Snow')->first();
+
+        DB::enableQueryLog();
+        $autumn->makeChildOf($winter);
+        $queries = count(DB::getQueryLog());
+        DB::disableQueryLog();
+
+        // The bulk depth realignment keeps a move at a fixed number of statements no matter how
+        // many descendants the subtree has (previously one full save cycle per descendant).
+        $this->assertLessThan(12, $queries);
     }
 
     public function seedSampleTree()
