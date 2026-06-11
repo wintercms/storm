@@ -42,7 +42,12 @@ trait AttachOneOrMany
         if (static::$constraints) {
             $this->query->where($this->morphType, $this->morphClass);
 
-            $this->query->where($this->foreignKey, '=', $this->getParentKey());
+            // Bind the parent key as a string to match the string `attachment_id` column. A numeric
+            // binding forces the database to coerce the column for every row, which prevents the
+            // column's index from being used.
+            $parentKey = $this->getParentKey();
+
+            $this->query->where($this->foreignKey, '=', is_null($parentKey) ? $parentKey : (string) $parentKey);
 
             $this->query->where('field', $this->getFieldName());
 
@@ -116,7 +121,19 @@ trait AttachOneOrMany
      */
     public function addEagerConstraints(array $models)
     {
-        parent::addEagerConstraints($models);
+        // Bind the parent keys as strings to match the string `attachment_id` column, rather than
+        // deferring to the parent implementation, which compares integer keys against the string
+        // column and prevents the column's index from being used. Null keys are preserved as-is
+        // so they match nothing, instead of being cast to an empty string.
+        $this->query->whereIn(
+            $this->foreignKey,
+            array_map(
+                fn ($key) => is_null($key) ? $key : (string) $key,
+                $this->getKeys($models, $this->localKey)
+            )
+        );
+
+        $this->query->where($this->morphType, $this->morphClass);
 
         $this->query->where('field', $this->fieldName);
     }
