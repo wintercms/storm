@@ -110,7 +110,8 @@ trait HasSortableRelations
         string|int|array $itemIds,
         array $itemOrders = [],
         ?string $sessionKey = null
-    ) : void {
+    ) : void
+    {
         if (!is_array($itemIds)) {
             $itemIds = [$itemIds];
         }
