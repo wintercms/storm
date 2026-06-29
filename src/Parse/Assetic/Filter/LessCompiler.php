@@ -22,22 +22,55 @@ class LessCompiler extends BaseFilter implements HashableInterface, DependencyEx
 
     protected $lastHash;
 
+    /**
+     * Additional roots beyond the asset's own source directory that `@import`
+     * directives are allowed to resolve into. Configured by the caller (typically
+     * `System\Classes\CombineAssets`) to permit legitimate cross-tree imports
+     * (e.g. a plugin asset importing a module asset). Defaults to none — the
+     * asset's own directory subtree is always allowed implicitly via the
+     * resolver's contextDir rule.
+     *
+     * @var string[]
+     */
+    protected array $allowedImportRoots = [];
+
     public function setPresets(array $presets)
     {
         $this->presets = $presets;
     }
 
+    /**
+     * Configure additional roots that `@import` directives may resolve into. The
+     * source file's own directory is always allowed; this list adds cross-tree
+     * destinations.
+     *
+     * @param string[] $roots
+     */
+    public function setAllowedImportRoots(array $roots): void
+    {
+        $this->allowedImportRoots = $roots;
+    }
+
     public function filterLoad(AssetInterface $asset)
     {
         $parser = new Less_Parser();
-        
+
         // Ensure unchanged behavior across Less.php 3.x and Less.php 5.x
         $parser->SetOption('strictMath', false);
 
         // CSS Rewriter will take care of this
         $parser->SetOption('relativeUrls', false);
 
-        $parser->parseFile($asset->getSourceRoot() . '/' . $asset->getSourcePath());
+        $sourceFile = $asset->getSourceRoot() . '/' . $asset->getSourcePath();
+
+        // Constrain `@import` resolution to the source file's own directory subtree
+        // plus any caller-configured roots. Without this, `@import (inline) "<path>"`
+        // could disclose arbitrary server-readable files. See GHSA-58fp-mcx6-7qf9.
+        $parser->SetImportDirs(
+            LessImportResolver::buildImportDirs($sourceFile, $this->allowedImportRoots)
+        );
+
+        $parser->parseFile($sourceFile);
 
         // Set the LESS variables after parsing to override them
         $parser->ModifyVars($this->presets);
