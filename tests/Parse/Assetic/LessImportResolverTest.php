@@ -43,7 +43,7 @@ class LessImportResolverTest extends TestCase
         $result = $resolver('partial.less');
 
         $this->assertIsArray($result);
-        $this->assertSame($this->tmpReal . '/inside/partial.less', $result[0]);
+        $this->assertSamePath($this->tmpReal . '/inside/partial.less', $result[0]);
     }
 
     /**
@@ -60,7 +60,7 @@ class LessImportResolverTest extends TestCase
 
         $result = $resolver('partial');
 
-        $this->assertSame($this->tmpReal . '/inside/partial.less', $result[0]);
+        $this->assertSamePath($this->tmpReal . '/inside/partial.less', $result[0]);
     }
 
     public function testAllowsRelativeImportIntoSubdirectoryOfContextDir()
@@ -69,7 +69,7 @@ class LessImportResolverTest extends TestCase
 
         $result = $resolver('subdir/nested.less');
 
-        $this->assertSame($this->tmpReal . '/inside/subdir/nested.less', $result[0]);
+        $this->assertSamePath($this->tmpReal . '/inside/subdir/nested.less', $result[0]);
     }
 
     public function testBlocksRelativeTraversalEscapeOutsideContextDir()
@@ -96,7 +96,7 @@ class LessImportResolverTest extends TestCase
 
         $result = $resolver($this->tmpReal . '/sibling/sibling.less');
 
-        $this->assertSame($this->tmpReal . '/sibling/sibling.less', $result[0]);
+        $this->assertSamePath($this->tmpReal . '/sibling/sibling.less', $result[0]);
     }
 
     public function testDenyAllWhenContextDirIsNullAndRootsEmpty()
@@ -141,10 +141,15 @@ class LessImportResolverTest extends TestCase
         $this->assertCount(1, $dirs);
         $key = array_keys($dirs)[0];
 
-        // less.php's SetFileInfo computes dirname(realpath($file)) and SetImportDirs
-        // appends '/'. We must match exactly so PHP array_merge collides the auto-added
-        // currentDirectory entry with our callable.
-        $this->assertSame($this->tmpReal . '/inside/', $key);
+        // less.php's SetFileInfo computes dirname(realpath($file)) and runs the
+        // result through WinPath() (which converts backslashes to forward
+        // slashes), then SetImportDirs() appends '/'. We must reproduce that
+        // exact normalisation — *including the forward-slash conversion on
+        // Windows* — so PHP array_merge collides the auto-added entry with
+        // our callable. Without the forward-slash normalisation the gate is
+        // non-authoritative on Windows for relative-traversal attacks.
+        $expectedKey = str_replace('\\', '/', $this->tmpReal) . '/inside/';
+        $this->assertSame($expectedKey, $key);
         $this->assertInstanceOf(\Closure::class, $dirs[$key]);
     }
 
@@ -156,9 +161,24 @@ class LessImportResolverTest extends TestCase
         $dirs = LessImportResolver::buildImportDirs($sourceFile, []);
         $callable = reset($dirs);
 
-        $this->assertSame($this->tmpReal . '/inside/partial.less', $callable('partial.less')[0]);
+        $this->assertSamePath($this->tmpReal . '/inside/partial.less', $callable('partial.less')[0]);
         // Cross-tree (sibling) must be denied without an explicit allowed root.
         $this->assertSame(LessImportResolver::SENTINEL_PATH, $callable('../sibling/sibling.less')[0]);
     }
 
+    /**
+     * Compare two paths after normalising separators. `realpath()` returns
+     * backslashes on Windows, but the test fixture paths are built with
+     * forward slashes for cross-platform readability. Both forms refer to
+     * the same filesystem location; the test cares about the location, not
+     * the cosmetic separator.
+     */
+    protected function assertSamePath(string $expected, string $actual): void
+    {
+        $filesystem = new \Winter\Storm\Filesystem\Filesystem();
+        $this->assertSame(
+            $filesystem->normalizePath($expected),
+            $filesystem->normalizePath($actual)
+        );
+    }
 }

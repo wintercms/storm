@@ -44,6 +44,8 @@ Paths and filesystem:
 | Custom recursive `rmrf()` in tests | `(new Winter\Storm\Filesystem\Filesystem())->deleteDirectory($path)` or `File::deleteDirectory($path)` |
 | Detect absolute path | `(new Filesystem())->isAbsolutePath($path)` (covers Unix, Windows drive letter, URL schemes) |
 | Path symbol resolution (`~/`, `$/`) | `(new Filesystem())->symbolizePath($path)` |
+| `str_replace('\\', '/', $path)` (backslash → forward slash, often for cross-platform comparison) | `(new Filesystem())->normalizePath($path)` |
+| `str_replace('/', DIRECTORY_SEPARATOR, $path)` (forward slash → native, when handing a path to an OS API) | `PathResolver::standardize($path)` |
 | Atomic file write (avoid partial-write races) | `(new \Symfony\Component\Filesystem\Filesystem())->dumpFile($path, $contents)` |
 | Find files matching a pattern | `\Symfony\Component\Finder\Finder::create()->files()->name('*.ext')->in($dir)` |
 | `RecursiveDirectoryIterator` + filter loops | Same — `Finder` is almost always shorter and clearer |

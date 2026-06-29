@@ -123,9 +123,16 @@ class LessImportResolver
         $resolvedSource = realpath($sourceFile);
         $sourceDir = $resolvedSource !== false ? dirname($resolvedSource) : dirname($sourceFile);
 
-        $key = rtrim($sourceDir, '/\\') . '/';
+        // less.php normalises its auto-added currentDirectory key by running
+        // it through `WinPath()` (backslash -> forward slash) before storing,
+        // then SetImportDirs() applies `rtrim('/\\') . '/'`. We must reproduce
+        // the *exact same* normalisation here or PHP `array_merge`'s
+        // string-key collision won't happen on Windows and the gate becomes
+        // non-authoritative for relative-traversal attacks (the auto-added
+        // path-form entry would still match first via file_exists). This is
+        // not just a test issue — it's a security regression on Windows.
+        $key = rtrim((new Filesystem())->normalizePath($sourceDir), '/') . '/';
 
         return [$key => self::makeResolver($allowedRoots, $sourceDir)];
     }
-
 }
