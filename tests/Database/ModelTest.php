@@ -133,6 +133,33 @@ class ModelTest extends \Winter\Storm\Tests\DbTestCase
         $this->seeded['websites'][1]->users()->add($this->seeded['users'][1]);
     }
 
+    public function testSearchWhereExactHandlesExpressionColumns()
+    {
+        $grammar = Post::query()->getQuery()->getGrammar();
+        $relationColumn = DB::raw(sprintf(
+            '(select %s from %s where %s = %s)',
+            $grammar->wrap('users.name'),
+            $grammar->wrapTable('users'),
+            $grammar->wrap('users.id'),
+            $grammar->wrap('posts.user_id')
+        ));
+
+        $resultIds = Post::query()
+            ->searchWhere('User1', [$relationColumn], 'exact')
+            ->pluck('id')
+            ->all();
+
+        sort($resultIds);
+
+        $expectedIds = [
+            $this->seeded['posts'][0]->id,
+            $this->seeded['posts'][1]->id,
+        ];
+        sort($expectedIds);
+
+        $this->assertEquals($expectedIds, $resultIds);
+    }
+
     // tests hasOneThrough & hasManyThrough
     public function testDeleteWithThroughRelations()
     {

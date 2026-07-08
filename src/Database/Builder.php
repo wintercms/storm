@@ -88,6 +88,9 @@ class Builder extends BuilderModel
                     if (!strlen($term)) {
                         continue;
                     }
+                    if ($field instanceof Expression) {
+                        $field = $field->getValue($query->getQuery()->getGrammar());
+                    }
                     $fieldSql = $this->query->raw(sprintf("lower(%s)", DbDongle::cast($field, 'text')));
                     $termSql = '%' . trim(mb_strtolower($term)) . '%';
                     $query->orWhere($fieldSql, 'LIKE', $termSql);
