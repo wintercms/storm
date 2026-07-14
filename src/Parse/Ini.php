@@ -12,6 +12,16 @@
 class Ini
 {
     /**
+     * Placeholder used to neutralize PHP's `${VAR}` environment-variable
+     * interpolation in parse_ini_string(). The `${` token is replaced with
+     * this marker before parsing and restored afterwards, preventing the
+     * information-disclosure vulnerability tracked as CVE-2026-25125 while
+     * preserving all other INI semantics (escape sequences, multi-line
+     * quoted values, boolean coercion, etc.).
+     */
+    protected const DOLLAR_BRACE_PLACEHOLDER = '__WNTR_INI_DOLLAR_BRACE_ESCAPE_7f8c9b2a__';
+
+    /**
      * Parses supplied INI contents in to a PHP array.
      * @param string $contents INI contents to parse.
      * @return array
@@ -19,9 +29,40 @@ class Ini
     public function parse($contents)
     {
         $contents = $this->parsePreProcess($contents);
+        // Neutralize `${...}` env-var interpolation before handing the content
+        // to PHP's native parser. See CVE-2026-25125.
+        $contents = str_replace('${', static::DOLLAR_BRACE_PLACEHOLDER, $contents);
         $contents = parse_ini_string($contents, true);
+        $contents = $this->restoreDollarBrace($contents);
         $contents = $this->parsePostProcess($contents);
         return $contents;
+    }
+
+    /**
+     * Recursively restores the `${` token wherever the placeholder appears
+     * in the parsed result. Values inside section arrays are handled too.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function restoreDollarBrace($value)
+    {
+        if (is_array($value)) {
+            $restored = [];
+            foreach ($value as $key => $item) {
+                if (is_string($key)) {
+                    $key = str_replace(static::DOLLAR_BRACE_PLACEHOLDER, '${', $key);
+                }
+                $restored[$key] = $this->restoreDollarBrace($item);
+            }
+            return $restored;
+        }
+
+        if (is_string($value)) {
+            return str_replace(static::DOLLAR_BRACE_PLACEHOLDER, '${', $value);
+        }
+
+        return $value;
     }
 
     /**

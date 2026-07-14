@@ -1,12 +1,16 @@
-<?php namespace Winter\Storm\Database\Connections;
+<?php
+
+namespace Winter\Storm\Database\Connections;
 
 use Closure;
 use Exception;
-use Throwable;
 use Illuminate\Database\Schema\SqlServerBuilder;
 use Illuminate\Database\PDO\SqlServerDriver;
 use Illuminate\Database\Query\Processors\SqlServerProcessor;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
+use Illuminate\Filesystem\Filesystem;
+use RuntimeException;
+use Throwable;
 use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 
 /**
@@ -109,5 +113,18 @@ class SqlServerConnection extends Connection
     protected function getDoctrineDriver()
     {
         return new SqlServerDriver;
+    }
+
+    /**
+     * Get the schema state for the connection.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem|null  $files
+     * @param  callable|null  $processFactory
+     *
+     * @throws \RuntimeException
+     */
+    public function getSchemaState(?Filesystem $files = null, ?callable $processFactory = null)
+    {
+        throw new RuntimeException('Schema dumping is not supported when using SQL Server.');
     }
 }

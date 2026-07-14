@@ -242,6 +242,7 @@ class ArrayFileTest extends TestCase
 <?php
 
 use Symfony\Component\HttpFoundation\Response;
+
 return [
     'foo' => Response::HTTP_OK,
     'bar' => Response::HTTP_I_AM_A_TEAPOT,
@@ -261,6 +262,7 @@ PHP;
 <?php
 
 use Symfony\Component\HttpFoundation\Response;
+
 return [
     'foo' => Response::HTTP_CONFLICT,
     'bar' => Response::HTTP_I_AM_A_TEAPOT,
@@ -279,6 +281,7 @@ PHP;
 <?php
 
 \$bar = nl2br("Hello\\nWorld");
+
 return [
     'foo' => \$bar,
 ];
@@ -789,6 +792,7 @@ include(__DIR__ . '/sample-array-file.php');
 include_once(__DIR__ . '/sample-array-file.php');
 require(__DIR__ . '/sample-array-file.php');
 require_once(__DIR__ . '/sample-array-file.php');
+
 return [
     'foo' => array_merge(include(__DIR__ . '/sample-array-file.php'), [
         'bar' => 'foo',

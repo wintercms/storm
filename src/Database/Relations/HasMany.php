@@ -85,8 +85,8 @@ class HasMany extends HasManyBase implements RelationInterface
         $value = null;
         $relationName = $this->relationName;
 
-        if ($relation = $this->parent->$relationName) {
-            $value = $relation->pluck($this->localKey)->all();
+        if ($relation = $this->parent->$relationName()->pluck($this->localKey)) {
+            $value = $relation->all();
         }
 
         return $value;

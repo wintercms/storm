@@ -194,7 +194,7 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
         // If we've already loaded this collection, we will just bail out since we do
         // not want to load it again. Once items are loaded a first time they will
         // stay kept in memory within this class and not loaded from disk again.
-        if (isset($this->afterLoad[$namespace])) {
+        if ($namespace !== null && isset($this->afterLoad[$namespace])) {
             $items = $this->callAfterLoad($namespace, $group, $items);
         }
 
@@ -433,7 +433,30 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
      */
     public function getItems()
     {
-        return $this->items;
+        return $this->all();
+    }
+
+    /**
+     * Get all of the configuration items for the application.
+     *
+     * @return array
+     */
+    public function all(): array
+    {
+        $items = $this->items;
+
+        // Add "alias" keys (foo) that reference "*::foo" when present
+        foreach ($items as $key => &$value) {
+            if (str_starts_with($key, '*::')) {
+                $alias = substr($key, 3);
+                if ($alias !== '' && !array_key_exists($alias, $items)) {
+                    $items[$alias] =& $value; // reference to the same element
+                }
+            }
+        }
+        unset($value);
+
+        return $items;
     }
 
     /**

@@ -357,6 +357,32 @@ class PathResolverTest extends TestCase
         }
     }
 
+    /**
+     * Regression for a prefix-collision bug in {@see PathResolver::within()}.
+     * Without the directory-separator boundary check, a sibling directory
+     * sharing a name prefix with the allowed directory would test as "within"
+     * it (e.g. `/var/www/themes_other/...` against allowed `/var/www/themes`).
+     */
+    public function testWithinDirectoryRejectsPrefixCollision()
+    {
+        $base = sys_get_temp_dir() . '/pathresolver-within-' . bin2hex(random_bytes(4));
+        mkdir($base . '/secret/inside', 0777, true);
+        mkdir($base . '/secret_other/deep', 0777, true);
+        file_put_contents($base . '/secret/inside/file', 'allowed');
+        file_put_contents($base . '/secret_other/deep/file', 'forbidden');
+
+        try {
+            // Within the intended directory: still works.
+            $this->assertTrue(PathResolver::within($base . '/secret/inside/file', $base . '/secret'));
+            // Prefix-collision sibling: must NOT count as within.
+            $this->assertFalse(PathResolver::within($base . '/secret_other/deep/file', $base . '/secret'));
+            // Exact directory match still allowed.
+            $this->assertTrue(PathResolver::within($base . '/secret', $base . '/secret'));
+        } finally {
+            (new \Winter\Storm\Filesystem\Filesystem())->deleteDirectory($base);
+        }
+    }
+
     public function testWithOpenBaseDirRestrictions()
     {
         $this->markTestSkipped(
