@@ -48,12 +48,18 @@ class AttributesToArrayTest extends DbTestCase
         $this->assertSame(['foo' => 'bar'], $model->attributesToArray()['jsondata']);
     }
 
+    /**
+     * The mutator deliberately returns a *valid* JSON string. If the $jsonable loop stopped
+     * skipping mutated attributes it would decode that string into an array, overriding the
+     * mutator's intent; a mutator returning a non-JSON value would mask the regression because
+     * json_decode() would fail and leave the value untouched either way.
+     */
     public function testJsonableAttributesAreSkippedWhenAMutatorExists()
     {
         $model = new TestModelAttributes();
         $model->setRawAttributes(['mutatedjson' => '{"foo":"bar"}']);
 
-        $this->assertSame('MUTATED', $model->attributesToArray()['mutatedjson']);
+        $this->assertSame('{"mutated":true}', $model->attributesToArray()['mutatedjson']);
     }
 
     //
@@ -305,7 +311,7 @@ class TestModelAttributes extends Model
 
     public function getMutatedjsonAttribute($value)
     {
-        return 'MUTATED';
+        return '{"mutated":true}';
     }
 
     public function getAppendedAttribute()
