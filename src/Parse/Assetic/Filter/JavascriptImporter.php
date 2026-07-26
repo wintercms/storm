@@ -3,6 +3,7 @@
 use RuntimeException;
 use Assetic\Filter\BaseFilter;
 use Assetic\Contracts\Asset\AssetInterface;
+use Winter\Storm\Filesystem\PathResolver;
 use Winter\Storm\Support\Facades\File;
 
 /**
@@ -132,12 +133,12 @@ class JavascriptImporter extends BaseFilter
 
             /*
              * Confine the resolved path to the including file's own directory subtree
-             * or a caller-configured allowed root, mirroring the LESS importer gate
-             * (see ImportGuard). Without this, `=include ../../../.env` would resolve
-             * via `realpath()` traversal and inline an arbitrary server-readable file
-             * into public combiner output. See GHSA-2223-f22x-24cq.
+             * or a caller-configured allowed root, mirroring the LESS importer gate.
+             * Without this, `=include ../../../.env` would resolve via `realpath()`
+             * traversal and inline an arbitrary server-readable file into public
+             * combiner output. See GHSA-2223-f22x-24cq.
              */
-            if (!ImportGuard::isAllowed($scriptPath, $this->scriptPath, $this->allowedImportRoots)) {
+            if (!PathResolver::withinAny($scriptPath, array_merge([$this->scriptPath], $this->allowedImportRoots))) {
                 $errorMsg = sprintf("File '%s' is outside the allowed import paths. in %s", $script, $this->scriptFile);
                 $result .= '/* ' . $errorMsg . ' */' . PHP_EOL;
                 continue;

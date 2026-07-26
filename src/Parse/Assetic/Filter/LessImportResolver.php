@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Parse\Assetic\Filter;
 
 use Winter\Storm\Filesystem\Filesystem;
+use Winter\Storm\Filesystem\PathResolver;
 
 /**
  * Safe import resolver for wikimedia/less.php's `Less_Parser`.
@@ -91,7 +92,7 @@ class LessImportResolver
                 return $sentinel;
             }
 
-            if (ImportGuard::isAllowed($resolved, $contextDir, $allowedRoots)) {
+            if (PathResolver::withinAny($resolved, array_merge([$contextDir], $allowedRoots))) {
                 return [$resolved, dirname($filename)];
             }
 

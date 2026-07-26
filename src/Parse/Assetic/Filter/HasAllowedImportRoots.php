@@ -6,7 +6,8 @@
  *
  * Configured by the caller (typically `System\Classes\CombineAssets`) to permit
  * legitimate cross-tree imports — e.g. a plugin asset importing a module asset — while
- * still confining everything else. Consumed together with {@see ImportGuard}.
+ * still confining everything else. The stored roots are enforced via
+ * {@see \Winter\Storm\Filesystem\PathResolver::withinAny()}.
  */
 trait HasAllowedImportRoots
 {
