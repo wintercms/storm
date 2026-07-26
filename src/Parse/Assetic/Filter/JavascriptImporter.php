@@ -20,6 +20,8 @@ use Winter\Storm\Support\Facades\File;
  */
 class JavascriptImporter extends BaseFilter
 {
+    use HasAllowedImportRoots;
+
     /**
      * @var string Location of where the processed JS script resides.
      */
@@ -99,6 +101,24 @@ class JavascriptImporter extends BaseFilter
                 $script = $script . '.js';
             }
 
+            /*
+             * Only JavaScript files may be inlined. Rejecting any other extension
+             * (e.g. `.env`, `.php`, `.log`) neutralises disclosure of non-JS server
+             * files even before the path-confinement check below, and mirrors the
+             * combiner's CSS importer, which is restricted to `.css`. Extension-less
+             * includes keep working — they are resolved to `.js` immediately above,
+             * before this check. See GHSA-2223-f22x-24cq.
+             */
+            if (strtolower((string) File::extension($script)) !== 'js') {
+                $errorMsg = sprintf("File '%s' has a disallowed extension. in %s", $script, $this->scriptFile);
+                if ($required) {
+                    throw new RuntimeException($errorMsg);
+                }
+
+                $result .= '/* ' . $errorMsg . ' */' . PHP_EOL;
+                continue;
+            }
+
             $scriptPath = realpath($this->scriptPath . '/' . $script);
             if (!File::isFile($scriptPath)) {
                 $errorMsg = sprintf("File '%s' not found. in %s", $script, $this->scriptFile);
@@ -106,6 +126,19 @@ class JavascriptImporter extends BaseFilter
                     throw new RuntimeException($errorMsg);
                 }
 
+                $result .= '/* ' . $errorMsg . ' */' . PHP_EOL;
+                continue;
+            }
+
+            /*
+             * Confine the resolved path to the including file's own directory subtree
+             * or a caller-configured allowed root, mirroring the LESS importer gate
+             * (see ImportGuard). Without this, `=include ../../../.env` would resolve
+             * via `realpath()` traversal and inline an arbitrary server-readable file
+             * into public combiner output. See GHSA-2223-f22x-24cq.
+             */
+            if (!ImportGuard::isAllowed($scriptPath, $this->scriptPath, $this->allowedImportRoots)) {
+                $errorMsg = sprintf("File '%s' is outside the allowed import paths. in %s", $script, $this->scriptFile);
                 $result .= '/* ' . $errorMsg . ' */' . PHP_EOL;
                 continue;
             }

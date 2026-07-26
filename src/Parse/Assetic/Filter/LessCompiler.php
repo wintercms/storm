@@ -18,37 +18,15 @@ use Assetic\Contracts\Filter\DependencyExtractorInterface;
  */
 class LessCompiler extends BaseFilter implements HashableInterface, DependencyExtractorInterface
 {
+    use HasAllowedImportRoots;
+
     protected $presets = [];
 
     protected $lastHash;
 
-    /**
-     * Additional roots beyond the asset's own source directory that `@import`
-     * directives are allowed to resolve into. Configured by the caller (typically
-     * `System\Classes\CombineAssets`) to permit legitimate cross-tree imports
-     * (e.g. a plugin asset importing a module asset). Defaults to none — the
-     * asset's own directory subtree is always allowed implicitly via the
-     * resolver's contextDir rule.
-     *
-     * @var string[]
-     */
-    protected array $allowedImportRoots = [];
-
     public function setPresets(array $presets)
     {
         $this->presets = $presets;
-    }
-
-    /**
-     * Configure additional roots that `@import` directives may resolve into. The
-     * source file's own directory is always allowed; this list adds cross-tree
-     * destinations.
-     *
-     * @param string[] $roots
-     */
-    public function setAllowedImportRoots(array $roots): void
-    {
-        $this->allowedImportRoots = $roots;
     }
 
     public function filterLoad(AssetInterface $asset)
