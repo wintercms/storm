@@ -128,4 +128,17 @@ class JavascriptImporterTest extends TestCase
 
         $this->combine("/*\n=require ../secret.env\n*/\n");
     }
+
+    /**
+     * A mandatory `=require` for a `.js` file outside the allowed roots must fail hard,
+     * mirroring the not-found and disallowed-extension guards rather than silently
+     * degrading to a comment the way the optional `=include` does.
+     */
+    public function testRequireThrowsOnPathOutsideAllowedRoots()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('outside the allowed import paths');
+
+        $this->combine("/*\n=require ../secret.js\n*/\n");
+    }
 }

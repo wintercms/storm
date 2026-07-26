@@ -95,6 +95,14 @@ class JavascriptImporter extends BaseFilter
         $require = explode(',', $data);
         $result = "";
 
+        /*
+         * The set of roots an include may resolve into: the including file's own
+         * directory subtree plus any caller-configured cross-tree roots. Computed
+         * once here rather than per-iteration; $this->scriptPath is stable across
+         * the loop (nested parsing saves and restores it below).
+         */
+        $allowedRoots = array_merge([$this->scriptPath], $this->allowedImportRoots);
+
         foreach ($require as $script) {
             $script = trim($script);
 
@@ -138,8 +146,12 @@ class JavascriptImporter extends BaseFilter
              * traversal and inline an arbitrary server-readable file into public
              * combiner output. See GHSA-2223-f22x-24cq.
              */
-            if (!PathResolver::withinAny($scriptPath, array_merge([$this->scriptPath], $this->allowedImportRoots))) {
+            if (!PathResolver::withinAny($scriptPath, $allowedRoots)) {
                 $errorMsg = sprintf("File '%s' is outside the allowed import paths. in %s", $script, $this->scriptFile);
+                if ($required) {
+                    throw new RuntimeException($errorMsg);
+                }
+
                 $result .= '/* ' . $errorMsg . ' */' . PHP_EOL;
                 continue;
             }
