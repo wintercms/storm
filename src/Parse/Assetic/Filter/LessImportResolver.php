@@ -92,14 +92,8 @@ class LessImportResolver
                 return $sentinel;
             }
 
-            if ($contextDir !== null && PathResolver::within($resolved, $contextDir)) {
+            if (PathResolver::withinAny($resolved, array_merge([$contextDir], $allowedRoots))) {
                 return [$resolved, dirname($filename)];
-            }
-
-            foreach ($allowedRoots as $root) {
-                if (PathResolver::within($resolved, $root)) {
-                    return [$resolved, dirname($filename)];
-                }
             }
 
             return $sentinel;

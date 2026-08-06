@@ -383,6 +383,45 @@ class PathResolverTest extends TestCase
         }
     }
 
+    /**
+     * {@see PathResolver::withinAny()} returns true if the path is within any of the
+     * given directories. Null, empty and non-string entries are ignored, so callers
+     * can pass an optional (nullable) context directory alongside a roots list
+     * without pre-filtering — the behaviour the JS/LESS importers rely on.
+     */
+    public function testWithinAny()
+    {
+        $base = sys_get_temp_dir() . '/pathresolver-withinany-' . bin2hex(random_bytes(4));
+        mkdir($base . '/allowed/inside', 0777, true);
+        mkdir($base . '/other', 0777, true);
+        mkdir($base . '/outside', 0777, true);
+        file_put_contents($base . '/allowed/inside/file', 'x');
+
+        try {
+            $target = $base . '/allowed/inside/file';
+
+            // Matches when the containing directory appears anywhere in the list.
+            $this->assertTrue(PathResolver::withinAny($target, [$base . '/allowed']));
+            $this->assertTrue(PathResolver::withinAny($target, [$base . '/other', $base . '/allowed']));
+
+            // No directory in the list contains the path.
+            $this->assertFalse(PathResolver::withinAny($target, [$base . '/other', $base . '/outside']));
+
+            // Empty list never matches.
+            $this->assertFalse(PathResolver::withinAny($target, []));
+
+            // Null, empty-string and non-string entries are skipped; a valid later
+            // entry still matches (the nullable context-dir usage in the importers).
+            $this->assertTrue(PathResolver::withinAny($target, [null, '', $base . '/allowed']));
+            $this->assertFalse(PathResolver::withinAny($target, [null, '', $base . '/outside']));
+
+            // A list of only skippable entries never matches.
+            $this->assertFalse(PathResolver::withinAny($target, [null, '', false]));
+        } finally {
+            (new \Winter\Storm\Filesystem\Filesystem())->deleteDirectory($base);
+        }
+    }
+
     public function testWithOpenBaseDirRestrictions()
     {
         $this->markTestSkipped(

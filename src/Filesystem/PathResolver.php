@@ -123,6 +123,26 @@ class PathResolver
     }
 
     /**
+     * Determines whether a path is within any of the given directories.
+     *
+     * Returns true as soon as {@see within()} matches one of $directories. Empty and
+     * non-string entries are ignored, so callers may pass an optional context
+     * directory (which may be null) alongside a list of roots without pre-filtering.
+     *
+     * @param string[] $directories
+     */
+    public static function withinAny(string $path, array $directories): bool
+    {
+        foreach ($directories as $directory) {
+            if (is_string($directory) && $directory !== '' && static::within($path, $directory)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Join two paths, making sure they use the correct directory separators.
      */
     public static function join(string $prefix, string $path = ''): string
