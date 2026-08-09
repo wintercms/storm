@@ -118,19 +118,23 @@ interface DatasourceInterface
     /**
      * Get all available paths within this datasource.
      *
-     * This method returns an array, with all available paths as the key, and a boolean that represents whether the path
-     * can be handled or modified.
+     * This method returns an array, with all available paths as the key, and a value that represents whether the path
+     * can be handled or modified. A falsy value means the path cannot be handled; any truthy value means it can.
+     *
+     * Datasources that are able to determine a path's modification time cheaply may return that timestamp as the
+     * truthy value, allowing consumers to resolve modification times without a further lookup.
      *
      * Example:
      *
      * ```php
      * [
      *     'path/to/file.md' => true, // (this path is available, and can be handled)
-     *     'path/to/file2.md' => false // (this path is available, but cannot be handled)
+     *     'path/to/file2.md' => 1559390400, // (as above, and was last modified at this timestamp)
+     *     'path/to/file3.md' => false // (this path is available, but cannot be handled)
      * ]
      * ```
      *
-     * @return array An array of available paths alongside whether they can be handled.
+     * @return array<string, int|bool> An array of available paths alongside whether they can be handled.
      */
     public function getAvailablePaths(): array;
 }
