@@ -1,4 +1,6 @@
-<?php namespace Winter\Storm\Console\Traits;
+<?php
+
+namespace Winter\Storm\Console\Traits;
 
 /**
  * Console Command Trait that injects cross-platform signal handling to trigger
@@ -12,6 +14,8 @@
  */
 trait HandlesCleanup
 {
+    protected $windowsSignalHandlerRegistered = false;
+
     /**
      * Returns the process signals this command listens to
      * @see https://www.php.net/manual/en/pcntl.constants.php
@@ -20,15 +24,18 @@ trait HandlesCleanup
     public function getSubscribedSignals(): array
     {
         $signals = [];
+
         if (method_exists($this, 'handleCleanup')) {
             // Handle Windows OS
             if (PHP_OS_FAMILY === 'Windows') {
                 // Attach to Windows Ctrl+C & Ctrl+Break events
-                if (function_exists('sapi_windows_set_ctrl_handler')) {
-                    sapi_windows_set_ctrl_handler([$this, 'handleWindowsSignal'], true);
+                if (function_exists('sapi_windows_set_ctrl_handler') && !$this->windowsSignalHandlerRegistered) {
+                    if (sapi_windows_set_ctrl_handler([$this, 'handleWindowsSignal'], true)) {
+                        $this->windowsSignalHandlerRegistered = true;
+                    }
                 }
             // Handle Unix-like OS
-            } else {
+            } elseif (function_exists('pcntl_signal')) {
                 $signals = [SIGINT, SIGTERM, SIGQUIT];
             }
         }
@@ -51,7 +58,7 @@ trait HandlesCleanup
         }
 
         // Exit cleanly at this point if this was a user termination
-        if (in_array($signal, [SIGINT, SIGQUIT])) {
+        if (function_exists('pcntl_signal') && in_array($signal, [SIGINT, SIGQUIT])) {
             return 0;
         }
 
@@ -64,16 +71,14 @@ trait HandlesCleanup
     public function handleWindowsSignal(int $event): void
     {
         // Remove the handler
-        sapi_windows_set_ctrl_handler([$this, 'handleWindowsSignal'], false);
+        if ($this->windowsSignalHandlerRegistered) {
+            if (sapi_windows_set_ctrl_handler([$this, 'handleWindowsSignal'], false)) {
+                $this->windowsSignalHandlerRegistered = false;
+            }
+        }
 
         // Handle the signal
-        if (
-            method_exists($this, 'handleCleanup')
-            && (
-                $event === PHP_WINDOWS_EVENT_CTRL_C
-                || $event === PHP_WINDOWS_EVENT_CTRL_BREAK
-            )
-        ) {
+        if (method_exists($this, 'handleCleanup')) {
             $this->handleCleanup();
 
             // Exit cleanly at this point if this was a user termination

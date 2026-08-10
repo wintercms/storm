@@ -8,6 +8,10 @@ parameters:
     level: 5
     ignoreErrors:
         - identifier: trait.unused
+        - message: '#Anonymous function should return static\(.*\) but returns static\(.*\)#'
+          paths:
+            - src/Support/Traits/Singleton.php
+          reportUnmatched: false
     excludePaths:
         # Exclude PHP Parser files
         - src/Parse/PHP/ArrayFile.php

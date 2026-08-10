@@ -35,7 +35,7 @@
         "ext-pdo": "*",
         "ext-zip": "*",
 
-        "assetic/framework": "^3.1",
+        "assetic/framework": "^3.2.1",
         "doctrine/dbal": "^3.0",
         "enshrined/svg-sanitize": "~0.16",
         "laravel/framework": "^12.30.1",
