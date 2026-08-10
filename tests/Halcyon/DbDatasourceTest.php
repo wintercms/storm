@@ -111,6 +111,24 @@ class DbDatasourceTest extends DbTestCase
         $this->assertFalse($paths['pages/deleted.htm']);
     }
 
+    public function testGetAvailablePathsFallsBackToTrueForTheEpoch()
+    {
+        DB::table(self::TABLE)->insert([
+            'source' => 'test',
+            'path' => 'pages/epoch.htm',
+            'content' => 'Epoch page',
+            'file_size' => 10,
+            'updated_at' => '1970-01-01 00:00:00',
+            'deleted_at' => null,
+        ]);
+
+        $paths = $this->datasource->getAvailablePaths();
+
+        // Consumers of this map test the value for truthiness, so a timestamp of 0 would
+        // make a live record read as deleted
+        $this->assertTrue($paths['pages/epoch.htm']);
+    }
+
     public function testGetAvailablePathsIsScopedToTheSource()
     {
         $paths = $this->datasource->getAvailablePaths();

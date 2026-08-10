@@ -122,7 +122,8 @@ interface DatasourceInterface
      * can be handled or modified. A falsy value means the path cannot be handled; any truthy value means it can.
      *
      * Datasources that are able to determine a path's modification time cheaply may return that timestamp as the
-     * truthy value, allowing consumers to resolve modification times without a further lookup.
+     * truthy value, allowing consumers to resolve modification times without a further lookup. Such a timestamp
+     * must never be `0`, since consumers test these values for truthiness -- fall back to `true` for the epoch.
      *
      * Example:
      *

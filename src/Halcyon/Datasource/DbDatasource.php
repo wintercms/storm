@@ -396,9 +396,16 @@ class DbDatasource extends Datasource
             $records = $this->getQuery(false)->get();
 
             foreach ($records as $record) {
-                $pathsCache[$record->path] = $record->deleted_at
-                    ? false
-                    : Carbon::parse($record->updated_at)->timestamp;
+                if ($record->deleted_at) {
+                    $pathsCache[$record->path] = false;
+                    continue;
+                }
+
+                // A falsy value marks a path as unable to be handled, so a timestamp of 0
+                // (the Unix epoch) has to fall back to `true` -- otherwise the record would
+                // read as deleted everywhere this map is consumed. Such a record just
+                // resolves its modification time with a query, as it did before.
+                $pathsCache[$record->path] = Carbon::parse($record->updated_at)->timestamp ?: true;
             }
         }
 
