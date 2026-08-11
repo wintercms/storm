@@ -110,5 +110,4 @@ class LessCompilerTest extends \Winter\Storm\Tests\TestCase
         $compiler->filterLoad($asset);
         return $asset->getContent();
     }
-
 }
