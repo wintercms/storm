@@ -13,6 +13,12 @@ parameters:
 			path: src/Auth/Models/Group.php
 
 		-
+			message: '#^Method Winter\\Storm\\Auth\\Models\\Preferences\:\:findRecord\(\) should return Winter\\Storm\\Auth\\Models\\Preferences\|null but returns stdClass\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Auth/Models/Preferences.php
+
+		-
 			message: '#^Call to an undefined method \$this\(Winter\\Storm\\Auth\\Models\\Role\)\:\:getOriginalEncryptableValues\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -27,24 +33,6 @@ parameters:
 		-
 			message: '#^Call to an undefined method \$this\(Winter\\Storm\\Auth\\Models\\User\)\:\:getOriginalEncryptableValues\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: src/Auth/Models/User.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(Winter\\Storm\\Auth\\Models\\User\) and ''getHashableAttribut…'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Auth/Models/User.php
-
-		-
-			message: '#^Call to function property_exists\(\) with \$this\(Winter\\Storm\\Auth\\Models\\User\) and ''attributeNames'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Auth/Models/User.php
-
-		-
-			message: '#^Call to function property_exists\(\) with \$this\(Winter\\Storm\\Auth\\Models\\User\) and ''customMessages'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Auth/Models/User.php
 
@@ -183,6 +171,54 @@ parameters:
 		-
 			message: '#^Method Winter\\Storm\\Database\\Model\:\:newMorphToMany\(\) should return Illuminate\\Database\\Eloquent\\Relations\\MorphToMany\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Relations\\MorphPivot, ''pivot''\> but returns Winter\\Storm\\Database\\Relations\\MorphToMany\.$#'
 			identifier: return.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\BelongsTo constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\BelongsToMany constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\HasMany constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\HasManyThrough constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\HasOne constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\HasOneThrough constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\MorphTo constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\MorphToMany constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Database/Model.php
 
@@ -643,12 +679,6 @@ parameters:
 			path: src/Database/Relations/HasOneThrough.php
 
 		-
-			message: '#^Instanceof between \*NEVER\* and Winter\\Storm\\Database\\Relations\\HasManyThrough will always evaluate to false\.$#'
-			identifier: instanceof.alwaysFalse
-			count: 4
-			path: src/Database/Relations/HasOneThrough.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\:\:withDefault\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -959,6 +989,12 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: src/Database/TreeCollection.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Events/Dispatcher.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Routing\\Router\:\:after\(\)\.$#'
