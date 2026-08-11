@@ -931,42 +931,6 @@ parameters:
 			path: src/Database/Schema/Grammars/PostgresGrammar.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$autoIncrement\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Database/Schema/Grammars/SQLiteGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: src/Database/Schema/Grammars/SQLiteGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$storedAs\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Database/Schema/Grammars/SQLiteGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$storedAsJson\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Database/Schema/Grammars/SQLiteGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$virtualAs\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Database/Schema/Grammars/SQLiteGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Support\\Fluent\:\:\$virtualAsJson\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Database/Schema/Grammars/SQLiteGrammar.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
