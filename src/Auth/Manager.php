@@ -10,7 +10,7 @@ use Illuminate\Session\SessionManager;
 /**
  * Authentication manager
  */
-class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
+class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm\Contracts\ResetsWorkerState
 {
     use \Winter\Storm\Support\Traits\Singleton;
 
@@ -622,13 +622,46 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      */
     public function once(array $credentials = [])
     {
+        $previousUseSession = $this->useSession;
+
         $this->useSession = false;
 
-        $user = $this->authenticate($credentials);
-
-        $this->useSession = true;
+        try {
+            $user = $this->authenticate($credentials);
+        }
+        finally {
+            /*
+             * Restore the previous value even when authentication throws. This manager is a
+             * singleton, so leaving it false would silently disable session persistence for every
+             * later caller in the process. The previous value is restored rather than a hard true
+             * because subclasses configure their own default.
+             */
+            $this->useSession = $previousUseSession;
+        }
 
         return !!$user;
+    }
+
+    /**
+     * Discard the authentication state derived from the previous operation.
+     *
+     * Everything cleared here is request-derived: the resolved user, any impersonation, throttle
+     * models keyed by user and IP, the remembered-login flag, and the client address captured at
+     * construction. Configuration such as the model classes, session key and throttle settings is
+     * deliberately left alone, since it belongs to the worker rather than to a request.
+     */
+    public function resetWorkerState(): void
+    {
+        $this->user = null;
+        $this->impersonator = null;
+        $this->throttle = [];
+        $this->viaRemember = false;
+
+        /*
+         * Captured from the request in the constructor, so a worker that booted from the CLI would
+         * otherwise attribute every throttle record to the synthetic boot request's address.
+         */
+        $this->ipAddress = Request::ip() ?? '0.0.0.0';
     }
 
     /**

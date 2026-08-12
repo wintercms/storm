@@ -102,6 +102,22 @@ class ErrorHandler
     }
 
     /**
+     * Discards every applied mask.
+     *
+     * applyMask() and removeMask() are expected to be balanced, but an exception thrown between
+     * them leaves a mask applied. In a single-request process that is harmless because the process
+     * ends; under a persistent application server the stale mask would be applied to the next
+     * request's exception, and $maskLayers would keep growing with every unbalanced pair.
+     *
+     * @return void
+     */
+    public static function resetMaskState()
+    {
+        static::$activeMask = null;
+        static::$maskLayers = [];
+    }
+
+    /**
      * Returns a more descriptive error message if application
      * debug mode is turned on.
      * @param Throwable $exception
