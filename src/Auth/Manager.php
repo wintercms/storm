@@ -72,12 +72,12 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
     /**
      * @var string|null The IP address of this request, or null when it has not been resolved yet.
      *
-     * Read through getIpAddress(). Under a persistent application server the value
-     * is deliberately left unresolved at the operation boundary and derived on first use, because
-     * the boundary runs before the trusted-proxy middleware has told the request which addresses
-     * to believe — an eager capture there records the load balancer instead of the client.
+     * Read through getIpAddress(). The value is deliberately left unresolved until first use:
+     * both singleton construction and the worker-boundary reset can run before the trusted-proxy
+     * middleware has told the request which addresses to believe, and an eager capture at either
+     * point records the load balancer instead of the client.
      */
-    public $ipAddress = '0.0.0.0';
+    public $ipAddress = null;
 
     /**
      * Session manager instance.
@@ -89,7 +89,16 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
      */
     protected function init()
     {
-        $this->ipAddress = Request::ip();
+        /*
+         * Deliberately unresolved. The singleton can be constructed before the trusted-proxy
+         * middleware has run — during provider boot, or from anything that touches auth early —
+         * and an eager Request::ip() there records the load balancer's address and keeps it for
+         * the whole request, because getIpAddress() only derives when nothing is stored yet.
+         * Leaving it unresolved means the address is derived at first actual use, which under
+         * throttling happens mid-request, after the proxy chain is trusted. This holds under
+         * PHP-FPM and a persistent application server alike.
+         */
+        $this->ipAddress = null;
         $this->sessionManager = App::make(SessionManager::class);
     }
 
