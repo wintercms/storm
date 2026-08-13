@@ -72,7 +72,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
     /**
      * @var string|null The IP address of this request, or null when it has not been resolved yet.
      *
-     * Read through resolveIpAddress() internally. Under a persistent application server the value
+     * Read through getIpAddress(). Under a persistent application server the value
      * is deliberately left unresolved at the operation boundary and derived on first use, because
      * the boundary runs before the trusted-proxy middleware has told the request which addresses
      * to believe — an eager capture there records the load balancer instead of the client.
@@ -437,7 +437,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
         $useThrottle = $this->useThrottle;
 
         if ($useThrottle) {
-            $throttle = $this->findThrottleByLogin($credentials[$loginName], $this->resolveIpAddress());
+            $throttle = $this->findThrottleByLogin($credentials[$loginName], $this->getIpAddress());
             $throttle->check();
         }
 
@@ -574,7 +574,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
 
         // Check if the user has been throttled
         if ($this->useThrottle) {
-            $throttle = $this->findThrottleByUserId($user->getKey(), $this->resolveIpAddress());
+            $throttle = $this->findThrottleByUserId($user->getKey(), $this->getIpAddress());
 
             if ($throttle->is_banned || $throttle->checkSuspended()) {
                 $this->logout();
@@ -666,7 +666,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
          * Deliberately unresolved rather than recaptured. The reset runs at the operation
          * boundary, before the trusted-proxy middleware has run against the incoming request, so
          * Request::ip() here would record the proxy's address — and, worse, may still be reading
-         * the previous operation's request. resolveIpAddress() derives it on first use instead,
+         * the previous operation's request. getIpAddress() derives it on first use instead,
          * which under throttling happens mid-request, after the proxy chain is trusted.
          */
         $this->ipAddress = null;
@@ -680,11 +680,17 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
      * that eager capture at every operation boundary, and this method re-derives the address the
      * first time something — throttling, in practice — actually needs it.
      *
-     * @return string
+     * A null return is meaningful and is deliberately NOT coalesced to a placeholder address.
+     * Request::ip() is null in console contexts (queue workers, artisan), and throttle lookups
+     * treat a null address as "match on the user alone" — which is how an existing ban is found
+     * from a console context. A placeholder like '0.0.0.0' would scope those lookups to an
+     * address no real record carries, missing the ban and minting spurious throttle rows.
+     *
+     * @return string|null
      */
-    protected function resolveIpAddress(): string
+    public function getIpAddress(): ?string
     {
-        return $this->ipAddress ??= (Request::ip() ?? '0.0.0.0');
+        return $this->ipAddress ??= Request::ip();
     }
 
     /**
