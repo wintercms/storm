@@ -70,7 +70,12 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
     protected $viaRemember = false;
 
     /**
-     * @var string The IP address of this request
+     * @var string|null The IP address of this request, or null when it has not been resolved yet.
+     *
+     * Read through resolveIpAddress() internally. Under a persistent application server the value
+     * is deliberately left unresolved at the operation boundary and derived on first use, because
+     * the boundary runs before the trusted-proxy middleware has told the request which addresses
+     * to believe — an eager capture there records the load balancer instead of the client.
      */
     public $ipAddress = '0.0.0.0';
 
@@ -432,7 +437,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
         $useThrottle = $this->useThrottle;
 
         if ($useThrottle) {
-            $throttle = $this->findThrottleByLogin($credentials[$loginName], $this->ipAddress);
+            $throttle = $this->findThrottleByLogin($credentials[$loginName], $this->resolveIpAddress());
             $throttle->check();
         }
 
@@ -569,7 +574,7 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
 
         // Check if the user has been throttled
         if ($this->useThrottle) {
-            $throttle = $this->findThrottleByUserId($user->getKey(), $this->ipAddress);
+            $throttle = $this->findThrottleByUserId($user->getKey(), $this->resolveIpAddress());
 
             if ($throttle->is_banned || $throttle->checkSuspended()) {
                 $this->logout();
@@ -658,10 +663,28 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard, \Winter\Storm
         $this->viaRemember = false;
 
         /*
-         * Captured from the request in the constructor, so a worker that booted from the CLI would
-         * otherwise attribute every throttle record to the synthetic boot request's address.
+         * Deliberately unresolved rather than recaptured. The reset runs at the operation
+         * boundary, before the trusted-proxy middleware has run against the incoming request, so
+         * Request::ip() here would record the proxy's address — and, worse, may still be reading
+         * the previous operation's request. resolveIpAddress() derives it on first use instead,
+         * which under throttling happens mid-request, after the proxy chain is trusted.
          */
-        $this->ipAddress = Request::ip() ?? '0.0.0.0';
+        $this->ipAddress = null;
+    }
+
+    /**
+     * Returns the client IP for this operation, deriving it on first use.
+     *
+     * init() captures an address eagerly, which is correct under PHP-FPM where the manager is
+     * constructed mid-request. Under a persistent application server resetWorkerState() clears
+     * that eager capture at every operation boundary, and this method re-derives the address the
+     * first time something — throttling, in practice — actually needs it.
+     *
+     * @return string
+     */
+    protected function resolveIpAddress(): string
+    {
+        return $this->ipAddress ??= (Request::ip() ?? '0.0.0.0');
     }
 
     /**

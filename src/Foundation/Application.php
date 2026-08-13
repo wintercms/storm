@@ -356,14 +356,17 @@ class Application extends ApplicationBase
     /**
      * Determine if a persistent application server is serving requests from this process.
      *
-     * Distinct from runningInConsole(), which is true under an application server as well, because
-     * the worker is started from the CLI. Anything that must tell "a worker serving HTTP" apart from
-     * "an artisan command" has to ask this instead.
+     * Distinct from runningInConsole(). Octane's worker entrypoints set APP_RUNNING_IN_CONSOLE to
+     * false before creating the application, so inside a worker runningInConsole() answers false —
+     * but that only distinguishes a worker from an artisan command, not from an ordinary PHP-FPM
+     * request. Anything that must tell "a persistent worker" apart from both has to ask this
+     * instead.
      *
-     * The reason it matters at boot is that a worker's providers register once, from a CLI context,
-     * and then serve requests of every kind. A registration gated on a per-request condition —
-     * runningInBackend() being the significant one — is therefore decided by the synthetic boot
-     * request and never revisited, so it never happens at all. Such a gate has to admit a worker.
+     * The reason it matters at boot is that a worker's providers register once, against a
+     * synthetic request rather than a real one, and then serve requests of every kind. A
+     * registration gated on a per-request condition — runningInBackend() being the significant
+     * one — is therefore decided by that synthetic boot request and never revisited, so it never
+     * happens at all. Such a gate has to admit a worker.
      *
      * The client contract is the signal because Octane binds it in the worker process only; the
      * package merely being installed does not bind it, so an artisan command still answers false.

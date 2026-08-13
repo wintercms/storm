@@ -26,6 +26,11 @@ class WorkerStateTest extends \Winter\Storm\Tests\TestCase
         $prop->setValue($target, $value);
     }
 
+    protected function callProtected(object $target, string $method, ...$args)
+    {
+        return (new \ReflectionMethod($target, $method))->invoke($target, ...$args);
+    }
+
     protected function getProtected(object $target, string $property)
     {
         $prop = (new ReflectionObject($target))->getProperty($property);
@@ -59,7 +64,25 @@ class WorkerStateTest extends \Winter\Storm\Tests\TestCase
         $this->assertNull($this->getProtected($manager, 'impersonator'), 'impersonation must not persist');
         $this->assertSame([], $this->getProtected($manager, 'throttle'));
         $this->assertFalse($this->getProtected($manager, 'viaRemember'));
-        $this->assertNotSame('203.0.113.9', $manager->ipAddress);
+
+        /*
+         * The address must be left UNRESOLVED, not recaptured. The reset runs at the operation
+         * boundary, before the trusted-proxy middleware has run, so an eager Request::ip() there
+         * records the proxy — or the previous operation's request. resolveIpAddress() derives it
+         * on first use instead, mid-request, once the proxy chain is trusted.
+         */
+        $this->assertNull(
+            $manager->ipAddress,
+            'the reset must leave the IP unresolved rather than sampling the request too early'
+        );
+
+        $resolved = $this->callProtected($manager, 'resolveIpAddress');
+        $this->assertNotSame('203.0.113.9', $resolved, 'the previous operation\'s address must not survive');
+        $this->assertSame(
+            $resolved,
+            $manager->ipAddress,
+            'first use must memoise the derived address for the rest of the operation'
+        );
     }
 
     /**
