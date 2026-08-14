@@ -11,11 +11,8 @@ use Winter\Storm\Exception\ErrorHandler;
 use Winter\Storm\Halcyon\MemoryCacheManager;
 
 /**
- * State that a single operation produces must not survive into the next one.
- *
- * Under PHP-FPM each request gets a fresh process, so these are all harmless. Under a persistent
- * application server the same objects and static properties serve every request, and anything
- * derived from one request stays visible to the next.
+ * Request state must not survive into the next request when the process is reused, as it is
+ * under a persistent application server.
  */
 class WorkerStateTest extends \Winter\Storm\Tests\TestCase
 {
@@ -60,12 +57,8 @@ class WorkerStateTest extends \Winter\Storm\Tests\TestCase
         $this->assertSame([], $this->getProtected($manager, 'throttle'));
         $this->assertFalse($this->getProtected($manager, 'viaRemember'));
 
-        /*
-         * The address must be left UNRESOLVED, not recaptured. The reset runs at the operation
-         * boundary, before the trusted-proxy middleware has run, so an eager Request::ip() there
-         * records the proxy — or the previous operation's request. getIpAddress() derives it
-         * on first use instead, mid-request, once the proxy chain is trusted.
-         */
+        // Recapturing here would run before the trusted-proxy middleware, so the reset leaves
+        // the address unresolved and getIpAddress() derives it on first use.
         $this->assertNull(
             $manager->ipAddress,
             'the reset must leave the IP unresolved rather than sampling the request too early'
@@ -110,8 +103,8 @@ class WorkerStateTest extends \Winter\Storm\Tests\TestCase
     }
 
     /**
-     * once() disables session persistence for a single authentication attempt. A throw used to
-     * leave it disabled for every later caller in the process.
+     * once() disables session persistence for a single attempt and must re-enable it even when
+     * authentication throws.
      */
     public function testOnceRestoresSessionUseWhenAuthenticationThrows()
     {
@@ -188,8 +181,8 @@ class WorkerStateTest extends \Winter\Storm\Tests\TestCase
     //
 
     /**
-     * The called class is stored statically while a static extension method runs, so a throw used
-     * to leave the previous caller's class name visible to every later static call.
+     * extendableCallStatic() stores the called class in a static while it runs, and must restore
+     * it when the extension method throws.
      */
     public function testStaticCalledClassIsClearedWhenAnExtensionThrows()
     {
@@ -215,8 +208,8 @@ class WorkerStateTest extends \Winter\Storm\Tests\TestCase
     //
 
     /**
-     * runningInConsole() only reports the SAPI, so an application server that boots from the CLI
-     * and then serves HTTP would otherwise have the request cache silently disabled.
+     * The request cache is disabled for console runs, but a worker serving HTTP is not a console
+     * run even when the process looks like one.
      */
     public function testRequestCacheIsEnabledForAnApplicationServerDespiteTheConsoleSapi()
     {
@@ -248,8 +241,7 @@ class WorkerStateTest extends \Winter\Storm\Tests\TestCase
 }
 
 /**
- * An auth manager whose authentication always fails, standing in for invalid credentials or a
- * failure inside a user model event.
+ * Fails every authentication attempt.
  */
 class WorkerStateThrowingAuthManager extends AuthManager
 {
@@ -263,9 +255,6 @@ class WorkerStateExtendableHost
 {
     use \Winter\Storm\Extension\ExtendableTrait;
 
-    /**
-     * Static methods on the listed extensions are dispatched through extendableCallStatic().
-     */
     public $implement = ['Winter\\Storm\\Tests\\Foundation\\WorkerStateStaticExtension'];
 
     public static function __callStatic($name, $params)

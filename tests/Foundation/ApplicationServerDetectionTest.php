@@ -7,19 +7,11 @@ use Winter\Storm\Foundation\Application;
 use Winter\Storm\Tests\TestCase;
 
 /**
- * A worker's providers register once, from a CLI context, and then serve requests of every kind.
+ * runningInApplicationServer() gates boot-time registrations that per-request checks would skip
+ * during a worker's boot. runningInConsole() cannot stand in for it: that only separates a worker
+ * from an artisan command, not from an ordinary request.
  *
- * Anything gated on a per-request condition at registration time is therefore decided by the synthetic
- * boot request and never revisited. runningInBackend() is the case that matters: it is false during a
- * worker's boot, so the back-end registrations behind it never ran at all, and any back-end page
- * needing a form widget failed. Winter's module providers now also admit an application server, which
- * makes this detection load-bearing.
- *
- * runningInConsole() cannot serve the purpose, because a worker is started from the CLI and so answers
- * true — which is precisely why this is a separate method.
- *
- * The binding is referenced by name rather than by importing the interface: Storm does not depend on
- * laravel/octane, and must not start doing so for a test.
+ * The Octane binding is referenced by name because Storm does not depend on laravel/octane.
  */
 class ApplicationServerDetectionTest extends TestCase
 {
@@ -36,8 +28,8 @@ class ApplicationServerDetectionTest extends TestCase
     }
 
     /**
-     * Octane binds the client contract in the worker process only, so the package merely being
-     * installed must not be enough — otherwise every artisan command would be treated as a worker.
+     * Octane binds the client contract in worker processes only. Installing the package must not
+     * be enough, or every artisan command would count as a worker.
      */
     public function testDetectionIsDrivenByTheBindingRatherThanThePackage()
     {
@@ -54,8 +46,8 @@ class ApplicationServerDetectionTest extends TestCase
     }
 
     /**
-     * The distinction the method exists for: a worker is a console process too, so the two answers
-     * have to be able to disagree.
+     * The two answers must be independent: a process can report a console context and still be
+     * serving requests.
      */
     public function testAnApplicationServerIsDetectedEvenThoughItIsAlsoAConsoleProcess()
     {
@@ -70,16 +62,12 @@ class ApplicationServerDetectionTest extends TestCase
     }
 
     /**
-     * The global trans() helper Storm defines must not return an object for a null key.
+     * trans(null) must not return the translator object: e(trans($key)) becomes a TypeError when
+     * it does, which broke back-end pages under a worker entry point that loaded Composer's
+     * autoloader (and its Laravel helpers) first.
      *
-     * Laravel's helper returns the translator instance in that case, and e() then raises a TypeError
-     * on it — which is what broke every back-end page with a settings menu when a worker entry point
-     * loaded Composer's autoloader before bootstrap/autoload.php and so got Laravel's definition.
-     *
-     * Asserted against Storm's Translator rather than the global helper on purpose: vendor/bin/phpunit
-     * requires Composer's autoloader before the suite's bootstrap file, so inside the test suite the
-     * global helpers are always Laravel's regardless of which entry point production uses. The
-     * behaviour that has to hold is this method's.
+     * Asserted against Storm's Translator directly because the test suite always gets Laravel's
+     * global helpers, regardless of which entry point production uses.
      */
     public function testTranslatingANullKeyDoesNotReturnAnObject()
     {

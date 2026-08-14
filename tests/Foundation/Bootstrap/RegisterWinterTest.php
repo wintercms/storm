@@ -8,15 +8,10 @@ use Winter\Storm\Foundation\Application;
 use Winter\Storm\Foundation\Bootstrap\RegisterWinter;
 
 /**
- * RegisterWinter forces the configured root URL when running in console, because a console
- * process has no request to derive one from.
- *
- * The workaround needs the request to be bound already: resolving the URL generator without one
- * throws, since Illuminate\Routing\UrlGenerator requires a request instance. Both stock kernels
- * satisfy that — the console kernel runs SetRequestForConsole first, and HTTP requests are not
- * running in console — but an application server that boots from the CLI and then serves HTTP,
- * such as Laravel Octane, bootstraps through the HTTP kernel while runningInConsole() is true and
- * has no request bound at that point.
+ * RegisterWinter forces the configured root URL when no request is bound to derive one from.
+ * The gate must be the request itself, not runningInConsole(): a worker boots through the HTTP
+ * kernel before any request exists, and the override must not fire against the requests it
+ * serves afterwards.
  */
 class RegisterWinterTest extends \Winter\Storm\Tests\TestCase
 {
