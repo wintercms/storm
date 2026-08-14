@@ -13,10 +13,10 @@ concurrency:
 jobs:
   unitTests:
     strategy:
-      max-parallel: 4
+      max-parallel: 6
       matrix:
         operatingSystem: [ubuntu-latest, windows-latest]
-        phpVersion: ['8.2', '8.3', '8.4']
+        phpVersion: ['8.2', '8.3', '8.4', '8.5']
       fail-fast: false
     runs-on: ${{ matrix.operatingSystem }}
     name: ${{ matrix.operatingSystem }} / PHP ${{ matrix.phpVersion }}

@@ -1,4 +1,6 @@
-<?php namespace Winter\Storm\Config;
+<?php
+
+namespace Winter\Storm\Config;
 
 use PhpParser\Error;
 use PhpParser\Lexer;
@@ -32,9 +34,9 @@ class ConfigWriter
         $parser = new Php8($lexer, $version);
 
         try {
-                $ast = $parser->parse($contents);
+            $ast = $parser->parse($contents);
         } catch (Error $e) {
-                throw new SystemException($e);
+            throw new SystemException($e);
         }
 
         return (new ArrayFile($ast, $parser))->set($newValues)->render();

@@ -1,5 +1,7 @@
 <?php namespace Winter\Storm\Mail;
 
+use Winter\Storm\Parse\Ini;
+
 /**
  * This class parses Mail templates.
  * Returns the structured file information.
@@ -43,12 +45,12 @@ class MailParser
         ];
 
         if ($count >= 3) {
-            $result['settings'] = parse_ini_string($sections[0], true);
+            $result['settings'] = (new Ini)->parse($sections[0]);
             $result['text'] = $sections[1];
             $result['html'] = $sections[2];
         }
         elseif ($count == 2) {
-            $result['settings'] = parse_ini_string($sections[0], true);
+            $result['settings'] = (new Ini)->parse($sections[0]);
             $result['html'] = $sections[1];
         }
         elseif ($count == 1) {
