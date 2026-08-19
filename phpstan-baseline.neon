@@ -13,12 +13,6 @@ parameters:
 			path: src/Auth/Models/Group.php
 
 		-
-			message: '#^Method Winter\\Storm\\Auth\\Models\\Preferences\:\:findRecord\(\) should return Winter\\Storm\\Auth\\Models\\Preferences\|null but returns stdClass\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Auth/Models/Preferences.php
-
-		-
 			message: '#^Call to an undefined method \$this\(Winter\\Storm\\Auth\\Models\\Role\)\:\:getOriginalEncryptableValues\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -171,54 +165,6 @@ parameters:
 		-
 			message: '#^Method Winter\\Storm\\Database\\Model\:\:newMorphToMany\(\) should return Illuminate\\Database\\Eloquent\\Relations\\MorphToMany\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model, TDeclaringModel of Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Relations\\MorphPivot, ''pivot''\> but returns Winter\\Storm\\Database\\Relations\\MorphToMany\.$#'
 			identifier: return.type
-			count: 1
-			path: src/Database/Model.php
-
-		-
-			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\BelongsTo constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Database/Model.php
-
-		-
-			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\BelongsToMany constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Database/Model.php
-
-		-
-			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\HasMany constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Database/Model.php
-
-		-
-			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\HasManyThrough constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Database/Model.php
-
-		-
-			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\HasOne constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Database/Model.php
-
-		-
-			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\HasOneThrough constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Database/Model.php
-
-		-
-			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\MorphTo constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Database/Model.php
-
-		-
-			message: '#^Parameter \#1 \$query of class Winter\\Storm\\Database\\Relations\\MorphToMany constructor expects Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>, Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\> given\.$#'
-			identifier: argument.type
 			count: 1
 			path: src/Database/Model.php
 
@@ -1021,7 +967,7 @@ parameters:
 			path: src/Support/Testing/Fakes/MailFake.php
 
 		-
-			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\)$#'
+			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(BackedEnum\|string\|null\) of method Illuminate\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\)$#'
 			identifier: method.childParameterType
 			count: 1
 			path: src/Support/Testing/Fakes/MailFake.php
