@@ -59,11 +59,13 @@ abstract class Datasource implements DatasourceInterface
     {
         $this->forceDeleting = true;
 
-        $success = $this->delete($dirName, $fileName, $extension);
-
-        $this->forceDeleting = false;
-
-        return $success;
+        try {
+            return $this->delete($dirName, $fileName, $extension);
+        } finally {
+            // A delete that throws must not leave the datasource in force-deleting mode,
+            // or every later ordinary delete on this instance becomes a hard delete.
+            $this->forceDeleting = false;
+        }
     }
 
     /**

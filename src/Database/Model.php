@@ -1185,6 +1185,7 @@ class Model extends EloquentModel implements ModelInterface
     public function attributesToArray()
     {
         $attributes = $this->getArrayableAttributes();
+        $mutatedAttributes = $this->getMutatedAttributes();
 
         /*
          * Before Event
@@ -1195,55 +1196,12 @@ class Model extends EloquentModel implements ModelInterface
             }
         }
 
-        /*
-         * Dates
-         */
-        foreach ($this->getDates() as $key) {
-            if (!isset($attributes[$key])) {
-                continue;
-            }
+        $attributes = $this->addDateAttributesToArray($attributes);
 
-            $attributes[$key] = $this->serializeDate(
-                $this->asDateTime($attributes[$key])
-            );
-        }
+        $attributes = $this->addMutatedAttributesToArray($attributes, $mutatedAttributes);
 
-        /*
-         * Mutate
-         */
-        $mutatedAttributes = $this->getMutatedAttributes();
+        $attributes = $this->addCastAttributesToArray($attributes, $mutatedAttributes);
 
-        foreach ($mutatedAttributes as $key) {
-            if (!array_key_exists($key, $attributes)) {
-                continue;
-            }
-
-            $attributes[$key] = $this->mutateAttributeForArray(
-                $key,
-                $attributes[$key]
-            );
-        }
-
-        /*
-         * Casts
-         */
-        foreach ($this->casts as $key => $value) {
-            if (
-                !array_key_exists($key, $attributes) ||
-                in_array($key, $mutatedAttributes)
-            ) {
-                continue;
-            }
-
-            $attributes[$key] = $this->castAttribute(
-                $key,
-                $attributes[$key]
-            );
-        }
-
-        /*
-         * Appends
-         */
         foreach ($this->getArrayableAppends() as $key) {
             $attributes[$key] = $this->mutateAttributeForArray($key, null);
         }

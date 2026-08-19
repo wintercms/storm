@@ -334,6 +334,43 @@ class IniTest extends TestCase
         $this->assertEquals($this->getContents($path), $str);
     }
 
+    /**
+     * Regression test for CVE-2026-25125 — ensure the INI parser does not
+     * interpolate PHP ${VAR} environment-variable syntax, which would allow
+     * an attacker with editor access to exfiltrate secrets such as APP_KEY
+     * or DB_PASSWORD via CMS template settings.
+     */
+    public function testEnvironmentVariableInterpolationIsDisabled()
+    {
+        $canaryName = 'WINTER_CVE_2026_25125_CANARY';
+        $canaryValue = 'LEAK_ME_IF_BROKEN';
+        putenv($canaryName . '=' . $canaryValue);
+
+        try {
+            $parser = new IniParser;
+
+            $contents = <<<INI
+title = "\${{$canaryName}}"
+url = "/demo/\${{$canaryName}}"
+nested[key] = "\${{$canaryName}}"
+INI;
+
+            $result = $parser->parse($contents);
+
+            $literal = '${' . $canaryName . '}';
+            $this->assertSame($literal, $result['title']);
+            $this->assertSame('/demo/' . $literal, $result['url']);
+            $this->assertSame($literal, $result['nested']['key']);
+
+            // Belt-and-braces: the secret value must not appear anywhere in
+            // the parsed result, even nested or URL-encoded.
+            $flattened = print_r($result, true);
+            $this->assertStringNotContainsString($canaryValue, $flattened);
+        } finally {
+            putenv($canaryName);
+        }
+    }
+
    //
    // Helpers
    //

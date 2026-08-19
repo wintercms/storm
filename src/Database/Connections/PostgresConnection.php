@@ -3,6 +3,8 @@
 use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Database\PDO\PostgresDriver;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
+use Illuminate\Database\Schema\PostgresSchemaState;
+use Illuminate\Filesystem\Filesystem;
 use Winter\Storm\Database\Query\Grammars\PostgresGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
 
@@ -63,5 +65,17 @@ class PostgresConnection extends Connection
     protected function getDoctrineDriver()
     {
         return new PostgresDriver;
+    }
+
+    /**
+     * Get the schema state for the connection.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem|null  $files
+     * @param  callable|null  $processFactory
+     * @return \Illuminate\Database\Schema\PostgresSchemaState
+     */
+    public function getSchemaState(?Filesystem $files = null, ?callable $processFactory = null)
+    {
+        return new PostgresSchemaState($this, $files, $processFactory);
     }
 }

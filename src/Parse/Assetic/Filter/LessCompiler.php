@@ -18,6 +18,8 @@ use Assetic\Contracts\Filter\DependencyExtractorInterface;
  */
 class LessCompiler extends BaseFilter implements HashableInterface, DependencyExtractorInterface
 {
+    use HasAllowedImportRoots;
+
     protected $presets = [];
 
     protected $lastHash;
@@ -30,14 +32,23 @@ class LessCompiler extends BaseFilter implements HashableInterface, DependencyEx
     public function filterLoad(AssetInterface $asset)
     {
         $parser = new Less_Parser();
-        
+
         // Ensure unchanged behavior across Less.php 3.x and Less.php 5.x
         $parser->SetOption('strictMath', false);
 
         // CSS Rewriter will take care of this
         $parser->SetOption('relativeUrls', false);
 
-        $parser->parseFile($asset->getSourceRoot() . '/' . $asset->getSourcePath());
+        $sourceFile = $asset->getSourceRoot() . '/' . $asset->getSourcePath();
+
+        // Constrain `@import` resolution to the source file's own directory subtree
+        // plus any caller-configured roots. Without this, `@import (inline) "<path>"`
+        // could disclose arbitrary server-readable files. See GHSA-58fp-mcx6-7qf9.
+        $parser->SetImportDirs(
+            LessImportResolver::buildImportDirs($sourceFile, $this->allowedImportRoots)
+        );
+
+        $parser->parseFile($sourceFile);
 
         // Set the LESS variables after parsing to override them
         $parser->ModifyVars($this->presets);
