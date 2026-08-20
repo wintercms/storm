@@ -913,6 +913,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newHasOne(Builder $query, Model $parent, $foreignKey, $localKey)
     {
@@ -926,6 +931,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newHasOneThrough(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
     {
@@ -939,6 +949,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newMorphOne(Builder $query, Model $parent, $type, $id, $localKey)
     {
@@ -968,6 +983,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newBelongsTo(Builder $query, Model $child, $foreignKey, $ownerKey, $relation)
     {
@@ -981,6 +1001,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newMorphTo(Builder $query, Model $parent, $foreignKey, $ownerKey, $type, $relation)
     {
@@ -994,6 +1019,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newHasMany(Builder $query, Model $parent, $foreignKey, $localKey)
     {
@@ -1007,6 +1037,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newHasManyThrough(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
     {
@@ -1020,6 +1055,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newMorphMany(Builder $query, Model $parent, $type, $id, $localKey)
     {
@@ -1033,6 +1073,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newBelongsToMany(
         Builder $query,
@@ -1054,6 +1099,11 @@ trait HasRelationships
 
     /**
      * {@inheritDoc}
+     *
+     * Storm's relation classes are non-generic and their constructors accept a
+     * `Builder<Model>`, so we override the inherited `Builder<TRelatedModel>` param type here.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      */
     protected function newMorphToMany(
         Builder $query,

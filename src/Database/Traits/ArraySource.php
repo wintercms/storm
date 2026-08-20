@@ -39,7 +39,20 @@ trait ArraySource
         if (!in_array('sqlite', \PDO::getAvailableDrivers())) {
             throw new ApplicationException('You must enable the SQLite PDO driver to use the ArraySource trait');
         }
+    }
 
+    /**
+     * Boots the temporary SQLite datasource for this model.
+     *
+     * This is deferred out of the trait's boot method (`bootArraySource`) because Laravel 13 no
+     * longer permits a model to be instantiated while it is still booting -- doing so throws a
+     * LogicException. Building the datasource requires an instance to read the model's (overridable)
+     * array source configuration, as well as model inserts (which themselves instantiate the model),
+     * so the work is performed lazily the first time the connection is resolved, by which point the
+     * model has always finished booting.
+     */
+    protected static function arraySourceBootConnection(): void
+    {
         $instance = new static;
 
         static::arraySourceSetDbConnection(
@@ -79,6 +92,10 @@ trait ArraySource
      */
     public static function resolveConnection($connection = null)
     {
+        if (!isset(static::$arraySourceConnection)) {
+            static::arraySourceBootConnection();
+        }
+
         return static::$arraySourceConnection;
     }
 
