@@ -110,5 +110,4 @@ class LessCompilerTest extends TestCase
         $compiler->filterLoad($asset);
         return $asset->getContent();
     }
-
 }
