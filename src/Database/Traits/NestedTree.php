@@ -167,6 +167,10 @@ trait NestedTree
         elseif ($parentId !== false) {
             $this->makeChildOf($parentId);
         }
+
+        // The pending move (if any) has been processed and its depth realigned by moveTo(),
+        // so the depth pass that follows in the model.afterSave event can be skipped.
+        $this->moveToNewParentId = false;
     }
 
     /**
@@ -781,10 +785,19 @@ trait NestedTree
     /**
      * Sets the depth attribute
      *
+     * @param bool $force Recompute the depth even when this save did not move the node.
      * @return \Winter\Storm\Database\Model
      */
-    public function setDepth()
+    public function setDepth($force = false)
     {
+        /*
+         * Recomputing the depth costs a reload and an ancestor count inside a transaction on every
+         * save. Skip it when this save cycle did not move the node and a depth is already stored.
+         */
+        if (!$force && $this->moveToNewParentId === false && $this->getDepth() !== null) {
+            return $this;
+        }
+
         $this->getConnection()->transaction(function () {
             $this->reload();
 
@@ -979,6 +992,12 @@ trait NestedTree
         }
 
         /*
+         * Capture the depth before the move. The whole subtree moves intact, so every descendant
+         * shifts by the same depth difference as this node.
+         */
+        $oldDepth = $this->getDepth();
+
+        /*
          * Perform move
          */
         $this->getConnection()->transaction(function () use ($target, $position) {
@@ -989,10 +1008,30 @@ trait NestedTree
          * Reapply alignments
          */
         $target->reload();
-        $this->setDepth();
+        $this->setDepth(true);
 
-        foreach ($this->newQuery()->allChildren()->get() as $descendant) {
-            $descendant->save();
+        if ($oldDepth === null) {
+            // Without a previous depth the shared difference is unknown; realign each descendant
+            // from its own ancestry instead.
+            foreach ($this->newQuery()->allChildren()->get() as $descendant) {
+                $descendant->setDepth(true);
+            }
+        }
+        else {
+            // Realign all descendants with a single bulk update rather than saving each one,
+            // which would fire the full model lifecycle per descendant.
+            $depthDelta = $this->getDepth() - $oldDepth;
+
+            if ($depthDelta !== 0) {
+                $grammar = $this->getConnection()->getQueryGrammar();
+                $wrappedDepth = $grammar->wrap($this->getDepthColumnName());
+
+                $this->newQuery()->allChildren()->update([
+                    $this->getDepthColumnName() => $this->getConnection()->raw(
+                        sprintf('%s + (%d)', $wrappedDepth, $depthDelta)
+                    )
+                ]);
+            }
         }
 
         $this->reload();
