@@ -23,8 +23,11 @@ if (!count($files)) {
     exit(0);
 }
 
-// Escape each path so filenames are passed to the shell safely.
-$files = array_map('escapeshellarg', $files);
+// Prefix each path with ./ so a filename beginning with '-' cannot be parsed
+// as a PHPCS option, then escape it for safe shell usage.
+$files = array_map(function ($file) {
+    return escapeshellarg('./' . $file);
+}, $files);
 
 // Run all changed files through the PHPCS code sniffer and generate a CSV report
 $csv = shell_exec('phpcs --colors -nq --report="csv" --extensions="php" ' . implode(' ', $files));
@@ -66,7 +69,7 @@ fwrite(STDERR, "\e[0;31mFound "
         ? '1 issue'
         : count($lines) . ' issues')
     . " with code quality.\e[0m");
-fwrite(STDERR,  "\n");
+fwrite(STDERR, "\n");
 
 foreach ($files as $file => $errors) {
     fwrite(STDERR, "\n");
@@ -81,4 +84,3 @@ foreach ($files as $file => $errors) {
     }
 }
 exit(1);
-
