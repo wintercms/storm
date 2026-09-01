@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Tests\Database\Relations;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Winter\Storm\Database\Attach\File;
 use Winter\Storm\Database\Model;
@@ -93,6 +94,80 @@ class AttachOneTest extends DbTestCase
 
         $this->assertNotNull($user2->displayPicture);
         $this->assertEquals('avatar.png', $user2->displayPicture->file_name);
+    }
+
+    public function testConstraintsBindParentKeyAsString()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        Model::reguard();
+
+        $bindings = $user->avatar()->getBaseQuery()->getBindings();
+
+        // The attachment_id column is a string; the key must be bound as a string so the
+        // database can use the column's index instead of coercing every row to a number.
+        $this->assertContains((string) $user->id, $bindings);
+        $this->assertNotContains($user->id, $bindings);
+    }
+
+    public function testEagerConstraintsBindParentKeysAsStrings()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $user2 = User::create(['name' => 'Joe', 'email' => 'joe@example.com']);
+        Model::reguard();
+
+        $relation = Relation::noConstraints(function () use ($user) {
+            return $user->avatar();
+        });
+        $relation->addEagerConstraints([$user, $user2]);
+
+        $bindings = $relation->getBaseQuery()->getBindings();
+
+        $this->assertContains((string) $user->id, $bindings);
+        $this->assertContains((string) $user2->id, $bindings);
+        $this->assertNotContains($user->id, $bindings);
+        $this->assertNotContains($user2->id, $bindings);
+    }
+
+    public function testEagerConstraintsPreserveNullParentKeys()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        Model::reguard();
+
+        $unsavedUser = new User;
+
+        $relation = Relation::noConstraints(function () use ($user) {
+            return $user->avatar();
+        });
+        $relation->addEagerConstraints([$user, $unsavedUser]);
+
+        $bindings = $relation->getBaseQuery()->getBindings();
+
+        // A parent without a key must not be cast to an empty string, which could match
+        // orphaned rows where attachment_id = ''
+        $this->assertNotContains('', $bindings);
+        $this->assertContains((string) $user->id, $bindings);
+    }
+
+    public function testEagerLoadMatchesAttachmentsToParents()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $user2 = User::create(['name' => 'Joe', 'email' => 'joe@example.com']);
+        Model::reguard();
+
+        $user->avatar()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+        $user2->avatar()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+
+        $results = User::with('avatar')->whereIn('id', [$user->id, $user2->id])->get();
+
+        foreach ($results as $result) {
+            $this->assertTrue($result->relationLoaded('avatar'));
+            $this->assertNotNull($result->avatar);
+            $this->assertEquals($result->id, $result->avatar->attachment_id);
+        }
     }
 
     public function testDeleteFlagDestroyRelationship()
