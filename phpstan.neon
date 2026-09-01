@@ -6,23 +6,19 @@ parameters:
     paths:
         - src
     level: 5
-    excludePaths:
-        # Exclude PHP Parser files
-        - src/Parse/PHP/ArrayFile.php
-        - src/Parse/PHP/ArrayPrinter.php
-        - src/Foundation/Console/KeyGenerateCommand.php
-        - src/Scaffold/GeneratorCommand.php
     ignoreErrors:
-        - message: '#Call to private method select\(\)#'
-          paths:
-            - src/Database/Relations/Concerns/CanBeCounted.php
+        - identifier: trait.unused
         - message: '#Anonymous function should return static\(.*\) but returns static\(.*\)#'
           paths:
             - src/Support/Traits/Singleton.php
           reportUnmatched: false
+    excludePaths:
+        # Exclude PHP Parser files
+        - src/Parse/PHP/ArrayFile.php
+        - src/Foundation/Console/KeyGenerateCommand.php
+        - src/Scaffold/GeneratorCommand.php
     disableSchemaScan: true
     databaseMigrationsPath:
         - src/Auth/Migrations
         - src/Database/Migrations
-    stubFiles:
-        - tests/stubs/Facades.stub
+    treatPhpDocTypesAsCertain: false

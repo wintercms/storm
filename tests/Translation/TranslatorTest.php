@@ -14,7 +14,7 @@ use Winter\Storm\Translation\Translator;
  *
  * Credits: https://github.com/laravel
  */
-class TranslatorTest extends TestCase
+class TranslatorTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * @var Translator
@@ -35,6 +35,7 @@ class TranslatorTest extends TestCase
     protected function tearDown(): void
     {
         m::close();
+        parent::tearDown();
     }
 
     protected function getLoader()
@@ -221,8 +222,9 @@ class TranslatorTest extends TestCase
 
     public function testChoiceMethodProperlyLoadsAndRetrievesItem()
     {
-        $t = $this->getMockBuilder(Translator::class)->onlyMethods(['get'])->setConstructorArgs([$this->getLoader(), 'en'])->getMock();
-        $t->expects($this->once())->method('get')->with($this->equalTo('foo'), $this->equalTo(['replace']), $this->equalTo('en'))->willReturn('line');
+        $t = $this->getMockBuilder(Translator::class)->onlyMethods(['get', 'localeForChoice'])->setConstructorArgs([$this->getLoader(), 'en'])->getMock();
+        $t->expects($this->once())->method('get')->with($this->equalTo('foo'), $this->equalTo([]), $this->equalTo('en'))->willReturn('line');
+        $t->expects($this->once())->method('localeForChoice')->with($this->equalTo('foo'), $this->equalTo(null))->willReturn('en');
         $t->setSelector($selector = m::mock(MessageSelector::class));
         $selector->shouldReceive('choose')->once()->with('line', 10, 'en')->andReturn('choiced');
 
@@ -231,8 +233,9 @@ class TranslatorTest extends TestCase
 
     public function testChoiceMethodProperlyCountsCollectionsAndLoadsAndRetrievesItem()
     {
-        $t = $this->getMockBuilder(Translator::class)->onlyMethods(['get'])->setConstructorArgs([$this->getLoader(), 'en'])->getMock();
-        $t->expects($this->exactly(2))->method('get')->with($this->equalTo('foo'), $this->equalTo(['replace']), $this->equalTo('en'))->willReturn('line');
+        $t = $this->getMockBuilder(Translator::class)->onlyMethods(['get', 'localeForChoice'])->setConstructorArgs([$this->getLoader(), 'en'])->getMock();
+        $t->expects($this->exactly(2))->method('get')->with($this->equalTo('foo'), $this->equalTo([]), $this->equalTo('en'))->willReturn('line');
+        $t->expects($this->exactly(2))->method('localeForChoice')->with($this->equalTo('foo'), $this->equalTo(null))->willReturn('en');
         $t->setSelector($selector = m::mock(MessageSelector::class));
         $selector->shouldReceive('choose')->twice()->with('line', 3, 'en')->andReturn('choiced');
 

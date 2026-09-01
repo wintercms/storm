@@ -3,7 +3,9 @@
 namespace Winter\Storm\Config;
 
 use PhpParser\Error;
-use PhpParser\ParserFactory;
+use PhpParser\Lexer;
+use PhpParser\Parser\Php8;
+use PhpParser\PhpVersion;
 use Winter\Storm\Exception\SystemException;
 use Winter\Storm\Parse\PHP\ArrayFile;
 
@@ -27,8 +29,9 @@ class ConfigWriter
 
     public function toContent(string $contents, $newValues): string
     {
-        /** @var \PhpParser\Parser\Php7|\PhpParser\Parser\Php8 $parser */
-        $parser = (new ParserFactory)->createForHostVersion();
+        $version = PhpVersion::getHostVersion();
+        $lexer = new Lexer\Emulative($version);
+        $parser = new Php8($lexer, $version);
 
         try {
             $ast = $parser->parse($contents);

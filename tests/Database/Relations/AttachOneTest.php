@@ -9,7 +9,7 @@ use Winter\Storm\Tests\Database\Fixtures\SoftDeleteUser;
 use Winter\Storm\Tests\Database\Fixtures\User;
 use Winter\Storm\Tests\DbTestCase;
 
-class AttachOneTest extends DbTestCase
+class AttachOneTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testSetRelationValue()
     {

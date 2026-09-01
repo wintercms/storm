@@ -7,7 +7,7 @@ use Winter\Storm\Parse\Assetic\Filter\LessImportResolver;
  * response to GHSA-58fp-mcx6-7qf9. The resolver is the structural backstop that
  * prevents `wikimedia/less.php` from inlining arbitrary server-readable files.
  */
-class LessImportResolverTest extends TestCase
+class LessImportResolverTest extends \Winter\Storm\Tests\TestCase
 {
     /** @var string */
     protected $tmpRoot;

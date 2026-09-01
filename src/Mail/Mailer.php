@@ -184,6 +184,8 @@ class Mailer extends MailerBase
                 return $sentMessage;
             }
         }
+
+        return null;
     }
 
     /**

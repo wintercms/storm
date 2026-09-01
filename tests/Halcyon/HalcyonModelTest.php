@@ -7,7 +7,7 @@ use Winter\Storm\Halcyon\Datasource\FileDatasource;
 use Winter\Storm\Filesystem\Filesystem;
 use Winter\Storm\Support\Facades\Input;
 
-class HalcyonModelTest extends TestCase
+class HalcyonModelTest extends \Winter\Storm\Tests\TestCase
 {
     protected $resolver;
 
@@ -377,16 +377,13 @@ ESC;
 
     protected function setValidatorOnModel()
     {
-        $translator = $this->getMockBuilder('Illuminate\Contracts\Translation\Translator')->setMethods([
-            'get',
-            'choice',
-            'trans',
-            'transChoice',
-            'setLocale',
-            'getLocale'
-        ])->getMock();
+        $translator = $this->getMockBuilder(\Illuminate\Contracts\Translation\Translator::class)
+            ->onlyMethods(['get','choice','setLocale','getLocale']) // existing ones
+            ->getMock();
 
-        $translator->expects($this->any())->method('get')->will($this->returnArgument(0));
+        $translator->expects($this->any())
+            ->method('get')
+            ->willReturnArgument(0);
 
         $factory = new \Winter\Storm\Validation\Factory($translator);
 

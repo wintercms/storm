@@ -2,7 +2,7 @@
 
 use Illuminate\Filesystem\Filesystem;
 
-class ArraySourceTest extends DbTestCase
+class ArraySourceTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function setUp(): void
     {

@@ -1,10 +1,15 @@
 <?php
 
-class ValidationTraitTest extends TestCase
+class ValidationTraitHost
+{
+    use \Winter\Storm\Halcyon\Traits\Validation;
+}
+
+class ValidationTraitTest extends \Winter\Storm\Tests\TestCase
 {
     public function testArrayFieldNames()
     {
-        $mock = $this->getMockForTrait('Winter\Storm\Halcyon\Traits\Validation');
+        $mock = new ValidationTraitHost();
 
         $rules = [
             'field' => 'required',
@@ -16,6 +21,7 @@ class ValidationTraitTest extends TestCase
             'field][six' => 'required|string',
             'field]seven' => 'required|string',
         ];
+
         $rules = self::callProtectedMethod($mock, 'processRuleFieldNames', [$rules]);
 
         $this->assertEquals([

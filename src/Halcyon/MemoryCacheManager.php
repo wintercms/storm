@@ -7,9 +7,9 @@ use Winter\Storm\Support\Facades\Config;
 
 class MemoryCacheManager extends CacheManager
 {
-    public function repository(Store $store)
+    public function repository(Store $store, array $config = [])
     {
-        return new MemoryRepository($store);
+        return new MemoryRepository($store, $config);
     }
 
     public static function isEnabled()

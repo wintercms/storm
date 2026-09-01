@@ -4,7 +4,7 @@ namespace Winter\Storm\Tests\Database\Traits;
 
 use Winter\Storm\Tests\DbTestCase;
 
-class SortableTest extends DbTestCase
+class SortableTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testOrderByIsAutomaticallyAdded()
     {

@@ -6,7 +6,7 @@ use Winter\Storm\Database\Model;
 use Winter\Storm\Database\MorphPivot;
 use Winter\Storm\Tests\Database\Fixtures\CustomMorphPivot;
 
-class MorphPivotTest extends \DbTestCase
+class MorphPivotTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function setUp(): void
     {

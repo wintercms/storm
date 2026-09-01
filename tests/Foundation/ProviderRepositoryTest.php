@@ -8,7 +8,7 @@ use Winter\Storm\Foundation\Application;
 use Winter\Storm\Foundation\ProviderRepository as WinterProviderRepository;
 use Winter\Storm\Support\ServiceProvider;
 
-class ProviderRepositoryTest extends TestCase
+class ProviderRepositoryTest extends \Winter\Storm\Tests\TestCase
 {
     public function setUp(): void
     {

@@ -11,7 +11,7 @@ use Winter\Storm\Parse\Assetic\Filter\LessCompiler;
  *
  * See GHSA-58fp-mcx6-7qf9.
  */
-class LessCompilerTest extends TestCase
+class LessCompilerTest extends \Winter\Storm\Tests\TestCase
 {
     /** @var string */
     protected $tmpRoot;
@@ -110,5 +110,4 @@ class LessCompilerTest extends TestCase
         $compiler->filterLoad($asset);
         return $asset->getContent();
     }
-
 }

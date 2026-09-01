@@ -2,7 +2,7 @@
 
 use Winter\Storm\Mail\MailParser;
 
-class MailParserTest extends TestCase
+class MailParserTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * Regression test for CVE-2026-25125 — mail template settings must not

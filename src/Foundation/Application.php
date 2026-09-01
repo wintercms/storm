@@ -6,6 +6,7 @@ use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
+use Illuminate\Log\Context\ContextServiceProvider;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
@@ -67,11 +68,12 @@ class Application extends ApplicationBase
     /**
      * Get the path to the public / web directory.
      *
+     * @param string $path
      * @return string
      */
-    public function publicPath()
+    public function publicPath($path = '')
     {
-        return $this->basePath;
+        return $this->joinPaths($this->basePath, $path);
     }
 
     /**
@@ -104,13 +106,11 @@ class Application extends ApplicationBase
     protected function registerBaseServiceProviders()
     {
         $this->register(new EventServiceProvider($this));
-
         $this->register(new LogServiceProvider($this));
-
+        $this->register(new ContextServiceProvider($this));
         $this->register(new RoutingServiceProvider($this));
 
         $this->register(new ExecutionContextProvider($this));
-
         $this->register(new CarbonServiceProvider($this));
     }
 
@@ -401,7 +401,7 @@ class Application extends ApplicationBase
                         });
 
         if (Config::get('app.loadDiscoveredPackages', false)) {
-            $providers->splice(1, 0, [$this->make(PackageManifest::class)->providers()]);
+            $providers->splice(1, 0, $this->make(PackageManifest::class)->providers());
         }
 
         $filesystem = new Filesystem;

@@ -1,18 +1,18 @@
 <?php
 
-use Winter\Storm\Html\HtmlBuilder;
-use Winter\Storm\Html\FormBuilder;
-use Winter\Storm\Router\UrlGenerator;
-
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollection;
+use PHPUnit\Framework\Attributes\TestDox;
+use Winter\Storm\Html\FormBuilder;
+use Winter\Storm\Html\HtmlBuilder;
+use Winter\Storm\Router\UrlGenerator;
 use Winter\Storm\Tests\Assertions\AssertHtml;
 
 /**
- * @testdox The FormBuilder utility
  * @covers \Winter\Storm\Html\FormBuilder
  */
-class FormBuilderTest extends TestCase
+#[TestDox('The FormBuilder utility')]
+class FormBuilderTest extends \Winter\Storm\Tests\TestCase
 {
     use AssertHtml;
 
@@ -33,10 +33,7 @@ class FormBuilderTest extends TestCase
         $this->formBuilder = new FormBuilder($htmlBuilder, $generator);
     }
 
-    /**
-     * @testdox can generate a form open tag.
-     */
-    public function testFormOpen()
+    public function test_it_can_generate_a_form_open_tag()
     {
         $result = $this->formBuilder->open();
 
@@ -46,10 +43,7 @@ class FormBuilderTest extends TestCase
         $this->assertElementDoesntHaveAttribute('enctype', $result);
     }
 
-    /**
-     * @testdox can generate a form open tag with method "GET".
-     */
-    public function testFormOpenMethodGet()
+    public function test_it_can_generate_a_form_open_tag_with_method_GET()
     {
         $result = $this->formBuilder->open([
             'method' => 'GET'
@@ -61,10 +55,7 @@ class FormBuilderTest extends TestCase
         $this->assertElementDoesntHaveAttribute('enctype', $result);
     }
 
-    /**
-     * @testdox can generate a form open tag and accept file uploads.
-     */
-    public function testFormOpenFiles()
+    public function test_it_can_generate_a_form_open_tag_and_accept_file_uploads()
     {
         $result = $this->formBuilder->open([
             'files' => true,
@@ -76,10 +67,7 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('enctype', 'multipart/form-data', $result);
     }
 
-    /**
-     * @testdox can generate a form open tag and have custom attributes.
-     */
-    public function testFormOpenCustomAttributes()
+    public function test_it_can_generate_a_form_open_tag_and_have_custom_attributes()
     {
         $result = $this->formBuilder->open([
             'data-my-attribute' => 'my-value',
@@ -94,10 +82,7 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('class', 'boss-form', $result);
     }
 
-    /**
-     * @testdox can generate a form open tag with a data attribute AJAX request.
-     */
-    public function testFormAjax()
+    public function test_it_can_generate_a_form_open_tag_with_a_data_attribute_AJAX_request()
     {
         $result = $this->formBuilder->ajax('onSave');
 
@@ -107,10 +92,7 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('data-request', 'onSave', $result);
     }
 
-    /**
-     * @testdox can generate a form open tag with a data attribute AJAX request to a different target.
-     */
-    public function testFormAjaxTarget()
+    public function test_it_can_generate_a_form_open_tag_with_a_data_attribute_ajax_request_to_a_different_target()
     {
         $result = $this->formBuilder->ajax(['myComponent', 'onSave']);
 
@@ -120,10 +102,7 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('data-request', 'myComponent::onSave', $result);
     }
 
-    /**
-     * @testdox can generate a form open tag with a data attribute AJAX request and accept files.
-     */
-    public function testFormAjaxFiles()
+    public function test_it_can_generate_a_form_open_tag_with_a_data_attribute_ajax_request_and_accept_files()
     {
         $result = $this->formBuilder->ajax('onSave', [
             'files' => true,
@@ -137,23 +116,15 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('enctype', 'multipart/form-data', $result);
     }
 
-    /**
-     * @testdox can generate a form close tag.
-     */
-    public function testClose()
+    public function test_it_can_generate_a_form_close_tag()
     {
         $result = $this->formBuilder->close();
-
         $this->assertEquals('</form>', $result);
     }
 
-    /**
-     * @testdox can create a text input. The text input will not have an ID.
-     */
-    public function testFormInputText()
+    public function test_it_can_create_a_text_input()
     {
         $result = $this->formBuilder->input(type: 'text', name: 'my-name', value: 'my value');
-
         $this->assertElementIs('input', $result);
         $this->assertElementDoesntHaveAttribute('id', $result);
         $this->assertElementAttributeEquals('name', 'my-name', $result);
@@ -161,10 +132,7 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('value', 'my value', $result);
     }
 
-    /**
-     * @testdox can create a text input with a corresponding label. The text input will have an ID.
-     */
-    public function testFormInputTextWithLabel()
+    public function test_it_can_create_a_text_input_with_a_corresponding_label()
     {
         $result = $this->formBuilder->label(name: 'my-input', value: 'my input label');
         $result = $this->formBuilder->input(type: 'text', name: 'my-input', value: 'my value');
@@ -176,13 +144,9 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('value', 'my value', $result);
     }
 
-    /**
-     * @testdox accepts an empty ID and sets the ID attribute to empty.
-     */
-    public function testFormInputTextIdEmpty()
+    public function test_it_accepts_an_empty_id_and_sets_the_id_attribute_to_empty()
     {
         $result = $this->formBuilder->input(type: 'text', name: 'my-name', value: 'my value', options: ['id' => '']);
-
         $this->assertElementIs('input', $result);
         $this->assertElementAttributeEquals('id', '', $result);
         $this->assertElementAttributeEquals('name', 'my-name', $result);
@@ -190,13 +154,9 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('value', 'my value', $result);
     }
 
-    /**
-     * @testdox ignores an ID that is "null".
-     */
-    public function testFormInputTextNull()
+    public function test_it_ignores_an_id_that_is_null()
     {
         $result = $this->formBuilder->input(type: 'text', name: 'my-name', value: 'my value', options: ['id' => null]);
-
         $this->assertElementIs('input', $result);
         $this->assertElementDoesntHaveAttribute('id', $result);
         $this->assertElementAttributeEquals('name', 'my-name', $result);
@@ -204,13 +164,9 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('value', 'my value', $result);
     }
 
-    /**
-     * @testdox ignores an ID that is boolean "false".
-     */
-    public function testFormInputTextFalse()
+    public function test_it_ignores_an_id_that_is_boolean_false()
     {
         $result = $this->formBuilder->input(type: 'text', name: 'my-name', value: 'my value', options: ['id' => false]);
-
         $this->assertElementIs('input', $result);
         $this->assertElementDoesntHaveAttribute('id', $result);
         $this->assertElementAttributeEquals('name', 'my-name', $result);
@@ -218,13 +174,9 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('value', 'my value', $result);
     }
 
-    /**
-     * @testdox accepts an ID that is an integer of zero.
-     */
-    public function testFormInputTextZero()
+    public function test_it_accepts_an_id_that_is_an_integer_of_zero()
     {
         $result = $this->formBuilder->input(type: 'text', name: 'my-name', value: 'my value', options: ['id' => 0]);
-
         $this->assertElementIs('input', $result);
         $this->assertElementAttributeEquals('id', '0', $result);
         $this->assertElementAttributeEquals('name', 'my-name', $result);
@@ -232,7 +184,7 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('value', 'my value', $result);
     }
 
-    public function testFormInputBooleanAttribute()
+    public function test_it_can_create_a_required_input()
     {
         $result = $this->formBuilder->input(type: 'text', name: 'my-name', value: 'my value', options: ['required']);
 
@@ -242,13 +194,9 @@ class FormBuilderTest extends TestCase
         $this->assertElementHasAttribute('required', $result);
     }
 
-    /**
-     * @testdox can create a text input of type "email".
-     */
-    public function testFormInputEmail()
+    public function test_it_can_create_a_text_input_of_type_email()
     {
         $result = $this->formBuilder->input(type: 'email', name: 'my-input', value: 'my value');
-
         $this->assertElementIs('input', $result);
         $this->assertElementDoesntHaveAttribute('id', $result);
         $this->assertElementAttributeEquals('name', 'my-input', $result);
@@ -257,7 +205,6 @@ class FormBuilderTest extends TestCase
 
         $result = $this->formBuilder->label(name: 'my-input', value: 'my input label');
         $result = $this->formBuilder->email(name: 'my-input', value: 'my value');
-
         $this->assertElementIs('input', $result);
         $this->assertElementAttributeEquals('id', 'my-input', $result);
         $this->assertElementAttributeEquals('name', 'my-input', $result);
@@ -265,56 +212,38 @@ class FormBuilderTest extends TestCase
         $this->assertElementAttributeEquals('value', 'my value', $result);
     }
 
-    /**
-     * @testdox can create a submit button.
-     * @see https://github.com/wintercms/winter/issues/864
-     */
-    public function testSubmit()
+    /** @see https://github.com/wintercms/winter/issues/864 */
+    public function test_it_can_create_a_submit_button()
     {
         $result = $this->formBuilder->submit(value: 'Apply');
-
         $this->assertElementIs('input', $result);
         $this->assertElementAttributeEquals('type', 'submit', $result);
         $this->assertElementAttributeEquals('value', 'Apply', $result);
     }
 
-    /**
-     * @testdox can create a submit button with additional classes.
-     * @see https://github.com/wintercms/winter/issues/864
-     */
-    public function testSubmitWithClasses()
+    /** @see https://github.com/wintercms/winter/issues/864 */
+    public function test_it_can_create_a_submit_button_with_additional_classes()
     {
         $result = $this->formBuilder->submit(value: 'Apply', options: ['class' => 'btn btn-primary']);
-
         $this->assertElementIs('input', $result);
         $this->assertElementAttributeEquals('type', 'submit', $result);
         $this->assertElementAttributeEquals('class', 'btn btn-primary', $result);
         $this->assertElementAttributeEquals('value', 'Apply', $result);
     }
 
-    /**
-     * @testdox can create a standard button.
-     * @see https://github.com/wintercms/winter/issues/864
-     */
-    public function testButton()
+    /** @see https://github.com/wintercms/winter/issues/864 */
+    public function test_it_can_create_a_standard_button()
     {
         $result = $this->formBuilder->button(value: 'Apply');
-
         $this->assertElementIs('button', $result);
         $this->assertElementAttributeEquals('type', 'button', $result);
         $this->assertElementContainsText('Apply', $result);
     }
 
-    /**
-     * @testdox can create a standard button that submits the form.
-     * @see https://github.com/wintercms/winter/issues/864
-     */
-    public function testButtonSubmitType()
+    /** @see https://github.com/wintercms/winter/issues/864 */
+    public function test_it_can_create_a_standard_button_that_submits_the_form()
     {
-        $result = $this->formBuilder->button(value: 'Apply', options: [
-            'type' => 'submit',
-        ]);
-
+        $result = $this->formBuilder->button(value: 'Apply', options: ['type' => 'submit']);
         $this->assertElementIs('button', $result);
         $this->assertElementAttributeEquals('type', 'submit', $result);
         $this->assertElementContainsText('Apply', $result);

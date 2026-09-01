@@ -2,7 +2,7 @@
 
 use Winter\Storm\Config\ConfigWriter;
 
-class ConfigWriterTest extends TestCase
+class ConfigWriterTest extends \Winter\Storm\Tests\TestCase
 {
     public function testToFile()
     {

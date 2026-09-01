@@ -31,7 +31,7 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
     /**
      * All of the configuration items.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $items = [];
 
@@ -174,11 +174,11 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
      * Load the configuration group for the key.
      *
      * @param  string  $group
-     * @param  string  $namespace
+     * @param  string|null  $namespace
      * @param  string  $collection
      * @return void
      */
-    protected function load($group, $namespace, $collection)
+    protected function load($group, ?string $namespace, $collection)
     {
         $env = $this->environment;
 
@@ -191,9 +191,9 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
 
         $items = $this->loader->load($env, $group, $namespace);
 
-        // If we've already loaded this collection, we will just bail out since we do
-        // not want to load it again. Once items are loaded a first time they will
-        // stay kept in memory within this class and not loaded from disk again.
+        // After load callbacks are only ever registered against a real namespace, so
+        // the global namespace (null) can never have one. Guarding here also avoids
+        // using null as an array offset, which is deprecated as of PHP 8.5.
         if ($namespace !== null && isset($this->afterLoad[$namespace])) {
             $items = $this->callAfterLoad($namespace, $group, $items);
         }
@@ -209,7 +209,7 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
      * @param  array   $items
      * @return array
      */
-    protected function callAfterLoad($namespace, $group, $items)
+    protected function callAfterLoad(string $namespace, $group, $items)
     {
         $callback = $this->afterLoad[$namespace];
 
@@ -312,7 +312,7 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
      * @param  \Closure  $callback
      * @return void
      */
-    public function afterLoading($namespace, Closure $callback)
+    public function afterLoading(string $namespace, Closure $callback)
     {
         $this->afterLoad[$namespace] = $callback;
     }

@@ -117,36 +117,6 @@ if (!function_exists('array_except')) {
     }
 }
 
-if (!function_exists('array_first')) {
-    /**
-     * Return the first element in an array passing a given truth test.
-     *
-     * @param  array  $array
-     * @param  callable|null  $callback
-     * @param  mixed  $default
-     * @return mixed
-     */
-    function array_first($array, ?callable $callback = null, $default = null)
-    {
-        return Arr::first($array, $callback, $default);
-    }
-}
-
-if (!function_exists('array_last')) {
-    /**
-     * Return the last element in an array passing a given truth test.
-     *
-     * @param  array  $array
-     * @param  callable|null  $callback
-     * @param  mixed  $default
-     * @return mixed
-     */
-    function array_last($array, ?callable $callback = null, $default = null)
-    {
-        return Arr::last($array, $callback, $default);
-    }
-}
-
 if (!function_exists('array_flatten')) {
     /**
      * Flatten a multi-dimensional array into a single level.
@@ -328,12 +298,11 @@ if (!function_exists('array_shuffle')) {
      * Shuffle the given array and return the result.
      *
      * @param  array  $array
-     * @param  int|null  $seed
      * @return array
      */
-    function array_shuffle($array, $seed = null)
+    function array_shuffle($array)
     {
-        return Arr::shuffle($array, $seed);
+        return Arr::shuffle($array);
     }
 }
 

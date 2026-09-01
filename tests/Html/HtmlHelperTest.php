@@ -2,7 +2,7 @@
 
 use Winter\Storm\Html\Helper as HtmlHelper;
 
-class HtmlHelperTest extends TestCase
+class HtmlHelperTest extends \Winter\Storm\Tests\TestCase
 {
     public function testNameToId()
     {
