@@ -6,8 +6,32 @@ use Illuminate\Foundation\Console\ConfigClearCommand as BaseCommand;
 
 class ConfigClearCommand extends BaseCommand
 {
-    public function handle()
+    /**
+     * @var string The console command signature.
+     */
+    protected $signature = 'config:clear
+        {env? : Which environment should be cleared?}
+    ';
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+    public function handle(): void
     {
-        $this->components->warn('Caching configuration files is not supported in Winter CMS. See https://github.com/wintercms/winter/issues/1297#issuecomment-2624578966');
+        $configPath = $this->laravel->getCachedConfigPath();
+
+        if ($this->argument('env')) {
+            $configPath = realpath(
+                dirname($this->laravel->getCachedConfigPath())
+                . DIRECTORY_SEPARATOR
+                . $this->argument('env')
+                . '.config.php'
+            );
+        }
+
+        $this->files->delete($configPath);
+        $this->components->info('Configuration cache cleared successfully.');
     }
 }

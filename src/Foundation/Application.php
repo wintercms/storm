@@ -503,7 +503,7 @@ class Application extends ApplicationBase
      */
     public function getCachedConfigPath()
     {
-        return PathResolver::join($this->storagePath(), '/framework/config.php');
+        return PathResolver::join($this->storagePath(), '/framework/' . ($this['env'] ?? 'production') . '.config.php');
     }
 
     /**
