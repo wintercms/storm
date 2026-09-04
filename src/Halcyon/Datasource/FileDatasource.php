@@ -1,6 +1,7 @@
 <?php namespace Winter\Storm\Halcyon\Datasource;
 
 use Exception;
+use FilesystemIterator;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use Winter\Storm\Filesystem\Filesystem;
@@ -339,7 +340,10 @@ class FileDatasource extends Datasource
     {
         $pathsCache = [];
         $it = (is_dir($this->basePath))
-            ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->basePath))
+            ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator(
+                $this->basePath,
+                FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::FOLLOW_SYMLINKS
+            ))
             : [];
 
         foreach ($it as $file) {
