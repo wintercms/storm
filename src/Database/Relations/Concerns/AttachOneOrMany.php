@@ -150,22 +150,17 @@ trait AttachOneOrMany
      */
     public function create(array $attributes = [], $sessionKey = null)
     {
-        // Delete siblings for single attachments
-        if ($sessionKey === null && $this instanceof AttachOne) {
-            $this->delete();
-        }
-
         if (!array_key_exists('is_public', $attributes)) {
             $attributes = array_merge(['is_public' => $this->isPublic()], $attributes);
         }
 
         $attributes['field'] = $this->fieldName;
 
-        $model = parent::create($attributes);
+        $model = $sessionKey === null
+            ? $this->related->newInstance($attributes)
+            : parent::create($attributes);
 
-        if ($sessionKey !== null) {
-            $this->add($model, $sessionKey);
-        }
+        $this->add($model, $sessionKey);
 
         return $model;
     }
