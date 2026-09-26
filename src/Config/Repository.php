@@ -63,10 +63,12 @@ class Repository extends BaseRepository implements ArrayAccess, RepositoryContra
      * @param  string  $environment
      * @return void
      */
-    public function __construct(LoaderInterface $loader, $environment)
+    public function __construct(LoaderInterface $loader, $environment, array $items = [])
     {
         $this->loader = $loader;
         $this->environment = $environment;
+
+        parent::__construct($items);
     }
 
     /**
