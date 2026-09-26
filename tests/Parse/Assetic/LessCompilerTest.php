@@ -168,6 +168,30 @@ class LessCompilerTest extends TestCase
         $this->assertStringContainsString('deeper-marker', $css);
     }
 
+    /**
+     * A file admitted from a subdirectory must still be able to import from the entry
+     * asset's tree above it, not just from its own directory downwards.
+     */
+    public function testAllowsImportedSubdirectoryFileToImportFromEntryDirectory()
+    {
+        mkdir($this->tmpReal . '/theme/assets/less/sub', 0777, true);
+        $main = $this->tmpReal . '/theme/assets/less/main.less';
+        file_put_contents($main, '@import "sub/child.less"; .main-marker { color: blue; }');
+        file_put_contents(
+            $this->tmpReal . '/theme/assets/less/sub/child.less',
+            '@import "../variables.less"; .child-marker { color: green; }'
+        );
+        file_put_contents(
+            $this->tmpReal . '/theme/assets/less/variables.less',
+            '.variables-marker { color: purple; }'
+        );
+
+        $css = $this->compile($main);
+
+        $this->assertStringContainsString('child-marker', $css);
+        $this->assertStringContainsString('variables-marker', $css);
+    }
+
     protected function compile(string $sourceFile, ?LessCompiler $compiler = null): string
     {
         $compiler ??= new LessCompiler();

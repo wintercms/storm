@@ -1,6 +1,7 @@
 <?php
 
 use Assetic\Asset\FileAsset;
+use Assetic\Factory\AssetFactory;
 use Winter\Storm\Parse\Assetic\Filter\ScssCompiler;
 
 /**
@@ -121,10 +122,28 @@ class ScssCompilerTest extends TestCase
         file_put_contents($main, '@import "cross"; .main { color: blue; }');
 
         $compiler = new ScssCompiler();
-        $compiler->setAllowedImportRoots([$this->tmpReal . '/cross-tree']);
         $compiler->addImportPath($this->tmpReal . '/cross-tree');
 
         $this->assertStringContainsString('cross-tree-marker', $this->compile($main, $compiler));
+    }
+
+    /**
+     * getChildren() recurses once per child, so an import that follows a subdirectory
+     * import must still be validated against the entry asset's directory.
+     */
+    public function testGetChildrenFindsSiblingImportAfterSubdirectoryImport()
+    {
+        $dir = $this->tmpReal . '/theme/assets/scss';
+        file_put_contents($dir . '/sub/_child.scss', '.child { color: red; }');
+        file_put_contents($dir . '/_sibling.scss', '.sibling { color: red; }');
+
+        $children = (new ScssCompiler())->getChildren(
+            new AssetFactory($dir),
+            '@import "sub/child"; @import "sibling";',
+            $dir
+        );
+
+        $this->assertCount(2, $children);
     }
 
     protected function compile(string $sourceFile, ?ScssCompiler $compiler = null): string

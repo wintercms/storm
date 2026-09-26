@@ -103,7 +103,7 @@ class LessImportResolver
                 // re-adds an unconfined path-form import dir for it. Claim that key
                 // now so the gate keeps applying to the file's own imports and to
                 // any data-uri() / image-size() call it makes.
-                self::registerDir(dirname($resolved), $allowedRoots);
+                self::registerDir(dirname($resolved), array_merge([$contextDir], $allowedRoots));
 
                 return [$resolved, dirname($filename)];
             }

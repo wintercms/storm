@@ -40,6 +40,14 @@ class ScssCompiler extends ScssphpFilter implements HashableInterface, Dependenc
      */
     protected $sourceDirectory = null;
 
+    /**
+     * Whether getChildren() is already running. The parent recurses through the
+     * override for each child, and only the outermost call may set the root.
+     *
+     * @var bool
+     */
+    protected $resolvingChildren = false;
+
     public function __construct()
     {
         Event::listen('cms.combiner.beforePrepare', function ($compiler, $assets) {
@@ -120,9 +128,19 @@ class ScssCompiler extends ScssphpFilter implements HashableInterface, Dependenc
 
     public function getChildren(AssetFactory $factory, $content, $loadPath = null)
     {
+        // Nested calls keep the entry asset's directory as the root, as filterLoad() does.
+        if ($this->resolvingChildren) {
+            return parent::getChildren($factory, $content, $loadPath);
+        }
+
+        $this->resolvingChildren = true;
         $this->sourceDirectory = $loadPath;
 
-        return parent::getChildren($factory, $content, $loadPath);
+        try {
+            return parent::getChildren($factory, $content, $loadPath);
+        } finally {
+            $this->resolvingChildren = false;
+        }
     }
 
     public function setHash($hash)
