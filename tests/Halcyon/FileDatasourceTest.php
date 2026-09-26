@@ -102,6 +102,16 @@ class FileDatasourceTest extends TestCase
         $this->assertSame([], $datasource->getAvailablePaths());
     }
 
+    public function testGetAvailablePathsFollowsSymlinkedDirectories()
+    {
+        $this->seedFile('shared/static-pages/index.htm', 'Index page');
+        symlink($this->basePath . '/shared/static-pages', $this->basePath . '/pages/linked');
+
+        $paths = array_keys($this->datasource->getAvailablePaths());
+
+        $this->assertContains('pages/linked/index.htm', $paths);
+    }
+
     //
     // selectOne()
     //
