@@ -40,6 +40,7 @@
         "enshrined/svg-sanitize": "~0.16",
         "laravel/framework": "^9.49",
         "laravel/tinker": "^2.7",
+        "league/commonmark": "^2.10.2",
         "league/csv": "~9.1",
         "nesbot/carbon": "^2.0",
         "nikic/php-parser": "^5.7",
