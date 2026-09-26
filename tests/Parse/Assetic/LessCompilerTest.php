@@ -102,6 +102,96 @@ class LessCompilerTest extends TestCase
         $this->assertStringNotContainsString('cross-tree-marker', $css);
     }
 
+    /**
+     * less.php re-creates the unconfined path-form import dir for every file it
+     * parses, keyed by that file's own directory. Confining only the entry asset's
+     * directory therefore left anything imported from a subdirectory ungated.
+     */
+    public function testBlocksTraversalFromAnImportedSubdirectoryFile()
+    {
+        mkdir($this->tmpReal . '/theme/assets/less/sub', 0777, true);
+        $main = $this->tmpReal . '/theme/assets/less/main.less';
+        file_put_contents($main, '@import "sub/child.less"; .main { color: blue; }');
+        file_put_contents(
+            $this->tmpReal . '/theme/assets/less/sub/child.less',
+            '@import (inline) "../../../../secret.env"; .child { color: red; }'
+        );
+
+        $css = $this->compile($main);
+
+        $this->assertStringNotContainsString('APP_KEY', $css);
+        $this->assertStringNotContainsString('do-not-leak-me', $css);
+    }
+
+    /**
+     * `data-uri()` resolves through the same import-dir list as `@import` and
+     * inlines the file's bytes, so the gate has to cover it too.
+     */
+    public function testBlocksDataUriFileReadFromAnImportedSubdirectoryFile()
+    {
+        mkdir($this->tmpReal . '/theme/assets/less/sub', 0777, true);
+        $main = $this->tmpReal . '/theme/assets/less/main.less';
+        file_put_contents($main, '@import "sub/child.less"; .main { color: blue; }');
+        file_put_contents(
+            $this->tmpReal . '/theme/assets/less/sub/child.less',
+            '.x { background: data-uri("text/plain", "../../../../secret.env"); }'
+        );
+
+        $css = $this->compile($main);
+
+        $this->assertStringNotContainsString('APP_KEY', $css);
+        $this->assertStringNotContainsString('do-not-leak-me', $css);
+    }
+
+    /**
+     * A legitimate multi-level partial chain inside the asset tree must keep
+     * resolving — the gate follows the import graph rather than blocking it.
+     */
+    public function testAllowsNestedPartialChain()
+    {
+        mkdir($this->tmpReal . '/theme/assets/less/sub', 0777, true);
+        $main = $this->tmpReal . '/theme/assets/less/main.less';
+        file_put_contents($main, '@import "sub/child.less"; .main-marker { color: blue; }');
+        file_put_contents(
+            $this->tmpReal . '/theme/assets/less/sub/child.less',
+            '@import "deeper.less"; .child-marker { color: green; }'
+        );
+        file_put_contents(
+            $this->tmpReal . '/theme/assets/less/sub/deeper.less',
+            '.deeper-marker { color: purple; }'
+        );
+
+        $css = $this->compile($main);
+
+        $this->assertStringContainsString('main-marker', $css);
+        $this->assertStringContainsString('child-marker', $css);
+        $this->assertStringContainsString('deeper-marker', $css);
+    }
+
+    /**
+     * A file admitted from a subdirectory must still be able to import from the entry
+     * asset's tree above it, not just from its own directory downwards.
+     */
+    public function testAllowsImportedSubdirectoryFileToImportFromEntryDirectory()
+    {
+        mkdir($this->tmpReal . '/theme/assets/less/sub', 0777, true);
+        $main = $this->tmpReal . '/theme/assets/less/main.less';
+        file_put_contents($main, '@import "sub/child.less"; .main-marker { color: blue; }');
+        file_put_contents(
+            $this->tmpReal . '/theme/assets/less/sub/child.less',
+            '@import "../variables.less"; .child-marker { color: green; }'
+        );
+        file_put_contents(
+            $this->tmpReal . '/theme/assets/less/variables.less',
+            '.variables-marker { color: purple; }'
+        );
+
+        $css = $this->compile($main);
+
+        $this->assertStringContainsString('child-marker', $css);
+        $this->assertStringContainsString('variables-marker', $css);
+    }
+
     protected function compile(string $sourceFile, ?LessCompiler $compiler = null): string
     {
         $compiler ??= new LessCompiler();
@@ -110,5 +200,4 @@ class LessCompilerTest extends TestCase
         $compiler->filterLoad($asset);
         return $asset->getContent();
     }
-
 }
