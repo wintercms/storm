@@ -140,7 +140,7 @@ class Ini
 
         $defined = [];
 
-        $escaped = preg_replace_callback($pattern, function ($match) use (&$defined) {
+        $escaped = $this->replaceIdentifiers($pattern, function ($match) use (&$defined) {
             $lead = $match['lead'] ?? '';
             $isOffset = ($match['offset'] ?? '') !== '';
             $token = $isOffset ? $match['offset'] : $match[0];
@@ -177,6 +177,20 @@ class Ini
         }
 
         return $escaped;
+    }
+
+    /**
+     * Runs the identifier pre-pass over the document contents.
+     *
+     * Separated from escapeIdentifiers() so that its failure path can be exercised: PCRE only
+     * fails here on a backtrack or recursion limit, and how close to those limits a given
+     * subject lands differs between PCRE builds.
+     *
+     * @return string|null Null if the replacement failed.
+     */
+    protected function replaceIdentifiers(string $pattern, callable $callback, string $contents): ?string
+    {
+        return preg_replace_callback($pattern, $callback, $contents);
     }
 
     /**

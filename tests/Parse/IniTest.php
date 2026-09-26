@@ -730,22 +730,19 @@ INI;
             define('WINTER_INI_TEST_PREPASS_CONSTANT', 'value');
         }
 
-        $parser = new IniParser;
+        // Forced through the seam rather than by lowering pcre.backtrack_limit, because how
+        // close to that limit a subject lands differs between PCRE builds.
+        $parser = new class extends IniParser {
+            protected function replaceIdentifiers(string $pattern, callable $callback, string $contents): ?string
+            {
+                return null;
+            }
+        };
 
-        $method = new \ReflectionMethod($parser, 'escapeIdentifiers');
-        $method->setAccessible(true);
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/Unable to parse INI contents/');
 
-        $limit = ini_get('pcre.backtrack_limit');
-        ini_set('pcre.backtrack_limit', '1');
-
-        try {
-            $this->expectException(\RuntimeException::class);
-            $this->expectExceptionMessageMatches('/Unable to parse INI contents/');
-
-            $method->invoke($parser, "a = WINTER_INI_TEST_PREPASS_CONSTANT\n");
-        } finally {
-            ini_set('pcre.backtrack_limit', $limit);
-        }
+        $parser->parse("a = WINTER_INI_TEST_PREPASS_CONSTANT\n");
     }
 
     /**
