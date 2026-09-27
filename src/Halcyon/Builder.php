@@ -754,8 +754,8 @@ class Builder
 
     /**
      * Initialize the cache data of each record.
-     * @param  \Winter\Storm\Halcyon\Collection|array  $data
-     * @return \Winter\Storm\Halcyon\Collection|array
+     * @param  \Winter\Storm\Halcyon\Collection|array|null  $data
+     * @return \Winter\Storm\Halcyon\Collection|array|null
      */
     protected function processInitCacheData($data)
     {
