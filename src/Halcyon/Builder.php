@@ -746,7 +746,9 @@ class Builder
     protected function getCacheCallback($columns)
     {
         return function () use ($columns) {
-            return $this->processInitCacheData($this->getFresh($columns));
+            // The cache treats a stored null as a miss, so a missing template is stored as an empty
+            // result instead. The miss then stays cached until isCacheBusted() sees the file appear.
+            return $this->processInitCacheData($this->getFresh($columns)) ?? [];
         };
     }
 
