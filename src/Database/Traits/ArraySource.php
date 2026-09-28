@@ -29,7 +29,7 @@ trait ArraySource
     /**
      * Connection. to the SQLite datasource.
      */
-    protected static \Illuminate\Database\Connection $arraySourceConnection;
+    protected static ?\Illuminate\Database\Connection $arraySourceConnection = null;
 
     /**
      * Boots the ArraySource trait.
@@ -40,6 +40,17 @@ trait ArraySource
             throw new ApplicationException('You must enable the SQLite PDO driver to use the ArraySource trait');
         }
 
+        static::$arraySourceConnection = null;
+    }
+
+    /**
+     * Creates the temporary SQLite datasource for this model.
+     *
+     * Laravel 13 throws a LogicException when a model is instantiated while it is booting, so this runs the first
+     * time the connection is resolved instead of in `bootArraySource()`.
+     */
+    protected static function arraySourceBootConnection(): void
+    {
         $instance = new static;
 
         static::arraySourceSetDbConnection(
@@ -79,6 +90,10 @@ trait ArraySource
      */
     public static function resolveConnection($connection = null)
     {
+        if (static::$arraySourceConnection === null) {
+            static::arraySourceBootConnection();
+        }
+
         return static::$arraySourceConnection;
     }
 

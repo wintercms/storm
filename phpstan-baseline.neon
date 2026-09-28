@@ -1021,7 +1021,7 @@ parameters:
 			path: src/Support/Testing/Fakes/MailFake.php
 
 		-
-			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\)$#'
+			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \((BackedEnum\|)?string\|null\) of method Illuminate\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\)$#'
 			identifier: method.childParameterType
 			count: 1
 			path: src/Support/Testing/Fakes/MailFake.php
