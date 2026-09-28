@@ -20,7 +20,7 @@ class DownCommand extends BaseCommand
             'redirect' => $this->redirectPath(),
             'retry' => $this->getRetryTime(),
             'refresh' => $this->option('refresh'),
-            'secret' => $this->option('secret'),
+            'secret' => $this->getSecret(),
             'status' => (int) $this->option('status'),
             'template' => $this->prerenderView(),
         ];
