@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Tests\Database\Relations;
 
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Winter\Storm\Database\Attach\File;
 use Winter\Storm\Database\Model;
@@ -11,6 +12,47 @@ use Winter\Storm\Tests\DbTestCase;
 
 class AttachOneTest extends DbTestCase
 {
+    public function testParentKeyIsBoundAsString()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        Model::reguard();
+
+        $bindings = $user->avatar()->getQuery()->getQuery()->getBindings();
+
+        $this->assertContains((string) $user->id, $bindings);
+        $this->assertNotContains($user->id, $bindings);
+    }
+
+    public function testEagerLoadInlinesParentKeysAsStrings()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        $user2 = User::create(['name' => 'Joe', 'email' => 'joe@example.com']);
+        Model::reguard();
+
+        $user->avatar()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+        $user2->avatar()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+
+        DB::enableQueryLog();
+        $users = User::with('avatar')->whereIn('id', [$user->id, $user2->id])->orderBy('id')->get();
+        $query = collect(DB::getQueryLog())->first(fn ($query) => str_contains($query['query'], '"files"'));
+        DB::disableQueryLog();
+
+        $this->assertStringContainsString(sprintf("in ('%d', '%d')", $user->id, $user2->id), $query['query']);
+        $this->assertSame((string) $user->id, $users[0]->avatar->attachment_id);
+        $this->assertSame((string) $user2->id, $users[1]->avatar->attachment_id);
+    }
+
+    public function testEagerLoadWithoutParents()
+    {
+        $this->assertCount(0, User::with('avatar')->whereRaw('1 = 0')->get());
+
+        $relation = User::make()->avatar();
+        $relation->addEagerConstraints([]);
+        $this->assertCount(0, $relation->get());
+    }
+
     public function testSetRelationValue()
     {
         Model::unguard();
