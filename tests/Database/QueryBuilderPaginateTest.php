@@ -46,6 +46,7 @@ class QueryBuilderPaginateTest extends DbTestCase
     public function testGroupedPaginationWithBoundWhere()
     {
         $paginator = DB::table('pagination_test')
+            ->select('group_id')
             ->whereRaw('(group_id = ? OR group_id > ?)', [1, 0])
             ->groupBy('group_id')
             ->orderBy('group_id')

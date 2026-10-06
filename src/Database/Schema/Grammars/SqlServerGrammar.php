@@ -24,7 +24,7 @@ class SqlServerGrammar extends BaseSqlServerGrammar
      */
     public function compileChange(Blueprint $blueprint, Fluent $command)
     {
-        $changes = [$this->compileDropDefaultConstraint($blueprint, $command)];
+        $changes = (array) $this->compileDropDefaultConstraint($blueprint, $command);
         $schema = $this->connection->getSchemaBuilder();
         $table = $blueprint->getTable();
 
