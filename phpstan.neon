@@ -7,11 +7,11 @@ parameters:
         - src
     level: 5
     ignoreErrors:
-         -
+        -
             message: '#Call to private method select\(\)#'
             path: src/Database/Relations/Concerns/CanBeCounted.php
 
-          -
+        -
             message: '#Anonymous function should return static\(.*\) but returns static\(.*\)#'
             identifier: trait.unused
             path: src/Support/Traits/Singleton.php
