@@ -23,7 +23,7 @@ jobs:
     env:
       extensions: curl, fileinfo, gd, mbstring, openssl, pdo, pdo_sqlite, sqlite3, xml, zip
       key: winter-storm-cache-v1.2
-      GITHUB_TOKEN: ${{ secrets.COMPOSER_GITHUB_TOKEN }}
+      COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
     steps:
       - name: Checkout changes
         uses: actions/checkout@v4
