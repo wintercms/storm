@@ -16,6 +16,8 @@ jobs:
   codeAnalysis:
     runs-on: ubuntu-latest
     name: Code Analysis
+    permissions:
+      contents: read
     env:
       extensions: curl, fileinfo, gd, mbstring, openssl, pdo, pdo_sqlite, sqlite3, xml, zip
       key: winter-storm-cache-v1.2
@@ -31,7 +33,7 @@ jobs:
           coverage: none
 
       - name: Configure Composer GitHub token
-        run: composer config --global --auth github-oauth.github.com ${{ secrets.COMPOSER_GITHUB_TOKEN }}
+        run: composer config --global --auth github-oauth.github.com ${{ github.token }}
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --no-scripts
