@@ -7,14 +7,19 @@ parameters:
         - src
     level: 5
     ignoreErrors:
-        - identifier: trait.unused
-        - message: '#Anonymous function should return static\(.*\) but returns static\(.*\)#'
-          paths:
-            - src/Support/Traits/Singleton.php
-          reportUnmatched: false
+         -
+            message: '#Call to private method select\(\)#'
+            path: src/Database/Relations/Concerns/CanBeCounted.php
+
+          -
+            message: '#Anonymous function should return static\(.*\) but returns static\(.*\)#'
+            identifier: trait.unused
+            path: src/Support/Traits/Singleton.php
+            reportUnmatched: false
     excludePaths:
         # Exclude PHP Parser files
         - src/Parse/PHP/ArrayFile.php
+        - src/Parse/PHP/ArrayPrinter.php
         - src/Foundation/Console/KeyGenerateCommand.php
         - src/Scaffold/GeneratorCommand.php
     disableSchemaScan: true
