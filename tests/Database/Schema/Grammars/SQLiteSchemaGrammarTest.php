@@ -88,6 +88,17 @@ class SQLiteSchemaGrammarTest extends GrammarTestCase
         $this->assertSame("'admin'", $info['dflt_value']);
     }
 
+    public function testQuoteInDefaultValue()
+    {
+        [$pdo, , $builder] = $this->bootSqlite('CREATE TABLE users (id integer primary key, name varchar)');
+
+        // Add single quoted default value with a single quote by itself in the middle
+        $builder->table('users', fn (Blueprint $table) => $table->string('name')->default("'O'Brian'")->change());
+
+        $info = $this->columnInfo($pdo, 'users', 'name');
+        $this->assertSame("'O''Brian'", $info['dflt_value']);
+    }
+
     public function testChangePreservesUnspecifiedAttributes(): void
     {
         [$pdo, , $builder] = $this->bootSqlite("CREATE TABLE users (id integer primary key, name varchar default 'bob')");

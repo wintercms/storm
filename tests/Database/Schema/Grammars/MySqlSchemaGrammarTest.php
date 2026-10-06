@@ -61,4 +61,13 @@ class MySqlSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
         $statements = $this->runBlueprint($changedBlueprint);
         $this->assertSame("alter table `users` modify `name` varchar(255) not null default 'admin'", $statements[0]);
     }
+
+    public function testQuoteInDefaultValue()
+    {
+        $initialBlueprint = $this->getBlueprint('users');
+        $initialBlueprint->string('name')->default("'O'Brian'");
+
+        $statements = $this->runBlueprint($initialBlueprint);
+        $this->assertSame("alter table `users` add `name` varchar(255) not null default 'O''Brian'", $statements[0]);
+    }
 }

@@ -62,4 +62,13 @@ class SqlServerSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
         $this->assertSame('alter table "users" alter column "name" nvarchar(255) not null', $statements[1]);
         $this->assertSame('alter table "users" add default \'admin\' for "name"', $statements[2]);
     }
+
+    public function testQuoteInDefaultValue()
+    {
+        $initialBlueprint = $this->getBlueprint('users');
+        $initialBlueprint->string('name')->default("'O'Brian'");
+
+        $statements = $this->runBlueprint($initialBlueprint);
+        $this->assertSame("alter table \"users\" add \"name\" nvarchar(255) not null default 'O''Brian'", $statements[0]);
+    }
 }

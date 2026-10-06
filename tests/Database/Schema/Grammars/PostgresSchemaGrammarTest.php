@@ -69,4 +69,14 @@ class PostgresSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
         $this->assertSame('alter column "name" set not null', $parts[1]);
         $this->assertSame("alter column \"name\" set default 'admin'", $parts[2]);
     }
+
+    public function testQuoteInDefaultValue()
+    {
+        $initialBlueprint = $this->getBlueprint('users');
+        $initialBlueprint->string('name')->default("'O'Brian'");
+
+        $statements = $this->runBlueprint($initialBlueprint);
+        $parts = explode(', ', $statements[0]);
+        $this->assertSame("alter table \"users\" add column \"name\" varchar(255) not null default 'O''Brian'", $parts[0]);
+    }
 }
