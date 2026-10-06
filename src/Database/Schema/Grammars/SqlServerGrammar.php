@@ -34,7 +34,7 @@ class SqlServerGrammar extends BaseSqlServerGrammar
             $sql = sprintf(
                 'alter table %s alter column %s %s',
                 $this->wrapTable($blueprint),
-                $this->wrap($column),
+                $this->wrap($column->name),
                 $this->getType($column)
             );
 

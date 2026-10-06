@@ -54,7 +54,7 @@ class PostgresGrammar extends BasePostgresGrammar
                 }
             }
 
-            $columns[] = implode(', ', $this->prefixArray('alter column '.$this->wrap($column), $changes));
+            $columns[] = implode(', ', $this->prefixArray('alter column '.$this->wrap($column->name), $changes));
         }
 
         return 'alter table '.$this->wrapTable($blueprint).' '.implode(', ', $columns);

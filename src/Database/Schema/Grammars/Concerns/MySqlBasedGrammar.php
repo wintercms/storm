@@ -33,7 +33,7 @@ trait MySqlBasedGrammar
             $sql = sprintf(
                 '%s %s%s %s',
                 is_null($column->renameTo) ? 'modify' : 'change',
-                $this->wrap($column),
+                $this->wrap($column->name),
                 is_null($column->renameTo) ? '' : ' '.$this->wrap($column->renameTo),
                 $this->getType($column)
             );
