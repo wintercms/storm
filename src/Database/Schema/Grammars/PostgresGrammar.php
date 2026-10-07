@@ -45,7 +45,7 @@ class PostgresGrammar extends BasePostgresGrammar
 
                 if (method_exists($this, $method = "modify{$modifier}")) {
                     $mod = strtolower($modifier);
-                    $col = isset($oldColumn->{$mod}) && ! isset($column->{$mod}) ? $oldColumn : $column;
+                    $col = isset($oldColumn->{$mod}) && ! array_key_exists($mod, $column->getAttributes()) ? $oldColumn : $column;
                     $constraints = (array) $this->{$method}($blueprint, $col);
 
                     foreach ($constraints as $constraint) {
