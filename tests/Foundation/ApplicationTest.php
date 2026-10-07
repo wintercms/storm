@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Config\Repository;
+use Illuminate\Foundation\PackageManifest;
+use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\ServiceProvider;
 use Winter\Storm\Foundation\Application;
 use Winter\Storm\Filesystem\PathResolver;
 
@@ -44,5 +48,48 @@ class ApplicationTest extends \Winter\Storm\Tests\TestCase
 
             $this->assertEquals($expected, $this->app->{$getter}());
         }
+    }
+
+    public function testRegistersDiscoveredPackageProviders()
+    {
+        $basePath = sys_get_temp_dir() . '/winter-storm-' . uniqid();
+        mkdir($basePath . '/storage/framework', 0777, true);
+
+        $this->app = new Application($basePath);
+        $this->app->instance('config', new Repository([
+            'app' => ['providers' => [], 'loadDiscoveredPackages' => true],
+        ]));
+        $this->app->instance(PackageManifest::class, new class extends PackageManifest {
+            public function __construct()
+            {
+            }
+
+            public function providers()
+            {
+                return [DiscoveredPackageServiceProvider::class];
+            }
+        });
+        Facade::clearResolvedInstances();
+        Facade::setFacadeApplication($this->app);
+
+        try {
+            $this->app->registerConfiguredProviders();
+
+            $this->assertNotNull($this->app->getProvider(DiscoveredPackageServiceProvider::class));
+            $this->assertTrue($this->app->bound('discovered-package'));
+        } finally {
+            array_map('unlink', glob($basePath . '/storage/framework/*'));
+            rmdir($basePath . '/storage/framework');
+            rmdir($basePath . '/storage');
+            rmdir($basePath);
+        }
+    }
+}
+
+class DiscoveredPackageServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        $this->app->instance('discovered-package', true);
     }
 }
