@@ -757,26 +757,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
 			identifier: property.notFound
-			path: src/Database/Schema/Grammars/MariaDbGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$renameTo\.$#'
-			identifier: property.notFound
-			path: src/Database/Schema/Grammars/MariaDbGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
-			identifier: property.notFound
-			path: src/Database/Schema/Grammars/MySqlGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$renameTo\.$#'
-			identifier: property.notFound
-			path: src/Database/Schema/Grammars/MySqlGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
-			identifier: property.notFound
 			path: src/Database/Schema/Grammars/PostgresGrammar.php
 
 		-
