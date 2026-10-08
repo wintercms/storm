@@ -30,8 +30,10 @@ trait MySqlBasedGrammar
             ->firstWhere('name', $column->get('name'));
 
         if ($existing) {
+            $attributes = $column->getAttributes();
+
             foreach ($this->getKeptColumnAttributes($existing, $column) as $attribute => $value) {
-                if (!array_key_exists($attribute, $column->getAttributes())) {
+                if (!array_key_exists($attribute, $attributes)) {
                     $column[$attribute] = $value;
                 }
             }
