@@ -43,10 +43,12 @@ trait MySqlBasedGrammar
                 $oldColumn = new ColumnDefinition($oldColumn);
             }
 
+            $attributes = $column->getAttributes();
+
             foreach ($this->modifiers as $modifier) {
                 if (method_exists($this, $method = "modify{$modifier}")) {
                     $mod = strtolower($modifier);
-                    $col = isset($oldColumn->{$mod}) && !isset($column->{$mod}) ? $oldColumn : $column;
+                    $col = isset($oldColumn->{$mod}) && !array_key_exists($mod, $attributes) ? $oldColumn : $column;
                     $sql .= $this->{$method}($blueprint, $col);
                 }
             }
