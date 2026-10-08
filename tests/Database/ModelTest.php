@@ -526,6 +526,26 @@ class ModelTest extends \Winter\Storm\Tests\DbTestCase
         );
     }
 
+    public function testNumericDatesUseTheDefaultTimezone()
+    {
+        $timezone = date_default_timezone_get();
+        date_default_timezone_set('Europe/Brussels');
+
+        try {
+            $model = new TestModelGuarded();
+            $model->timestamps = false;
+            $model->addCasts(['deleted_at' => 'datetime']);
+
+            // 2023-11-14 22:13:20 UTC
+            $model->deleted_at = 1700000000;
+
+            $this->assertSame('2023-11-14 23:13:20', $model->getAttributes()['deleted_at']);
+            $this->assertSame(1700000000, $model->deleted_at->getTimestamp());
+        } finally {
+            date_default_timezone_set($timezone);
+        }
+    }
+
     public function testStringIsTrimmed()
     {
         $name = "Name";
