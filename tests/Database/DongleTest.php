@@ -2,7 +2,7 @@
 
 use Winter\Storm\Database\Dongle;
 
-class DongleTest extends TestCase
+class DongleTest extends \Winter\Storm\Tests\TestCase
 {
     public function testSqliteParseConcat()
     {

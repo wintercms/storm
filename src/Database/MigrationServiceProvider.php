@@ -1,8 +1,8 @@
 <?php namespace Winter\Storm\Database;
 
-use Illuminate\Database\MigrationServiceProvider as LaravelServiceProvider;
+use Illuminate\Database\MigrationServiceProvider as BaseMigrationServiceProvider;
 
-class MigrationServiceProvider extends LaravelServiceProvider
+class MigrationServiceProvider extends BaseMigrationServiceProvider
 {
     /**
      * The commands to be registered.

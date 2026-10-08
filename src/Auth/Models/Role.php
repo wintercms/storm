@@ -28,11 +28,11 @@ class Role extends Model
      * @var array Relations
      */
     public $hasMany = [
-        'users' => User::class
+        'users' => User::class,
     ];
 
     /**
-     * @var array List of attribute names which are json encoded and decoded from the database.
+     * @var string[] List of attribute names which are json encoded and decoded from the database.
      */
     protected $jsonable = ['permissions'];
 
@@ -46,7 +46,7 @@ class Role extends Model
     protected $allowedPermissionsValues = [0, 1];
 
     /**
-     * @var string[]|bool The attributes that aren't mass assignable.
+     * @var string[] The attributes that aren't mass assignable.
      */
     protected $guarded = [];
 
@@ -77,7 +77,7 @@ class Role extends Model
             // Now, let's check if the permission ends in a wildcard "*" symbol.
             // If it does, we'll check through all the merged permissions to see
             // if a permission exists which matches the wildcard.
-            if ((strlen($permission) > 1) && ends_with($permission, '*')) {
+            if (strlen($permission) > 1 && ends_with($permission, '*')) {
                 $matched = false;
 
                 foreach ($rolePermissions as $rolePermission => $value) {
@@ -86,7 +86,11 @@ class Role extends Model
 
                     // We will make sure that the merged permission does not
                     // exactly match our permission, but starts with it.
-                    if ($checkPermission !== $rolePermission && starts_with($rolePermission, $checkPermission) && (int) $value === 1) {
+                    if (
+                        $checkPermission !== $rolePermission &&
+                        starts_with($rolePermission, $checkPermission) &&
+                        (int) $value === 1
+                    ) {
                         $matched = true;
                         break;
                     }
@@ -95,7 +99,7 @@ class Role extends Model
             // Now, let's check if the permission starts in a wildcard "*" symbol.
             // If it does, we'll check through all the merged permissions to see
             // if a permission exists which matches the wildcard.
-            elseif ((strlen($permission) > 1) && starts_with($permission, '*')) {
+            elseif (strlen($permission) > 1 && starts_with($permission, '*')) {
                 $matched = false;
 
                 foreach ($rolePermissions as $rolePermission => $value) {
@@ -104,18 +108,24 @@ class Role extends Model
 
                     // We will make sure that the merged permission does not
                     // exactly match our permission, but ends with it.
-                    if ($checkPermission !== $rolePermission && ends_with($rolePermission, $checkPermission) && (int) $value === 1) {
+                    if (
+                        $checkPermission !== $rolePermission &&
+                        ends_with($rolePermission, $checkPermission) &&
+                        (int) $value === 1
+                    ) {
                         $matched = true;
                         break;
                     }
                 }
-            }
-            else {
+            } else {
                 $matched = false;
 
                 foreach ($rolePermissions as $rolePermission => $value) {
                     // This time check if the rolePermission ends in wildcard "*" symbol.
-                    if ((strlen($rolePermission) > 1) && ends_with($rolePermission, '*')) {
+                    if (
+                        strlen($rolePermission) > 1 &&
+                        ends_with($rolePermission, '*')
+                    ) {
                         $matched = false;
 
                         // Strip the '*' off the end of the permission.
@@ -123,14 +133,21 @@ class Role extends Model
 
                         // We will make sure that the merged permission does not
                         // exactly match our permission, but starts with it.
-                        if ($checkGroupPermission !== $permission && starts_with($permission, $checkGroupPermission) && (int) $value === 1) {
+                        if (
+                            $checkGroupPermission !== $permission &&
+                            starts_with($permission, $checkGroupPermission) &&
+                            (int) $value === 1
+                        ) {
                             $matched = true;
                             break;
                         }
                     }
                     // Otherwise, we'll fallback to standard permissions checking where
                     // we match that permissions explicitly exist.
-                    elseif ($permission === $rolePermission && (int) $rolePermissions[$permission] === 1) {
+                    elseif (
+                        $permission === $rolePermission &&
+                        (int) $rolePermissions[$permission] === 1
+                    ) {
                         $matched = true;
                         break;
                     }
@@ -142,8 +159,7 @@ class Role extends Model
             // accordingly.
             if ($all === true && $matched === false) {
                 return false;
-            }
-            elseif ($all === false && $matched === true) {
+            } elseif ($all === false && $matched === true) {
                 return true;
             }
         }
@@ -171,12 +187,19 @@ class Role extends Model
         $permissions = json_decode($permissions, true);
 
         foreach ($permissions as $permission => $value) {
-            if (!in_array($value = (int) $value, $this->allowedPermissionsValues)) {
-                throw new InvalidArgumentException(sprintf(
-                    'Invalid value "%s" for permission "%s" given.',
-                    $value,
-                    $permission
-                ));
+            if (
+                !in_array(
+                    $value = (int) $value,
+                    $this->allowedPermissionsValues,
+                )
+            ) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Invalid value "%s" for permission "%s" given.',
+                        $value,
+                        $permission,
+                    ),
+                );
             }
 
             if ($value === 0) {
@@ -184,6 +207,8 @@ class Role extends Model
             }
         }
 
-        $this->attributes['permissions'] = !empty($permissions) ? json_encode($permissions) : '';
+        $this->attributes['permissions'] = !empty($permissions)
+            ? json_encode($permissions)
+            : '';
     }
 }

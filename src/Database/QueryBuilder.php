@@ -4,7 +4,6 @@ use Winter\Storm\Support\Arr;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Database\Query\Builder as QueryBuilderBase;
-use Illuminate\Database\Query\Expression;
 
 class QueryBuilder extends QueryBuilderBase
 {
@@ -313,35 +312,7 @@ class QueryBuilder extends QueryBuilderBase
 
         $this->clearDuplicateCache();
 
-        if ($update === []) {
-            return (int) $this->insert($values);
-        }
-
-        if (!is_array(reset($values))) {
-            $values = [$values];
-        } else {
-            foreach ($values as $key => $value) {
-                ksort($value);
-
-                $values[$key] = $value;
-            }
-        }
-
-        if (is_null($update)) {
-            $update = array_keys(reset($values));
-        }
-
-        $bindings = $this->cleanBindings(array_merge(
-            Arr::flatten($values, 1),
-            collect($update)->reject(function ($value, $key) {
-                return is_int($key);
-            })->all()
-        ));
-
-        return $this->connection->affectingStatement(
-            $this->grammar->compileUpsert($this, $values, (array) $uniqueBy, $update),
-            $bindings
-        );
+        return parent::upsert($values, $uniqueBy, $update);
     }
 
     /**
@@ -423,64 +394,5 @@ class QueryBuilder extends QueryBuilderBase
         $this->concats[$as] = $parts;
 
         return $this;
-    }
-
-    /**
-     * Get the count of the total records for the paginator.
-     *
-     * @param  array  $columns
-     * @return int
-     */
-    public function getCountForPagination($columns = ['*'])
-    {
-        $results = $this->runPaginationCountQuery($columns);
-
-        // Once we have run the pagination count query, we will get the resulting count and
-        // take into account what type of query it was. When there is a group by we will
-        // just return the count of the entire results set since that will be correct.
-        if (!isset($results[0])) {
-            return 0;
-        } elseif (is_object($results[0])) {
-            return (int) $results[0]->aggregate;
-        }
-
-        return (int) array_change_key_case((array) $results[0])['aggregate'];
-    }
-
-    /**
-     * Run a pagination count query.
-     *
-     * @param array $columns
-     * @return array
-     */
-    protected function runPaginationCountQuery($columns = ['*'])
-    {
-        if ($this->groups || $this->havings) {
-            $clone = $this->cloneForPaginationCount();
-
-            if (empty($clone->columns) && !empty($this->joins)) {
-                $clone->select($this->from . '.*');
-            }
-
-            return $this->newQuery()
-                ->from(new Expression('(' . $clone->toSql() . ') as ' . $this->grammar->wrap('aggregate_table')))
-                ->mergeBindings($clone)
-                ->setAggregate('count', $this->withoutSelectAliases($columns))
-                ->get()
-                ->all();
-        }
-
-        return parent::runPaginationCountQuery($columns);
-    }
-
-    /**
-     * Clone the existing query instance for usage in a pagination subquery.
-     *
-     * @return self
-     */
-    protected function cloneForPaginationCount()
-    {
-        return $this->cloneWithout(['orders', 'limit', 'offset'])
-            ->cloneWithoutBindings(['order']);
     }
 }

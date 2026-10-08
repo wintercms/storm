@@ -1,5 +1,5 @@
 <?php
-class CountableTest extends TestCase
+class CountableTest extends \Winter\Storm\Tests\TestCase
 {
     public function testCountable()
     {

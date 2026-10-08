@@ -558,6 +558,7 @@ trait ExtendableTrait
         if (!is_null($instance)) {
             $reflector = $instance;
         } else {
+            // @phpstan-ignore-next-line
             $reflector = new ReflectionClass($this);
         }
         $parent = $reflector->getParentClass();

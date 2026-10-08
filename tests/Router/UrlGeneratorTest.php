@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Winter\Storm\Router\UrlGenerator;
 use Illuminate\Routing\RouteCollection;
 
-class UrlGeneratorTest extends TestCase
+class UrlGeneratorTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * Tests the provided input against both UrlGenerator::buildUrl() and the http_build_url() method

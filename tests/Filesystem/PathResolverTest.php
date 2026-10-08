@@ -7,7 +7,7 @@ use Winter\Storm\Filesystem\PathResolver;
  * as well as the original realpath() method to ensure we maintain parity with the expected functionality of
  * realpath(), except for where we've deviated for flexibility.
  */
-class PathResolverTest extends TestCase
+class PathResolverTest extends \Winter\Storm\Tests\TestCase
 {
     /** @var bool Whether we are testing on Windows, as Windows has some unique quirks for symlinks */
     protected $onWindows = false;

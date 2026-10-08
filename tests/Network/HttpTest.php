@@ -3,7 +3,7 @@
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Network\Http;
 
-class HttpTest extends TestCase
+class HttpTest extends \Winter\Storm\Tests\TestCase
 {
     use \DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 

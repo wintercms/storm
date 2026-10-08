@@ -32,7 +32,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     public $rules = [
         'email' => 'required|between:3,255|email|unique:users',
         'password' => 'required:create|min:4|confirmed',
-        'password_confirmation' => 'required_with:password|min:4'
+        'password_confirmation' => 'required_with:password|min:4',
     ];
 
     /**
@@ -43,48 +43,48 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     ];
 
     public $belongsTo = [
-        'role' => Role::class
+        'role' => Role::class,
     ];
 
     /**
      * The attributes that should be mutated to dates.
      *
-     * @var array
+     * @var string[]
      */
     protected $dates = ['activated_at', 'last_login'];
 
     /**
-     * @var array<int, string> The attributes that should be hidden for arrays.
+     * @var string[] The attributes that should be hidden for arrays.
      */
     protected $hidden = ['password', 'reset_password_code', 'activation_code', 'persist_code'];
 
     /**
-     * @var string[]|bool The attributes that aren't mass assignable.
+     * @var string[] The attributes that aren't mass assignable.
      */
     protected $guarded = ['is_superuser', 'reset_password_code', 'activation_code', 'persist_code', 'role_id'];
 
     /**
-     * @var array List of attribute names which should be hashed using the Bcrypt hashing algorithm.
+     * @var string[] List of attribute names which should be hashed using the Bcrypt hashing algorithm.
      */
     protected $hashable = ['password', 'persist_code'];
 
     /**
-     * @var array List of attribute names which should not be saved to the database.
+     * @var string[] List of attribute names which should not be saved to the database.
      */
     protected $purgeable = ['password_confirmation'];
 
     /**
-     * @var array The array of custom attribute names.
+     * @var array<string, string> The array of custom attribute names.
      */
     public $attributeNames = [];
 
     /**
-     * @var array The array of custom error messages.
+     * @var array<string, string> The array of custom error messages.
      */
     public $customMessages = [];
 
     /**
-     * @var array List of attribute names which are json encoded and decoded from the database.
+     * @var string[] List of attribute names which are json encoded and decoded from the database.
      */
     protected $jsonable = ['permissions'];
 
@@ -109,6 +109,13 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
      * @var string The column name of the "remember me" token.
      */
     protected $rememberTokenName = 'persist_code';
+
+    /**
+     * The column name of the password field using during authentication.
+     *
+     * @var string
+     */
+    protected $authPasswordName = 'password';
 
     /**
      * @var array The user merged permissions.
@@ -144,10 +151,21 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     // Events
     //
 
+    /**
+     * Event method called before a user is logged in.
+     *
+     * @return void
+     */
     public function beforeLogin()
     {
+        // Extend this method to define functionality before login
     }
 
+    /**
+     * Event method called after a user is logged in.
+     *
+     * @return void
+     */
     public function afterLogin()
     {
         $this->last_login = $this->freshTimestamp();
@@ -248,7 +266,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
      */
     public function checkPassword($password)
     {
-        return Hash::check($password, $this->password);
+        return Hash::check($password, $this->getAuthPassword());
     }
 
     /**
@@ -273,7 +291,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
             return false;
         }
 
-        return ($this->reset_password_code === $resetCode);
+        return $this->reset_password_code === $resetCode;
     }
 
     /**
@@ -285,7 +303,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     public function attemptResetPassword($resetCode, $newPassword)
     {
         if ($this->checkResetPasswordCode($resetCode)) {
-            $this->password = $newPassword;
+            $this->{$this->getAuthPasswordName()} = $newPassword;
             $this->reset_password_code = null;
             return $this->forceSave();
         }
@@ -312,8 +330,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     {
         if ($this->exists && empty($value)) {
             unset($this->attributes['password']);
-        }
-        else {
+        } else {
             $this->attributes['password'] = $value;
 
             // Password has changed, log out all users
@@ -470,7 +487,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
             // Now, let's check if the permission ends in a wildcard "*" symbol.
             // If it does, we'll check through all the merged permissions to see
             // if a permission exists which matches the wildcard.
-            if ((strlen($permission) > 1) && ends_with($permission, '*')) {
+            if (strlen($permission) > 1 && ends_with($permission, '*')) {
                 $matched = false;
 
                 foreach ($mergedPermissions as $mergedPermission => $value) {
@@ -479,13 +496,16 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
                     // We will make sure that the merged permission does not
                     // exactly match our permission, but starts with it.
-                    if ($checkPermission !== $mergedPermission && starts_with($mergedPermission, $checkPermission) && (int) $value === 1) {
+                    if (
+                        $checkPermission !== $mergedPermission &&
+                        starts_with($mergedPermission, $checkPermission) &&
+                        (int) $value === 1
+                    ) {
                         $matched = true;
                         break;
                     }
                 }
-            }
-            elseif ((strlen($permission) > 1) && starts_with($permission, '*')) {
+            } elseif (strlen($permission) > 1 && starts_with($permission, '*')) {
                 $matched = false;
 
                 foreach ($mergedPermissions as $mergedPermission => $value) {
@@ -494,18 +514,21 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
                     // We will make sure that the merged permission does not
                     // exactly match our permission, but ends with it.
-                    if ($checkPermission !== $mergedPermission && ends_with($mergedPermission, $checkPermission) && (int) $value === 1) {
+                    if (
+                        $checkPermission !== $mergedPermission &&
+                        ends_with($mergedPermission, $checkPermission) &&
+                        (int) $value === 1
+                    ) {
                         $matched = true;
                         break;
                     }
                 }
-            }
-            else {
+            } else {
                 $matched = false;
 
                 foreach ($mergedPermissions as $mergedPermission => $value) {
                     // This time check if the mergedPermission ends in wildcard "*" symbol.
-                    if ((strlen($mergedPermission) > 1) && ends_with($mergedPermission, '*')) {
+                    if (strlen($mergedPermission) > 1 && ends_with($mergedPermission, '*')) {
                         $matched = false;
 
                         // Strip the '*' off the end of the permission.
@@ -513,7 +536,11 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
                         // We will make sure that the merged permission does not
                         // exactly match our permission, but starts with it.
-                        if ($checkMergedPermission !== $permission && starts_with($permission, $checkMergedPermission) && (int) $value === 1) {
+                        if (
+                            $checkMergedPermission !== $permission &&
+                            starts_with($permission, $checkMergedPermission) &&
+                            (int) $value === 1
+                        ) {
                             $matched = true;
                             break;
                         }
@@ -533,8 +560,7 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
             // accordingly.
             if ($all === true && $matched === false) {
                 return false;
-            }
-            elseif ($all === false && $matched === true) {
+            } elseif ($all === false && $matched === true) {
                 return true;
             }
         }
@@ -563,11 +589,9 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
         foreach ($permissions as $permission => &$value) {
             if (!in_array($value = (int) $value, $this->allowedPermissionsValues)) {
-                throw new InvalidArgumentException(sprintf(
-                    'Invalid value "%s" for permission "%s" given.',
-                    $value,
-                    $permission
-                ));
+                throw new InvalidArgumentException(
+                    sprintf('Invalid value "%s" for permission "%s" given.', $value, $permission),
+                );
             }
 
             if ($value === 0) {
@@ -601,12 +625,22 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     }
 
     /**
+     * Get the name of the password attribute for the user.
+     *
+     * @return string
+     */
+    public function getAuthPasswordName()
+    {
+        return $this->authPasswordName;
+    }
+
+    /**
      * Get the password for the user.
      * @return string
      */
     public function getAuthPassword()
     {
-        return $this->password;
+        return $this->{$this->getAuthPasswordName()};
     }
 
     /**

@@ -1,19 +1,21 @@
 <?php namespace Winter\Storm\Database\Connections;
 
-use Illuminate\Database\Schema\MySqlSchemaState;
-use Illuminate\Filesystem\Filesystem;
 use PDO;
-use Illuminate\Database\PDO\MySqlDriver;
+use Illuminate\Database\MySqlConnection as BaseMySqlConnection;
 use Illuminate\Database\Schema\MySqlBuilder;
 use Illuminate\Database\Query\Processors\MySqlProcessor;
-use Illuminate\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
+
+use Winter\Storm\Database\PDO\MySqlDriver;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
+use Winter\Storm\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class MySqlConnection extends Connection
+class MySqlConnection extends BaseMySqlConnection
 {
+    use HasConnection;
+
     /**
      * Get the default query grammar instance.
      *
@@ -21,7 +23,7 @@ class MySqlConnection extends Connection
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new QueryGrammar);
+        return new QueryGrammar($this);
     }
 
     /**
@@ -45,7 +47,7 @@ class MySqlConnection extends Connection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return $this->withTablePrefix(new SchemaGrammar);
+        return new SchemaGrammar($this);
     }
 
     /**
@@ -56,16 +58,6 @@ class MySqlConnection extends Connection
     protected function getDefaultPostProcessor()
     {
         return new MySqlProcessor;
-    }
-
-    /**
-     * Get the Doctrine DBAL driver.
-     *
-     * @return \Illuminate\Database\PDO\MySqlDriver
-     */
-    protected function getDoctrineDriver()
-    {
-        return new MySqlDriver;
     }
 
     /**
@@ -87,24 +79,12 @@ class MySqlConnection extends Connection
     }
 
     /**
-     * Determine if the connected database is a MariaDB database.
+     * Get the Doctrine DBAL driver.
      *
-     * @return bool
+     * @return \Winter\Storm\Database\PDO\MySqlDriver
      */
-    public function isMaria()
+    protected function getDoctrineDriver()
     {
-        return str_contains($this->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION), 'MariaDB');
-    }
-
-    /**
-     * Get the schema state for the connection.
-     *
-     * @param  \Illuminate\Filesystem\Filesystem|null  $files
-     * @param  callable|null  $processFactory
-     * @return \Illuminate\Database\Schema\MySqlSchemaState
-     */
-    public function getSchemaState(?Filesystem $files = null, ?callable $processFactory = null)
-    {
-        return new MySqlSchemaState($this, $files, $processFactory);
+        return new MySqlDriver;
     }
 }

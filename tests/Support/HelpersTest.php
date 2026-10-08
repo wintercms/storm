@@ -3,7 +3,7 @@
 use Winter\Storm\Foundation\Application;
 use Winter\Storm\Filesystem\PathResolver;
 
-class HelpersTest extends TestCase
+class HelpersTest extends \Winter\Storm\Tests\TestCase
 {
     protected function setUp(): void
     {

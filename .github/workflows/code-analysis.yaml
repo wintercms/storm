@@ -19,6 +19,7 @@ jobs:
     env:
       extensions: curl, fileinfo, gd, mbstring, openssl, pdo, pdo_sqlite, sqlite3, xml, zip
       key: winter-storm-cache-v1.2
+      COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
     steps:
       - name: Checkout changes
         uses: actions/checkout@v4
@@ -32,6 +33,9 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --no-scripts
+
+      - name: Clear phpstan cache
+        run: ./vendor/bin/phpstan clear-result-cache
 
       - name: Analyse code
         run: ./vendor/bin/phpstan analyse --memory-limit=2G --no-progress

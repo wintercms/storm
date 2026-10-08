@@ -21,7 +21,7 @@ use Winter\Storm\Tests\Database\Fixtures\Tag;
 use Winter\Storm\Tests\Database\Fixtures\User;
 use Winter\Storm\Tests\DbTestCase;
 
-class HasRelationshipsTest extends DbTestCase
+class HasRelationshipsTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testHasRelation()
     {

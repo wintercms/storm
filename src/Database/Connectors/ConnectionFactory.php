@@ -1,8 +1,9 @@
 <?php namespace Winter\Storm\Database\Connectors;
 
 use Illuminate\Support\Arr;
-use Illuminate\Database\Connectors\ConnectionFactory as ConnectionFactoryBase;
-use Winter\Storm\Database\Connections\Connection;
+use Illuminate\Database\Connectors\ConnectionFactory as BaseConnectionFactory;
+use Illuminate\Database\Connection;
+use Winter\Storm\Database\Connections\MariaDbConnection;
 use Winter\Storm\Database\Connections\MySqlConnection;
 use Winter\Storm\Database\Connections\SQLiteConnection;
 use Winter\Storm\Database\Connections\PostgresConnection;
@@ -10,7 +11,7 @@ use Winter\Storm\Database\Connections\SqlServerConnection;
 use PDOException;
 use InvalidArgumentException;
 
-class ConnectionFactory extends ConnectionFactoryBase
+class ConnectionFactory extends BaseConnectionFactory
 {
     /**
      * Carbon copy of parent. Except Laravel creates an "uncatchable" exception,
@@ -39,23 +40,6 @@ class ConnectionFactory extends ConnectionFactoryBase
     }
 
     /**
-     * Create a connector instance based on the configuration.
-     *
-     * @param  array  $config
-     * @return \Illuminate\Database\Connectors\ConnectorInterface
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function createConnector(array $config)
-    {
-        if (array_get($config, 'driver') === 'sqlite') {
-            return new SQLiteConnector;
-        } else {
-            return parent::createConnector($config);
-        }
-    }
-
-    /**
      * Create a new connection instance.
      *
      * @param  string   $driver
@@ -74,6 +58,8 @@ class ConnectionFactory extends ConnectionFactoryBase
         }
 
         switch ($driver) {
+            case 'mariadb':
+                return new MariaDbConnection($connection, $database, $prefix, $config);
             case 'mysql':
                 return new MySqlConnection($connection, $database, $prefix, $config);
             case 'pgsql':

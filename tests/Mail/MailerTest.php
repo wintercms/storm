@@ -3,7 +3,7 @@
 use Winter\Storm\Mail\Mailer;
 use Illuminate\Mail\Transport\ArrayTransport;
 
-class MailerTest extends TestCase
+class MailerTest extends \Winter\Storm\Tests\TestCase
 {
     //
     // Helpers

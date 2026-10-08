@@ -5,7 +5,7 @@ namespace Winter\Storm\Tests\Database\Traits;
 use Winter\Storm\Tests\Database\Fixtures\NullablePost;
 use Winter\Storm\Tests\DbTestCase;
 
-class NullableTest extends DbTestCase
+class NullableTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testNullifyingFields()
     {

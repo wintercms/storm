@@ -3,7 +3,7 @@
 use Winter\Storm\Extension\Extendable;
 use Winter\Storm\Extension\ExtensionBase;
 
-class ExtensionTest extends TestCase
+class ExtensionTest extends \Winter\Storm\Tests\TestCase
 {
     public function testExtendingBehavior()
     {

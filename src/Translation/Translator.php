@@ -128,9 +128,9 @@ class Translator extends TranslatorBase
     /**
      * @inheritDoc
      */
-    protected function localeForChoice($locale)
+    protected function localeForChoice($key, $locale)
     {
-        $locale = parent::localeForChoice($locale);
+        $locale = parent::localeForChoice($key, $locale);
 
         if (str_contains($locale, '-')) {
             $localeParts = explode('-', $locale, 2);

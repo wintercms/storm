@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Support\Facades;
 
+use Winter\Storm\Mail\MailManager;
 use Winter\Storm\Support\Facade;
 use Winter\Storm\Support\Testing\Fakes\MailFake;
 
@@ -31,11 +32,16 @@ class Mail extends Facade
     /**
      * Replace the bound instance with a fake.
      *
+     * @param \Winter\Storm\Mail\MailManager|null $manager Defaults to the application's mail manager
      * @return \Winter\Storm\Support\Testing\Fakes\MailFake
      */
-    public static function fake()
+    public static function fake(?MailManager $manager = null)
     {
-        static::swap($fake = new MailFake);
+        $manager ??= static::isFake()
+            ? static::getFacadeRoot()->manager
+            : static::$app->make('mail.manager');
+
+        static::swap($fake = new MailFake($manager));
 
         return $fake;
     }

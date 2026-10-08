@@ -1,23 +1,24 @@
-<?php
-
-namespace Winter\Storm\Database\Connections;
+<?php namespace Winter\Storm\Database\Connections;
 
 use Closure;
 use Exception;
-use Illuminate\Database\Schema\SqlServerBuilder;
-use Illuminate\Database\PDO\SqlServerDriver;
-use Illuminate\Database\Query\Processors\SqlServerProcessor;
-use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
-use Illuminate\Filesystem\Filesystem;
-use RuntimeException;
 use Throwable;
+
+use Illuminate\Database\SqlServerConnection as BaseSqlServerConnection;
+use Illuminate\Database\Schema\SqlServerBuilder;
+use Illuminate\Database\Query\Processors\SqlServerProcessor;
+
+use Winter\Storm\Database\PDO\SqlServerDriver;
 use Winter\Storm\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
+use Winter\Storm\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class SqlServerConnection extends Connection
+class SqlServerConnection extends BaseSqlServerConnection
 {
+    use HasConnection;
+
     /**
      * Execute a Closure within a transaction.
      *
@@ -68,7 +69,7 @@ class SqlServerConnection extends Connection
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new QueryGrammar);
+        return new QueryGrammar($this);
     }
 
     /**
@@ -92,7 +93,7 @@ class SqlServerConnection extends Connection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return $this->withTablePrefix(new SchemaGrammar);
+        return new SchemaGrammar($this);
     }
 
     /**
@@ -108,23 +109,10 @@ class SqlServerConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Illuminate\Database\PDO\SqlServerDriver
+     * @return \Winter\Storm\Database\PDO\SqlServerDriver
      */
     protected function getDoctrineDriver()
     {
         return new SqlServerDriver;
-    }
-
-    /**
-     * Get the schema state for the connection.
-     *
-     * @param  \Illuminate\Filesystem\Filesystem|null  $files
-     * @param  callable|null  $processFactory
-     *
-     * @throws \RuntimeException
-     */
-    public function getSchemaState(?Filesystem $files = null, ?callable $processFactory = null)
-    {
-        throw new RuntimeException('Schema dumping is not supported when using SQL Server.');
     }
 }

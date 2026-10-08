@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Winter\Storm\Support\Facades\Input;
 
-class ValidationTest extends TestCase
+class ValidationTest extends \Winter\Storm\Tests\TestCase
 {
     use \Winter\Storm\Database\Traits\Validation;
 
@@ -122,7 +122,9 @@ class ValidationTest extends TestCase
 
     public function testArrayFieldNames()
     {
-        $mock = $this->getMockForTrait('Winter\Storm\Database\Traits\Validation');
+        $mock = new class {
+            use \Winter\Storm\Database\Traits\Validation;
+        };
 
         $rules = [
             'field' => 'required',

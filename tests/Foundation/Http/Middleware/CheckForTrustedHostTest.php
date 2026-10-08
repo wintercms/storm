@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
 /**
  * Adaptation of https://github.com/laravel/framework/pull/27206. Credit to @shrft for original implentation.
  */
-class CheckForTrustedHostTest extends TestCase
+class CheckForTrustedHostTest extends \Winter\Storm\Tests\TestCase
 {
     protected static $orignalTrustHosts;
 
@@ -182,7 +182,7 @@ class CheckForTrustedHostTest extends TestCase
     {
         $middleware = $this->getMockBuilder(CheckForTrustedHost::class)
             ->disableOriginalConstructor()
-            ->setMethods(['hosts', 'shouldSpecifyTrustedHosts'])
+            ->onlyMethods(['hosts', 'shouldSpecifyTrustedHosts'])
             ->getMock();
 
         $middleware->expects($this->any())

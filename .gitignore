@@ -6,6 +6,8 @@ composer.lock
 # Editor files
 .idea
 .vscode
+.zed
+*.code-workspace
 
 # Other files
 .DS_Store
@@ -17,8 +19,8 @@ php_errors.log
 /.settings/
 
 #phpunit
-tests/.phpunit.result.cache
 .phpunit.result.cache
+tests/.phpunit.result.cache
 tests/tmp
 tests/artifacts/*
 .local

@@ -8,7 +8,7 @@ use Winter\Storm\Tests\Database\Fixtures\Phone;
 use Winter\Storm\Tests\Database\Fixtures\User;
 use Winter\Storm\Tests\DbTestCase;
 
-class HasOneThroughTest extends DbTestCase
+class HasOneThroughTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testGet()
     {

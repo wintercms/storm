@@ -3,8 +3,6 @@ name: Tests
 on:
   push:
     branches:
-      - "1.0"
-      - "1.1"
       - develop
   pull_request:
 
@@ -18,13 +16,14 @@ jobs:
       max-parallel: 6
       matrix:
         operatingSystem: [ubuntu-latest, windows-latest]
-        phpVersion: ['8.1', '8.2', '8.3', '8.4', '8.5']
+        phpVersion: ['8.2', '8.3', '8.4', '8.5']
       fail-fast: false
     runs-on: ${{ matrix.operatingSystem }}
     name: ${{ matrix.operatingSystem }} / PHP ${{ matrix.phpVersion }}
     env:
       extensions: curl, fileinfo, gd, mbstring, openssl, pdo, pdo_sqlite, sqlite3, xml, zip
       key: winter-storm-cache-v1.2
+      COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
     steps:
       - name: Checkout changes
         uses: actions/checkout@v4
@@ -44,12 +43,4 @@ jobs:
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Run tests
-        run: ./vendor/bin/phpunit ./tests
-
-      - name: Upload test artifacts on failure
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-            name: ResizerTest-${{ matrix.operatingSystem }}-PHP${{ matrix.phpVersion }}
-            path: tests/artifacts/ResizerTest/
-            if-no-files-found: error
+        run: composer test

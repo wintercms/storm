@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar;
@@ -9,7 +9,7 @@ use Winter\Storm\Database\Query\Grammars\SQLiteGrammar;
 use Winter\Storm\Database\Query\Grammars\SqlServerGrammar;
 use Winter\Storm\Database\QueryBuilder;
 
-class QueryBuilderTest extends TestCase
+class QueryBuilderTest extends \Winter\Storm\Tests\TestCase
 {
     public function testSelectConcat()
     {
@@ -100,14 +100,12 @@ class QueryBuilderTest extends TestCase
             return parent::getConnection($connection, $table);
         }
 
-        $connection = $this->getMockBuilder(ConnectionInterface::class)
+        $connection = $this->getMockBuilder(\Illuminate\Database\Connection::class)
             ->disableOriginalConstructor()
-            ->disableOriginalClone()
-            ->disableArgumentCloning()
-            ->disallowMockingUnknownTypes()
-            ->setMethods([
+            ->onlyMethods([
                 'table',
                 'raw',
+                'scalar',
                 'selectOne',
                 'select',
                 'cursor',
@@ -137,7 +135,7 @@ class QueryBuilderTest extends TestCase
 
     protected function getBuilder()
     {
-        $grammar = new Grammar;
+        $grammar = new Grammar($this->getConnection());
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);
@@ -145,7 +143,7 @@ class QueryBuilderTest extends TestCase
 
     protected function getMySqlBuilder()
     {
-        $grammar = new MySqlGrammar;
+        $grammar = new MySqlGrammar($this->createMock(Connection::class));
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);
@@ -153,7 +151,7 @@ class QueryBuilderTest extends TestCase
 
     protected function getPostgresBuilder()
     {
-        $grammar = new PostgresGrammar;
+        $grammar = new PostgresGrammar($this->createMock(Connection::class));
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);
@@ -161,7 +159,7 @@ class QueryBuilderTest extends TestCase
 
     protected function getSQLiteBuilder()
     {
-        $grammar = new SQLiteGrammar;
+        $grammar = new SQLiteGrammar($this->createMock(Connection::class));
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);
@@ -169,7 +167,7 @@ class QueryBuilderTest extends TestCase
 
     protected function getSqlServerBuilder()
     {
-        $grammar = new SqlServerGrammar;
+        $grammar = new SqlServerGrammar($this->createMock(Connection::class));
         $processor = $this->createMock(Processor::class);
 
         return new QueryBuilder($this->getConnection(), $grammar, $processor);

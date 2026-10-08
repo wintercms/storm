@@ -5,7 +5,7 @@ namespace Winter\Storm\Tests\Database\Traits;
 use Winter\Storm\Tests\Database\Fixtures\SluggablePost;
 use Winter\Storm\Tests\DbTestCase;
 
-class SluggableTest extends DbTestCase
+class SluggableTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function setUp(): void
     {

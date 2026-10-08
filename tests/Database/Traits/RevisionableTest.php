@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Winter\Storm\Tests\Database\Fixtures\RevisionablePost;
 use Winter\Storm\Tests\DbTestCase;
 
-class RevisionableTest extends DbTestCase
+class RevisionableTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testUpdateNothing()
     {
