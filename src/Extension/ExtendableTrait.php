@@ -507,10 +507,22 @@ trait ExtendableTrait
             $extension = self::$extendableStaticMethods[$className][$name];
 
             if (method_exists($extension, $name) && is_callable([$extension, $name])) {
+                $previousCalledClass = $extension::$extendableStaticCalledClass;
+
                 $extension::$extendableStaticCalledClass = $className;
-                $result = forward_static_call_array(array($extension, $name), $params);
-                $extension::$extendableStaticCalledClass = null;
-                return $result;
+
+                try {
+                    return forward_static_call_array(array($extension, $name), $params);
+                }
+                finally {
+                    /*
+                     * Clear the called class even when the extension throws. The property is
+                     * static, so a thrown call would otherwise leave the previous caller's class
+                     * name visible to every later static call in the process, including calls made
+                     * while handling a subsequent request.
+                     */
+                    $extension::$extendableStaticCalledClass = $previousCalledClass;
+                }
             }
         }
 

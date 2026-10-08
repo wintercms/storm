@@ -1543,6 +1543,30 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
     }
 
     /**
+     * Discard the request-level record cache without touching external cache stores.
+     *
+     * The cache manager is held statically and so outlives a single operation on a persistent
+     * application server. Its in-memory repository is request-scoped by design, so it must be
+     * emptied at each operation boundary; the external stores it wraps keep their own invalidation
+     * rules and are deliberately left alone.
+     *
+     * Not the same as flushDuplicateCache() below, which is deliberately left as it is because it has
+     * existing callers. That one empties only the default driver and returns early when
+     * MemoryCacheManager::isEnabled() is false; this one empties every store the manager has resolved
+     * and is unconditional. Use this at an operation boundary, where missing a non-default store would
+     * carry one operation's records into the next, and that one where the intent is to invalidate the
+     * cache the current code path is reading through.
+     *
+     * @return void
+     */
+    public static function flushRequestCache()
+    {
+        if (static::$cache instanceof MemoryCacheManager) {
+            static::$cache->flushRequestCache();
+        }
+    }
+
+    /**
      * Initializes the object properties from the cached data. The extra data
      * set here becomes available as attributes set on the model after fetch.
      *
