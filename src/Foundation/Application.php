@@ -401,7 +401,7 @@ class Application extends ApplicationBase
                         });
 
         if (Config::get('app.loadDiscoveredPackages', false)) {
-            $providers->splice(1, 0, $this->make(PackageManifest::class)->providers());
+            $providers->splice(1, 0, [$this->make(PackageManifest::class)->providers()]);
         }
 
         $filesystem = new Filesystem;
