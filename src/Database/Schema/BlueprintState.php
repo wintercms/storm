@@ -65,8 +65,10 @@ class BlueprintState extends BaseBlueprintState
                 continue;
             }
 
+            $attributes = $column->getAttributes();
+
             foreach ($this->preservedAttributes as $attribute) {
-                if (!array_key_exists($attribute, $column->getAttributes()) && isset($existing[$attribute])) {
+                if (!array_key_exists($attribute, $attributes) && isset($existing[$attribute])) {
                     $column[$attribute] = $existing[$attribute];
                 }
             }
