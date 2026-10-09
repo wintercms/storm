@@ -24,7 +24,7 @@ trait MySqlBasedGrammar
     public function compileChange(Blueprint $blueprint, Fluent $command)
     {
         /** @var \Illuminate\Database\Schema\ColumnDefinition $column */
-        $column = clone $command->get('column');
+        $column = $command->get('column');
 
         $existing = collect($this->connection->getSchemaBuilder()->getColumns($blueprint->getTable()))
             ->firstWhere('name', $column->get('name'));
@@ -39,7 +39,7 @@ trait MySqlBasedGrammar
             }
         }
 
-        return parent::compileChange($blueprint, new Fluent(['column' => $column] + $command->getAttributes()));
+        return parent::compileChange($blueprint, $command);
     }
 
     /**
