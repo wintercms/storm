@@ -37,7 +37,7 @@
 
         "assetic/framework": "^3.2.3",
         "doctrine/dbal": "^2.6",
-        "enshrined/svg-sanitize": "~0.16",
+        "enshrined/svg-sanitize": "~1.0",
         "laravel/framework": "^9.49",
         "laravel/tinker": "^2.7",
         "league/commonmark": "^2.10.2",
