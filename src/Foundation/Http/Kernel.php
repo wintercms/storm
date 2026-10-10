@@ -23,6 +23,7 @@ class Kernel extends HttpKernel
      * {@inheritDoc}
      */
     protected $middleware = [
+        \Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks::class,
         \Winter\Storm\Foundation\Http\Middleware\CheckForTrustedHost::class,
         \Winter\Storm\Foundation\Http\Middleware\CheckForTrustedProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
