@@ -13,11 +13,9 @@ class RegisterWinter
     public function bootstrap(Application $app): void
     {
         /*
-         * Workaround for CLI and URL based in subdirectory. Skipped when no request is bound yet,
-         * because the URL generator cannot be resolved without one (as when Laravel Octane boots
-         * a worker through the HTTP kernel).
+         * Workaround for CLI and URL based in subdirectory
          */
-        if ($app->runningInConsole() && $app->bound('request')) {
+        if ($app->runningInConsole()) {
             $app['url']->forceRootUrl($app['config']->get('app.url'));
         }
 
