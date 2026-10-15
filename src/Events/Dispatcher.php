@@ -215,10 +215,6 @@ class Dispatcher extends BaseDispatcher
     /**
      * Add the listeners for the event's interfaces to the given array.
      *
-     * Overrides Laravel's version, which expects raw listeners stored as `listeners[event][]`. This
-     * dispatcher stores wrapped listeners keyed by priority, so the parent passed each priority bucket
-     * to makeListener() and dispatching any event with an interface listener threw.
-     *
      * @param string $eventName
      * @param array $listeners
      * @return array
