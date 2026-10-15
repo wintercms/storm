@@ -24,7 +24,7 @@ class SqlServerGrammar extends BaseSqlServerGrammar
      */
     public function compileChange(Blueprint $blueprint, Fluent $command)
     {
-        $changes = [$this->compileDropDefaultConstraint($blueprint, $command)];
+        $changes = (array) $this->compileDropDefaultConstraint($blueprint, $command);
         $schema = $this->connection->getSchemaBuilder();
         $table = $blueprint->getTable();
 
@@ -34,7 +34,7 @@ class SqlServerGrammar extends BaseSqlServerGrammar
             $sql = sprintf(
                 'alter table %s alter column %s %s',
                 $this->wrapTable($blueprint),
-                $this->wrap($column),
+                $this->wrap($column->name),
                 $this->getType($column)
             );
 
@@ -57,10 +57,16 @@ class SqlServerGrammar extends BaseSqlServerGrammar
         return $changes;
     }
 
+    /**
+     * Format a value so that it can be used in "default" clauses.
+     *
+     * @param  mixed  $value
+     * @return string
+     */
     public function getDefaultValue($value)
     {
-        if (is_string($value)) {
-            $value = preg_replace('#\'#', '', $value);
+        if (is_string($value) && strlen($value) >= 2 && $value[0] === "'" && substr($value, -1) === "'") {
+            $value = substr($value, 1, -1);
         }
 
         return parent::getDefaultValue($value);

@@ -33,7 +33,7 @@ trait MySqlBasedGrammar
             $sql = sprintf(
                 '%s %s%s %s',
                 is_null($column->renameTo) ? 'modify' : 'change',
-                $this->wrap($column),
+                $this->wrap($column->name),
                 is_null($column->renameTo) ? '' : ' '.$this->wrap($column->renameTo),
                 $this->getType($column)
             );
@@ -56,10 +56,16 @@ trait MySqlBasedGrammar
         return 'alter table '.$this->wrapTable($blueprint).' '.implode(', ', $columns);
     }
 
+    /**
+     * Format a value so that it can be used in "default" clauses.
+     *
+     * @param  mixed  $value
+     * @return string
+     */
     public function getDefaultValue($value)
     {
-        if (is_string($value)) {
-            $value = preg_replace('#\'#', '', $value);
+        if (is_string($value) && strlen($value) >= 2 && $value[0] === "'" && substr($value, -1) === "'") {
+            $value = substr($value, 1, -1);
         }
 
         return parent::getDefaultValue($value);

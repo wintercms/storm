@@ -36,7 +36,7 @@ class ConfigWriter
         try {
             $ast = $parser->parse($contents);
         } catch (Error $e) {
-            throw new SystemException($e);
+            throw new SystemException($e->getMessage(), $e->getCode(), $e);
         }
 
         return (new ArrayFile($ast, $parser))->set($newValues)->render();
