@@ -215,16 +215,9 @@ class Dispatcher extends BaseDispatcher
     /**
      * Add the listeners for the event's interfaces to the given array.
      *
-     * Laravel's implementation cannot be inherited here because the two dispatchers store
-     * listeners differently. Laravel keeps raw listeners as `listeners[event][]` and wraps them
-     * later in `prepareListeners()`; this dispatcher wraps them in `listen()` and keys them by
-     * priority as `listeners[event][priority][]`. Reusing the parent implementation therefore
-     * hands each priority bucket to `makeListener()` as though the bucket itself were a listener,
-     * which produces an invalid array callable and throws when the event is dispatched.
-     *
-     * Any event registered against an interface is affected. Laravel Octane relies on exactly
-     * that: it registers its post-operation cleanup against the OperationTerminated contract, so
-     * without this override every RequestTerminated dispatch fails.
+     * Overrides Laravel's version, which expects raw listeners stored as `listeners[event][]`. This
+     * dispatcher stores wrapped listeners keyed by priority, so the parent passed each priority bucket
+     * to makeListener() and dispatching any event with an interface listener threw.
      *
      * @param string $eventName
      * @param array $listeners
