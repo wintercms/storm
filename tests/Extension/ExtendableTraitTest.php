@@ -42,6 +42,41 @@ class ExtendableTraitTest extends \Winter\Storm\Tests\TestCase
         $this->assertEquals(Level1NonExtendable::class, $this->callProtectedMethod($level2NonExtendable, 'extensionGetParentClass')->getName());
         $this->assertEquals(Level1NonExtendable::class, $this->callProtectedMethod($level3NonExtendable, 'extensionGetParentClass')->getName());
     }
+
+    public function testStaticCalledClassIsClearedWhenAStaticExtensionMethodThrows()
+    {
+        try {
+            StaticThrowingHost::explode();
+            $this->fail('The exception from the extension should propagate.');
+        }
+        catch (\RuntimeException $ex) {
+            // Expected.
+        }
+
+        $this->assertNull(StaticThrowingExtension::$extendableStaticCalledClass);
+    }
+}
+
+class StaticThrowingHost
+{
+    use ExtendableTrait;
+
+    public $implement = [StaticThrowingExtension::class];
+
+    public static function __callStatic($name, $params)
+    {
+        return self::extendableCallStatic($name, $params);
+    }
+}
+
+class StaticThrowingExtension
+{
+    use \Winter\Storm\Extension\ExtensionTrait;
+
+    public static function explode()
+    {
+        throw new \RuntimeException('static extension failed');
+    }
 }
 
 class ExtendableRoot extends Extendable
