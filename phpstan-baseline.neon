@@ -169,6 +169,18 @@ parameters:
 			path: src/Database/Model.php
 
 		-
+			message: '#^Parameter \#2 \$mutatedAttributes of method Illuminate\\Database\\Eloquent\\Model\:\:addCastAttributesToArray\(\) expects array\<string, mixed\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
+			message: '#^Parameter \#2 \$mutatedAttributes of method Illuminate\\Database\\Eloquent\\Model\:\:addMutatedAttributesToArray\(\) expects array\<string, mixed\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database/Model.php
+
+		-
 			message: '#^Return type \(Winter\\Storm\\Database\\Collection\) of method Winter\\Storm\\Database\\Model\:\:newCollection\(\) should be compatible with return type \(Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), static\(Illuminate\\Database\\Eloquent\\Model\)\>\) of method Illuminate\\Database\\Eloquent\\Model\:\:newCollection\(\)$#'
 			identifier: method.childReturnType
 			count: 1
@@ -849,7 +861,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: src/Database/Schema/Grammars/MariaDbGrammar.php
 
 		-
@@ -861,7 +873,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: src/Database/Schema/Grammars/MySqlGrammar.php
 
 		-
@@ -873,13 +885,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: src/Database/Schema/Grammars/PostgresGrammar.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: src/Database/Schema/Grammars/SqlServerGrammar.php
 
 		-
@@ -899,12 +911,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: src/Database/TreeCollection.php
-
-		-
-			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Events/Dispatcher.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Routing\\Router\:\:after\(\)\.$#'
@@ -961,13 +967,13 @@ parameters:
 			path: src/Support/Facades/Url.php
 
 		-
-			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Contracts\\Mail\\MailQueue\:\:queue\(\)$#'
+			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(BackedEnum\|string\|null\) of method Illuminate\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\)$#'
 			identifier: method.childParameterType
 			count: 1
 			path: src/Support/Testing/Fakes/MailFake.php
 
 		-
-			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(BackedEnum\|string\|null\) of method Illuminate\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\)$#'
+			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Contracts\\Mail\\MailQueue\:\:queue\(\)$#'
 			identifier: method.childParameterType
 			count: 1
 			path: src/Support/Testing/Fakes/MailFake.php

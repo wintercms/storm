@@ -22,6 +22,8 @@ class EmitterTest extends \Winter\Storm\Tests\TestCase
      */
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->traitObject = new class {
             use \Winter\Storm\Support\Traits\Emitter;
         };

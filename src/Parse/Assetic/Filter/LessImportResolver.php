@@ -18,6 +18,12 @@ use Winter\Storm\Filesystem\PathResolver;
  * authoritative resolver, we have to collide-and-override the auto-added entry by
  * using its exact normalised key (`buildImportDirs()` does this).
  *
+ * That auto-added entry is re-created for *every* file less.php parses, not just the
+ * entry file, and it is also consulted by `data-uri()` / `image-size()`. Overriding
+ * only the entry file's directory therefore leaves any `.less` imported from another
+ * directory ungated. `makeResolver()` closes that by registering a resolver for each
+ * directory it admits, so the collision follows the import graph.
+ *
  * Usage shapes:
  *
  *   // parseFile()-based caller (e.g. theme asset compilation):
@@ -93,6 +99,12 @@ class LessImportResolver
             }
 
             if (PathResolver::withinAny($resolved, array_merge([$contextDir], $allowedRoots))) {
+                // less.php is about to make this file's directory "current", which
+                // re-adds an unconfined path-form import dir for it. Claim that key
+                // now so the gate keeps applying to the file's own imports and to
+                // any data-uri() / image-size() call it makes.
+                self::registerDir(dirname($resolved), array_merge([$contextDir], $allowedRoots));
+
                 return [$resolved, dirname($filename)];
             }
 
@@ -117,16 +129,40 @@ class LessImportResolver
         $resolvedSource = realpath($sourceFile);
         $sourceDir = $resolvedSource !== false ? dirname($resolvedSource) : dirname($sourceFile);
 
-        // less.php normalises its auto-added currentDirectory key by running
-        // it through `WinPath()` (backslash -> forward slash) before storing,
-        // then SetImportDirs() applies `rtrim('/\\') . '/'`. We must reproduce
-        // the *exact same* normalisation here or PHP `array_merge`'s
-        // string-key collision won't happen on Windows and the gate becomes
-        // non-authoritative for relative-traversal attacks (the auto-added
-        // path-form entry would still match first via file_exists). This is
-        // not just a test issue — it's a security regression on Windows.
-        $key = rtrim((new Filesystem())->normalizePath($sourceDir), '/') . '/';
+        return [self::importDirKey($sourceDir) => self::makeResolver($allowedRoots, $sourceDir)];
+    }
 
-        return [$key => self::makeResolver($allowedRoots, $sourceDir)];
+    /**
+     * Register a resolver for `$dir` directly on the parser's import-dir list, so it
+     * collides with the path-form entry less.php auto-adds while that directory is
+     * the current one. Existing entries are left alone: the first resolver to claim
+     * a directory is the one that admitted it, and re-registering would only widen
+     * the allowed set.
+     *
+     * @param string[] $allowedRoots
+     */
+    public static function registerDir(string $dir, array $allowedRoots): void
+    {
+        $key = self::importDirKey($dir);
+
+        if (!isset(\Less_Parser::$options['import_dirs'][$key])) {
+            \Less_Parser::$options['import_dirs'][$key] = self::makeResolver($allowedRoots, $dir);
+        }
+    }
+
+    /**
+     * Reproduce the exact key less.php uses for a directory in its import-dir list.
+     *
+     * It normalises the key by running the file through `AbsPath()`/`WinPath()`
+     * (backslash -> forward slash) and `dirname()`-ing it with a trailing slash, then
+     * `SetImportDirs()` applies `rtrim('/\\') . '/'`. Reproducing that normalisation
+     * exactly is what makes PHP `array_merge` string-key collision replace the
+     * auto-added entry with our callable. Getting it wrong doesn't fail loudly — it
+     * silently leaves the auto-added path-form entry matching first via `file_exists`,
+     * which is a security regression, and it differs by platform (Windows).
+     */
+    public static function importDirKey(string $dir): string
+    {
+        return rtrim((new Filesystem())->normalizePath($dir), '/') . '/';
     }
 }

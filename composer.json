@@ -34,10 +34,9 @@
         "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-zip": "*",
-
-        "assetic/framework": "^3.2.2",
+        "assetic/framework": "^3.2.3",
         "doctrine/dbal": "^3.0",
-        "enshrined/svg-sanitize": "~0.16",
+        "enshrined/svg-sanitize": "~1.0",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "league/commonmark": "^2.10.2",
