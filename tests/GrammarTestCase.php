@@ -64,6 +64,21 @@ class GrammarTestCase extends TestCase
             ->getMock();
     }
 
+    /**
+     * Report the given rows, in the format of Builder::getColumns(), as the table's existing columns.
+     * Call this before getBlueprint().
+     */
+    protected function existingColumns(array $columns): void
+    {
+        $builder = m::mock(Builder::class)
+            ->shouldReceive('getColumns')->andReturn($columns)
+            ->shouldReceive('getForeignKeys')->andReturn([])
+            ->shouldReceive('getIndexes')->andReturn([])
+            ->getMock();
+
+        $this->connection->shouldReceive('getSchemaBuilder')->andReturn($builder);
+    }
+
     protected function runBlueprint(Blueprint $blueprint)
     {
         return $blueprint->toSql();
