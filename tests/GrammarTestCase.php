@@ -14,6 +14,13 @@ class GrammarTestCase extends TestCase
     protected $grammarClass = null;
     protected $builderClass = null;
 
+    /**
+     * The rows existingColumns() reports as the table's existing columns, if any.
+     *
+     * @var array<int, array<string, mixed>>|null
+     */
+    protected $reportedColumns = null;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -57,7 +64,7 @@ class GrammarTestCase extends TestCase
     protected function getSchemaBuilder($blueprint)
     {
         return m::mock(Builder::class)
-            ->shouldReceive('getColumns')->andReturn($blueprint->getColumns())
+            ->shouldReceive('getColumns')->andReturn($this->reportedColumns ?? $blueprint->getColumns())
             ->shouldReceive('getForeignKeys')->andReturn([])
             ->shouldReceive('getIndexes')->andReturn([])
             ->shouldReceive('parseSchemaAndTable')->andReturn([null, $blueprint->getTable()])
@@ -66,17 +73,10 @@ class GrammarTestCase extends TestCase
 
     /**
      * Report the given rows, in the format of Builder::getColumns(), as the table's existing columns.
-     * Call this before getBlueprint().
      */
     protected function existingColumns(array $columns): void
     {
-        $builder = m::mock(Builder::class)
-            ->shouldReceive('getColumns')->andReturn($columns)
-            ->shouldReceive('getForeignKeys')->andReturn([])
-            ->shouldReceive('getIndexes')->andReturn([])
-            ->getMock();
-
-        $this->connection->shouldReceive('getSchemaBuilder')->andReturn($builder);
+        $this->reportedColumns = $columns;
     }
 
     protected function runBlueprint(Blueprint $blueprint)
