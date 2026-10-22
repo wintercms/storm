@@ -102,6 +102,23 @@ class ArraySourceTest extends \Winter\Storm\Tests\DbTestCase
         $record = Random::find(10);
         $this->assertEquals('Record 10', $record->name);
     }
+
+    public function testSubclassUsesItsOwnDatasource(): void
+    {
+        $this->assertEquals(['Parent record'], MemoryParent::pluck('name')->toArray());
+        $this->assertEquals(['Child one', 'Child two'], MemoryChild::pluck('name')->toArray());
+        $this->assertEquals(['Parent record'], MemoryParent::pluck('name')->toArray());
+    }
+
+    public function testDatasourceIsRebuiltAfterBootedModelsAreCleared(): void
+    {
+        MemoryParent::query()->delete();
+        $this->assertEquals(0, MemoryParent::count());
+
+        \Winter\Storm\Database\Model::clearBootedModels();
+
+        $this->assertEquals(['Parent record'], MemoryParent::pluck('name')->toArray());
+    }
 }
 
 class ArrayModel extends \Winter\Storm\Database\Model
@@ -280,4 +297,32 @@ class Random extends \Winter\Storm\Database\Model
             ];
         }
     }
+}
+
+class MemoryParent extends \Winter\Storm\Database\Model
+{
+    use \Winter\Storm\Database\Traits\ArraySource;
+
+    public $cacheArray = false;
+
+    public $records = [
+        [
+            'id' => 1,
+            'name' => 'Parent record',
+        ],
+    ];
+}
+
+class MemoryChild extends MemoryParent
+{
+    public $records = [
+        [
+            'id' => 1,
+            'name' => 'Child one',
+        ],
+        [
+            'id' => 2,
+            'name' => 'Child two',
+        ],
+    ];
 }

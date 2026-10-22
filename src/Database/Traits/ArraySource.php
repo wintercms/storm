@@ -27,12 +27,27 @@ use Winter\Storm\Support\Facades\Config;
 trait ArraySource
 {
     /**
-     * Connection. to the SQLite datasource.
+     * Connections to the SQLite datasources, keyed by model class.
+     *
+     * Keyed by class because a static property declared in a trait is shared with subclasses of the class that
+     * uses it, and each model needs its own datasource.
+     *
+     * @var array<class-string, \Illuminate\Database\Connection>
      */
-    protected static \Illuminate\Database\Connection $arraySourceConnection;
+    protected static array $arraySourceConnections = [];
+
+    /**
+     * Model classes whose datasource is currently being built.
+     *
+     * @var array<class-string, bool>
+     */
+    protected static array $arraySourceBuilding = [];
 
     /**
      * Boots the ArraySource trait.
+     *
+     * Discards any datasource built for a previous boot, so that the next query rebuilds it after
+     * `Model::clearBootedModels()`, as happened when the datasource was built here.
      */
     public static function bootArraySource(): void
     {
@@ -40,14 +55,43 @@ trait ArraySource
             throw new ApplicationException('You must enable the SQLite PDO driver to use the ArraySource trait');
         }
 
-        $instance = new static;
+        unset(static::$arraySourceConnections[static::class]);
+    }
 
-        static::arraySourceSetDbConnection(
-            (!$instance->arraySourceCanStoreDb()) ? ':memory:' : $instance->arraySourceGetDbPath()
-        );
+    /**
+     * Boots the temporary SQLite datasource for this model.
+     *
+     * This is deferred out of the trait's boot method (`bootArraySource`) because Laravel 13 no
+     * longer permits a model to be instantiated while it is still booting -- doing so throws a
+     * LogicException. Building the datasource requires an instance to read the model's (overridable)
+     * array source configuration, as well as model inserts (which themselves instantiate the model),
+     * so the work is performed lazily the first time the connection is resolved, by which point the
+     * model has always finished booting.
+     */
+    protected static function arraySourceBootConnection(): void
+    {
+        if (isset(static::$arraySourceBuilding[static::class])) {
+            throw new ApplicationException(sprintf(
+                'The datasource for "%s" was requested while it was being built. A model that uses the "ArraySource"'
+                . ' trait must not query its connection while it is being constructed.',
+                static::class
+            ));
+        }
 
-        if ($instance->arraySourceDbNeedsUpdate()) {
-            $instance->arraySourceCreateDb();
+        static::$arraySourceBuilding[static::class] = true;
+
+        try {
+            $instance = new static;
+
+            static::arraySourceSetDbConnection(
+                (!$instance->arraySourceCanStoreDb()) ? ':memory:' : $instance->arraySourceGetDbPath()
+            );
+
+            if ($instance->arraySourceDbNeedsUpdate()) {
+                $instance->arraySourceCreateDb();
+            }
+        } finally {
+            unset(static::$arraySourceBuilding[static::class]);
         }
     }
 
@@ -79,7 +123,11 @@ trait ArraySource
      */
     public static function resolveConnection($connection = null)
     {
-        return static::$arraySourceConnection;
+        if (!isset(static::$arraySourceConnections[static::class])) {
+            static::arraySourceBootConnection();
+        }
+
+        return static::$arraySourceConnections[static::class];
     }
 
     /**
@@ -94,7 +142,7 @@ trait ArraySource
             'database' => $database,
         ];
 
-        static::$arraySourceConnection = App::get(ConnectionFactory::class)->make($config);
+        static::$arraySourceConnections[static::class] = App::get(ConnectionFactory::class)->make($config);
     }
 
     /**
