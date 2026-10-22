@@ -56,8 +56,12 @@ trait MySqlBasedGrammar
             'nullable' => (bool) $existing['nullable'],
             'default' => $this->getKeptColumnDefault($existing['default']),
             'comment' => $existing['comment'],
-            'unsigned' => str_contains(strtolower((string) $existing['type']), 'unsigned') ?: null,
         ];
+
+        // Only keep the unsigned attribute while the column stays a numeric column, as no other type accepts it
+        if (in_array($column->get('type'), ['boolean', 'tinyInteger', 'smallInteger', 'mediumInteger', 'integer', 'bigInteger', 'decimal', 'float', 'double'])) {
+            $attributes['unsigned'] = str_contains(strtolower((string) $existing['type']), 'unsigned') ?: null;
+        }
 
         // Like Laravel 9, only keep the collation while the column stays a text column
         if (in_array($column->get('type'), ['char', 'string', 'tinyText', 'text', 'mediumText', 'longText', 'enum', 'set'])) {

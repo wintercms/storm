@@ -116,6 +116,27 @@ class MySqlSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
         $this->assertSame('alter table `users` modify `created_at` timestamp null default CURRENT_TIMESTAMP', $this->runBlueprint($blueprint)[0]);
     }
 
+    public function testChangeKeepsTheUnsignedAttribute()
+    {
+        $this->existingColumns([$this->mysqlColumn('amount', 'decimal(8,2) unsigned')]);
+
+        $blueprint = $this->getBlueprint('users');
+        $blueprint->decimal('amount', 10, 2)->change();
+
+        $this->assertSame('alter table `users` modify `amount` decimal(10, 2) unsigned not null', $this->runBlueprint($blueprint)[0]);
+    }
+
+    public function testChangeToANonNumericTypeDropsTheUnsignedAttribute()
+    {
+        // Only a numeric column accepts the unsigned attribute, so keeping it here would be a syntax error
+        $this->existingColumns([$this->mysqlColumn('code', 'int unsigned')]);
+
+        $blueprint = $this->getBlueprint('users');
+        $blueprint->string('code', 50)->change();
+
+        $this->assertSame('alter table `users` modify `code` varchar(50) not null', $this->runBlueprint($blueprint)[0]);
+    }
+
     public function testChangingTwoColumnsCompilesOneStatementPerColumn()
     {
         $this->existingColumns([$this->mysqlColumn('first', 'varchar(255)'), $this->mysqlColumn('last', 'varchar(255)')]);
