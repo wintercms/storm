@@ -434,8 +434,8 @@ class Application extends ApplicationBase
             $this->getCachedClassesPath(),
         ]);
 
-        // Reset package manifest
-        $this->make(PackageManifest::class)->manifest = [];
+        // Reset the package manifest so that it gets rebuilt; null is its unbuilt state, an empty array counts as built
+        $this->make(PackageManifest::class)->manifest = null; // @phpstan-ignore-line
     }
 
 
