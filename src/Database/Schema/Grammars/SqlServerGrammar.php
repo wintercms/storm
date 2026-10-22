@@ -9,6 +9,8 @@ use Illuminate\Support\Fluent;
 
 class SqlServerGrammar extends BaseSqlServerGrammar
 {
+    use Concerns\KeepsExistingColumnAttributes;
+
     /**
      * Compile a change column command into a series of SQL statements.
      *
@@ -28,30 +30,12 @@ class SqlServerGrammar extends BaseSqlServerGrammar
         /** @var \Illuminate\Database\Schema\ColumnDefinition $column */
         $column = $command->get('column');
 
-        $existing = collect($this->connection->getSchemaBuilder()->getColumns($blueprint->getTable()))
-            ->firstWhere('name', $column->get('name'));
-
-        if ($existing) {
-            $attributes = $column->getAttributes();
-
-            foreach ($this->getKeptColumnAttributes($existing, $column) as $attribute => $value) {
-                if (!array_key_exists($attribute, $attributes)) {
-                    $column[$attribute] = $value;
-                }
-            }
-        }
+        $this->keepExistingColumnAttributes($blueprint, $column);
 
         return parent::compileChange($blueprint, $command);
     }
 
-    /**
-     * Get the attributes of an existing column, as reported by the schema builder, that a change keeps
-     * when the new definition doesn't set them.
-     *
-     * @param  array|\ArrayAccess  $existing
-     * @param  \Illuminate\Support\Fluent  $column
-     * @return array
-     */
+    /** @inheritDoc */
     protected function getKeptColumnAttributes($existing, Fluent $column): array
     {
         $attributes = [
@@ -60,11 +44,11 @@ class SqlServerGrammar extends BaseSqlServerGrammar
             'default' => is_null($existing['default']) ? null : new Expression($existing['default']),
         ];
 
-        if (in_array($column->get('type'), ['char', 'string', 'tinyText', 'text', 'mediumText', 'longText', 'enum', 'set'])) {
+        if ($this->changesToATextColumn($column)) {
             $attributes['collation'] = $existing['collation'];
         }
 
-        return array_filter($attributes, fn ($value) => !is_null($value));
+        return $attributes;
     }
 
     /**
