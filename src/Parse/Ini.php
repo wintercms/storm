@@ -22,26 +22,17 @@ class Ini
     protected const DOLLAR_BRACE_PLACEHOLDER = '__WNTR_INI_DOLLAR_BRACE_ESCAPE_7f8c9b2a__';
 
     /**
-     * Placeholder used to keep tokens in an INI document from being
-     * substituted by parse_ini_string(), which replaces any unquoted token
-     * matching the name of a defined PHP constant with that constant's value.
-     * The marker is prefixed to each such token before parsing and removed
-     * again afterwards, so a document's own text is returned as written while
-     * every other INI semantic (escape sequences, multi-line quoted values,
-     * keyword coercion, etc.) is preserved.
+     * Placeholder that stops parse_ini_string() resolving a token which names a defined PHP constant. Prefixed to each such token before parsing, stripped again afterwards.
      */
     protected const IDENTIFIER_PLACEHOLDER = '__WNTR_INI_IDENTIFIER_ESCAPE_5d1e0a63__';
 
     /**
-     * Pattern matching a single INI identifier token, i.e. the shape that
-     * parse_ini_string() will look up in the table of defined PHP constants.
+     * Pattern matching a single INI identifier token, the shape parse_ini_string() looks up as a constant.
      */
     protected const IDENTIFIER_PATTERN = '[A-Za-z_][A-Za-z0-9_]*';
 
     /**
-     * Tokens that parse_ini_string() coerces to a boolean-ish value and which
-     * are therefore left untouched by the identifier pre-pass. The comparison
-     * is case-insensitive, matching the native scanner.
+     * Tokens the native scanner coerces to a boolean-ish value, so the pre-pass leaves them alone. Compared case-insensitively, as the scanner does.
      */
     protected const RESERVED_KEYWORDS = [
         'true',
@@ -55,11 +46,7 @@ class Ini
     ];
 
     /**
-     * The reserved keywords that parse_ini_string() coerces in value position
-     * but resolves against the table of defined PHP constants when they appear
-     * as a bracketed key offset (`a[none] = x`). Only there do they need the
-     * same treatment as any other token. `true`, `false` and `null` are absent
-     * because the scanner coerces them in both positions.
+     * Keywords the scanner coerces in a value but resolves as a constant in a bracketed key offset (`a[none] = x`), the one position where they need marking. `true`, `false` and `null` are coerced in both.
      */
     protected const OFFSET_RESOLVED_KEYWORDS = [
         'on',
@@ -77,8 +64,7 @@ class Ini
     public function parse($contents)
     {
         $contents = $this->parsePreProcess($contents);
-        // Neutralize tokens that PHP's native parser would otherwise replace
-        // with the value of a same-named PHP constant.
+        // Neutralize tokens that name a defined PHP constant.
         $contents = $this->escapeIdentifiers($contents);
         // Neutralize `${...}` env-var interpolation before handing the content
         // to PHP's native parser. See CVE-2026-25125.
@@ -91,50 +77,25 @@ class Ini
     }
 
     /**
-     * Prefixes a marker to every token in the document that names a currently
-     * defined PHP constant, so that parse_ini_string() cannot resolve it. The
-     * marker is removed again by restorePlaceholders() once parsing is done,
-     * leaving the document's own text.
+     * Prefixes a marker to every token naming a currently defined PHP constant so parse_ini_string() cannot resolve it; restorePlaceholders() strips it again, leaving the document's own text.
      *
-     * A token is only marked when defined() reports a constant of that name,
-     * because parse_ini_string() leaves every other token as written; that
-     * keeps the document handed to the native parser byte-identical whenever
-     * it names no constant at all. The whole document is scanned rather than
-     * only the value side of each line, because a constant named inside a
-     * bracketed key (`a[SOME_NAME] = x`) is substituted as well. Marking a
-     * token that the native parser would not have resolved - in a quoted run,
-     * a comment, a key or a section header - is harmless, since the marker is
-     * stripped again either way.
+     * Only defined names are marked, so a document naming none reaches the native parser byte for byte. The whole document is scanned because a constant inside a bracketed key (`a[SOME_NAME] = x`) is substituted as well, and a marker in a quoted run, comment, key or section header is harmless since it is stripped either way.
      *
-     * Marking happens per whole matched token rather than by substituting the
-     * token everywhere it occurs in the document, so that a short constant name
-     * cannot have a marker inserted into the middle of a longer word. That
-     * distinction matters for the reserved keywords, whose coercion the native
-     * scanner decides from the value's exact text: a marker landing inside one
-     * of them would stop it coercing. They are otherwise skipped so that their
-     * coercion to `1`/`''` is unchanged, except as a bracketed key offset,
-     * which is the one position where the scanner resolves them as constants
-     * instead of coercing them.
+     * Whole tokens are marked rather than substrings, so a marker cannot land inside a longer word and stop a reserved keyword coercing. Keywords are otherwise skipped, except as a bracketed key offset.
      *
      * @param string $contents
      * @return string
      */
     protected function escapeIdentifiers($contents)
     {
-        // Double any marker the document already contains, so that
-        // restorePlaceholders() can tell it apart from one inserted here.
+        // Double any marker the document already contains, so restorePlaceholders() can tell it from one inserted here.
         $contents = str_replace(
             static::IDENTIFIER_PLACEHOLDER,
             static::IDENTIFIER_PLACEHOLDER . static::IDENTIFIER_PLACEHOLDER,
             $contents
         );
 
-        // The first branch matches a token that stands alone between the
-        // delimiters of a bracketed key offset, together with the delimiter and
-        // any horizontal whitespace in front of it, which the native scanner
-        // skips when it resolves the offset. The second matches any other token.
-        // Both consume the whole token, so the marker is only ever inserted in
-        // front of one.
+        // The first branch matches a token standing alone in a bracketed key offset, with its delimiter and the whitespace the scanner skips; the second matches any other token. Both consume the whole token.
         $pattern = '/(?<lead>[\[|][ \t]*)(?<offset>' . static::IDENTIFIER_PATTERN . ')(?=[ \t]*[\]|])|'
             . static::IDENTIFIER_PATTERN . '/';
 
@@ -165,10 +126,7 @@ class Ini
             return $lead . static::IDENTIFIER_PLACEHOLDER . $token;
         }, $contents);
 
-        // A failed pre-pass must not be mistaken for a document that needed no
-        // marking: the contents would reach the native parser unprotected, or
-        // as null. preg_replace_callback() returns null on a PCRE failure, the
-        // reachable one being a backtrack or recursion limit.
+        // preg_replace_callback() returns null on a PCRE failure, reachably a backtrack or recursion limit. That must not pass for a document needing no marking, which would reach the native parser unprotected or as null.
         if ($escaped === null) {
             throw new \RuntimeException(sprintf(
                 'Unable to parse INI contents: %s',
@@ -182,9 +140,7 @@ class Ini
     /**
      * Runs the identifier pre-pass over the document contents.
      *
-     * Separated from escapeIdentifiers() so that its failure path can be exercised: PCRE only
-     * fails here on a backtrack or recursion limit, and how close to those limits a given
-     * subject lands differs between PCRE builds.
+     * Separated from escapeIdentifiers() so its failure path can be exercised: PCRE only fails here on a backtrack or recursion limit, and how close a subject lands to those differs between builds.
      *
      * @return string|null Null if the replacement failed.
      */
@@ -194,15 +150,9 @@ class Ini
     }
 
     /**
-     * Recursively removes the identifier marker inserted by
-     * escapeIdentifiers() wherever it appears in the parsed result, restoring
-     * a doubled marker to the single one the document itself contained. Values
-     * inside section arrays are handled too, and so are keys.
+     * Recursively strips the marker inserted by escapeIdentifiers(), restoring a doubled marker to the single one the document itself contained. Keys and values inside section arrays are handled too.
      *
-     * The `${` token is restored separately, by restoreDollarBrace(), which
-     * parse() still calls with the whole parsed array exactly as it did before
-     * this pre-pass existed, so that an override of that method keeps seeing
-     * every node it used to.
+     * `${` is restored separately by restoreDollarBrace(), which parse() still calls with the whole parsed array exactly as before, so an override of it keeps seeing every node.
      *
      * @param mixed $value
      * @return mixed
