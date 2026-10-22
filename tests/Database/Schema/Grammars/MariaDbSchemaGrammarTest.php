@@ -1,9 +1,10 @@
 <?php
 
-namespace Tests\Database\Schema\Grammars;
+namespace Winter\Storm\Tests\Database\Schema\Grammars;
 
 use Illuminate\Database\Schema\MariaDbBuilder;
 use Winter\Storm\Database\Schema\Grammars\MariaDbGrammar;
+use Winter\Storm\Tests\GrammarTestCase;
 
 class MariaDbSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
 {
