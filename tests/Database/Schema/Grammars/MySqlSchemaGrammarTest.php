@@ -2,7 +2,9 @@
 
 namespace Tests\Database\Schema\Grammars;
 
+use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\Schema\MySqlBuilder;
+use Mockery as m;
 use Winter\Storm\Database\Schema\Grammars\MySqlGrammar;
 use Winter\Storm\Tests\GrammarTestCase;
 
@@ -135,6 +137,26 @@ class MySqlSchemaGrammarTest extends \Winter\Storm\Tests\GrammarTestCase
         $blueprint->string('code', 50)->change();
 
         $this->assertSame('alter table `users` modify `code` varchar(50) not null', $this->runBlueprint($blueprint)[0]);
+    }
+
+    public function testChangeOnAMariaDbServerTreatsTheReportedDefaultAsAnExpression()
+    {
+        // The mysql driver can point at a MariaDB server, which reports no default as the expression NULL
+        $this->connection = m::mock(MySqlConnection::class)
+            ->shouldReceive('getTablePrefix')->andReturn('')
+            ->shouldReceive('getServerVersion')->andReturn('11.4.13')
+            ->shouldReceive('isMaria')->andReturn(true)
+            ->shouldReceive('scalar')->andReturn('')
+            ->getMock();
+
+        $this->connection->shouldReceive('getSchemaGrammar')->andReturn($this->getSchemaGrammar());
+
+        $this->existingColumns([$this->mysqlColumn('name', 'varchar(255)', nullable: true, default: 'NULL')]);
+
+        $blueprint = $this->getBlueprint('users');
+        $blueprint->string('name', 100)->change();
+
+        $this->assertSame('alter table `users` modify `name` varchar(100) null', $this->runBlueprint($blueprint)[0]);
     }
 
     public function testChangingTwoColumnsCompilesOneStatementPerColumn()
