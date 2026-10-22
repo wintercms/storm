@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Config\Repository;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
@@ -16,6 +17,11 @@ class ApplicationTest extends \Winter\Storm\Tests\TestCase
         // Mock application
         $this->basePath = '/tmp/custom-path';
         $this->app = new Application($this->basePath);
+    }
+
+    protected function tearDown(): void
+    {
+        // These tests build their own throwaway applications instead of booting one through Testbench, so there is nothing for Testbench to tear down.
     }
 
     public function testPathMethods()
@@ -69,6 +75,7 @@ class ApplicationTest extends \Winter\Storm\Tests\TestCase
                 return [DiscoveredPackageServiceProvider::class];
             }
         });
+        $facadeApp = Facade::getFacadeApplication();
         Facade::clearResolvedInstances();
         Facade::setFacadeApplication($this->app);
 
@@ -78,10 +85,10 @@ class ApplicationTest extends \Winter\Storm\Tests\TestCase
             $this->assertNotNull($this->app->getProvider(DiscoveredPackageServiceProvider::class));
             $this->assertTrue($this->app->bound('discovered-package'));
         } finally {
-            array_map('unlink', glob($basePath . '/storage/framework/*'));
-            rmdir($basePath . '/storage/framework');
-            rmdir($basePath . '/storage');
-            rmdir($basePath);
+            Facade::clearResolvedInstances();
+            Facade::setFacadeApplication($facadeApp);
+
+            (new Filesystem)->deleteDirectory($basePath);
         }
     }
 }
