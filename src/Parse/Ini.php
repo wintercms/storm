@@ -229,6 +229,15 @@ class Ini
     protected function parsePreProcess($contents)
     {
         $contents = preg_replace('~\R~u', PHP_EOL, $contents); // Normalize EOL
+
+        // Reachably malformed UTF-8, the pattern being in unicode mode. A null must not pass for an empty document, which the native parser would parse as nothing at all.
+        if ($contents === null) {
+            throw new \RuntimeException(sprintf(
+                'Unable to parse INI contents: %s',
+                preg_last_error_msg()
+            ));
+        }
+
         $contents = explode(PHP_EOL, $contents);
         $count = 0;
         $lastName = null;

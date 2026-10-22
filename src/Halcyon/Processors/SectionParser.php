@@ -203,8 +203,15 @@ class SectionParser
     public static function parseSettings(string $settings): array
     {
         $iniParser = new Ini;
-        return @$iniParser->parse($settings)
-            ?: [self::ERROR_INI => $settings];
+
+        // The parser throws where it cannot hand the document to PHP's native parser at all. That is the same kind of failure as an invalid section, so it is reported the same way: the content is passed on as a special attribute, for the caller to re-parse unsuppressed once it can name the file it came from.
+        try {
+            return @$iniParser->parse($settings)
+                ?: [self::ERROR_INI => $settings];
+        }
+        catch (\RuntimeException $ex) {
+            return [self::ERROR_INI => $settings];
+        }
     }
 
     /**

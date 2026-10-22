@@ -388,4 +388,28 @@ ESC;
         $this->assertEquals(7, $result["code"]);
         $this->assertEquals(16, $result["markup"]);
     }
+
+    /**
+     * A settings section the parser cannot hand to PHP's native parser at all is passed on as a special attribute, the same as any other invalid section, rather than thrown from here.
+     */
+    public function testParseSettingsPassesOnContentItCannotParse()
+    {
+        $settings = "a = ok\xC3\x28";
+
+        $this->assertSame(
+            [SectionParser::ERROR_INI => $settings],
+            SectionParser::parseSettings($settings)
+        );
+    }
+
+    /**
+     * The file itself still loads, so the object can report the failure against its own file name.
+     */
+    public function testParseKeepsAFileLoadableWhenItsSettingsCannotBeParsed()
+    {
+        $result = SectionParser::parse("a = ok\xC3\x28\n==\n<p>markup</p>");
+
+        $this->assertArrayHasKey(SectionParser::ERROR_INI, $result['settings']);
+        $this->assertEquals('<p>markup</p>', $result['markup']);
+    }
 }

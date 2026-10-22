@@ -922,4 +922,17 @@ INI;
         $content = preg_replace('~\R~u', PHP_EOL, $content); // Normalize EOL
         return $content;
     }
+
+    /**
+     * Malformed UTF-8 fails the EOL normalization pre-pass, which runs in unicode mode. Until it was reported, such a document was silently handed on as an empty string and parsed as nothing at all.
+     */
+    public function testMalformedUtf8IsReported()
+    {
+        $parser = new IniParser;
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/Unable to parse INI contents: Malformed UTF-8/');
+
+        $parser->parse("a = ok\xC3\x28\nb = 1\n");
+    }
 }
