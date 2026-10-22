@@ -81,7 +81,7 @@ class HtmlBuilderTest extends TestCase
         $this->assertEquals('<a href="nojavascript... alert(\'Ping!\');">Test</a>', $result);
     }
 
-    public function unsafeAttributeProvider()
+    public static function unsafeAttributeProvider()
     {
         return [
             'unquoted value'                       => ['<img src=x onerror=alert(1)>', 'onerror'],
@@ -124,7 +124,7 @@ class HtmlBuilderTest extends TestCase
         $this->assertStringNotContainsStringIgnoringCase($attribute, $result);
     }
 
-    public function safeMarkupProvider()
+    public static function safeMarkupProvider()
     {
         return [
             'heading'                          => ["# Hello\n"],
