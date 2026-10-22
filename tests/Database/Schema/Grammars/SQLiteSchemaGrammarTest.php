@@ -152,4 +152,16 @@ class SQLiteSchemaGrammarTest extends GrammarTestCase
 
         $this->assertSame(1, $rebuilds, 'A single ->change() must rebuild the table exactly once.');
     }
+
+    public function testChangeCanRemoveDefaultWithNull(): void
+    {
+        [$pdo, , $builder] = $this->bootSqlite("CREATE TABLE users (id integer primary key, name varchar not null default 'bob')");
+
+        // An explicit null default must remove the existing default, not keep it.
+        $builder->table('users', fn (Blueprint $table) => $table->string('name')->nullable()->default(null)->change());
+
+        $info = $this->columnInfo($pdo, 'users', 'name');
+        $this->assertSame(0, (int) $info['notnull']);
+        $this->assertNull($info['dflt_value']);
+    }
 }

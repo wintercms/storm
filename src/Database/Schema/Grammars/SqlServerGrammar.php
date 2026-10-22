@@ -2,13 +2,15 @@
 
 namespace Winter\Storm\Database\Schema\Grammars;
 
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar as BaseSqlServerGrammar;
 use Illuminate\Support\Fluent;
 
 class SqlServerGrammar extends BaseSqlServerGrammar
 {
+    use Concerns\KeepsExistingColumnAttributes;
+
     /**
      * Compile a change column command into a series of SQL statements.
      *
@@ -16,45 +18,37 @@ class SqlServerGrammar extends BaseSqlServerGrammar
      * This restores Laravel previous behavior where existing column attributes are kept
      * unless they get changed by the new Blueprint.
      *
+     * The kept attributes are set on the column itself, so that the default command that runs
+     * after the change adds the existing default back once the change has dropped its constraint.
+     *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
      * @param  \Illuminate\Support\Fluent  $command
      * @return array|string
-     *
-     * @throws \RuntimeException
      */
     public function compileChange(Blueprint $blueprint, Fluent $command)
     {
-        $changes = (array) $this->compileDropDefaultConstraint($blueprint, $command);
-        $schema = $this->connection->getSchemaBuilder();
-        $table = $blueprint->getTable();
+        /** @var \Illuminate\Database\Schema\ColumnDefinition $column */
+        $column = $command->get('column');
 
-        $oldColumns = collect($schema->getColumns($table));
+        $this->keepExistingColumnAttributes($blueprint, $column);
 
-        foreach ($blueprint->getChangedColumns() as $column) {
-            $sql = sprintf(
-                'alter table %s alter column %s %s',
-                $this->wrapTable($blueprint),
-                $this->wrap($column->name),
-                $this->getType($column)
-            );
+        return parent::compileChange($blueprint, $command);
+    }
 
-            $oldColumn = $oldColumns->where('name', $column->name)->first();
-            if (!$oldColumn instanceof ColumnDefinition) {
-                $oldColumn = new ColumnDefinition($oldColumn);
-            }
+    /** @inheritDoc */
+    protected function getKeptColumnAttributes($existing, Fluent $column): array
+    {
+        $attributes = [
+            'nullable' => (bool) $existing['nullable'],
+            // SQL Server reports a default as the expression of its constraint, such as ('text')
+            'default' => is_null($existing['default']) ? null : new Expression($existing['default']),
+        ];
 
-            foreach ($this->modifiers as $modifier) {
-                if (method_exists($this, $method = "modify{$modifier}")) {
-                    $mod = strtolower($modifier);
-                    $col = isset($oldColumn->{$mod}) && !isset($column->{$mod}) ? $oldColumn : $column;
-                    $sql .= $this->{$method}($blueprint, $col);
-                }
-            }
-
-            $changes[] = $sql;
+        if ($this->changesToATextColumn($column)) {
+            $attributes['collation'] = $existing['collation'];
         }
 
-        return $changes;
+        return $attributes;
     }
 
     /**
