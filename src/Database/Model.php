@@ -638,7 +638,7 @@ class Model extends EloquentModel implements ModelInterface
         // and format a Carbon object from this timestamp. This allows flexibility
         // when defining your date fields as they might be UNIX timestamps here.
         if (is_numeric($value)) {
-            return Argon::createFromTimestamp($value);
+            return Argon::createFromTimestamp($value, date_default_timezone_get());
         }
 
         // If the value is in simply year, month, day format, we will instantiate the
