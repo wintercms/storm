@@ -924,7 +924,7 @@ INI;
     }
 
     /**
-     * Malformed UTF-8 fails the EOL normalization pre-pass, which runs in unicode mode. Until it was reported, such a document was silently handed on as an empty string and parsed as nothing at all.
+     * Malformed UTF-8 fails the unicode-mode EOL normalization, which used to empty the document silently.
      */
     public function testMalformedUtf8IsReported()
     {

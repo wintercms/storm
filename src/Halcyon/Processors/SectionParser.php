@@ -204,7 +204,7 @@ class SectionParser
     {
         $iniParser = new Ini;
 
-        // The parser throws where it cannot hand the document to PHP's native parser at all. That is the same kind of failure as an invalid section, so it is reported the same way: the content is passed on as a special attribute, for the caller to re-parse unsuppressed once it can name the file it came from.
+        // `@` does not suppress an exception, so a document the parser refuses outright is caught here and reported like any other invalid section.
         try {
             return @$iniParser->parse($settings)
                 ?: [self::ERROR_INI => $settings];

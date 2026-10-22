@@ -390,7 +390,7 @@ ESC;
     }
 
     /**
-     * A settings section the parser cannot hand to PHP's native parser at all is passed on as a special attribute, the same as any other invalid section, rather than thrown from here.
+     * A section the parser refuses outright is passed on as an attribute, not thrown from here.
      */
     public function testParseSettingsPassesOnContentItCannotParse()
     {

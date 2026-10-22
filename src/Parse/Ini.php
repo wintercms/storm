@@ -230,7 +230,7 @@ class Ini
     {
         $contents = preg_replace('~\R~u', PHP_EOL, $contents); // Normalize EOL
 
-        // Reachably malformed UTF-8, the pattern being in unicode mode. A null must not pass for an empty document, which the native parser would parse as nothing at all.
+        // A null here, reachably malformed UTF-8, must not pass for an empty document.
         if ($contents === null) {
             throw new \RuntimeException(sprintf(
                 'Unable to parse INI contents: %s',
