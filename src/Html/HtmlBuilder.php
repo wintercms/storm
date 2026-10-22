@@ -483,22 +483,14 @@ class HtmlBuilder
     }
 
     /**
-     * Matches a single HTML attribute within the attribute section of a tag.
-     *
-     * Captures the separator before the attribute name (1), the name (2) and the value with its
-     * leading equals sign, if any (3). A value is only treated as quoted where a value may
-     * legally begin, so a quote mark anywhere else is an ordinary character and a quoted value
-     * is consumed whole - including any ">" it contains.
-     *
-     * Applied repeatedly from the start of the attribute section, this walks the attributes of a
-     * tag in order: the possessive quantifiers mean each match consumes one complete attribute
-     * and the scan cannot drift into the middle of a value.
+     * Matches one HTML attribute: the separators before its name (1), the name (2), and the value
+     * with its equals sign, if any (3). A quoted value is consumed whole, including any ">" inside
+     * it. The separators include "=" so that a stray one cannot strand the rest of the scan.
      */
-    protected const ATTRIBUTE_PATTERN = '([\x00-\x20\/]*+)([^\x00-\x20=\/>]++)((?:[\x00-\x20]*+=[\x00-\x20]*+(?:"[^"]*+"|\'[^\']*+\'|[^\x00-\x20>]*+))?)';
+    protected const ATTRIBUTE_PATTERN = '([\x00-\x20\/=]*+)([^\x00-\x20=\/>]++)((?:[\x00-\x20]*+=[\x00-\x20]*+(?:"[^"]*+"|\'[^\']*+\'|[^\x00-\x20>]*+))?)';
 
     /**
-     * Matches the name of an attribute that is never safe to keep: an event handler, a namespace
-     * declaration, or an inline style.
+     * Attribute names that are never safe to keep.
      */
     protected const UNSAFE_ATTRIBUTE_NAME_PATTERN = '#^(?:on\w*|xmlns(?::[\w\-]+)?|style)$#i';
 
@@ -518,9 +510,8 @@ class HtmlBuilder
             $html = preg_replace('#(&\#x*)([0-9A-F]+);*#iu', "$1$2;", $html);
             $html = html_entity_decode($html, ENT_COMPAT|ENT_HTML5, 'UTF-8');
 
-            // Remove event handler, xmlns and style attributes from every tag. Inline styles are
-            // included because of expression() support in legacy versions of Internet Explorer:
-            // <span style="width: expression(alert('Ping!'));"></span>
+            // Remove event handler, xmlns and style attributes from every tag. Styles are
+            // included for IE's expression() support.
             $html = preg_replace_callback(
                 '#(<[a-z][^\x00-\x20\/>]*+)((?:' . self::ATTRIBUTE_PATTERN . ')*+)#iu',
                 fn (array $tag): string => $tag[1] . static::stripUnsafeAttributes($tag[2]),
@@ -545,13 +536,8 @@ class HtmlBuilder
     }
 
     /**
-     * Removes the unsafe attributes from the attribute section of a single HTML tag.
-     *
-     * The separator before each removed attribute is kept, so that the attributes either side of
-     * it do not run together.
-     *
-     * @param string $attributes The attribute section of a tag, i.e. everything after its name.
-     * @return string
+     * Removes unsafe attributes from a tag's attribute section, keeping each separator so the
+     * attributes either side of a removed one do not run together.
      */
     protected static function stripUnsafeAttributes($attributes)
     {

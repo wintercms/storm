@@ -107,6 +107,10 @@ class HtmlBuilderTest extends TestCase
             'xmlns declaration'                    => ['<img alt=">" xmlns="x" src=x>', 'xmlns'],
             'namespaced xmlns declaration'         => ['<img alt=">" xmlns:xlink="x" src=x>', 'xmlns'],
             'inline style'                         => ['<span alt=">" style="width: expression(alert(1))"></span>', 'style'],
+            'equals sign before a name'            => ['<img =foo onerror=alert(1)>', 'onerror'],
+            'bare equals sign'                     => ['<img = onerror=alert(1)>', 'onerror'],
+            'slash then equals sign'               => ['<img /=foo onerror=alert(1)>', 'onerror'],
+            'repeated equals signs'                => ['<img ==foo onerror=alert(1)>', 'onerror'],
         ];
     }
 
