@@ -435,7 +435,7 @@ class Application extends ApplicationBase
         ]);
 
         // Reset the package manifest so that it gets rebuilt; null is its unbuilt state, an empty array counts as built
-        $this->make(PackageManifest::class)->manifest = null; // @phpstan-ignore-line
+        $this->make(PackageManifest::class)->manifest = null;
     }
 
 
