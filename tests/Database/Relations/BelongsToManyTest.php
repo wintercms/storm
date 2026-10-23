@@ -3,6 +3,7 @@
 namespace Winter\Storm\Tests\Database\Relations;
 
 use Winter\Storm\Database\Model;
+use Winter\Storm\Database\Pivot;
 use Winter\Storm\Support\Facades\DB;
 use Winter\Storm\Tests\Database\Fixtures\Category;
 use Winter\Storm\Tests\Database\Fixtures\Post;
@@ -369,4 +370,57 @@ class BelongsToManyTest extends DbTestCase
         $this->assertEquals([1, 2], $author->executiveAuthors()->lists('id'));
         $this->assertEquals([1, 2], $author->executiveAuthors()->get()->lists('id'));
     }
+
+    public function testTableDefaultsToCustomPivotTable()
+    {
+        $model = new TestModel();
+        $model->addBelongsToManyRelation('pivot_with_table', [
+            Model::class,
+            'pivotModel' => CustomPivotWithTable::class,
+        ]);
+
+        $relation = $model->pivot_with_table();
+
+        $this->assertEquals('custom_pivot_table', $relation->getTable());
+    }
+
+    public function testTableDefaultsToCustomPivotTableWithoutTable()
+    {
+        $model = new TestModel();
+        $model->addBelongsToManyRelation('pivot_without_table', [
+            Model::class,
+            'pivotModel' => CustomPivotWithoutTable::class,
+        ]);
+
+        $relation = $model->pivot_without_table();
+
+        $this->assertEquals('custom_pivot_without_table', $relation->getTable());
+    }
+
+    public function testTableDefaultsToRelationTable()
+    {
+        $model = new TestModel();
+        $model->addBelongsToManyRelation('pivot_without_table', [
+            Model::class,
+            'table' => 'custom_pivot_table',
+            'pivotModel' => CustomPivotWithoutTable::class,
+        ]);
+
+        $relation = $model->pivot_without_table();
+
+        $this->assertEquals('custom_pivot_table', $relation->getTable());
+    }
+}
+
+class TestModel extends Model
+{
+}
+
+class CustomPivotWithTable extends Pivot
+{
+    public $table = 'custom_pivot_table';
+}
+
+class CustomPivotWithoutTable extends Pivot
+{
 }
