@@ -2,6 +2,7 @@
 
 namespace Winter\Storm\Tests\Database\Concerns;
 
+use Winter\Storm\Database\Model;
 use Winter\Storm\Database\Relations\BelongsTo;
 use Winter\Storm\Database\Relations\BelongsToMany;
 use Winter\Storm\Database\Relations\HasMany;
@@ -70,6 +71,31 @@ class HasRelationshipsTest extends \Winter\Storm\Tests\DbTestCase
 
         $author->addDynamicMethod('dynamicClassMethodFromArray', [$author, 'isDatabaseReady']);
         $this->assertFalse($author->hasRelation('dynamicClassMethodFromArray'));
+    }
+
+    public function testGetRelationMethodsAfterResolvingASingleRelation()
+    {
+        $this->forgetResolvedRelationMethods();
+
+        $author = new Author();
+        $author->getRelationType('messages');
+
+        $this->assertEquals(
+            ['contactNumber', 'messages', 'scopes', 'executiveAuthors', 'info', 'labels', 'auditLogs'],
+            $author->getRelationMethods()
+        );
+    }
+
+    public function testClassWithoutRelationMethodsIsOnlyReflectedOnce()
+    {
+        $this->forgetResolvedRelationMethods();
+
+        $phone = new Phone();
+        $this->assertEquals('belongsTo', $phone->getRelationType('author'));
+        $this->assertEquals([], $phone->getRelationMethods());
+
+        $scanned = new \ReflectionProperty(Model::class, 'scannedRelationMethods');
+        $this->assertSame([Phone::class => []], $scanned->getValue());
     }
 
     public function testGetRelationType()
@@ -342,5 +368,12 @@ class HasRelationshipsTest extends \Winter\Storm\Tests\DbTestCase
                 'detach' => true,
             ],
         ], $definitions['morphToMany']);
+    }
+
+    protected function forgetResolvedRelationMethods(): void
+    {
+        foreach (['resolvedRelationMethods', 'resolvedNonRelationMethods', 'scannedRelationMethods'] as $property) {
+            (new \ReflectionProperty(Model::class, $property))->setValue(null, []);
+        }
     }
 }

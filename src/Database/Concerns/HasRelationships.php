@@ -171,6 +171,12 @@ trait HasRelationships
      */
     protected static array $resolvedNonRelationMethods = [];
 
+    /**
+     * @var array<string, string[]> Stores the relation methods found by reflecting each class, so a class is only
+     * reflected once.
+     */
+    protected static array $scannedRelationMethods = [];
+
     //
     // Relations
     //
@@ -721,7 +727,7 @@ trait HasRelationships
     {
         $relationMethods = [];
 
-        if ($ignoreResolved || !isset(static::$resolvedRelationMethods[static::class])) {
+        if ($ignoreResolved || !isset(static::$scannedRelationMethods[static::class])) {
             $validMethods = [];
             $reflection = new \ReflectionClass($this);
 
@@ -740,8 +746,10 @@ trait HasRelationships
                     $relationMethods[] = $method;
                 }
             }
+
+            static::$scannedRelationMethods[static::class] = $relationMethods;
         } else {
-            $relationMethods += array_keys(static::$resolvedRelationMethods[static::class]);
+            $relationMethods = static::$scannedRelationMethods[static::class];
         }
 
         if (count($this->extensionData['methods'] ?? [])) {
