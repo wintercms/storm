@@ -9,24 +9,6 @@ require_once("helpers-array.php");
 require_once("helpers-paths.php");
 require_once("helpers-str.php");
 
-if (!function_exists('e')) {
-    /**
-     * Encode HTML special characters in a string.
-     *
-     * @param  \Illuminate\Contracts\Support\Htmlable|string  $value
-     * @param  bool  $doubleEncode
-     * @return string
-     */
-    function e($value, $doubleEncode = false)
-    {
-        if ($value instanceof \Illuminate\Contracts\Support\Htmlable) {
-            return $value->toHtml();
-        }
-
-        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', $doubleEncode);
-    }
-}
-
 if (!function_exists('trans')) {
     /**
      * Translate the given message.
