@@ -1,8 +1,11 @@
 <?php
 
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
+use Illuminate\Support\Facades\DB;
+use Winter\Storm\Database\MemoryCache;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar;
 use Winter\Storm\Database\Query\Grammars\PostgresGrammar;
 use Winter\Storm\Database\Query\Grammars\SQLiteGrammar;
@@ -92,6 +95,60 @@ class QueryBuilderTest extends TestCase
             'select [id], concat(\'field\', \' \', [cast]) as [full_cast]',
             $query->toSql()
         );
+    }
+
+    /**
+     * @dataProvider duplicateCacheColumnsProvider
+     */
+    public function testDuplicateCachePutsQueryWithSelectedColumns(callable $run, array $columns)
+    {
+        $putColumns = null;
+
+        $cache = $this->createMock(MemoryCache::class);
+        $cache->method('has')->willReturn(false);
+        $cache->expects($this->once())
+            ->method('put')
+            ->willReturnCallback(function (QueryBuilder $query) use (&$putColumns) {
+                // Read during the call: get() restores the columns of the builder afterwards
+                $putColumns = $query->columns;
+            });
+
+        $this->app->instance(MemoryCache::class, $cache);
+
+        $run($this->getBuilder()->from('countries')->enableDuplicateCache());
+
+        $this->assertSame($columns, $putColumns);
+    }
+
+    public static function duplicateCacheColumnsProvider(): array
+    {
+        return [
+            'value()' => [fn (QueryBuilder $query) => $query->value('code'), ['code']],
+            'first() with columns' => [fn (QueryBuilder $query) => $query->first(['id', 'code']), ['id', 'code']],
+            'get()' => [fn (QueryBuilder $query) => $query->get(), ['*']],
+        ];
+    }
+
+    public function testRememberCacheKeyIncludesSelectedColumns()
+    {
+        $keys = [];
+
+        $cache = $this->createMock(Repository::class);
+        $cache->expects($this->exactly(2))
+            ->method('remember')
+            ->willReturnCallback(function ($key) use (&$keys) {
+                $keys[] = $key;
+
+                return [];
+            });
+
+        $this->app->instance('cache', $cache);
+
+        // DB::table() leaves the duplicate cache off, so get() calls getCached() directly
+        DB::table('countries')->remember(10)->value('code');
+        DB::table('countries')->remember(10)->first();
+
+        $this->assertNotSame($keys[0], $keys[1]);
     }
 
     protected function getConnection($connection = null, $table = null)

@@ -117,20 +117,24 @@ class QueryBuilder extends QueryBuilderBase
      */
     protected function getDuplicateCached($columns = ['*'])
     {
-        $cache = MemoryCache::instance();
+        // The memory cache is keyed on toSql(), so the columns of this call must be selected
+        // while the results are looked up and stored. Otherwise the get(['id']) behind
+        // value('id') or first(['id']) answers a later get() of the same query with the id alone.
+        return $this->onceWithColumns(Arr::wrap($columns), function () use ($columns) {
+            $cache = MemoryCache::instance();
 
-        if ($cache->has($this)) {
-            $results = collect($cache->get($this));
-        }
-        else {
+            if ($cache->has($this)) {
+                return collect($cache->get($this));
+            }
+
             $results = !is_null($this->cacheMinutes)
                 ? $this->getCached($columns)
                 : parent::get($columns);
 
             $cache->put($this, $results->all());
-        }
 
-        return $results;
+            return $results;
+        });
     }
 
     /**
@@ -141,31 +145,35 @@ class QueryBuilder extends QueryBuilderBase
      */
     public function getCached($columns = ['*'])
     {
-        // If the query is requested to be cached, we will cache it using a unique key
-        // for this database connection and query statement, including the bindings
-        // that are used on this query, providing great convenience when caching.
-        list($key, $minutes) = $this->getCacheInfo();
+        // The generated cache key is built from toSql() as well, so the columns of this call
+        // must be selected while it is generated, as in getDuplicateCached().
+        return $this->onceWithColumns(Arr::wrap($columns), function () use ($columns) {
+            // If the query is requested to be cached, we will cache it using a unique key
+            // for this database connection and query statement, including the bindings
+            // that are used on this query, providing great convenience when caching.
+            list($key, $minutes) = $this->getCacheInfo();
 
-        $cache = $this->getCache();
+            $cache = $this->getCache();
 
-        $callback = $this->getCacheCallback($columns);
+            $callback = $this->getCacheCallback($columns);
 
-        // If the "minutes" value is less than zero, we will use that as the indicator
-        // that the value should be remembered values should be stored indefinitely
-        // and if we have minutes we will use the typical remember function here.
-        if (is_int($minutes) && $minutes < 0) {
-            $results = $cache->rememberForever($key, $callback);
-        }
-        else {
-            if (is_int($minutes)) {
-                $expiresAt = now()->addMinutes($minutes);
-            } else {
-                $expiresAt = $minutes;
+            // If the "minutes" value is less than zero, we will use that as the indicator
+            // that the value should be remembered values should be stored indefinitely
+            // and if we have minutes we will use the typical remember function here.
+            if (is_int($minutes) && $minutes < 0) {
+                $results = $cache->rememberForever($key, $callback);
             }
-            $results = $cache->remember($key, $expiresAt, $callback);
-        }
+            else {
+                if (is_int($minutes)) {
+                    $expiresAt = now()->addMinutes($minutes);
+                } else {
+                    $expiresAt = $minutes;
+                }
+                $results = $cache->remember($key, $expiresAt, $callback);
+            }
 
-        return collect($results);
+            return collect($results);
+        });
     }
 
     /**
