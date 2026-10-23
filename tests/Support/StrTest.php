@@ -2,7 +2,7 @@
 
 use Winter\Storm\Support\Str;
 
-class StrTest extends TestCase
+class StrTest extends \Winter\Storm\Tests\TestCase
 {
     public function testJoin()
     {

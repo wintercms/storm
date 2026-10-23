@@ -12,7 +12,7 @@ use Winter\Storm\Parse\Assetic\Filter\ScssCompiler;
  *
  * Mirrors LessCompilerTest, which covers the equivalent LESS wiring.
  */
-class ScssCompilerTest extends TestCase
+class ScssCompilerTest extends \Winter\Storm\Tests\TestCase
 {
     /** @var string */
     protected $tmpRoot;

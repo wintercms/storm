@@ -2,7 +2,7 @@
 
 use Winter\Storm\Database\Factories\Factory;
 
-class FactoryTest extends TestCase
+class FactoryTest extends \Winter\Storm\Tests\TestCase
 {
     public function testResolveFactoryName()
     {

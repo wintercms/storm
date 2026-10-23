@@ -9,7 +9,7 @@ use Winter\Storm\Tests\Database\Fixtures\Country;
 use Winter\Storm\Tests\Database\Fixtures\Post;
 use Winter\Storm\Tests\DbTestCase;
 
-class HasManyThroughTest extends DbTestCase
+class HasManyThroughTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testGet()
     {

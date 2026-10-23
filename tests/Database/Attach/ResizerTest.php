@@ -3,7 +3,7 @@
 use AssertGD\DiffCalculator\ScaledRgbChannels;
 use Winter\Storm\Database\Attach\Resizer;
 
-class ResizerTest extends TestCase
+class ResizerTest extends \Winter\Storm\Tests\TestCase
 {
     use \AssertGD\GDAssertTrait;
 

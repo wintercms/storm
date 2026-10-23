@@ -4,7 +4,7 @@ use Illuminate\Events\QueuedClosure;
 
 include_once __DIR__.'/../fixtures/events/EventTest.php';
 
-class EmitterTest extends TestCase
+class EmitterTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * The object under test.
@@ -22,8 +22,11 @@ class EmitterTest extends TestCase
      */
     public function setUp(): void
     {
-        $traitName = 'Winter\Storm\Support\Traits\Emitter';
-        $this->traitObject = $this->getObjectForTrait($traitName);
+        parent::setUp();
+
+        $this->traitObject = new class {
+            use \Winter\Storm\Support\Traits\Emitter;
+        };
     }
 
     //

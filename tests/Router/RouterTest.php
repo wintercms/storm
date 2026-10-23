@@ -2,7 +2,7 @@
 
 use Winter\Storm\Router\Router;
 
-class RouterTest extends TestCase
+class RouterTest extends \Winter\Storm\Tests\TestCase
 {
     public function testResolveUrl()
     {

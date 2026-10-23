@@ -23,6 +23,7 @@ class Kernel extends HttpKernel
      * {@inheritDoc}
      */
     protected $middleware = [
+        \Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks::class,
         \Winter\Storm\Foundation\Http\Middleware\CheckForTrustedHost::class,
         \Winter\Storm\Foundation\Http\Middleware\CheckForTrustedProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
@@ -32,7 +33,7 @@ class Kernel extends HttpKernel
     /**
      * {@inheritDoc}
      */
-    protected $routeMiddleware = [
+    protected $middlewareAliases = [
         // 'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
         // 'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,

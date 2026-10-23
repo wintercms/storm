@@ -7,7 +7,7 @@ use Winter\Storm\Tests\Database\Fixtures\Author;
 use Winter\Storm\Tests\Database\Fixtures\Phone;
 use Winter\Storm\Tests\DbTestCase;
 
-class HasOneTest extends DbTestCase
+class HasOneTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testSetRelationValue()
     {

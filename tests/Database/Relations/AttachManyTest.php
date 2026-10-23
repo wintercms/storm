@@ -7,7 +7,7 @@ use Winter\Storm\Database\Model;
 use Winter\Storm\Tests\Database\Fixtures\User;
 use Winter\Storm\Tests\DbTestCase;
 
-class AttachManyTest extends DbTestCase
+class AttachManyTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testDeleteFlagDestroyRelationship()
     {

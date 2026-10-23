@@ -5,7 +5,7 @@ use Winter\Storm\Translation\FileLoader;
 use Winter\Storm\Translation\Translator;
 use Winter\Storm\Validation\Factory;
 
-class EmailValidationTest extends TestCase
+class EmailValidationTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * @var Factory

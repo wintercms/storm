@@ -21,7 +21,7 @@ class SectionParser
      */
     protected static function parseIntoSections(string $content, int $limit = 3): array
     {
-        $sections = preg_split('/^'.preg_quote(self::SECTION_SEPARATOR).'\s*$/m', $content, -1);
+        $sections = preg_split('/^'.preg_quote(self::SECTION_SEPARATOR, '/').'\s*$/m', $content, -1);
 
         // If more than the limit sections found, merge the extra sections into the final section
         if ($limit >= 1 && count($sections) > $limit) {
