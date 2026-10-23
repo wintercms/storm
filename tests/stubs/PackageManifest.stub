@@ -1,0 +1,15 @@
+<?php
+
+// Laravel annotates $manifest as `array`, but the property is untyped, defaults to null, and getManifest() treats null as "not built yet".
+
+namespace Illuminate\Foundation;
+
+class PackageManifest
+{
+    /**
+     * The loaded manifest array, or null if it has not been built yet.
+     *
+     * @var array<string, array<string, mixed>>|null
+     */
+    public $manifest;
+}
