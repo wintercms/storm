@@ -25,3 +25,5 @@ parameters:
         - src/Auth/Migrations
         - src/Database/Migrations
     treatPhpDocTypesAsCertain: false
+    stubFiles:
+        - tests/stubs/PackageManifest.stub
