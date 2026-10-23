@@ -2,13 +2,15 @@
 
 namespace Winter\Storm\Database\Schema\Grammars;
 
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar as BasePostgresGrammar;
 use Illuminate\Support\Fluent;
 
 class PostgresGrammar extends BasePostgresGrammar
 {
+    use Concerns\KeepsExistingColumnAttributes;
+
     /**
      * Compile a change column command into a series of SQL statements.
      *
@@ -16,48 +18,38 @@ class PostgresGrammar extends BasePostgresGrammar
      * This restores Laravel previous behavior where existing column attributes are kept
      * unless they get changed by the new Blueprint.
      *
+     * The kept attributes are set on the column itself, so that the comment command that runs
+     * after the change keeps the existing comment as well.
+     *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
      * @param  \Illuminate\Support\Fluent  $command
      * @return array|string
-     *
-     * @throws \RuntimeException
      */
     public function compileChange(Blueprint $blueprint, Fluent $command)
     {
-        $columns = [];
-        $schema = $this->connection->getSchemaBuilder();
-        $table = $blueprint->getTable();
+        /** @var \Illuminate\Database\Schema\ColumnDefinition $column */
+        $column = $command->get('column');
 
-        $oldColumns = collect($schema->getColumns($table));
+        $this->keepExistingColumnAttributes($blueprint, $column);
 
-        foreach ($blueprint->getChangedColumns() as $column) {
-            $changes = ['type '.$this->getType($column).$this->modifyCollate($blueprint, $column)];
+        return parent::compileChange($blueprint, $command);
+    }
 
-            $oldColumn = $oldColumns->where('name', $column->name)->first();
-            if (!$oldColumn instanceof ColumnDefinition) {
-                $oldColumn = new ColumnDefinition($oldColumn);
-            }
+    /** @inheritDoc */
+    protected function getKeptColumnAttributes($existing, Fluent $column): array
+    {
+        $attributes = [
+            'nullable' => (bool) $existing['nullable'],
+            // PostgreSQL reports every default as an SQL expression, such as 'text'::character varying
+            'default' => is_null($existing['default']) ? null : new Expression($existing['default']),
+            'comment' => $existing['comment'],
+        ];
 
-            foreach ($this->modifiers as $modifier) {
-                if ($modifier === 'Collate') {
-                    continue;
-                }
-
-                if (method_exists($this, $method = "modify{$modifier}")) {
-                    $mod = strtolower($modifier);
-                    $col = isset($oldColumn->{$mod}) && ! isset($column->{$mod}) ? $oldColumn : $column;
-                    $constraints = (array) $this->{$method}($blueprint, $col);
-
-                    foreach ($constraints as $constraint) {
-                        $changes[] = $constraint;
-                    }
-                }
-            }
-
-            $columns[] = implode(', ', $this->prefixArray('alter column '.$this->wrap($column->name), $changes));
+        if ($this->changesToATextColumn($column)) {
+            $attributes['collation'] = $existing['collation'];
         }
 
-        return 'alter table '.$this->wrapTable($blueprint).' '.implode(', ', $columns);
+        return $attributes;
     }
 
     /**

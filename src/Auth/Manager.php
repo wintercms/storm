@@ -622,11 +622,16 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      */
     public function once(array $credentials = [])
     {
+        $previousUseSession = $this->useSession;
+
         $this->useSession = false;
 
-        $user = $this->authenticate($credentials);
-
-        $this->useSession = true;
+        try {
+            $user = $this->authenticate($credentials);
+        }
+        finally {
+            $this->useSession = $previousUseSession;
+        }
 
         return !!$user;
     }

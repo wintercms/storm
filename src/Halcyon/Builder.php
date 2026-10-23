@@ -745,14 +745,16 @@ class Builder
     protected function getCacheCallback($columns)
     {
         return function () use ($columns) {
-            return $this->processInitCacheData($this->getFresh($columns));
+            // The cache treats a stored null as a miss, so a missing template is stored as an empty
+            // result instead. The miss then stays cached until isCacheBusted() sees the file appear.
+            return $this->processInitCacheData($this->getFresh($columns)) ?? [];
         };
     }
 
     /**
      * Initialize the cache data of each record.
-     * @param  \Winter\Storm\Halcyon\Collection|array  $data
-     * @return \Winter\Storm\Halcyon\Collection|array
+     * @param  \Winter\Storm\Halcyon\Collection|array|null  $data
+     * @return \Winter\Storm\Halcyon\Collection|array|null
      */
     protected function processInitCacheData($data)
     {

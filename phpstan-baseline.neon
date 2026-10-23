@@ -755,36 +755,6 @@ parameters:
 			path: src/Database/Relations/MorphToMany.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
-			identifier: property.notFound
-			path: src/Database/Schema/Grammars/MariaDbGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$renameTo\.$#'
-			identifier: property.notFound
-			path: src/Database/Schema/Grammars/MariaDbGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
-			identifier: property.notFound
-			path: src/Database/Schema/Grammars/MySqlGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$renameTo\.$#'
-			identifier: property.notFound
-			path: src/Database/Schema/Grammars/MySqlGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
-			identifier: property.notFound
-			path: src/Database/Schema/Grammars/PostgresGrammar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$name\.$#'
-			identifier: property.notFound
-			path: src/Database/Schema/Grammars/SqlServerGrammar.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getSortOrderColumn\(\)\.$#'
 			identifier: method.notFound
 			path: src/Database/SortableScope.php
@@ -850,7 +820,7 @@ parameters:
 			path: src/Support/Testing/Fakes/MailFake.php
 
 		-
-			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \(string\|null\) of method Illuminate\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\)$#'
+			message: '#^Parameter \#2 \$data \(array\) of method Winter\\Storm\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\) should be compatible with parameter \$queue \((BackedEnum\|)?string\|null\) of method Illuminate\\Support\\Testing\\Fakes\\MailFake\:\:queue\(\)$#'
 			identifier: method.childParameterType
 			path: src/Support/Testing/Fakes/MailFake.php
 
