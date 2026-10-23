@@ -57,6 +57,24 @@ class HasRelationshipsTest extends DbTestCase
         $this->assertEquals('hasMany', $author->getRelationType('dynamicClassMethodFromArray'));
     }
 
+    public function testRelationMethodsAreScannedOncePerClass()
+    {
+        $scanned = new \ReflectionProperty(Author::class, 'scannedRelationMethods');
+
+        // A class without Laravel-style relation methods is remembered too
+        $meta = new Meta();
+        $this->assertSame([], $meta->getRelationMethods());
+        $this->assertSame([], $scanned->getValue()[Meta::class]);
+
+        $author = new Author();
+        $methods = $author->getRelationMethods();
+        $this->assertEqualsCanonicalizing(
+            ['contactNumber', 'messages', 'scopes', 'executiveAuthors', 'info', 'labels', 'auditLogs'],
+            $methods
+        );
+        $this->assertSame($methods, (new Author())->getRelationMethods());
+    }
+
     public function testNonRelationDynamicMethods()
     {
         $author = new Author();
