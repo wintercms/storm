@@ -5,6 +5,7 @@ namespace Tests\Database;
 use Mockery;
 use Illuminate\Support\Facades\DB;
 use Winter\Storm\Database\Model;
+use Winter\Storm\Extension\ExtensionBase;
 use Winter\Storm\Tests\DbTestCase;
 
 class ModelTest extends DbTestCase
@@ -728,6 +729,68 @@ class ModelTest extends DbTestCase
 
         $this->assertEquals(2, $model->calledCount);
     }
+
+    public function testIssetIsExtensionAware()
+    {
+        $model = new TestModelVisible();
+        $model->addDynamicProperty('dynamicProperty', 'dynamic value');
+
+        $this->assertTrue($model->propertyExists('dynamicProperty'));
+        $this->assertTrue(isset($model->dynamicProperty));
+        $this->assertFalse(empty($model->dynamicProperty));
+        $this->assertEquals('dynamic value', $model->dynamicProperty ?? 'fallback');
+    }
+
+    public function testIssetOnNullExtensionProperty()
+    {
+        $model = new TestModelVisible();
+        $model->addDynamicProperty('nullDynamicProperty', null);
+
+        $this->assertTrue($model->propertyExists('nullDynamicProperty'));
+        $this->assertFalse(isset($model->nullDynamicProperty));
+        $this->assertEquals('fallback', $model->nullDynamicProperty ?? 'fallback');
+    }
+
+    public function testIssetOnNullDynamicPropertyFallsThroughToAttribute()
+    {
+        $model = new TestModelVisible();
+        $model->name = 'Ben Thomson';
+        $model->addDynamicProperty('name', null);
+
+        // extendableGet() skips the null dynamic property and resolves the attribute instead
+        $this->assertEquals('Ben Thomson', $model->name);
+        $this->assertTrue(isset($model->name));
+        $this->assertEquals('Ben Thomson', $model->name ?? 'fallback');
+    }
+
+    public function testIssetIsAwareOfBehaviorProperties()
+    {
+        $model = new TestModelVisible();
+        $model->extendClassWith(ExtensionPropertyBehavior::class);
+
+        $this->assertEquals('from behaviour', $model->behaviorProperty);
+        $this->assertTrue(isset($model->behaviorProperty));
+        $this->assertEquals('from behaviour', $model->behaviorProperty ?? 'fallback');
+        $this->assertFalse(isset($model->nullBehaviorProperty));
+    }
+
+    public function testIssetStillResolvesAttributesAndUnknownProperties()
+    {
+        $model = new TestModelVisible();
+        $model->name = 'Ben Thomson';
+        $model->description = null;
+
+        $this->assertTrue(isset($model->name));
+        $this->assertFalse(isset($model->description));
+        $this->assertFalse(isset($model->unknownProperty));
+    }
+}
+
+class ExtensionPropertyBehavior extends ExtensionBase
+{
+    public $behaviorProperty = 'from behaviour';
+
+    public $nullBehaviorProperty = null;
 }
 
 class TestModelGuarded extends Model
