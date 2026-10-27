@@ -161,15 +161,9 @@ trait HasRelationships
     ];
 
     /**
-     * @var array<string, array<string, mixed>> Stores methods that have resolved to Laravel-style relation objects by class name.
+     * @var array<string, array<string, mixed>> Stores the relation methods declared on each model class, by class name.
      */
     protected static array $resolvedRelationMethods = [];
-
-    /**
-     * @var array<string, array<string, mixed>> Stores methods that have not been resolved to Laravel-style relation objects by class name.
-     * Used mainly for testing extension methods.
-     */
-    protected static array $resolvedNonRelationMethods = [];
 
     //
     // Relations
@@ -182,7 +176,7 @@ trait HasRelationships
     {
         $this->detectRelationConflict($name);
 
-        if (!$propertyOnly && $this->isRelationMethod($name, true)) {
+        if (!$propertyOnly && $this->isRelationMethod($name)) {
             return true;
         }
 
@@ -206,7 +200,7 @@ trait HasRelationships
             }
         }
 
-        foreach ($this->getRelationMethods(true) as $relation) {
+        foreach ($this->getRelationMethods() as $relation) {
             $relations[$relation] = $this->{$relation}();
         }
 
@@ -717,46 +711,19 @@ trait HasRelationships
     /**
      * Retrieves all methods that either contain the `Relation` attribute or have a return type that matches a relation.
      */
-    public function getRelationMethods(bool $ignoreResolved = false): array
+    public function getRelationMethods(): array
     {
-        $relationMethods = [];
+        $relationMethods = array_keys($this->getClassRelationMethods());
 
-        if ($ignoreResolved || !isset(static::$resolvedRelationMethods[static::class])) {
-            $validMethods = [];
-            $reflection = new \ReflectionClass($this);
+        // Extension and dynamic methods are always checked live, as they may change at runtime
+        $extensionMethods = array_keys(array_merge(
+            $this->extensionData['methods'] ?? [],
+            $this->extensionData['dynamicMethods'] ?? []
+        ));
 
-            foreach ($reflection->getMethods() as $method) {
-                if (
-                    $method->getDeclaringClass()->getName() === DatabaseModel::class
-                    || $method->getDeclaringClass()->getName() === Model::class
-                ) {
-                    continue;
-                }
-                $validMethods[] = $method->getName();
-            }
-
-            foreach ($validMethods as $method) {
-                if (!in_array($method, ['attachOne', 'attachMany']) && $this->isRelationMethod($method)) {
-                    $relationMethods[] = $method;
-                }
-            }
-        } else {
-            $relationMethods += array_keys(static::$resolvedRelationMethods[static::class]);
-        }
-
-        if (count($this->extensionData['methods'] ?? [])) {
-            foreach (array_keys($this->extensionData['methods']) as $name) {
-                if ($this->isRelationMethod($name)) {
-                    $relationMethods[] = $name;
-                }
-            }
-        }
-
-        if (count($this->extensionData['dynamicMethods'] ?? [])) {
-            foreach (array_keys($this->extensionData['dynamicMethods']) as $name) {
-                if ($this->isRelationMethod($name)) {
-                    $relationMethods[] = $name;
-                }
+        foreach ($extensionMethods as $name) {
+            if (!in_array($name, $relationMethods) && $this->isRelationMethod($name)) {
+                $relationMethods[] = $name;
             }
         }
 
@@ -764,33 +731,52 @@ trait HasRelationships
     }
 
     /**
+     * Retrieves the relation methods declared on the model class.
+     *
+     * The class is reflected once in full and relation methods, if any are found, are stored and cached on
+     * subsequent calls. Extension and dynamic methods are not stored, as they may change at runtime.
+     */
+    protected function getClassRelationMethods(): array
+    {
+        if (isset(static::$resolvedRelationMethods[static::class])) {
+            return static::$resolvedRelationMethods[static::class];
+        }
+
+        $relationMethods = [];
+        $reflection = new \ReflectionClass($this);
+
+        foreach ($reflection->getMethods() as $method) {
+            if (
+                $method->getDeclaringClass()->getName() === DatabaseModel::class
+                || $method->getDeclaringClass()->getName() === Model::class
+                || in_array($method->getName(), ['attachOne', 'attachMany'])
+            ) {
+                continue;
+            }
+
+            if (($type = $this->getReflectedRelationType($method)) !== null) {
+                $relationMethods[$method->getName()] = [
+                    'type' => $type,
+                ];
+            }
+        }
+
+        return static::$resolvedRelationMethods[static::class] = $relationMethods;
+    }
+
+    /**
      * Determine the relation type of a relation method.
      *
      * This is used to determine if a method is a relation method, first and foremost, and then to determine the type of the relation.
      */
-    protected function getRelationMethodType(string $name, bool $ignoreResolved = false): ?string
+    protected function getRelationMethodType(string $name): ?string
     {
-        if (!$this->methodExists($name)) {
-            return null;
-        }
-
-        if (!$ignoreResolved) {
-            if (isset(static::$resolvedRelationMethods[static::class][$name])) {
-                return static::$resolvedRelationMethods[static::class][$name]['type'];
-            }
-
-            if (
-                isset(static::$resolvedNonRelationMethods[static::class])
-                && in_array($name, static::$resolvedNonRelationMethods[static::class])
-            ) {
-                return null;
-            }
-        }
-
         // Directly defined relation methods
         if (method_exists($this, $name)) {
-            $method = new \ReflectionMethod($this, $name);
-        } elseif (isset($this->extensionData['methods'][$name])) {
+            return $this->getClassRelationMethods()[$name]['type'] ?? null;
+        }
+
+        if (isset($this->extensionData['methods'][$name])) {
             $extension = $this->extensionData['methods'][$name];
             $object = $this->extensionData['extensions'][$extension];
             $method = new \ReflectionMethod($object, $name);
@@ -802,54 +788,31 @@ trait HasRelationships
                 $method = new \ReflectionFunction($dynamicMethod->getClosure());
             }
         } else {
-            if (!isset(static::$resolvedNonRelationMethods[static::class])) {
-                static::$resolvedNonRelationMethods[static::class] = [$name];
-            } else {
-                static::$resolvedNonRelationMethods[static::class][] = $name;
-            }
             return null;
         }
 
+        return $this->getReflectedRelationType($method);
+    }
+
+    /**
+     * Determines the relation type from a method's `Relation` attribute or return type.
+     */
+    protected function getReflectedRelationType(\ReflectionFunctionAbstract $method): ?string
+    {
         if (count($method->getAttributes(Relation::class))) {
             $attribute = $method->getAttributes(Relation::class)[0];
-            $type = $attribute->newInstance()->getType();
-
-            static::$resolvedRelationMethods[static::class][$name] = [
-                'type' => $type,
-            ];
-
-            return $type;
+            return $attribute->newInstance()->getType();
         }
 
         $returnType = $method->getReturnType();
 
-        if (is_null($returnType)) {
-            if (!isset(static::$resolvedNonRelationMethods[static::class])) {
-                static::$resolvedNonRelationMethods[static::class] = [$name];
-            } else {
-                static::$resolvedNonRelationMethods[static::class][] = $name;
-            }
-            return null;
-        }
-
         if (
             $returnType instanceof \ReflectionNamedType
-             && in_array($returnType->getName(), array_values(static::$relationTypes))
+            && in_array($returnType->getName(), array_values(static::$relationTypes))
         ) {
-            $type = array_search($returnType->getName(), static::$relationTypes);
-
-            static::$resolvedRelationMethods[static::class][$name] = [
-                'type' => $type,
-            ];
-
-            return $type;
+            return array_search($returnType->getName(), static::$relationTypes);
         }
 
-        if (!isset(static::$resolvedNonRelationMethods[static::class])) {
-            static::$resolvedNonRelationMethods[static::class] = [$name];
-        } else {
-            static::$resolvedNonRelationMethods[static::class][] = $name;
-        }
         return null;
     }
 
@@ -858,48 +821,24 @@ trait HasRelationships
      *
      * A relation method either specifies the `Relation` attribute or has a return type that matches a relation.
      */
-    protected function isRelationMethod(string $name, bool $ignoreResolved = false): bool
+    protected function isRelationMethod(string $name): bool
     {
-        if (!$this->methodExists($name)) {
-            return false;
-        }
-
-        if (!$ignoreResolved) {
-            if (isset(static::$resolvedRelationMethods[static::class][$name])) {
-                return true;
-            }
-
-            if (
-                isset(static::$resolvedNonRelationMethods[static::class])
-                && in_array($name, static::$resolvedNonRelationMethods[static::class])
-            ) {
-                return false;
-            }
-        }
-
-        return $this->getRelationMethodType($name, $ignoreResolved) !== null;
+        return $this->getRelationMethodType($name) !== null;
     }
 
     /**
      * Generates a definition array for a relation method.
+     *
+     * Definitions are only stored for relation methods declared on the model class.
      */
-    protected function relationMethodDefinition(string $name, bool $ignoreResolved = false): array
+    protected function relationMethodDefinition(string $name): array
     {
         if (!$this->isRelationMethod($name)) {
             return [];
         }
 
-        if (!$ignoreResolved) {
-            if (isset(static::$resolvedRelationMethods[static::class][$name]['definition'])) {
-                return static::$resolvedRelationMethods[static::class][$name]['definition'];
-            }
-
-            if (
-                isset(static::$resolvedNonRelationMethods[static::class])
-                && in_array($name, static::$resolvedNonRelationMethods[static::class])
-            ) {
-                return [];
-            }
+        if (isset(static::$resolvedRelationMethods[static::class][$name]['definition'])) {
+            return static::$resolvedRelationMethods[static::class][$name]['definition'];
         }
 
         $definition = null;
@@ -908,7 +847,11 @@ trait HasRelationships
             $definition = $this->{$name}()->getArrayDefinition() + $this->getRelationDefaults($this->getRelationType($name));
         });
 
-        return static::$resolvedRelationMethods[static::class][$name]['definition'] = $definition;
+        if (isset(static::$resolvedRelationMethods[static::class][$name])) {
+            static::$resolvedRelationMethods[static::class][$name]['definition'] = $definition;
+        }
+
+        return $definition;
     }
 
     /**
