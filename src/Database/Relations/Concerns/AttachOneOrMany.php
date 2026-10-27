@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Expression;
 use Winter\Storm\Support\Facades\DbDongle;
 use Winter\Storm\Database\Attach\File as FileModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -42,7 +43,7 @@ trait AttachOneOrMany
         if (static::$constraints) {
             $this->query->where($this->morphType, $this->morphClass);
 
-            $this->query->where($this->foreignKey, '=', $this->getParentKey());
+            $this->query->where($this->foreignKey, '=', $this->castKey($this->getParentKey()));
 
             $this->query->where('field', $this->getFieldName());
 
@@ -109,16 +110,37 @@ trait AttachOneOrMany
     }
 
     /**
-     * Set the field constraint for an eager load of the relation.
+     * Set the constraints for an eager load of the relation.
      *
      * @param  array  $models
      * @return void
      */
     public function addEagerConstraints(array $models)
     {
-        parent::addEagerConstraints($models);
+        $keys = $this->getKeys($models, $this->localKey);
+
+        /*
+         * Laravel inlines integer keys as integers to avoid a placeholder per key. Inline them
+         * as string literals instead, so the string foreign key column can use its index.
+         */
+        if ($this->whereInMethod($this->parent, $this->localKey) === 'whereIntegerInRaw') {
+            $keys = array_map(fn ($key) => new Expression("'" . (int) $key . "'"), $keys);
+        }
+
+        $this->query->whereIn($this->foreignKey, $keys);
+
+        $this->query->where($this->morphType, $this->morphClass);
 
         $this->query->where('field', $this->fieldName);
+    }
+
+    /**
+     * The foreign key is a string column, so an integer parent key is compared as a string
+     * to keep its index usable.
+     */
+    protected function castKey($key): ?string
+    {
+        return $key === null ? null : (string) $key;
     }
 
     /**
