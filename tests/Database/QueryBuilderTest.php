@@ -1,8 +1,11 @@
 <?php
 
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
+use Illuminate\Support\Facades\DB;
+use Winter\Storm\Database\MemoryCache;
 use Winter\Storm\Database\Query\Grammars\MySqlGrammar;
 use Winter\Storm\Database\Query\Grammars\PostgresGrammar;
 use Winter\Storm\Database\Query\Grammars\SQLiteGrammar;

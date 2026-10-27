@@ -98,15 +98,17 @@ class QueryBuilder extends QueryBuilderBase
      */
     public function get($columns = ['*'])
     {
-        if ($this->cachingDuplicates()) {
-            return $this->getDuplicateCached($columns);
-        }
+        return $this->onceWithColumns(Arr::wrap($columns), function () use ($columns) {
+            if ($this->cachingDuplicates()) {
+                return $this->getDuplicateCached($columns);
+            }
 
-        if (!is_null($this->cacheMinutes)) {
-            return $this->getCached($columns);
-        }
+            if (!is_null($this->cacheMinutes)) {
+                return $this->getCached($columns);
+            }
 
-        return parent::get($columns);
+            return parent::get($columns);
+        });
     }
 
     /**
@@ -120,15 +122,14 @@ class QueryBuilder extends QueryBuilderBase
         $cache = MemoryCache::instance();
 
         if ($cache->has($this)) {
-            $results = collect($cache->get($this));
+            return collect($cache->get($this));
         }
-        else {
-            $results = !is_null($this->cacheMinutes)
-                ? $this->getCached($columns)
-                : parent::get($columns);
 
-            $cache->put($this, $results->all());
-        }
+        $results = !is_null($this->cacheMinutes)
+            ? $this->getCached($columns)
+            : parent::get($columns);
+
+        $cache->put($this, $results->all());
 
         return $results;
     }
@@ -144,7 +145,7 @@ class QueryBuilder extends QueryBuilderBase
         // If the query is requested to be cached, we will cache it using a unique key
         // for this database connection and query statement, including the bindings
         // that are used on this query, providing great convenience when caching.
-        list($key, $minutes) = $this->getCacheInfo();
+        [$key, $minutes] = $this->getCacheInfo();
 
         $cache = $this->getCache();
 
@@ -155,8 +156,7 @@ class QueryBuilder extends QueryBuilderBase
         // and if we have minutes we will use the typical remember function here.
         if (is_int($minutes) && $minutes < 0) {
             $results = $cache->rememberForever($key, $callback);
-        }
-        else {
+        } else {
             if (is_int($minutes)) {
                 $expiresAt = now()->addMinutes($minutes);
             } else {
