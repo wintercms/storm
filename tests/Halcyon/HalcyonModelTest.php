@@ -359,6 +359,29 @@ ESC;
         $this->assertArrayNotHasKey('myDynamicProperty', $page->attributes);
     }
 
+    public function testIssetOnDynamicProperty()
+    {
+        $page = HalcyonTestPage::find('home');
+        $page->addDynamicProperty('myDynamicProperty', 'myDynamicPropertyValue');
+
+        $this->assertTrue(isset($page->myDynamicProperty));
+        $this->assertEquals('myDynamicPropertyValue', $page->myDynamicProperty ?? 'Fallback');
+        $this->assertFalse(isset($page->someUnknownProperty));
+    }
+
+    public function testIssetOnNullBehaviorPropertyFallsThroughToAttribute()
+    {
+        $page = HalcyonTestPage::find('home');
+        $page->title = 'From attribute';
+        $page->extendClassWith(NullTitleBehavior::class);
+
+        // Halcyon's __get() uses `extendableGet($key) ?? getAttribute($key)`, so a null
+        // behavior property still resolves to the local attribute
+        $this->assertEquals('From attribute', $page->title);
+        $this->assertTrue(isset($page->title));
+        $this->assertEquals('From attribute', $page->title ?? 'fallback');
+    }
+
     //
     // House keeping
     //
@@ -392,4 +415,9 @@ ESC;
 
         HalcyonTestPageWithValidation::setModelValidator($factory);
     }
+}
+
+class NullTitleBehavior extends \Winter\Storm\Extension\ExtensionBase
+{
+    public $title = null;
 }

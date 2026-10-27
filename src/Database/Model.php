@@ -809,6 +809,11 @@ class Model extends EloquentModel implements ModelInterface
      */
     public function __isset($key)
     {
+        $extensionResult = $this->extendableIsset($key);
+        if ($extensionResult !== null) {
+            return $extensionResult;
+        }
+
         return !is_null($this->getAttribute($key));
     }
 
