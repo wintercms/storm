@@ -6,7 +6,7 @@ use Winter\Storm\Database\Model;
 use Winter\Storm\Tests\Database\Fixtures\CategoryNested;
 use Winter\Storm\Tests\DbTestCase;
 
-class NestedTreeTest extends DbTestCase
+class NestedTreeTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function setUp(): void
     {

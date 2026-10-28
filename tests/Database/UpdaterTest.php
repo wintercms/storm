@@ -2,9 +2,9 @@
 
 use Winter\Storm\Database\Updater;
 
-class UpdaterTest extends TestCase
+class UpdaterTest extends \Winter\Storm\Tests\TestCase
 {
-    protected Updater $updater;
+    protected ?Updater $updater = null;
 
     public function setUp(): void
     {

@@ -2,7 +2,7 @@
 
 use Winter\Storm\Parse\Bracket as TextParser;
 
-class BracketTest extends TestCase
+class BracketTest extends \Winter\Storm\Tests\TestCase
 {
 
     public function testParseCombination()

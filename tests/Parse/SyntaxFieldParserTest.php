@@ -2,7 +2,7 @@
 
 use Winter\Storm\Parse\Syntax\FieldParser;
 
-class SyntaxFieldParserTest extends TestCase
+class SyntaxFieldParserTest extends \Winter\Storm\Tests\TestCase
 {
     public function testParse()
     {

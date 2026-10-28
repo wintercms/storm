@@ -2,7 +2,7 @@
 
 use Winter\Storm\Halcyon\Processors\SectionParser;
 
-class SectionParserTest extends TestCase
+class SectionParserTest extends \Winter\Storm\Tests\TestCase
 {
     public function testParse()
     {

@@ -27,11 +27,11 @@ class Group extends Model
      * @var array Relations
      */
     public $belongsToMany = [
-        'users' => [User::class, 'table' => 'users_groups']
+        'users' => [User::class, 'table' => 'users_groups'],
     ];
 
     /**
-     * @var string[]|bool The attributes that aren't mass assignable.
+     * @var string[] The attributes that aren't mass assignable.
      */
     protected $guarded = [];
 

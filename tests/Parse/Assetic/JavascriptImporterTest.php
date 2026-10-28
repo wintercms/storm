@@ -9,7 +9,7 @@ use Winter\Storm\Parse\Assetic\Filter\JavascriptImporter;
  * arbitrary server-readable files reached via `..` traversal, and must reject non-`.js`
  * targets outright, while preserving legitimate same-tree and allowed-root includes.
  */
-class JavascriptImporterTest extends TestCase
+class JavascriptImporterTest extends \Winter\Storm\Tests\TestCase
 {
     /** @var string */
     protected $tmpRoot;

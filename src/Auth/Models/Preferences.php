@@ -30,7 +30,7 @@ class Preferences extends Model
     protected static $cache = [];
 
     /**
-     * @var array List of attribute names which are json encoded and decoded from the database.
+     * @var string[] List of attribute names which are json encoded and decoded from the database.
      */
     protected $jsonable = ['value'];
 
@@ -60,7 +60,7 @@ class Preferences extends Model
      */
     public static function forUser($user = null)
     {
-        $self = new static;
+        $self = new static();
         $self->userContext = $user ?: $self->resolveUser($user);
         return $self;
     }
@@ -113,8 +113,8 @@ class Preferences extends Model
         $record = static::findRecord($key, $user);
 
         if (!$record) {
-            list($namespace, $group, $item) = $this->parseKey($key);
-            $record = new static;
+            [$namespace, $group, $item] = $this->parseKey($key);
+            $record = new static();
             $record->namespace = $namespace;
             $record->group = $group;
             $record->item = $item;
@@ -174,7 +174,7 @@ class Preferences extends Model
      */
     public function scopeApplyKeyAndUser($query, $key, $user = null)
     {
-        list($namespace, $group, $item) = $this->parseKey($key);
+        [$namespace, $group, $item] = $this->parseKey($key);
 
         $query = $query
             ->where('namespace', $namespace)

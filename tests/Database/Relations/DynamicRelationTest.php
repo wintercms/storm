@@ -8,7 +8,7 @@ use Winter\Storm\Tests\Database\Fixtures\Author;
 use Winter\Storm\Tests\Database\Fixtures\Post;
 use Winter\Storm\Tests\DbTestCase;
 
-class DynamicRelationTest extends DbTestCase
+class DynamicRelationTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function testCreateDynamicRelation()
     {

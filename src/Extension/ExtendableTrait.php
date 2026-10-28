@@ -508,9 +508,13 @@ trait ExtendableTrait
 
             if (method_exists($extension, $name) && is_callable([$extension, $name])) {
                 $extension::$extendableStaticCalledClass = $className;
-                $result = forward_static_call_array(array($extension, $name), $params);
-                $extension::$extendableStaticCalledClass = null;
-                return $result;
+
+                try {
+                    return forward_static_call_array(array($extension, $name), $params);
+                }
+                finally {
+                    $extension::$extendableStaticCalledClass = null;
+                }
             }
         }
 
@@ -558,6 +562,7 @@ trait ExtendableTrait
         if (!is_null($instance)) {
             $reflector = $instance;
         } else {
+            // @phpstan-ignore-next-line
             $reflector = new ReflectionClass($this);
         }
         $parent = $reflector->getParentClass();

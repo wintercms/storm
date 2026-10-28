@@ -9,7 +9,7 @@ use Winter\Storm\Foundation\Http\Middleware\CheckForTrustedProxies;
  * Based off the test cases from https://github.com/fideloper/TrustedProxy. Credit to @fideloper for the original
  * implementation.
  */
-class CheckForTrustedProxiesTest extends TestCase
+class CheckForTrustedProxiesTest extends \Winter\Storm\Tests\TestCase
 {
     /**
      * Test an untrusted connection through a proxy.
@@ -432,7 +432,7 @@ class CheckForTrustedProxiesTest extends TestCase
     {
         $middleware = $this->getMockBuilder(CheckForTrustedProxies::class)
             ->disableOriginalConstructor()
-            ->setMethods(['proxies', 'headers'])
+            ->onlyMethods(['proxies', 'headers'])
             ->getMock();
 
         $middleware->expects($this->any())
