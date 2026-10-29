@@ -19,7 +19,17 @@ class LoadConfiguration
             return $this->getEnvironmentFromHost();
         });
 
-        $app->instance('config', $config = new Repository($fileLoader, $app['env']));
+        $items = [];
+
+        // First we will see if we have a cache configuration file. If we do, we'll load
+        // the configuration items from that file so that it is very quick. Otherwise
+        // we will need to spin through every configuration file and load them all.
+        if (empty($app['disableConfigCacheLoading']) && file_exists($cached = $app->getCachedConfigPath())) {
+            $items = require $cached;
+            $items['loadedFromCache'] = true;
+        }
+
+        $app->instance('config', $config = new Repository($fileLoader, $app['env'], $items));
 
         date_default_timezone_set($config['app.timezone']);
 
