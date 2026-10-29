@@ -176,4 +176,46 @@ class AttachOneTest extends DbTestCase
         $user->delete();
         $this->assertNotNull(File::find($avatarId));
     }
+
+    public function testCreateFiresRelationEvents()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        Model::reguard();
+
+        $beforeAddCalls = [];
+        $afterAddCalls = [];
+        $user->bindEvent('model.relation.beforeAdd', function ($relationName, $relatedModel) use (&$beforeAddCalls) {
+            $beforeAddCalls[] = [$relationName, $relatedModel];
+        });
+        $user->bindEvent('model.relation.afterAdd', function ($relationName, $relatedModel) use (&$afterAddCalls) {
+            $afterAddCalls[] = [$relationName, $relatedModel];
+        });
+
+        $avatar = $user->avatar()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+
+        $this->assertCount(1, $beforeAddCalls);
+        $this->assertSame('avatar', $beforeAddCalls[0][0]);
+        $this->assertTrue($avatar->is($beforeAddCalls[0][1]));
+
+        $this->assertCount(1, $afterAddCalls);
+        $this->assertSame('avatar', $afterAddCalls[0][0]);
+        $this->assertTrue($avatar->is($afterAddCalls[0][1]));
+    }
+
+    public function testCreateReplacesExistingSingleAttachment()
+    {
+        Model::unguard();
+        $user = User::create(['name' => 'Stevie', 'email' => 'stevie@example.com']);
+        Model::reguard();
+
+        $first = $user->avatar()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+        $firstId = $first->id;
+
+        $second = $user->avatar()->create(['data' => dirname(dirname(__DIR__)) . '/fixtures/attach/avatar.png']);
+
+        $this->assertNull(File::find($firstId));
+        $this->assertNotNull(File::find($second->id));
+        $this->assertNotSame($firstId, $second->id);
+    }
 }
