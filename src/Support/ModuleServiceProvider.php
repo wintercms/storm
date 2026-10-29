@@ -1,16 +1,25 @@
 <?php namespace Winter\Storm\Support;
 
-use Winter\Storm\Support\Str;
+use Illuminate\Support\ServiceProvider as ServiceProviderBase;
+use ReflectionClass;
+use Winter\Storm\Foundation\Extension\WinterExtension;
 use Winter\Storm\Support\ClassLoader;
 use Winter\Storm\Support\Facades\File;
-use Illuminate\Support\ServiceProvider as ServiceProviderBase;
+use Winter\Storm\Support\Str;
+use Winter\Storm\Support\Traits\HasComposerPackage;
 
-abstract class ModuleServiceProvider extends ServiceProviderBase
+abstract class ModuleServiceProvider extends ServiceProviderBase implements WinterExtension
 {
+    use HasComposerPackage;
+
     /**
      * @var \Winter\Storm\Foundation\Application The application instance.
      */
     protected $app;
+
+    protected string $path;
+
+    protected string $identifier;
 
     /**
      * Bootstrap the application events.
@@ -31,6 +40,9 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
         if (File::isFile($routesFile)) {
             $this->loadRoutesFrom($routesFile);
         }
+
+        // Bind the service provider to the application container
+        $this->app->instance($this::class, $this);
     }
 
     /**
@@ -89,5 +101,25 @@ abstract class ModuleServiceProvider extends ServiceProviderBase
         /** @var \Winter\Storm\Config\Repository */
         $config = $this->app['config'];
         $config->package($namespace, $path);
+    }
+
+    public function getVersion(): string
+    {
+        return $this->composerPackage['versions'][0] ?? 'dev-unknown';
+    }
+
+    public function getPath(): string
+    {
+        return $this->path ?? $this->path = dirname((new ReflectionClass(get_called_class()))->getFileName());
+    }
+
+    public function getIdentifier(): string
+    {
+        return $this->identifier ?? $this->identifier = (new ReflectionClass(get_called_class()))->getNamespaceName();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getIdentifier();
     }
 }
