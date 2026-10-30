@@ -10,11 +10,13 @@ use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\File\File as FileObj;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Exception\ApplicationException;
 use Winter\Storm\Network\Http;
 use Winter\Storm\Support\Arr;
 use Winter\Storm\Support\Facades\File as FileHelper;
+use Winter\Storm\Support\Str;
 use Winter\Storm\Support\Svg;
 
 /**
@@ -105,6 +107,22 @@ class File extends Model
         'avif' => 'image/avif',
         'pdf'  => 'application/pdf',
         'svg'  => 'image/svg+xml',
+    ];
+
+    /**
+     * @var string[] Content types a browser renders as a document that may run script in the
+     * origin that served it. The content type recorded for a file is derived from its bytes,
+     * which need not agree with the name it was stored under, so files of these types are
+     * served as a download rather than displayed in place.
+     */
+    public static $scriptableMimeTypes = [
+        'application/xhtml+xml',
+        'application/xml',
+        'application/xslt+xml',
+        'image/svg+xml',
+        'text/html',
+        'text/xml',
+        'text/xsl',
     ];
 
     //
@@ -315,12 +333,15 @@ class File extends Model
      */
     public function output($disposition = 'inline', $returnResponse = false)
     {
+        $contentType = $this->getContentType();
+
         $response = response($this->getContents())->withHeaders([
-            'Content-type'        => $this->getContentType(),
-            'Content-Disposition' => $disposition . '; filename="' . $this->file_name . '"',
-            'Cache-Control'       => 'private, no-store, no-cache, must-revalidate, max-age=0',
-            'Accept-Ranges'       => 'bytes',
-            'Content-Length'      => $this->file_size,
+            'Content-type'           => $contentType,
+            'Content-Disposition'    => $this->makeDisposition($disposition, $this->file_name, $contentType),
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control'          => 'private, no-store, no-cache, must-revalidate, max-age=0',
+            'Accept-Ranges'          => 'bytes',
+            'Content-Length'         => $this->file_size,
         ]);
 
         if ($returnResponse) {
@@ -356,13 +377,15 @@ class File extends Model
         $this->getThumb($width, $height, $options);
         $thumbFile = $this->getThumbFilename($width, $height, $options);
         $contents = $this->getContents($thumbFile);
+        $contentType = $this->getThumbContentType($thumbFile);
 
         $response = response($contents)->withHeaders([
-            'Content-type'        => $this->getContentType(),
-            'Content-Disposition' => $disposition . '; filename="' . basename($thumbFile) . '"',
-            'Cache-Control'       => 'private, no-store, no-cache, must-revalidate, max-age=0',
-            'Accept-Ranges'       => 'bytes',
-            'Content-Length'      => mb_strlen($contents, '8bit'),
+            'Content-type'           => $contentType,
+            'Content-Disposition'    => $this->makeDisposition($disposition, basename($thumbFile), $contentType),
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control'          => 'private, no-store, no-cache, must-revalidate, max-age=0',
+            'Accept-Ranges'          => 'bytes',
+            'Content-Length'         => mb_strlen($contents, '8bit'),
         ]);
 
         if ($returnResponse) {
@@ -371,6 +394,46 @@ class File extends Model
 
         $response->sendHeaders();
         $response->sendContent();
+    }
+
+    /**
+     * Builds the `Content-Disposition` header for a raw file response.
+     *
+     * `inline` is only honoured for content types the browser treats as a passive resource;
+     * anything in `$scriptableMimeTypes` is served as a download instead.
+     */
+    protected function makeDisposition(string $disposition, string $filename, ?string $contentType): string
+    {
+        $contentType = strtolower(trim(Str::before((string) $contentType, ';')));
+
+        if (
+            $disposition === HeaderUtils::DISPOSITION_INLINE
+            && in_array($contentType, static::$scriptableMimeTypes)
+        ) {
+            $disposition = HeaderUtils::DISPOSITION_ATTACHMENT;
+        }
+
+        $filename = basename(str_replace('\\', '/', $filename));
+
+        // RFC 6266 limits the `filename` parameter to ASCII and forbids `%` in it; the real
+        // name is carried by the `filename*` parameter that makeDisposition() adds for us.
+        $fallback = preg_replace('/[^\x20-\x7e]|%/', '_', Str::ascii($filename));
+
+        return HeaderUtils::makeDisposition($disposition, $filename, $fallback);
+    }
+
+    /**
+     * Returns the content type of a generated thumbnail.
+     *
+     * A thumbnail is re-encoded from the extension it is stored under, so its own name
+     * describes it; the content type recorded for the file it came from describes the
+     * original bytes, which the thumbnail no longer carries.
+     */
+    protected function getThumbContentType(string $thumbFile): ?string
+    {
+        $extension = strtolower(FileHelper::extension($thumbFile));
+
+        return $this->autoMimeTypes[$extension] ?? $this->getContentType();
     }
 
     //
