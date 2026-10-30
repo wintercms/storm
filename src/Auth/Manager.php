@@ -674,6 +674,14 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
          */
         if ($this->useSession) {
             $this->setPersistCodeInSession($user, $remember);
+
+            /*
+             * Move the session to a new identifier now that it carries an identity, so that an
+             * identifier from before the login cannot address the session afterwards. Mirrors
+             * Illuminate\Auth\SessionGuard::updateSession(); migrate() keeps the session data,
+             * including the CSRF token, so the current request can still render a valid form.
+             */
+            Session::migrate(true);
         }
 
         /*
