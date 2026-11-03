@@ -31,6 +31,10 @@ class FilesystemTest extends TestCase
             'winter_1.cms' => ['winter.cms', ['winter.cms', 'xwinter_2.cms']],
             'winter_3.cms' => ['winter.cms', ['winter.cms', 'winter_2.cms.bak', 'winter_2.cms']],
 
+            // Falsy-looking names are valid
+            '0_1.txt' => ['0.txt', ['0.txt']],
+            'a.0' => ['a.0', ['a.1']],
+
             // Regex special characters in the name, separator or extension are escaped
             'a+b_1.cms' => ['a+b.cms', ['a+b.cms', 'aab_5.cms']],
             'a.b_1.cms' => ['a.b.cms', ['a.b.cms', 'axb_5.cms']],
@@ -39,6 +43,21 @@ class FilesystemTest extends TestCase
         foreach ($cases as $output => $config) {
             $this->assertSame($output, $this->filesystem->unique(...$config));
         }
+    }
+
+    /**
+     * @dataProvider provideInvalidSteps
+     */
+    public function testUniqueRejectsInvalidStep($step)
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->filesystem->unique('foo.txt', ['foo.txt', 'foo_1.txt'], '_', 1, $step);
+    }
+
+    public function provideInvalidSteps()
+    {
+        return [[0], [-1]];
     }
 
     /**

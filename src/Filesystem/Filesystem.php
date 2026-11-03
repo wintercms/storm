@@ -246,8 +246,12 @@ class Filesystem extends FilesystemBase
 
         $info = pathinfo($str);
 
-        if (empty($info['filename']) || empty($info['extension'])) {
+        if (($info['filename'] ?? '') === '' || ($info['extension'] ?? '') === '') {
             throw new \InvalidArgumentException('$str must be a file name');
+        }
+
+        if ($step < 1) {
+            throw new \InvalidArgumentException('$step must be greater than zero');
         }
 
         if (!in_array($str, $list, true)) {
