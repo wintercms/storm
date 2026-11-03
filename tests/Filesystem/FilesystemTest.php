@@ -16,16 +16,25 @@ class FilesystemTest extends TestCase
       $cases = [
             // File exists, make it unique
             'winter_1.cms' => ['winter.cms', ['winter.cms', 'test_5']],
-            
+
             // File already unique, return original
             'winter.cms' => ['winter.cms', ['winter_1.cms']],
 
             // Last index available is incremented
-            'winter_4.cms' => ['winter.cms', ['winter_1.cms', 'test_5', 'winter_3.cms']],
-            'winter_98.cms' => ['winter.cms', ['winter_97.cms', 'test_5', 'winter_1.cms']],
+            'winter_4.cms' => ['winter.cms', ['winter.cms', 'winter_1.cms', 'test_5', 'winter_3.cms']],
+            'winter_98.cms' => ['winter.cms', ['winter.cms', 'winter_97.cms', 'test_5', 'winter_1.cms']],
 
             // Separator as space
-            'winter 1.cms' => ['winter.cms', ['winter_1.cms', 'test_5', 'winter_3.cms'], ' '],
+            'winter 1.cms' => ['winter.cms', ['winter.cms', 'winter_1.cms', 'test_5', 'winter_3.cms'], ' '],
+
+            // Names with a different prefix or a trailing extension are ignored
+            'winter_1.cms' => ['winter.cms', ['winter.cms', 'xwinter_2.cms']],
+            'winter_3.cms' => ['winter.cms', ['winter.cms', 'winter_2.cms.bak', 'winter_2.cms']],
+
+            // Regex special characters in the name, separator or extension are escaped
+            'a+b_1.cms' => ['a+b.cms', ['a+b.cms', 'aab_5.cms']],
+            'a.b_1.cms' => ['a.b.cms', ['a.b.cms', 'axb_5.cms']],
+            'winter.1.cms' => ['winter.cms', ['winter.cms', 'winterx3.cms'], '.'],
         ];
         foreach ($cases as $output => $config) {
             $this->assertSame($output, $this->filesystem->unique(...$config));

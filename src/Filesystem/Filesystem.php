@@ -233,8 +233,12 @@ class Filesystem extends FilesystemBase
 
     /**
      * Apply a unique index to a filename from provided list i.e.
-     * winter.txt, [winter_1.txt, winter_2.txt] -> winter_3.txt
-     * winter.txt, [winter_1.txt, winter_3.txt] -> winter_4.txt
+     * winter.txt, [winter.txt] -> winter_1.txt
+     * winter.txt, [winter.txt, winter_1.txt, winter_2.txt] -> winter_3.txt
+     * winter.txt, [winter.txt, winter_1.txt, winter_3.txt] -> winter_4.txt
+     * winter.txt, [winter_1.txt, winter_3.txt] -> winter.txt
+     *
+     * If the filename does not exist in the list, it will be returned as-is.
      */
     public function unique(string $str, array $list, string $separator = '_', int $starting = 1, int $step = 1): string
     {
@@ -246,8 +250,14 @@ class Filesystem extends FilesystemBase
             throw new \InvalidArgumentException('$str must be a file name');
         }
 
+        if (!in_array($str, $list, true)) {
+            return $str;
+        }
+
+        $pattern = '/^' . preg_quote($info['filename'], '/') . preg_quote($separator, '/') . '(\d*)\.' . preg_quote($info['extension'], '/') . '$/';
+
         foreach ($list as $item) {
-            if (!preg_match('/' . $info['filename'] . $separator . '(\d*)\.' . $info['extension'] . '/', $item, $matches)) {
+            if (!preg_match($pattern, $item, $matches)) {
                 continue;
             }
 
