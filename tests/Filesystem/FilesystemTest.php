@@ -13,7 +13,7 @@ class FilesystemTest extends TestCase
 
     public function testUnique()
     {
-      $cases = [
+        $cases = [
             // File exists, make it unique
             'winter_1.cms' => ['winter.cms', ['winter.cms', 'test_5']],
 
