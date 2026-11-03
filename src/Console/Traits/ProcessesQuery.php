@@ -16,7 +16,7 @@ trait ProcessesQuery
      * query by the provided chunkSize, running the callback on each record and
      * limiting number of records processed to the provided limit
      */
-    public function processQuery(Builder $query, callable $callback, int $chunkSize = 100, int $limit = null): void
+    public function processQuery(Builder $query, callable $callback, int $chunkSize = 100, ?int $limit = null): void
     {
         $totalRecords = $query->count();
 

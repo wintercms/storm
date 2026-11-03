@@ -16,9 +16,14 @@ parameters:
         - message: '#Call to private method select\(\)#'
           paths:
             - src/Database/Relations/Concerns/CanBeCounted.php
+        - message: '#Anonymous function should return static\(.*\) but returns static\(.*\)#'
+          paths:
+            - src/Support/Traits/Singleton.php
+          reportUnmatched: false
     disableSchemaScan: true
     databaseMigrationsPath:
         - src/Auth/Migrations
         - src/Database/Migrations
     stubFiles:
         - tests/stubs/Facades.stub
+        - tests/stubs/PackageManifest.stub

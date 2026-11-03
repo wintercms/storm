@@ -27,7 +27,7 @@ cell 2.1
 
 ---
 
-Not a table.
+Is a table.
 header 1
 -------|
 cell 1.1

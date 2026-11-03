@@ -203,8 +203,15 @@ class SectionParser
     public static function parseSettings(string $settings): array
     {
         $iniParser = new Ini;
-        return @$iniParser->parse($settings)
-            ?: [self::ERROR_INI => $settings];
+
+        // `@` does not suppress an exception, so a document the parser refuses outright is caught here and reported like any other invalid section.
+        try {
+            return @$iniParser->parse($settings)
+                ?: [self::ERROR_INI => $settings];
+        }
+        catch (\RuntimeException $ex) {
+            return [self::ERROR_INI => $settings];
+        }
     }
 
     /**

@@ -368,7 +368,7 @@ class Http
         /*
          * Close resources
          */
-        curl_close($curl);
+        unset($curl);
 
         if ($this->streamFile) {
             rewind($headerStream);

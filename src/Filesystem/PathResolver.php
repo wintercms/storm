@@ -97,13 +97,49 @@ class PathResolver
 
     /**
      * Determines if the path is within the given directory.
+     *
+     * A path is considered "within" $directory if it equals $directory exactly,
+     * or if it lies in a subdirectory of $directory. A naive prefix-match on
+     * the resolved paths would also accept sibling paths whose names happen to
+     * share a string prefix (e.g. `/var/www/themes_other` would test as
+     * "within" `/var/www/themes`), so the comparison requires a
+     * directory-separator boundary after the directory prefix.
      */
     public static function within(string $path, string $directory): bool
     {
         $directory = static::resolve($directory);
         $path = static::resolve($path);
 
-        return starts_with($path, $directory);
+        if ($directory === false || $path === false) {
+            return false;
+        }
+
+        if ($path === $directory) {
+            return true;
+        }
+
+        return starts_with($path, rtrim($directory, '/\\') . DIRECTORY_SEPARATOR)
+            || starts_with($path, rtrim($directory, '/\\') . '/');
+    }
+
+    /**
+     * Determines whether a path is within any of the given directories.
+     *
+     * Returns true as soon as {@see within()} matches one of $directories. Empty and
+     * non-string entries are ignored, so callers may pass an optional context
+     * directory (which may be null) alongside a list of roots without pre-filtering.
+     *
+     * @param string[] $directories
+     */
+    public static function withinAny(string $path, array $directories): bool
+    {
+        foreach ($directories as $directory) {
+            if (is_string($directory) && $directory !== '' && static::within($path, $directory)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

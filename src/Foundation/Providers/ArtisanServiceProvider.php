@@ -47,6 +47,7 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         'ScheduleRun'           => \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
         'ScheduleTest'          => \Illuminate\Console\Scheduling\ScheduleTestCommand::class,
         'ScheduleWork'          => \Illuminate\Console\Scheduling\ScheduleWorkCommand::class,
+        'SchemaDump'            => \Illuminate\Database\Console\DumpCommand::class,
         'Up'                    => \Illuminate\Foundation\Console\UpCommand::class,
         'ViewClear'             => \Illuminate\Foundation\Console\ViewClearCommand::class,
 
@@ -58,7 +59,6 @@ class ArtisanServiceProvider extends ArtisanServiceProviderBase
         // 'DbWipe' => WipeCommand::class,
         // 'OptimizeClear' => OptimizeClearCommand::class,
         // 'QueueClear' => QueueClearCommand::class,
-        // 'SchemaDump' => DumpCommand::class,
         // 'ScheduleClearCache' => ScheduleClearCacheCommand::class,
         // 'ViewCache' => ViewCacheCommand::class,
 

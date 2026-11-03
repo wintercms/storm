@@ -341,25 +341,37 @@ class DbDatasource extends Datasource
      */
     public function lastModified(string $dirName, string $fileName, string $extension): ?int
     {
-        try {
-            return Carbon::parse($this->getQuery()
-                    ->where('path', $this->makeFilePath($dirName, $fileName, $extension))
-                    ->first()->updated_at)->timestamp;
-        } catch (Exception $ex) {
-            return null;
-        }
+        $record = $this->getQuery()
+            ->select('updated_at')
+            ->where('path', $this->makeFilePath($dirName, $fileName, $extension))
+            ->first();
+
+        return $record ? Carbon::parse($record->updated_at)->timestamp : null;
     }
 
     /**
      * @inheritDoc
+     *
+     * The key is versioned because the payload shape has changed; see getAvailablePaths().
      */
     public function getPathsCacheKey(): string
     {
-        return 'halcyon-datastore-db-' . $this->table . '-' . $this->source;
+        return 'halcyon-datastore-db-v2-' . $this->table . '-' . $this->source;
     }
 
     /**
-     * @inheritDoc
+     * Get all available paths within this datasource.
+     *
+     * Live records are mapped to their last modification timestamp rather than `true` so that
+     * consumers can resolve mtimes without a further query. Timestamps are truthy, so the
+     * existence / deletion contract of this map is unchanged.
+     *
+     * Note that the `halcyon.datasource.db.beforeGetAvailablePaths` event below may still
+     * return plain booleans, so consumers must treat the timestamps as an optimization rather
+     * than something they can rely on being present.
+     *
+     * @return array<string, int|bool> Paths that cannot be handled are `false`; live paths are
+     *                                 a timestamp, or `true` when supplied by the event below.
      **/
     public function getAvailablePaths(): array
     {
@@ -377,14 +389,16 @@ class DbDatasource extends Datasource
         if (!$pathsCache = $this->fireEvent('halcyon.datasource.db.beforeGetAvailablePaths', [], true)) {
             // Only query for what is required
             $this->bindEventOnce('halcyon.datasource.db.extendQuery', function ($query, $ignoreDeleted) {
-                $query->addSelect('source', 'path', 'deleted_at');
+                $query->addSelect('source', 'path', 'deleted_at', 'updated_at');
             });
 
             // Get all records stored in the DB
             $records = $this->getQuery(false)->get();
 
             foreach ($records as $record) {
-                $pathsCache[$record->path] = !$record->deleted_at;
+                $pathsCache[$record->path] = $record->deleted_at
+                    ? false
+                    : Carbon::parse($record->updated_at)->timestamp;
             }
         }
 
