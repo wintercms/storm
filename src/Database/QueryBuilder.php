@@ -111,6 +111,32 @@ class QueryBuilder extends QueryBuilderBase
     }
 
     /**
+     * Execute the given callback while selecting the given columns.
+     *
+     * Reimplemented here because Laravel 13 inlined and removed this internal
+     * helper from the base query builder; our get() override still relies on it
+     * to produce the correct SQL before the memory cache hashes the query.
+     *
+     * @param  array  $columns
+     * @param  callable  $callback
+     * @return mixed
+     */
+    protected function onceWithColumns($columns, $callback)
+    {
+        $original = $this->columns;
+
+        if (is_null($original)) {
+            $this->columns = $columns;
+        }
+
+        $result = $callback();
+
+        $this->columns = $original;
+
+        return $result;
+    }
+
+    /**
      * Check the memory cache before executing the query
      *
      * @param  array  $columns
