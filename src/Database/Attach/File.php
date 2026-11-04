@@ -668,7 +668,20 @@ class File extends Model
         $options['mode'] = strtolower($options['mode']);
 
         if (strtolower($options['extension']) == 'auto') {
-            $options['extension'] = strtolower($this->getExtension());
+            $options['extension'] = $this->getExtension();
+        }
+
+        $options['extension'] = strtolower($options['extension']);
+
+        /*
+         * The extension names a file that gets written to the uploads disk, and callers take it
+         * from request data -- `Backend\Controllers\Files::thumb()` reads it from a URL segment.
+         * A thumbnail is only ever written by `Resizer::save()`, which encodes just the formats
+         * in $imageExtensions, or by `BrokenImage`, which writes a PNG; anything else would let
+         * the caller choose a filename for a format that can never be produced.
+         */
+        if (!in_array($options['extension'], static::$imageExtensions, true)) {
+            $options['extension'] = 'png';
         }
 
         return $options;
