@@ -37,14 +37,17 @@ class FileThumbExtensionTest extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * `getThumbFilename()` reads nothing but the id and the file name, so there is no reason to
+     * store the attachment. `fromFile()` would copy the fixture onto the attachment disk, and
+     * nothing here saves or deletes the model, so every run would leave a copy behind.
+     */
     protected function makeFile(string $fileName = 'avatar.png'): File
     {
-        $file = (new File())->fromFile(
-            dirname(__DIR__, 2) . '/fixtures/attach/avatar.png',
-            $fileName
-        );
+        $file = new File();
 
         $file->id = 7;
+        $file->file_name = $fileName;
 
         return $file;
     }
