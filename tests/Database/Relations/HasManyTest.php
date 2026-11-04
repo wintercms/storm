@@ -170,6 +170,39 @@ class HasManyTest extends DbTestCase
         $this->assertEmpty($author->posts);
     }
 
+    public function testDeferredBindingSkipsBindingQueryWhenNothingIsDeferred()
+    {
+        $sessionKey = uniqid('session_key', true);
+
+        Model::unguard();
+        $author = Author::create(['name' => 'Stevie']);
+        Post::create(['title' => "First post", 'author_id' => $author->id]);
+        $post = Post::create(['title' => "Second post"]);
+        Model::reguard();
+
+        $query = $author->posts()->withDeferred($sessionKey);
+        $this->assertStringNotContainsString('deferred_bindings', $query->toSql());
+        $this->assertEquals(['First post'], $query->pluck('title')->all());
+
+        $author->posts()->add($post, $sessionKey);
+
+        $query = $author->posts()->withDeferred($sessionKey);
+        $this->assertStringContainsString('deferred_bindings', $query->toSql());
+        $this->assertEquals(['First post', 'Second post'], $query->pluck('title')->all());
+    }
+
+    public function testDeferredBindingOnUnsavedParentWithNothingDeferred()
+    {
+        $sessionKey = uniqid('session_key', true);
+
+        Model::unguard();
+        $author = Author::make(['name' => 'Stevie']);
+        Post::create(['title' => "First post"]);
+        Model::reguard();
+
+        $this->assertEquals(0, $author->posts()->withDeferred($sessionKey)->count());
+    }
+
     public function testDeferredBindingLaravelRelation()
     {
         $sessionKey = uniqid('session_key', true);
