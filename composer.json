@@ -99,6 +99,18 @@
             "dev-master": "1.0-dev"
         }
     },
+    "config": {
+        "policy": {
+            "advisories": {
+                "ignore": {
+                    "laravel/framework": {
+                        "on-audit": false,
+                        "reason": "Winter CMS 1.2 requires Laravel 9"
+                    }
+                }
+            }
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
