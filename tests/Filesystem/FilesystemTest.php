@@ -55,7 +55,7 @@ class FilesystemTest extends TestCase
         $this->filesystem->unique('foo.txt', ['foo.txt', 'foo_1.txt'], '_', 1, $step);
     }
 
-    public function provideInvalidSteps()
+    public static function provideInvalidSteps()
     {
         return [[0], [-1]];
     }
