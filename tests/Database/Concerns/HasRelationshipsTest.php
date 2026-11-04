@@ -72,6 +72,37 @@ class HasRelationshipsTest extends DbTestCase
         $this->assertFalse($author->hasRelation('dynamicClassMethodFromArray'));
     }
 
+    public function testRelationMethodsAfterSingleLookup()
+    {
+        (new \ReflectionProperty(Author::class, 'resolvedRelationMethods'))->setValue(null, []);
+
+        $author = new Author();
+        $this->assertTrue($author->hasRelation('messages'));
+
+        $this->assertEquals([
+            'contactNumber',
+            'messages',
+            'scopes',
+            'executiveAuthors',
+            'info',
+            'labels',
+            'auditLogs',
+        ], $author->getRelationMethods());
+    }
+
+    public function testDynamicRelationMethodsAreNotStored()
+    {
+        $author = new Author();
+        $author->addDynamicMethod('dynamicMessages', [$author, 'messages']);
+
+        $this->assertContains('dynamicMessages', $author->getRelationMethods());
+        $this->assertEquals('hasMany', $author->getRelationType('dynamicMessages'));
+
+        $otherAuthor = new Author();
+        $this->assertNotContains('dynamicMessages', $otherAuthor->getRelationMethods());
+        $this->assertFalse($otherAuthor->hasRelation('dynamicMessages'));
+    }
+
     public function testGetRelationType()
     {
         $author = new Author();

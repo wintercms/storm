@@ -483,6 +483,18 @@ class HtmlBuilder
     }
 
     /**
+     * Matches one HTML attribute: the separators before its name (1), the name (2), and the value
+     * with its equals sign, if any (3). A quoted value is consumed whole, including any ">" inside
+     * it. The separators include "=" so that a stray one cannot strand the rest of the scan.
+     */
+    protected const ATTRIBUTE_PATTERN = '([\x00-\x20\/=]*+)([^\x00-\x20=\/>]++)((?:[\x00-\x20]*+=[\x00-\x20]*+(?:"[^"]*+"|\'[^\']*+\'|[^\x00-\x20>]*+))?)';
+
+    /**
+     * Attribute names that are never safe to keep.
+     */
+    protected const UNSAFE_ATTRIBUTE_NAME_PATTERN = '#^(?:on\w*|xmlns(?::[\w\-]+)?|style)$#i';
+
+    /**
      * Cleans HTML to prevent most XSS attacks.
      * @param  string $html HTML
      * @return string Cleaned HTML
@@ -498,17 +510,19 @@ class HtmlBuilder
             $html = preg_replace('#(&\#x*)([0-9A-F]+);*#iu', "$1$2;", $html);
             $html = html_entity_decode($html, ENT_COMPAT|ENT_HTML5, 'UTF-8');
 
-            // Remove any attribute starting with "on" or xmlns
-            $html = preg_replace('#(<[^>]+[\x00-\x20\"\'\/])(on|xmlns)[^>]*>#iUu', "$1>", $html);
+            // Remove event handler, xmlns and style attributes from every tag. Styles are
+            // included for IE's expression() support.
+            $html = preg_replace_callback(
+                '#(<[a-z][^\x00-\x20\/>]*+)((?:' . self::ATTRIBUTE_PATTERN . ')*+)#iu',
+                fn (array $tag): string => $tag[1] . static::stripUnsafeAttributes($tag[2]),
+                $html
+            );
 
             // Remove javascript: and vbscript: protocols
             $html = preg_replace('#([a-z]*)[\x00-\x20\/]*=[\x00-\x20\/]*([\`\'\"]*)[\x00-\x20\/|(&\#\d+;)]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iUu', '$1=$2nojavascript...', $html);
             $html = preg_replace('#([a-z]*)[\x00-\x20\/]*=[\x00-\x20\/]*([\`\'\"]*)[\x00-\x20\/|(&\#\d+;)]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iUu', '$1=$2novbscript...', $html);
             $html = preg_replace('#([a-z]*)[\x00-\x20\/]*=[\x00-\x20\/]*([\`\'\"]*)[\x00-\x20\/|(&\#\d+;)]*-moz-binding[\x00-\x20]*:#Uu', '$1=$2nomozbinding...', $html);
             $html = preg_replace('#([a-z]*)[\x00-\x20\/]*=[\x00-\x20\/]*([\`\'\"]*)[\x00-\x20\/|(&\#\d+;)]*data[\x00-\x20]*:#Uu', '$1=$2nodata...', $html);
-
-            // Only works in IE: <span style="width: expression(alert('Ping!'));"></span>
-            $html = preg_replace('#(<[^>]+[\x00-\x20\"\'\/])style[^>]*>#iUu', "$1>", $html);
 
             // Remove namespaced elements (we do not need them)
             $html = preg_replace('#</*\w+:\w[^>]*>#i', "", $html);
@@ -519,5 +533,20 @@ class HtmlBuilder
         while ($oldHtml !== $html);
 
         return $html;
+    }
+
+    /**
+     * Removes unsafe attributes from a tag's attribute section, keeping each separator so the
+     * attributes either side of a removed one do not run together.
+     */
+    protected static function stripUnsafeAttributes($attributes)
+    {
+        return preg_replace_callback(
+            '#' . self::ATTRIBUTE_PATTERN . '#iu',
+            fn (array $attribute): string => preg_match(self::UNSAFE_ATTRIBUTE_NAME_PATTERN, $attribute[2])
+                ? $attribute[1]
+                : $attribute[0],
+            $attributes
+        );
     }
 }

@@ -26,3 +26,4 @@ parameters:
         - src/Database/Migrations
     stubFiles:
         - tests/stubs/Facades.stub
+        - tests/stubs/PackageManifest.stub
