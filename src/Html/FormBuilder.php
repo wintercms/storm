@@ -478,12 +478,12 @@ class FormBuilder
     /**
      * Create a select month field.
      */
-    public function selectMonth(string $name, string|array|null $selected = null, array $options = [], $format = '%B'): string
+    public function selectMonth(string $name, string|array|null $selected = null, array $options = [], $format = 'F'): string
     {
         $months = [];
 
         foreach (range(1, 12) as $month) {
-            $months[$month] = strftime($format, mktime(0, 0, 0, $month, 1));
+            $months[$month] = date($format, mktime(0, 0, 0, $month, 1));
         }
 
         return $this->select($name, $months, $selected, $options);
@@ -897,6 +897,8 @@ class FormBuilder
         if (isset($this->model)) {
             return $this->getModelValueAttribute($name);
         }
+
+        return null;
     }
 
     /**
@@ -909,10 +911,11 @@ class FormBuilder
     {
         if (is_object($this->model)) {
             return object_get($this->model, $this->transformKey($name));
-        }
-        elseif (is_array($this->model)) {
+        } elseif (is_array($this->model)) {
             return array_get($this->model, $this->transformKey($name));
         }
+
+        return null;
     }
 
     /**

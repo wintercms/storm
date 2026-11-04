@@ -1,17 +1,27 @@
 <?php
 
+use Illuminate\Config\Repository;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\PackageManifest;
+use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\ServiceProvider;
 use Winter\Storm\Foundation\Application;
 use Winter\Storm\Filesystem\PathResolver;
 
-class ApplicationTest extends TestCase
+class ApplicationTest extends \Winter\Storm\Tests\TestCase
 {
-    protected string $basePath;
+    protected string $basePath = '';
 
     protected function setUp(): void
     {
         // Mock application
         $this->basePath = '/tmp/custom-path';
         $this->app = new Application($this->basePath);
+    }
+
+    protected function tearDown(): void
+    {
+        // These tests build their own throwaway applications instead of booting one through Testbench, so there is nothing for Testbench to tear down.
     }
 
     public function testPathMethods()
@@ -44,5 +54,49 @@ class ApplicationTest extends TestCase
 
             $this->assertEquals($expected, $this->app->{$getter}());
         }
+    }
+
+    public function testRegistersDiscoveredPackageProviders()
+    {
+        $basePath = sys_get_temp_dir() . '/winter-storm-' . uniqid();
+        mkdir($basePath . '/storage/framework', 0777, true);
+
+        $this->app = new Application($basePath);
+        $this->app->instance('config', new Repository([
+            'app' => ['providers' => [], 'loadDiscoveredPackages' => true],
+        ]));
+        $this->app->instance(PackageManifest::class, new class extends PackageManifest {
+            public function __construct()
+            {
+            }
+
+            public function providers()
+            {
+                return [DiscoveredPackageServiceProvider::class];
+            }
+        });
+        $facadeApp = Facade::getFacadeApplication();
+        Facade::clearResolvedInstances();
+        Facade::setFacadeApplication($this->app);
+
+        try {
+            $this->app->registerConfiguredProviders();
+
+            $this->assertNotNull($this->app->getProvider(DiscoveredPackageServiceProvider::class));
+            $this->assertTrue($this->app->bound('discovered-package'));
+        } finally {
+            Facade::clearResolvedInstances();
+            Facade::setFacadeApplication($facadeApp);
+
+            (new Filesystem)->deleteDirectory($basePath);
+        }
+    }
+}
+
+class DiscoveredPackageServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        $this->app->instance('discovered-package', true);
     }
 }

@@ -1,5 +1,6 @@
 <?php namespace Winter\Storm\Database;
 
+use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder as BuilderModel;
 use Winter\Storm\Support\Facades\DbDongle;
@@ -87,6 +88,9 @@ class Builder extends BuilderModel
                     if (!strlen($term)) {
                         continue;
                     }
+                    if ($field instanceof Expression) {
+                        $field = $field->getValue($query->getQuery()->getGrammar());
+                    }
                     $fieldSql = $this->query->raw(sprintf("lower(%s)", DbDongle::cast($field, 'text')));
                     $termSql = '%' . trim(mb_strtolower($term)) . '%';
                     $query->orWhere($fieldSql, 'LIKE', $termSql);
@@ -102,6 +106,9 @@ class Builder extends BuilderModel
                         foreach ($words as $word) {
                             if (!strlen($word)) {
                                 continue;
+                            }
+                            if ($field instanceof Expression) {
+                                $field = $field->getValue($query->getQuery()->getGrammar());
                             }
                             $fieldSql = $this->query->raw(sprintf("lower(%s)", DbDongle::cast($field, 'text')));
                             $wordSql = '%' . trim(mb_strtolower($word)) . '%';
@@ -120,20 +127,21 @@ class Builder extends BuilderModel
      *
      * This method also accepts the Laravel signature:
      *
-     * `paginate(int|null $perPage, array $columns, string $pageName, int|null $page)`
+     * `paginate(int|null $perPage, array $columns, string $pageName, int|null $page, \Closure|int|null $total)`
      *
      * @param int|null $perPage
      * @param array|int|null $currentPage
      * @param array|string $columns
      * @param string|int|null $pageName
+     * @param \Closure|int|null $total
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page')
+    public function paginate($perPage = null, $currentPage = null, $columns = ['*'], $pageName = 'page', $total = null)
     {
         /*
          * Engage Laravel signature support
          *
-         * paginate($perPage, $columns, $pageName, $currentPage)
+         * paginate($perPage, $columns, $pageName, $currentPage, $total)
          */
         if (is_array($currentPage)) {
             $_columns = $columns;
@@ -153,7 +161,7 @@ class Builder extends BuilderModel
             $perPage = $this->model->getPerPage();
         }
 
-        $total = $this->toBase()->getCountForPagination();
+        $total = value($total) ?? $this->toBase()->getCountForPagination();
         $this->forPage((int) $currentPage, (int) $perPage);
 
         return $this->paginator($this->get($columns), $total, $perPage, $currentPage, [

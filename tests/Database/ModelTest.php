@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Tests\DbTestCase;
 
-class ModelTest extends DbTestCase
+class ModelTest extends \Winter\Storm\Tests\DbTestCase
 {
     protected $seeded = [];
 
@@ -131,6 +131,33 @@ class ModelTest extends DbTestCase
 
         $this->seeded['websites'][] = Website::create(['url' => 'https://wintertricks.com']);
         $this->seeded['websites'][1]->users()->add($this->seeded['users'][1]);
+    }
+
+    public function testSearchWhereExactHandlesExpressionColumns()
+    {
+        $grammar = Post::query()->getQuery()->getGrammar();
+        $relationColumn = DB::raw(sprintf(
+            '(select %s from %s where %s = %s)',
+            $grammar->wrap('users.name'),
+            $grammar->wrapTable('users'),
+            $grammar->wrap('users.id'),
+            $grammar->wrap('posts.user_id')
+        ));
+
+        $resultIds = Post::query()
+            ->searchWhere('User1', [$relationColumn], 'exact')
+            ->pluck('id')
+            ->all();
+
+        sort($resultIds);
+
+        $expectedIds = [
+            $this->seeded['posts'][0]->id,
+            $this->seeded['posts'][1]->id,
+        ];
+        sort($expectedIds);
+
+        $this->assertEquals($expectedIds, $resultIds);
     }
 
     // tests hasOneThrough & hasManyThrough
@@ -497,6 +524,26 @@ class ModelTest extends DbTestCase
             ],
             $model->attributesToArray()
         );
+    }
+
+    public function testNumericDatesUseTheDefaultTimezone()
+    {
+        $timezone = date_default_timezone_get();
+        date_default_timezone_set('Europe/Brussels');
+
+        try {
+            $model = new TestModelGuarded();
+            $model->timestamps = false;
+            $model->addCasts(['deleted_at' => 'datetime']);
+
+            // 2023-11-14 22:13:20 UTC
+            $model->deleted_at = 1700000000;
+
+            $this->assertSame('2023-11-14 23:13:20', $model->getAttributes()['deleted_at']);
+            $this->assertSame(1700000000, $model->deleted_at->getTimestamp());
+        } finally {
+            date_default_timezone_set($timezone);
+        }
     }
 
     public function testStringIsTrimmed()

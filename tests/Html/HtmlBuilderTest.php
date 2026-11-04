@@ -2,7 +2,7 @@
 
 use Winter\Storm\Html\HtmlBuilder;
 
-class HtmlBuilderTest extends TestCase
+class HtmlBuilderTest extends \Winter\Storm\Tests\TestCase
 {
     public function testStrip()
     {

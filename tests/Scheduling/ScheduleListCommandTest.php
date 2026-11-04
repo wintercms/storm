@@ -54,7 +54,7 @@ class ScheduleListCommandTest extends TestCase
             ->expectsOutput('  * *     * *      *  Winter\Storm\Tests\Scheduling\FooJob  Next Due: 1 minute from now')
             ->expectsOutput('  0 9,17  * *      *  php artisan inspire ......... Next Due: 9 hours from now')
             ->expectsOutput('  0 10    * *      *  php artisan inspire ........ Next Due: 10 hours from now')
-            ->expectsOutput('  * *     * *      *  Closure at: Winter\Storm\Tests\Scheduling\FooCall  Next Due: 1 minute from now')
+            ->expectsOutput('  * *     * *      *  Winter\Storm\Tests\Scheduling\FooCall  Next Due: 1 minute from now')
             ->expectsOutput('  * *     * *      *  Closure at: Winter\Storm\Tests\Scheduling\FooCall::fooFunction  Next Due: 1 minute from now')
             ->expectsOutput('  * *     * *      *  Closure at: '.$closureFilePath.':'.$closureLineNumber.'  Next Due: 1 minute from now');
     }
@@ -78,7 +78,7 @@ class ScheduleListCommandTest extends TestCase
             ->assertSuccessful()
             ->expectsOutput('  * *     * *      *  php artisan foobar a='.ProcessUtils::escapeArgument('b').' ... Next Due: 1 minute from now')
             ->expectsOutput('  * *     * *      *  Winter\Storm\Tests\Scheduling\FooJob  Next Due: 1 minute from now')
-            ->expectsOutput('  * *     * *      *  Closure at: Winter\Storm\Tests\Scheduling\FooCall  Next Due: 1 minute from now')
+            ->expectsOutput('  * *     * *      *  Winter\Storm\Tests\Scheduling\FooCall  Next Due: 1 minute from now')
             ->expectsOutput('  * *     * *      *  Closure at: Winter\Storm\Tests\Scheduling\FooCall::fooFunction  Next Due: 1 minute from now')
             ->expectsOutput('  * *     * *      *  Closure at: '.$closureFilePath.':'.$closureLineNumber.'  Next Due: 1 minute from now')
             ->expectsOutput('  0 9,17  * *      *  php artisan inspire ......... Next Due: 9 hours from now')

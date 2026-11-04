@@ -157,7 +157,8 @@ trait Revisionable
 
     protected function revisionableGetCastType($attribute)
     {
-        if (in_array($attribute, $this->getDates())) {
+        // dates property deprecated in Laravel 10, no longer used in getDates()
+        if (in_array($attribute, $this->getDates()) || $this->isDateCastable($attribute) || in_array($attribute, $this->dates)) {
             return 'date';
         }
 

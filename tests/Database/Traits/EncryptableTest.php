@@ -2,7 +2,7 @@
 
 use Illuminate\Encryption\Encrypter;
 
-class EncryptableTest extends DbTestCase
+class EncryptableTest extends \Winter\Storm\Tests\DbTestCase
 {
     const TEST_CRYPT_KEY = 'gBmM1S5bxZ5ePRj5';
 

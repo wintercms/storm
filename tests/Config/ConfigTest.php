@@ -4,7 +4,7 @@ use Winter\Storm\Config\Repository;
 use Winter\Storm\Config\FileLoader;
 use Illuminate\Filesystem\Filesystem;
 
-class ConfigTest extends TestCase
+class ConfigTest extends \Winter\Storm\Tests\TestCase
 {
     protected $config;
 
