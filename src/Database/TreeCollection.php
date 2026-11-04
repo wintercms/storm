@@ -103,9 +103,10 @@ class TreeCollection extends Collection
      * Gets an nested array with values of a given columns.
      * @param  mixed  $values Model columns to return, either a string name of the role or an array of names.
      * @param  string $key    Model column to use as key
+     * @param  bool   $removeOrphans Remove nodes whose parent is missing from the collection, instead of keeping them as roots.
      * @return array
      */
-    public function toNestedArray($values, $key = null)
+    public function toNestedArray($values, $key = null, $removeOrphans = false)
     {
         if (!is_array($values)) {
             $values = [$values];
@@ -152,7 +153,7 @@ class TreeCollection extends Collection
         /*
          * Build a nested collection
          */
-        $rootItems = $this->toNested();
+        $rootItems = $this->toNested($removeOrphans);
         return $buildCollection($rootItems);
     }
 }
