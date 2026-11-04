@@ -342,6 +342,35 @@ trait ExtendableTrait
     }
 
     /**
+     * Resolves `isset()` and `empty()` semantics for extension-provided properties.
+     *
+     * Mirrors `extendableGet()`: a dynamic property holding null is treated as not provided, and
+     * behavior properties follow Eloquent's null semantics. Returns null when the property is not
+     * provided by the extension system at all, allowing the caller to fall back to its own
+     * resolution (attributes, relations, mutators, ...).
+     *
+     * @param  string $name
+     * @return bool|null
+     */
+    public function extendableIsset($name)
+    {
+        if (isset($this->extensionData['dynamicProperties'][$name])) {
+            return true;
+        }
+
+        foreach ($this->extensionData['extensions'] as $extensionObject) {
+            if (
+                property_exists($extensionObject, $name) &&
+                $this->extendableIsAccessible($extensionObject, $name)
+            ) {
+                return !is_null($extensionObject->{$name});
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Checks if a property is accessible, property equivalent of `is_callable()`
      * @param  mixed  $class
      * @param  string $propertyName

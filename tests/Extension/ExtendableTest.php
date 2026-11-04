@@ -68,6 +68,19 @@ class ExtendableTest extends TestCase
         $this->assertTrue($subject->propertyExists('dynamicAttribute'));
     }
 
+    public function testExtendableIssetResolvesDynamicProperties()
+    {
+        $subject = new BasicExtendable();
+        $subject->addDynamicProperty('dynamicAttribute', 'Test');
+        $subject->addDynamicProperty('nullDynamicAttribute', null);
+
+        $this->assertTrue($subject->extendableIsset('dynamicAttribute'));
+
+        // A null dynamic property is skipped, exactly like extendableGet() does
+        $this->assertNull($subject->extendableIsset('nullDynamicAttribute'));
+        $this->assertNull($subject->extendableIsset('notAnAttribute'));
+    }
+
     public function testModifyDynamicPropertyValueOnClass()
     {
         $subject = $this->mockClassLoader(ExtendableTestExampleExtendableClass::class);
