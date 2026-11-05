@@ -259,13 +259,21 @@ trait HasRelationships
      */
     public function getRelationTypeDefinition(string $type, string $name, bool $includeMethods = true): array|null
     {
-        $definitions = $this->getRelationTypeDefinitions($type, $includeMethods);
-
-        if (isset($definitions[$name])) {
-            return $definitions[$name];
+        if (!array_key_exists($type, static::$relationTypes)) {
+            return null;
         }
 
-        return null;
+        if ($includeMethods && $this->getRelationMethodType($name) === $type) {
+            return $this->relationMethodDefinition($name);
+        }
+
+        if (!isset($this->{$type}[$name])) {
+            return null;
+        }
+
+        $relation = $this->{$type}[$name];
+
+        return is_string($relation) ? [$relation] : $relation;
     }
 
     /**
@@ -301,7 +309,7 @@ trait HasRelationships
         }
 
         foreach (array_keys(static::$relationTypes) as $type) {
-            if ($this->getRelationTypeDefinition($type, $name, $includeMethods) !== null) {
+            if (isset($this->{$type}[$name])) {
                 return $type;
             }
         }
