@@ -272,6 +272,10 @@ class Filesystem extends FilesystemBase
             $indexes[] = (int) $matches[1];
         }
 
+        if (!empty($indexes) && max($indexes) > PHP_INT_MAX - $step) {
+            throw new \OverflowException('The next index for $str exceeds PHP_INT_MAX.');
+        }
+
         return empty($indexes)
             ? $info['filename'] . $separator . $starting . '.' . $info['extension']
             : $info['filename'] . $separator . (max($indexes) + $step) . '.' . $info['extension'];
