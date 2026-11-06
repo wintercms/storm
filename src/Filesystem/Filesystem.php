@@ -246,7 +246,7 @@ class Filesystem extends FilesystemBase
 
         $info = pathinfo($str);
 
-        if (($info['filename'] ?? '') === '' || ($info['extension'] ?? '') === '') {
+        if ($info['filename'] === '' || ($info['extension'] ?? '') === '') {
             throw new \InvalidArgumentException('$str must be a file name');
         }
 
