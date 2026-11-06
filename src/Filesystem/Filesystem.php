@@ -258,7 +258,7 @@ class Filesystem extends FilesystemBase
             return $str;
         }
 
-        $pattern = '/^' . preg_quote($info['filename'], '/') . preg_quote($separator, '/') . '(\d*)\.' . preg_quote($info['extension'], '/') . '$/';
+        $pattern = '/^' . preg_quote($info['filename'], '/') . preg_quote($separator, '/') . '(\d+)\.' . preg_quote($info['extension'], '/') . '$/';
 
         foreach ($list as $item) {
             if (!preg_match($pattern, $item, $matches)) {

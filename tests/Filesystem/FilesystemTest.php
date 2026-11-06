@@ -45,6 +45,13 @@ class FilesystemTest extends TestCase
         }
     }
 
+    public function testUniqueIgnoresEmptyIndex()
+    {
+        $this->assertSame('foo_5.txt', $this->filesystem->unique('foo.txt', ['foo.txt', 'foo_.txt'], '_', 5, 2));
+        $this->assertSame('foo_2.txt', $this->filesystem->unique('foo.txt', ['foo.txt', 'foo_.txt', 'foo_0.txt'], '_', 5, 2));
+        $this->assertSame('foo_14.txt', $this->filesystem->unique('foo.txt', ['foo.txt', 'foo_.txt', 'foo_12.txt'], '_', 5, 2));
+    }
+
     /**
      * @dataProvider provideInvalidSteps
      */
