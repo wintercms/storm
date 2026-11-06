@@ -254,6 +254,10 @@ class Filesystem extends FilesystemBase
             throw new \InvalidArgumentException('$step must be greater than zero');
         }
 
+        if ($starting < 0) {
+            throw new \InvalidArgumentException('$starting must be zero or greater');
+        }
+
         if (!in_array($str, $list, true)) {
             return $str;
         }
