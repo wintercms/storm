@@ -242,7 +242,7 @@ class FormBuilder
 
         $options = $this->html->attributes($options);
 
-        $value = e($this->formatLabel($name, $value));
+        $value = e($this->formatLabel($name, $value), false);
 
         return '<label for="'.$name.'"'.$options.'>'.$value.'</label>';
     }
@@ -517,7 +517,7 @@ class FormBuilder
             $html[] = $this->option($display, $value, $selected);
         }
 
-        return '<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>';
+        return '<optgroup label="' . e($label, false) . '">' . implode('', $html) . '</optgroup>';
     }
 
     /**
@@ -549,7 +549,7 @@ class FormBuilder
             }
             $display = $label;
         }
-        return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
+        return '<option' . $this->html->attributes($options) . '>' . e($display, false) . '</option>';
     }
 
     /**
