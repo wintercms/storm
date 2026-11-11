@@ -6,6 +6,7 @@ use Carbon\Laravel\ServiceProvider as CarbonServiceProvider;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as ApplicationBase;
 use Illuminate\Foundation\PackageManifest;
+use Illuminate\Log\Context\ContextServiceProvider;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Winter\Storm\Events\EventServiceProvider;
 use Winter\Storm\Filesystem\PathResolver;
@@ -67,11 +68,12 @@ class Application extends ApplicationBase
     /**
      * Get the path to the public / web directory.
      *
+     * @param string $path
      * @return string
      */
-    public function publicPath()
+    public function publicPath($path = '')
     {
-        return $this->basePath;
+        return $this->joinPaths($this->basePath, $path);
     }
 
     /**
@@ -104,13 +106,11 @@ class Application extends ApplicationBase
     protected function registerBaseServiceProviders()
     {
         $this->register(new EventServiceProvider($this));
-
         $this->register(new LogServiceProvider($this));
-
+        $this->register(new ContextServiceProvider($this));
         $this->register(new RoutingServiceProvider($this));
 
         $this->register(new ExecutionContextProvider($this));
-
         $this->register(new CarbonServiceProvider($this));
     }
 
@@ -468,7 +468,7 @@ class Application extends ApplicationBase
             'filesystem.cloud'     => [\Illuminate\Contracts\Filesystem\Cloud::class],
             'hash'                 => [\Illuminate\Contracts\Hashing\Hasher::class],
             'translator'           => [\Illuminate\Translation\Translator::class, \Illuminate\Contracts\Translation\Translator::class],
-            'log'                  => [\Illuminate\Log\Logger::class, \Psr\Log\LoggerInterface::class],
+            'log'                  => [\Illuminate\Log\LogManager::class, \Psr\Log\LoggerInterface::class],
             'mail.manager'         => [\Illuminate\Mail\MailManager::class, \Illuminate\Contracts\Mail\Factory::class],
             'mailer'               => [\Illuminate\Mail\Mailer::class, \Illuminate\Contracts\Mail\Mailer::class, \Illuminate\Contracts\Mail\MailQueue::class],
             'queue'                => [\Illuminate\Queue\QueueManager::class, \Illuminate\Contracts\Queue\Factory::class, \Illuminate\Contracts\Queue\Monitor::class],

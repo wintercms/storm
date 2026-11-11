@@ -171,9 +171,10 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      * Sets the user
      * @phpstan-param Models\User $user
      */
-    public function setUser(Authenticatable $user)
+    public function setUser(Authenticatable $user): static
     {
         $this->user = $user;
+        return $this;
     }
 
     /**
@@ -621,11 +622,16 @@ class Manager implements \Illuminate\Contracts\Auth\StatefulGuard
      */
     public function once(array $credentials = [])
     {
+        $previousUseSession = $this->useSession;
+
         $this->useSession = false;
 
-        $user = $this->authenticate($credentials);
-
-        $this->useSession = true;
+        try {
+            $user = $this->authenticate($credentials);
+        }
+        finally {
+            $this->useSession = $previousUseSession;
+        }
 
         return !!$user;
     }

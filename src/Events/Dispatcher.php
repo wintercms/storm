@@ -213,6 +213,30 @@ class Dispatcher extends BaseDispatcher
     }
 
     /**
+     * Add the listeners for the event's interfaces to the given array.
+     *
+     * @param string $eventName
+     * @param array $listeners
+     * @return array
+     */
+    protected function addInterfaceListeners($eventName, array $listeners = [])
+    {
+        foreach (class_implements($eventName) as $interface) {
+            if (!isset($this->listeners[$interface])) {
+                continue;
+            }
+
+            if (!isset($this->sorted[$interface])) {
+                $this->sortListeners($interface);
+            }
+
+            $listeners = array_merge($listeners, $this->sorted[$interface]);
+        }
+
+        return $listeners;
+    }
+
+    /**
      * Sort the listeners for a given event by priority.
      *
      * @param string $eventName

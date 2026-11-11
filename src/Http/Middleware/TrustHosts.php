@@ -67,5 +67,6 @@ abstract class TrustHosts
         if ($host = parse_url($this->app['config']->get('app.url'), PHP_URL_HOST)) {
             return '^(.+\.)?'.preg_quote($host).'$';
         }
+        return null;
     }
 }

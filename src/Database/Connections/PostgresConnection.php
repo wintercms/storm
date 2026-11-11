@@ -1,18 +1,20 @@
 <?php namespace Winter\Storm\Database\Connections;
 
+use Illuminate\Database\PostgresConnection as BasePostgresConnection;
 use Illuminate\Database\Schema\PostgresBuilder;
-use Illuminate\Database\PDO\PostgresDriver;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
-use Illuminate\Database\Schema\PostgresSchemaState;
-use Illuminate\Filesystem\Filesystem;
+
+use Winter\Storm\Database\PDO\PostgresDriver;
 use Winter\Storm\Database\Query\Grammars\PostgresGrammar as QueryGrammar;
-use Illuminate\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
+use Winter\Storm\Database\Schema\Grammars\PostgresGrammar as SchemaGrammar;
 
 /**
  * @phpstan-property \Illuminate\Database\Schema\Grammars\Grammar|null $schemaGrammar
  */
-class PostgresConnection extends Connection
+class PostgresConnection extends BasePostgresConnection
 {
+    use HasConnection;
+
     /**
      * Get the default query grammar instance.
      *
@@ -20,7 +22,7 @@ class PostgresConnection extends Connection
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new QueryGrammar);
+        return new QueryGrammar($this);
     }
 
     /**
@@ -44,7 +46,7 @@ class PostgresConnection extends Connection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return $this->withTablePrefix(new SchemaGrammar);
+        return new SchemaGrammar($this);
     }
 
     /**
@@ -60,22 +62,10 @@ class PostgresConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Illuminate\Database\PDO\PostgresDriver
+     * @return \Winter\Storm\Database\PDO\PostgresDriver
      */
     protected function getDoctrineDriver()
     {
         return new PostgresDriver;
-    }
-
-    /**
-     * Get the schema state for the connection.
-     *
-     * @param  \Illuminate\Filesystem\Filesystem|null  $files
-     * @param  callable|null  $processFactory
-     * @return \Illuminate\Database\Schema\PostgresSchemaState
-     */
-    public function getSchemaState(?Filesystem $files = null, ?callable $processFactory = null)
-    {
-        return new PostgresSchemaState($this, $files, $processFactory);
     }
 }

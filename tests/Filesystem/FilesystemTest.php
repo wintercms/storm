@@ -1,8 +1,9 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Winter\Storm\Filesystem\Filesystem;
 
-class FilesystemTest extends TestCase
+class FilesystemTest extends \Winter\Storm\Tests\TestCase
 {
     protected ?Filesystem $filesystem = null;
 
@@ -11,10 +12,8 @@ class FilesystemTest extends TestCase
         $this->filesystem = new Filesystem();
     }
 
-    /**
-     * @dataProvider providePathsForIsAbsolutePath
-     * @see Symfony\Component\Filesystem\Tests\FilesystemTest::testIsAbsolutePath
-     */
+    #[DataProvider('providePathsForIsAbsolutePath')]
+    /** @see Symfony\Component\Filesystem\Tests\FilesystemTest::testIsAbsolutePath */
     public function testIsAbsolutePath($path, $expectedResult)
     {
         $result = $this->filesystem->isAbsolutePath($path);
@@ -22,7 +21,7 @@ class FilesystemTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function providePathsForIsAbsolutePath()
+    public static function providePathsForIsAbsolutePath()
     {
         return [
             ['/var/lib', true],
@@ -34,9 +33,7 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideSizesForSizeToBytes
-     */
+    #[DataProvider('provideSizesForSizeToBytes')]
     public function testSizeToBytes($input, $expectedBytes)
     {
         $result = $this->filesystem->sizeToBytes($input);
@@ -44,7 +41,7 @@ class FilesystemTest extends TestCase
         $this->assertEquals($expectedBytes, $result);
     }
 
-    public function provideSizesForSizeToBytes()
+    public static function provideSizesForSizeToBytes()
     {
         return [
             ['1 byte', '1'],
@@ -60,9 +57,7 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideBytesForSizeToString
-     */
+    #[DataProvider('provideBytesForSizeToString')]
     public function testSizeToString($bytes, $expectedString)
     {
         $result = $this->filesystem->sizeToString($bytes);
@@ -70,7 +65,7 @@ class FilesystemTest extends TestCase
         $this->assertEquals($expectedString, $result);
     }
 
-    public function provideBytesForSizeToString()
+    public static function provideBytesForSizeToString()
     {
         return [
             [1, '1 byte'],
@@ -84,9 +79,7 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideInvalidSizesForSizeToBytes
-     */
+    #[DataProvider('provideInvalidSizesForSizeToBytes')]
     public function testSizeToBytesInvalidInput($input)
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -94,7 +87,7 @@ class FilesystemTest extends TestCase
         $this->filesystem->sizeToBytes($input);
     }
 
-    public function provideInvalidSizesForSizeToBytes()
+    public static function provideInvalidSizesForSizeToBytes()
     {
         return [
             ['-1G'],               // Negative value

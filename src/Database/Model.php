@@ -22,6 +22,7 @@ use Winter\Storm\Support\Str;
  */
 class Model extends EloquentModel implements ModelInterface
 {
+    use Concerns\HasAttributes;
     use Concerns\GuardsAttributes;
     use Concerns\HasRelationships;
     use Concerns\HidesAttributes;
@@ -105,7 +106,6 @@ class Model extends EloquentModel implements ModelInterface
         }
 
         // Resolver hasn't been set yet
-        /** @phpstan-ignore-next-line */
         if (!static::getConnectionResolver()) {
             return false;
         }
@@ -638,7 +638,7 @@ class Model extends EloquentModel implements ModelInterface
         // and format a Carbon object from this timestamp. This allows flexibility
         // when defining your date fields as they might be UNIX timestamps here.
         if (is_numeric($value)) {
-            return Argon::createFromTimestamp($value);
+            return Argon::createFromTimestamp($value, date_default_timezone_get());
         }
 
         // If the value is in simply year, month, day format, we will instantiate the
@@ -708,10 +708,10 @@ class Model extends EloquentModel implements ModelInterface
     protected function newBaseQueryBuilder()
     {
         $conn = $this->getConnection();
-
         $grammar = $conn->getQueryGrammar();
+        $processor = $conn->getPostProcessor();
 
-        $builder = new QueryBuilder($conn, $grammar, $conn->getPostProcessor());
+        $builder = new QueryBuilder($conn, $grammar, $processor);
 
         if ($this->duplicateCache) {
             $builder->enableDuplicateCache();
@@ -1061,20 +1061,6 @@ class Model extends EloquentModel implements ModelInterface
     //
     // Getters
     //
-
-    /**
-     * Determine if the given attribute will be processed by getAttributeValue().
-     */
-    public function hasAttribute(string $key): bool
-    {
-        return (
-            array_key_exists($key, $this->attributes)
-            || array_key_exists($key, $this->casts)
-            || $this->hasGetMutator($key)
-            || $this->hasAttributeMutator($key)
-            || $this->isClassCastable($key)
-        );
-    }
 
     /**
      * Get an attribute from the model.

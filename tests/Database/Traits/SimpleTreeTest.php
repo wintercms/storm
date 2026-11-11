@@ -6,7 +6,7 @@ use Winter\Storm\Database\Model;
 use Winter\Storm\Tests\Database\Fixtures\CategorySimple;
 use Winter\Storm\Tests\DbTestCase;
 
-class SimpleTreeTest extends DbTestCase
+class SimpleTreeTest extends \Winter\Storm\Tests\DbTestCase
 {
     public function setUp() : void
     {

@@ -9,7 +9,7 @@ class Pivot extends Model
     /**
      * The attributes that aren't mass assignable.
      *
-     * @var string[]|bool
+     * @var string[]
      */
     protected $guarded = [];
 
