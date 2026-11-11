@@ -1680,6 +1680,12 @@ class Model extends Extendable implements ModelInterface, ArrayAccess, Arrayable
      */
     public function __isset($key)
     {
+        // A null extension value falls through to the local attributes in __get(), so only
+        // a positive result may short-circuit here.
+        if ($this->extendableIsset($key) === true) {
+            return true;
+        }
+
         return isset($this->attributes[$key]) ||
             (
                 $this->hasGetMutator($key) &&
