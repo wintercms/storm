@@ -46,7 +46,7 @@
         "symfony/console": "^7.2",
         "symfony/process": "^7.1",
         "symfony/yaml": "^6.4|^7.0",
-        "twig/twig": "^3.14",
+        "twig/twig": "^3.21",
         "wikimedia/less.php": "^5.0",
         "wikimedia/minify": "~2.2",
         "winter/laravel-config-writer": "^1.2.0"
