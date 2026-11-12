@@ -290,7 +290,7 @@ class HtmlBuilder
             return $this->nestedListing($key, $type, $value);
         }
 
-        return '<li>'.e($value).'</li>';
+        return '<li>'.e($value, false).'</li>';
     }
 
     /**
@@ -355,7 +355,7 @@ class HtmlBuilder
             $value = substr(htmlspecialchars(json_encode($value), ENT_QUOTES, 'UTF-8'), 1, -1);
         }
 
-        return $key.'="'.e($value).'"';
+        return $key.'="'.e($value, false).'"';
     }
 
     /**
