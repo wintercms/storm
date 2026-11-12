@@ -177,7 +177,7 @@ parameters:
 
 		-
 			message: "#^Call to private method delete\\(\\) of parent class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOne\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\.$#"
-			count: 3
+			count: 2
 			path: src/Database/Relations/AttachOne.php
 
 		-
